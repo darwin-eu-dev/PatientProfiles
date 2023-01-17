@@ -38,14 +38,7 @@
 #'
 #' @examples
 
-addAge <- function(x,
-                   cdm,
-                   ageAt = "cohort_start_date",
-                   defaultMonth = 1,
-                   defaultDay = 1,
-                   imposeMonth = TRUE,
-                   imposeDay = TRUE,
-                   compute = TRUE) {
+addAge <- function(x, cdm, ageAt = "cohort_start_date", defaultMonth = 1, defaultDay = 1, imposeMonth = TRUE, imposeDay = TRUE, compute = TRUE) {
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)
 
@@ -87,9 +80,11 @@ addAge <- function(x,
     dplyr::mutate(year_of_birth1 = as.character(as.integer(.data$year_of_birth))) %>%
     dplyr::mutate(month_of_birth1 = as.character(as.integer(.data$month_of_birth))) %>%
     dplyr::mutate(day_of_birth1 = as.character(as.integer(.data$day_of_birth))) %>%
-    dplyr::mutate(birth_date = as.Date(paste0(.data$year_of_birth1, "-",
-                                              .data$month_of_birth1, "-",
-                                              .data$day_of_birth1)))  %>%
+    dplyr::mutate(birth_date = as.Date(paste0(
+      .data$year_of_birth1, "-",
+      .data$month_of_birth1, "-",
+      .data$day_of_birth1
+    ))) %>%
     dplyr::mutate(age = floor(dbplyr::sql(sqlGetAge(
       dialect = CDMConnector::dbms(cdm),
       dob = "birth_date",
