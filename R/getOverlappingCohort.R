@@ -68,12 +68,12 @@
 #' }
 #'
 getOverlappingCohort <- function(cdm,
-                                         targetCohortName,
-                                         targetCohortId = NULL,
-                                         overlapCohortName,
-                                         overlapCohortId = NULL,
-                                         lookbackWindow = 0,
-                                         multipleEvents = FALSE) {
+                                 targetCohortName,
+                                 targetCohortId = NULL,
+                                 overlapCohortName,
+                                 overlapCohortId = NULL,
+                                 lookbackWindow = 0,
+                                 multipleEvents = FALSE) {
   if (is.character(targetCohortId)) {
     targetCohortId <- as.numeric(targetCohortId)
   }
@@ -179,7 +179,8 @@ getOverlappingCohort <- function(cdm,
       values_fill = 0
     ) %>%
     dplyr::right_join(
-      targetCohort, by = c("subject_id", "cohort_start_date","cohort_end_date")
+      targetCohort,
+      by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     dplyr::mutate(dplyr::across(
       dplyr::starts_with("overlap"), ~ dplyr::if_else(is.na(.x), 0, .x)
