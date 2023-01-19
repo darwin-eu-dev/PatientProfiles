@@ -317,7 +317,7 @@ getTableOne <- function(cdm,
           )
         ) %>%
         dplyr::select("variable_name", "variable")
-      result.k <- getOverlappingCohortSubjects(
+      result.k <- getOverlappingCohort(
         cdm = cdm,
         targetCohortName = targetCohortName,
         targetCohortId = targetCohortId,
@@ -353,4 +353,59 @@ getTableOne <- function(cdm,
   ) %>% obscureSummary(minimumCellCounts = minimumCellCount)
 
   return(output)
+}
+
+#' @noRd
+addVisit <- function(cohortDb,
+                     cdm, window = c(-365, 0)) {
+  cdm[["visit_occurrence"]] %>%
+    dplyr::select(
+      "subject_id" = "person_id", "visit_concept_id", "visit_start_date"
+    ) %>%
+    dplyr::inner_join(
+      cohortDb %>%
+        dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
+        dplyr::distinct(),
+      by = "subject_id"
+    ) %>%
+    dplyr::filter(
+      CDMConnector::dateadd("cohort_start_date", window[1]) <=
+        .data$visit_start_date
+    ) %>%
+    dplyr::filter(
+      CDMConnector::dateadd("cohort_start_date", window[2]) >=
+        .data$visit_start_date
+    ) %>%
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
+    ) %>%
+    dplyr::summarise(number_visits = dplyr::n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::right_join(
+      cohortDb,
+      by = c("subject_id", "cohort_start_date", "cohort_end_date")
+    ) %>%
+    dplyr::select(dplyr::all_of(colnames(cohortDb)), "number_visits")
+}
+
+#' @noRd
+obscureSummary <- function(result, minimumCellCounts) {
+  values_to_osbcure <- suppressWarnings(as.numeric(result$value)) <
+    minimumCellCounts &
+    suppressWarnings(as.numeric(result$value)) > 0
+  obscured_values <- result$estimate == "count" & values_to_osbcure
+  obscured_cohort <- unique(result$cohort_definition_id[
+    result$estimate == "count" &
+      result$variable == "number_observations" &
+      values_to_osbcure
+  ])
+  result$value[obscured_values] <- paste0("<", minimumCellCounts)
+  result$value[
+    result$cohort_definition_id %in% obscured_cohort
+  ] <- as.character(NA)
+  result$value[
+    result$cohort_definition_id %in% obscured_cohort &
+      result$variable == "number_observations"
+  ] <- paste0("<", minimumCellCounts)
+  return(result)
 }

@@ -1,5 +1,46 @@
+# Copyright 2022 DARWIN EU (C)
+#
+# This file is part of CohortProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#' It creates a mock database for testing CohortProfiles package
+#'
+#' @param x ...
+#' @param cdm ...
+#' @param eventTableName ...
+#' @param eventId ...
+#' @param window ...
+#' @param name ...
+#' @param eventDate ...
+#' @param eventAt ...
+#' @param order ...
+#' @param compute ...
+#'
+#' @return
 #' @export
-addEvent <- function(x, cdm, eventTableName, eventId, window = c(NA, NA), name = "event", eventDate = "cohort_start_date", eventAt = "cohort_start_date", order = "first", compute = TRUE) {
+#'
+#' @examples
+addEvent <- function(x,
+                     cdm,
+                     eventTableName,
+                     eventId,
+                     window = c(NA, NA),
+                     name = "event",
+                     eventDate = "cohort_start_date",
+                     eventAt = "cohort_start_date",
+                     order = "first",
+                     compute = TRUE) {
   eventTable <- cdm[[eventTableName]]
   if (!is.null(eventId)) {
     eventTable <- eventTable %>% dplyr::filter(.data$cohort_definition_id == .env$eventId)

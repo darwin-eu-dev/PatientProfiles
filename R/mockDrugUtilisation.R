@@ -1,6 +1,6 @@
 # Copyright 2022 DARWIN EU (C)
 #
-# This file is part of DrugUtilisation
+# This file is part of CohortProfiles
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It creates a mock database for testing drugutilisation package
+#' It creates a mock database for testing CohortProfiles package
 #'
 #'
 #' @param drug_exposure default null user can define its own table

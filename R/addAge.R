@@ -38,7 +38,14 @@
 #'
 #' @examples
 
-addAge <- function(x, cdm, ageAt = "cohort_start_date", defaultMonth = 1, defaultDay = 1, imposeMonth = TRUE, imposeDay = TRUE, compute = TRUE) {
+addAge <- function(x,
+                   cdm,
+                   ageAt = "cohort_start_date",
+                   defaultMonth = 1,
+                   defaultDay = 1,
+                   imposeMonth = TRUE,
+                   imposeDay = TRUE,
+                   compute = TRUE) {
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)
 
@@ -97,4 +104,18 @@ addAge <- function(x, cdm, ageAt = "cohort_start_date", defaultMonth = 1, defaul
     person <- person %>% dplyr::compute()
   }
   return(person)
+}
+
+#' @noRd
+sqlGetAge <- function(dialect,
+                      dob,
+                      dateOfInterest) {
+  SqlRender::translate(
+    SqlRender::render("((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
+                      DAY(@date_of_interest)-(YEAR(@dob)* 10000 + MONTH(@dob) * 100 + DAY(@dob))) / 10000)",
+                      dob = dob,
+                      date_of_interest = dateOfInterest
+    ),
+    targetDialect = dialect
+  )
 }

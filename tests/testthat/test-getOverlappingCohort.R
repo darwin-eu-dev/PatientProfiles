@@ -23,7 +23,7 @@ test_that("overlap function", {
 
   cdm <- mockDrugUtilisation(cohort1 = cohort1, cohort2 = cohort2)
 
-  result <- getOverlappingCohortSubjects(
+  result <- getOverlappingCohort(
     cdm = cdm,
     targetCohortName = "cohort1",
     targetCohortId = c("1"),
@@ -67,7 +67,7 @@ test_that("test multipleEvents",{
     )
   )
 
-  result <- getOverlappingCohortSubjects(
+  result <- getOverlappingCohort(
     cdm = cdm,
     targetCohortName = "cohort1",
     targetCohortId = 1,
@@ -78,7 +78,7 @@ test_that("test multipleEvents",{
   ) %>% dplyr::collect()
   expect_true(all(result$overlap_cohort2_1 == c(1,1,0)))
 
-  result <- getOverlappingCohortSubjects(
+  result <- getOverlappingCohort(
     cdm = cdm,
     targetCohortName = "cohort1",
     targetCohortId = 1,
@@ -89,7 +89,7 @@ test_that("test multipleEvents",{
   ) %>% dplyr::collect()
   expect_true(all(result$overlap_cohort2_1 == c(1,2,0)))
 
-  result <- getOverlappingCohortSubjects(
+  result <- getOverlappingCohort(
     cdm = cdm,
     targetCohortName = "cohort1",
     targetCohortId = 1,

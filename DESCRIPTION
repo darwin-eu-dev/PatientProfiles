@@ -2,13 +2,33 @@ Package: CohortProfiles
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Authors@R: c(
+    person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", role = c("aut", "cre")),
+    person("Yuchen", "Guo", , "yuchen.guo@ndorms.ox.ac.uk", role = c("aut")),
+    person("Mike", "Du", , "mike.du@ndorms.ox.ac.uk", role = c("aut")),
+    person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut"))
+    )
+Maintainer: The package maintainer <marti.catalasabate@ndorms.ox.ac.uk>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
+Suggests: 
+    covr,
+    testthat (>= 3.1.5)
 Imports: 
-    magrittr
+    magrittr,
+    CDMConnector,
+    dplyr,
+    dbplyr,
+    tidyr,
+    checkmate,
+    stringr,
+    lubridate,
+    tibble,
+    DBI,
+    SqlRender,
+    duckdb,
+    rlang
