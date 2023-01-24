@@ -49,7 +49,6 @@ inObservation <- function(x,
   errorMessage <- checkmate::makeAssertCollection()
 
   xCheck <- inherits(x, "tbl_dbi")
-  checkmate::assertTRUE(xCheck, add = errorMessage)
   if (!isTRUE(xCheck)) {
     errorMessage$push(
       "- x is not a table"
@@ -57,9 +56,6 @@ inObservation <- function(x,
   }
 
   cdmCheck <- inherits(cdm, "cdm_reference")
-  checkmate::assertTRUE(cdmCheck,
-                        add = errorMessage
-  )
   if (!isTRUE(cdmCheck)) {
     errorMessage$push(
       "- cdm must be a CDMConnector CDM reference object"
@@ -69,6 +65,16 @@ inObservation <- function(x,
   checkmate::reportAssertions(collection = errorMessage)
 
   errorMessage <- checkmate::makeAssertCollection()
+
+  ObsperiodExists <- "observation_period" %in% names(cdm)
+  checkmate::assertTRUE(ObsperiodExists,
+                        add = errorMessage
+  )
+  if (!isTRUE(ObsperiodExists)) {
+    errorMessage$push(
+      "- `observation_period` is not found in cdm"
+    )
+  }
 
   cdmObsPeriodCheck <- inherits(cdm$observation_period, "tbl_dbi")
   checkmate::assertTRUE(cdmObsPeriodCheck, add = errorMessage)
@@ -81,7 +87,7 @@ inObservation <- function(x,
 
   errorMessage <- checkmate::makeAssertCollection()
 
-  checkmate::assertCharacter(observationAt,
+  checkmate::assertCharacter(observationAt, len = 1,
                              add = errorMessage,
   )
 
@@ -95,13 +101,13 @@ inObservation <- function(x,
     )
   }
 
-  column2Check <- "subject_id" %in% colnames(x)
+  column2Check <- ("subject_id" %in% colnames(x) || "person_id" %in% colnames(x))
   checkmate::assertTRUE(column2Check,
                         add = errorMessage
   )
   if (!isTRUE(column2Check)) {
     errorMessage$push(
-      "- `subject_id` is not a column of x"
+      "- neither `subject_id` nor `person_id` are columns of x"
     )
   }
 
@@ -135,11 +141,11 @@ inObservation <- function(x,
     )
   }
 
-  checkmate::assertCharacter(name,
+  checkmate::assertCharacter(name, len = 1,
                              add = errorMessage,
   )
 
-  checkmate::assert_logical(compute,
+  checkmate::assert_logical(compute, len = 1,
                             add = errorMessage
   )
 
@@ -148,6 +154,7 @@ inObservation <- function(x,
   # Start code
   name = rlang::enquo(name)
 
+  if("subject_id" %in% colnames(x)) {
     x <- x %>%
       dplyr::left_join(
         cdm$observation_period %>%
@@ -169,6 +176,29 @@ inObservation <- function(x,
       dplyr::select(
         -"observation_period_start_date", - "observation_period_end_date"
       )
+  } else {
+    x <- x %>%
+      dplyr::left_join(
+        cdm$observation_period %>%
+          dplyr::select(
+            "person_id",
+            "observation_period_start_date",
+            "observation_period_end_date"
+          ),
+        by = "person_id"
+      ) %>%
+      dplyr::mutate(
+        !!name := dplyr::if_else(
+          .data[[observationAt]] >= .data$observation_period_start_date &
+            .data[[observationAt]] <= .data$observation_period_end_date,
+          TRUE,
+          FALSE
+        )
+      ) %>%
+      dplyr::select(
+        -"observation_period_start_date", - "observation_period_end_date"
+      )
+  }
 
     if (isTRUE(compute)) {
       x <- x %>% dplyr::compute()
