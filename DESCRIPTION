@@ -17,7 +17,9 @@ LazyData: true
 RoxygenNote: 7.2.1
 Suggests: 
     covr,
-    testthat (>= 3.1.5)
+    testthat (>= 3.1.5),
+    knitr,
+    rmarkdown
 Imports: 
     magrittr,
     CDMConnector,
@@ -32,3 +34,4 @@ Imports:
     SqlRender,
     duckdb,
     rlang
+VignetteBuilder: knitr
