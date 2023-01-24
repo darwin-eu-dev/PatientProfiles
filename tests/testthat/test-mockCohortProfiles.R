@@ -22,12 +22,11 @@ test_that("test user define table", {
       as.Date("2015-01-01"), as.Date("2015-01-01"))
   )
 
-  cdm_1 <- mockCohortProfiles(user_table_name = "test_table_1",test_table_1 = test_table_1)
-  cdm_2 <- mockCohortProfiles(user_table_name = c("test_table_1","test_table_2"),test_table_1 = test_table_1,test_table_2 = test_table_2)
+  cdm_1 <- mockCohortProfiles(test_table_1 = test_table_1)
+  cdm_2 <- mockCohortProfiles(test_table_1 = test_table_1,test_table_2 = test_table_2)
 
 expect_true(dplyr::all_equal(cdm_1$test_table_1 %>% dplyr::collect(),test_table_1))
 expect_true(length(cdm_1)==10)
-expect_error(mockCohortProfiles(user_table_name = c("test_table_1","test_table_2"),test_table_1 = test_table_1))
 expect_true(length(cdm_2)==11)
 expect_true(dplyr::all_equal(cdm_2$test_table_1 %>% dplyr::collect(),test_table_1))
 expect_true(dplyr::all_equal(cdm_2$test_table_2 %>% dplyr::collect(),test_table_2))

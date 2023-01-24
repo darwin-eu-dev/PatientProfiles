@@ -39,7 +39,6 @@ mockCohortProfiles(
   min_days_to_visit_end = NULL,
   max_days_to_visit_end = NULL,
   seed = 1,
-  user_table_name = NULL,
   ...
 )
 }
@@ -111,8 +110,6 @@ mockCohortProfiles(
 \item{max_days_to_visit_end}{the maximum number of days of the visit integer}
 
 \item{seed}{seed}
-
-\item{user_table_name}{name of the user self defined tibble, it takes a vector if multiple tibble table are defined}
 
 \item{...}{user self defined tibble table to put in cdm, it can input as many as the user want}
 }

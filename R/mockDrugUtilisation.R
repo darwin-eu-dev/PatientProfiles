@@ -54,7 +54,6 @@
 #' @param cohort1 cohort table for test to run in getindication
 #' @param cohort2 cohort table for test to run in getindication
 #' @param ... user self defined tibble table to put in cdm, it can input as many as the user want
-#' @param user_table_name name of the user self defined tibble, it takes a vector if multiple tibble table are defined
 #' @return
 #' @export
 #'
@@ -93,7 +92,6 @@ mockCohortProfiles <- function(drug_exposure = NULL,
                                 min_days_to_visit_end = NULL,
                                 max_days_to_visit_end = NULL,
                                 seed = 1,
-                                user_table_name = NULL,
                                 ...) {
   #Put ... into a list
   listTables <- list(...)
@@ -156,7 +154,7 @@ mockCohortProfiles <- function(drug_exposure = NULL,
     checkmate::assertTRUE(max_days_to_visit_end >= min_days_to_visit_end)
   }
   if (length(listTables) > 1) {
-    checkmate::assertTRUE(length(listTables) == length(user_table_name))
+    checkmate::assertTRUE(length(listTables) == length(names(listTables)))
   }
   if (length(listTables) > 1) {
     for (i in length(listTables) > 1) {
@@ -585,7 +583,7 @@ mockCohortProfiles <- function(drug_exposure = NULL,
   if (length(listTables) > 0) {
     for (i in 1:length(listTables)) {
       DBI::dbWithTransaction(db, {
-        DBI::dbWriteTable(db, user_table_name[i],
+        DBI::dbWriteTable(db, names(listTables)[i],
                           listTables[[i]],
                           overwrite = TRUE)
       })
@@ -603,7 +601,7 @@ mockCohortProfiles <- function(drug_exposure = NULL,
         "condition_occurrence",
         "visit_occurrence"
       ),
-      cohort_tables = c("cohort1", "cohort2", user_table_name)
+      cohort_tables = c("cohort1", "cohort2", names(listTables))
     )
   } else {
     cdm <- CDMConnector::cdm_from_con(
