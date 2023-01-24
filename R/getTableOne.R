@@ -184,8 +184,7 @@ getTableOne <- function(cdm,
     dplyr::distinct() %>%
     addPriorHistory(cdm = cdm) %>%
     addSex(cdm = cdm) %>%
-    addAge(cdm = cdm) %>%
-    dplyr::compute()
+    addAge(cdm = cdm)
 
   result <- targetCohort %>%
     dplyr::left_join(
