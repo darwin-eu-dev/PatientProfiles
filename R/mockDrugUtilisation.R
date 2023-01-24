@@ -53,11 +53,13 @@
 
 #' @param cohort1 cohort table for test to run in getindication
 #' @param cohort2 cohort table for test to run in getindication
+#' @param ... user self defined tibble table to put in cdm, it can input as many as the user want
+#' @param user_table_name name of the user self defined tibble, it takes a vector if multiple tibble table are defined
 #' @return
 #' @export
 #'
 #' @examples
-mockDrugUtilisation <- function(drug_exposure = NULL,
+mockCohortProfiles <- function(drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
                                 condition_occurrence = NULL,
@@ -90,7 +92,11 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                                 latest_visit_start_date = NULL,
                                 min_days_to_visit_end = NULL,
                                 max_days_to_visit_end = NULL,
-                                seed = 1) {
+                                seed = 1,
+                                user_table_name = NULL,
+                                ...) {
+  #Put ... into a list
+  listTables <- list(...)
 
   # checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -148,6 +154,14 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   if (!is.null(min_days_to_visit_end) &
       !is.null(max_days_to_visit_end)) {
     checkmate::assertTRUE(max_days_to_visit_end >= min_days_to_visit_end)
+  }
+  if (length(listTables) > 1) {
+    checkmate::assertTRUE(length(listTables) == length(user_table_name))
+  }
+  if (length(listTables) > 1) {
+    for (i in length(listTables) > 1) {
+      checkmate::assert_tibble(listTables[[i]], null.ok = TRUE)
+    }
   }
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -568,21 +582,44 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                       overwrite = TRUE
     )
   })
-
-
-  cdm <- CDMConnector::cdm_from_con(
-    db,
-    cdm_tables = c(
-      "drug_strength",
-      "drug_exposure",
-      "person",
-      "concept_ancestor",
-      "observation_period",
-      "condition_occurrence",
-      "visit_occurrence"
-    ),
-    cohort_tables = c("cohort1", "cohort2")
-  )
+  if (length(listTables) > 0) {
+    for (i in 1:length(listTables)) {
+      DBI::dbWithTransaction(db, {
+        DBI::dbWriteTable(db, user_table_name[i],
+                          listTables[[i]],
+                          overwrite = TRUE)
+      })
+    }
+  }
+  if (length(listTables) > 0) {
+    cdm <- CDMConnector::cdm_from_con(
+      db,
+      cdm_tables = c(
+        "drug_strength",
+        "drug_exposure",
+        "person",
+        "concept_ancestor",
+        "observation_period",
+        "condition_occurrence",
+        "visit_occurrence"
+      ),
+      cohort_tables = c("cohort1", "cohort2", user_table_name)
+    )
+  } else {
+    cdm <- CDMConnector::cdm_from_con(
+      db,
+      cdm_tables = c(
+        "drug_strength",
+        "drug_exposure",
+        "person",
+        "concept_ancestor",
+        "observation_period",
+        "condition_occurrence",
+        "visit_occurrence"
+      ),
+      cohort_tables = c("cohort1", "cohort2")
+    )
+  }
 
   return(cdm)
 }

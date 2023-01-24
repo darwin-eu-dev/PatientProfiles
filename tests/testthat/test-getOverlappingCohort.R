@@ -21,7 +21,7 @@ test_that("overlap function", {
       as.Date("2015-01-01"), as.Date("2015-01-01"))
   )
 
-  cdm <- mockDrugUtilisation(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockCohortProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
   result <- getOverlappingCohort(
     cdm = cdm,
@@ -42,7 +42,7 @@ test_that("overlap function", {
 })
 
 test_that("test multipleEvents",{
-  cdm <- mockDrugUtilisation(
+  cdm <- mockCohortProfiles(
     cohort1 = tibble::tibble(
       cohort_definition_id = c(1, 1, 1, 2, 3),
       subject_id = c(1, 1, 2, 3, 4),
