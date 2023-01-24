@@ -193,7 +193,7 @@ getTableOne <- function(cdm,
     ) %>%
     dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
-      number_obervations.count = as.character(dplyr::n()),
+      number_observations.count = as.character(dplyr::n()),
       number_subjects.count = as.character(dplyr::n_distinct(.data$subject_id)),
       sex_female.count = as.character(count(.data$sex[.data$sex == "Female"])),
       sex_male.count = as.character(count(.data$sex[.data$sex == "Male"])),
@@ -207,7 +207,6 @@ getTableOne <- function(cdm,
       prior_history.median = as.character(median(.data$prior_history, na.rm = TRUE)),
       prior_history.quantile25 = as.character(quantile(.data$prior_history, 0.25, na.rm = TRUE)),
       prior_history.quantile75 = as.character(quantile(.data$prior_history, 0.75, na.rm = TRUE)),
-      number_observations.count = as.character(dplyr::n()),
       cohort_start_date.min = as.character(min(
         .data$cohort_start_date,
         na.rm = TRUE
