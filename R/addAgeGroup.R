@@ -75,7 +75,7 @@ addAgeGroup <- function(x,
 
 
   # check for ageGroup, change it to a list if it is a vector of length 2, push error if other length
-  if (is.numeric(ageGroup)) {
+  if (isTRUE(checkmate::checkIntegerish(ageGroup))) {
     if (length(ageGroup) == 2) {
       ageGroup <- list(ageGroup)
     } else {
@@ -86,7 +86,7 @@ addAgeGroup <- function(x,
 
   # after changing vector to list, we check it is a list with numeric
   checkmate::assertList(ageGroup,
-    types = "numeric", null.ok = TRUE,
+    types = "integerish", null.ok = TRUE,
     add = messageStore
   )
 
