@@ -37,6 +37,16 @@ test_that("NULL age group name, but given age groups, age not in table", {
 
   expect_true(identical(result1, result2))
 
+  #if provided ageGroupNames as follow, should be the same as result2
+  result3 <- addAgeGroup(
+    x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)),
+    ageGroupNames = c("1;20", "21;30", "31;40"), cdm = cdm
+  ) %>%
+    dplyr::collect() %>%
+    dplyr::arrange(age)
+
+  expect_true(identical(result3, result2))
+
   # allow vector of length 2 as ageGroup, same output as if input as list
   result1 <- addAgeGroup(
     x = cdm$cohort1, ageGroup = c(1, 20), cdm = cdm
