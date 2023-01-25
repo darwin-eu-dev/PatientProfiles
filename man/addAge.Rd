@@ -17,7 +17,7 @@ addAge(
 )
 }
 \arguments{
-\item{x}{Tibble with the individuals that we want to add the age.}
+\item{x}{Tibble with the individuals that we want to add the age. Need to be in cdm.}
 
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
@@ -39,6 +39,9 @@ missing for all the individuals. By default: TRUE.}
 
 \item{compute}{Whether resultant table will be computed as temporal table. By
 default: TRUE.}
+}
+\value{
+
 }
 \description{
 Add a column to the current tibble with the age of the subject_id at a
