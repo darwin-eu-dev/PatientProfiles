@@ -99,6 +99,10 @@ addAgeGroup <- function(x,
       messageStore$push("- ageGroup needs to be a numeric vector of length two,
                         or a list contains multiple length two vectors")
     }
+
+    # first sort ageGroup by first value
+    ageGroup <- ageGroup[order(sapply(ageGroup, function(x) x[1], simplify = TRUE), decreasing = FALSE)]
+
     # check lower bound is smaller than upper bound, allow NA in ageGroup at the moment
     checkAgeGroup <- unlist(lapply(ageGroup, function(x) {
       x[1] <= x[2]
@@ -106,7 +110,25 @@ addAgeGroup <- function(x,
     checkmate::assertTRUE(all(checkAgeGroup, na.rm = TRUE),
       add = messageStore
     )
+
+    # check ageGroup overlap
+    list1 <- lapply(dplyr::lag(ageGroup), function(x) {
+      x[2]
+    })
+    list1 <- unlist(list1[lengths(list1) != 0])
+    list2 <- lapply(dplyr::lead(ageGroup), function(x) {
+      x[1]
+    })
+    list2 <- unlist(list2[lengths(list2) != 0])
+
+    # the first value of the interval needs to be larger than the second value of previous vector
+    checkOverlap <- checkmate::assertTRUE(all(list2 - list1 > 0), add = messageStore)
+    if (!isTRUE(checkOverlap)) {
+      messageStore$push("- ageGroup can not have overlapping intervals")
+    }
   }
+
+
 
 
   if (is.null(ageGroup)) {

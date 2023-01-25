@@ -20,20 +20,35 @@ test_that("NULL age group name, but given age groups, age not in table", {
 
   cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
 
-  result <- addAgeGroup(
+  result1 <- addAgeGroup(
     x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)), cdm = cdm
-  ) %>% dplyr::collect()
+  ) %>%
+    dplyr::collect() %>%
+    dplyr::arrange(age)
 
-  expect_true(all(result$ageGroupNames == c("1;20", "21;30", "31;40")))
+  expect_true(all(result1$ageGroupNames == c("1;20", "21;30", "31;40")))
+
+  # change the order of ageGroup provided, result should be the same
+  result2 <- addAgeGroup(
+    x = cdm$cohort1, ageGroup = list(c(21, 30), c(1, 20), c(31, 40)), cdm = cdm
+  ) %>%
+    dplyr::collect() %>%
+    dplyr::arrange(age)
+
+  expect_true(identical(result1, result2))
 
   # allow vector of length 2 as ageGroup, same output as if input as list
   result1 <- addAgeGroup(
     x = cdm$cohort1, ageGroup = c(1, 20), cdm = cdm
-  ) %>% dplyr::collect()
+  ) %>%
+    dplyr::collect() %>%
+    dplyr::arrange(age)
 
   result2 <- addAgeGroup(
     x = cdm$cohort1, ageGroup = list(c(1, 20)), cdm = cdm
-  ) %>% dplyr::collect()
+  ) %>%
+    dplyr::collect() %>%
+    dplyr::arrange(age)
 
   expect_true(identical(result1, result2))
 })
@@ -114,6 +129,13 @@ test_that("throw errors", {
 
   cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
 
+  # error if overlapping ageGroyp
+  expect_error(addAgeGroup(
+    x = cdm$cohort1,
+    ageGroup = list(c(1, 22), c(19, 30), c(31, 40)),
+    ageGroupNames = c("1"), cdm = cdm
+  ))
+
   # error if length of ageGroup provided is different from
   # length of ageGroupNames provided
   expect_error(addAgeGroup(
@@ -144,7 +166,7 @@ test_that("throw errors", {
   # if x does not have "age" column, it has to be in cdm
   expect_error(addAgeGroup(
     x = cohort1,
-    ageGroup = list(c(1, 2), c(1, 20)),
+    ageGroup = list(c(1, 2), c(3, 20)),
     cdm = cdm
   ))
 
@@ -154,7 +176,7 @@ test_that("throw errors", {
   # throw error if when age is in x columns, function still throw error
   expect_error(expect_error(addAgeGroup(
     x = cohort1,
-    ageGroup = list(c(1, 2), c(1, 20)),
+    ageGroup = list(c(1, 2), c(3, 20)),
     cdm = cdm
   )))
 })

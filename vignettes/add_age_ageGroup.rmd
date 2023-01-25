@@ -72,5 +72,5 @@ addAge(x = cdm$cohort1, cdm = cdm, defaultMonth = 12, defaultDay = 3)
 ```
 After getting age for your cohort, addAgeGroup function can add age group to the cohort. In this case, age column is not provided in x, age will automatically computed by addAge function. So x needs to be in cdm to get the age computed. Output of addAgeGroup will be the same table as previous addAge example with one extra column: ageGroupNames. Here, as ageGroupNames is not provided, default setting of the function will combine ageGroup provided.
 ```{r, message= FALSE, warning=FALSE}
-addAgeGroup(x = cdm$cohort1, cdm = cdm, ageGroup = list(c(0,10),c(11,20),c(21,30)))
+addAgeGroup(x = cdm$cohort1, cdm = cdm, ageGroup = list(c(20, 30), c(1, 19)))
 ```
