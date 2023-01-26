@@ -26,18 +26,43 @@
 #' month of birth. By default: 1.
 #' @param defaultDay day of the month assigned to individuals with missing day
 #' of birth. By default: 1.
-#' @param imposeMonth Weather the month of the date of birth will be considered
+#' @param imposeMonth Whether the month of the date of birth will be considered
 #' as missing for all the individuals. By default: TRUE.
-#' @param imposeDay Weather the day of the date of birth will be considered as
+#' @param imposeDay Whether the day of the date of birth will be considered as
 #' missing for all the individuals. By default: TRUE.
-#' @param compute Weather resultant table will be computed as temporal table. By
+#' @param compute Whether resultant table will be computed as temporal table. By
 #' default: TRUE.
 #'
 #' @return
 #' @export
 #'
 #' @examples
-
+#' \dontrun{
+#' library(DBI)
+#' library(duckdb)
+#' library(tibble)
+#' library(CohortProfiles)
+#' cohort1 <- tibble::tibble(
+#'   cohort_definition_id = c("1", "1", "1"),
+#'   subject_id = c("1", "2", "3"),
+#'   cohort_start_date = c(
+#'     as.Date("2010-01-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
+#'   ),
+#'   cohort_end_date = c(
+#'     as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
+#'   )
+#' )
+#'
+#' person <- tibble::tibble(
+#'   person_id = c("1", "2", "3"),
+#'   gender_concept_id = c("8507", "8532", "8507"),
+#'   year_of_birth = c(2000, 1995, NA),
+#'   month_of_birth = c(NA, 07, 08),
+#'   day_of_birth = c(01, 25, 03)
+#' )
+#' cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
+#' addAge(x = cdm[["cohort1"]], cdm = cdm)
+#' }
 addAge <- function(x,
                    cdm,
                    ageAt = "cohort_start_date",
@@ -46,8 +71,31 @@ addAge <- function(x,
                    imposeMonth = TRUE,
                    imposeDay = TRUE,
                    compute = TRUE) {
+  messageStore <- checkmate::makeAssertCollection()
+
+  checkmate::assertClass(cdm, "cdm_reference", add = messageStore)
+
+  #check if ageAt length = 1 and is in table x
+  checkmate::assertCharacter(ageAt, len = 1, add = messageStore)
+  
+  ageAtExists <- checkmate::assertTRUE(ageAt %in% colnames(x), add = messageStore)
+  if (!isTRUE(ageAtExists)) {
+    messageStore$push("- ageAt not found in table")
+  }
+
+  #check if default imputation value for month and day are within range allowed
+  checkmate::assertInt(defaultMonth, lower = 1, upper = 12)
+  checkmate::assertInt(defaultDay, lower = 1, upper = 31)
+
+  #check if imposeMonth imposeDay and compute are logical
+  checkmate::assertLogical(imposeMonth, add = messageStore)
+  checkmate::assertLogical(imposeDay, add = messageStore)
+  checkmate::assertLogical(compute, add = messageStore)
+
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)
+
+  checkmate::reportAssertions(collection = messageStore)
 
   person <- cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
@@ -106,7 +154,7 @@ addAge <- function(x,
   return(person)
 }
 
-#' @noRd
+
 sqlGetAge <- function(dialect,
                       dob,
                       dateOfInterest) {
