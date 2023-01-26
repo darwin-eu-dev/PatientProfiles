@@ -14,7 +14,7 @@ Description: More about what it does (maybe more than one line)
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests: 
     covr,
     testthat (>= 3.1.5),
