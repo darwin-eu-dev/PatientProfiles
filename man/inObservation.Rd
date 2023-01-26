@@ -2,17 +2,45 @@
 % Please edit documentation in R/inObservation.R
 \name{inObservation}
 \alias{inObservation}
-\title{It creates a mock database for testing CohortProfiles package}
+\title{It adds a column to a cohort table indicating whether its individuals are
+in observation at the desired time}
 \usage{
-inObservation(x, cdm, compute = TRUE)
+inObservation(
+  x,
+  cdm,
+  observationAt = "cohort_start_date",
+  name = "in_observation",
+  compute = TRUE
+)
 }
 \arguments{
-\item{x}{...}
+\item{x}{cohort table in which the inObservation command wants to be tested}
 
-\item{cdm}{...}
+\item{cdm}{where the observation_period table is stored}
 
-\item{compute}{...}
+\item{observationAt}{name of the column with the dates to test the
+inObservation command}
+
+\item{name}{name of the column to hold the result of the enquiry:
+TRUE if in individual observation, FALSE if not}
+
+\item{compute}{whether to add compute functionality}
+}
+\value{
+cohort table with the added column assessing inObservation
 }
 \description{
-It creates a mock database for testing CohortProfiles package
+It adds a column to a cohort table indicating whether its individuals are
+in observation at the desired time
+}
+\examples{
+\dontrun{
+db <- DBI::dbConnect(" Your database connection here")
+cdm <- CDMConnector::cdm_from_con(
+  con = db,
+  cdm_schema = "cdm schema name"
+)
+cdm$cohort <- inObservation(cdm$cohort,cdm)
+}
+
 }
