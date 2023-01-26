@@ -8,7 +8,7 @@ addOverlap(
   x,
   cdm,
   overlapCohortName,
-  filter = NULL,
+  overlapCohortId = NULL,
   window = c(NA, NA),
   name = "overlap"
 )
@@ -20,7 +20,7 @@ addOverlap(
 
 \item{overlapCohortName}{...}
 
-\item{filter}{...}
+\item{overlapCohortId}{...}
 
 \item{window}{...}
 
