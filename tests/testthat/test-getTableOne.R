@@ -2,7 +2,7 @@ test_that("expected errors on inputs", {
 
   #need person table
   #obsercation table
-  cdm <- mockDrugUtilisation(
+  cdm <- mockCohortProfiles(
     cohort1 = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2, 2),
       subject_id = c(1, 1, 2, 1, 2),
@@ -47,7 +47,7 @@ test_that("expected errors on inputs", {
 })
 
 test_that("test covariates", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockCohortProfiles(
     cohort1 = tibble::tibble(
       cohort_definition_id = c(1, 1, 1, 2, 3),
       subject_id = c(1, 1, 2, 3, 4),
@@ -187,7 +187,7 @@ test_that("test covariates", {
 })
 
 test_that("test NA as Any", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockCohortProfiles(
     cohort1 = tibble::tibble(
       cohort_definition_id = c(1, 1, 1, 2, 3),
       subject_id = c(1, 1, 2, 3, 4),
