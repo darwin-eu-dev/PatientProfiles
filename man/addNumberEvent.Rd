@@ -2,7 +2,8 @@
 % Please edit documentation in R/addNumberEvent.R
 \name{addNumberEvent}
 \alias{addNumberEvent}
-\title{It creates a mock database for testing CohortProfiles package}
+\title{It adds a column of counts of desired events per individual to an events
+table}
 \usage{
 addNumberEvent(
   x,
@@ -17,24 +18,32 @@ addNumberEvent(
 )
 }
 \arguments{
-\item{x}{...}
+\item{x}{table containing the individuals for which the number of events
+wants to be counted}
 
-\item{cdm}{...}
+\item{cdm}{containing the events table}
 
-\item{eventTableName}{...}
+\item{eventTableName}{name of the table of the cdm containing the events
+of interest}
 
-\item{filter}{...}
+\item{filter}{condition to apply to the events table for what events to count}
 
-\item{window}{...}
+\item{window}{window to consider events of, from date of reference in table x
+to date of event at event table}
 
-\item{name}{...}
+\item{name}{name of the column containing the counts per individual}
 
-\item{eventAt}{...}
+\item{eventAt}{date of reference in table x}
 
-\item{eventDate}{...}
+\item{eventDate}{date to consider in event table}
 
-\item{compute}{...}
+\item{compute}{whether compute functionality is wanted}
+}
+\value{
+a table with all the individuals in x with a column containing counts
+of desired events
 }
 \description{
-It creates a mock database for testing CohortProfiles package
+It adds a column of counts of desired events per individual to an events
+table
 }

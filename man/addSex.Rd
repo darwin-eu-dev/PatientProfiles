@@ -2,7 +2,7 @@
 % Please edit documentation in R/addSex.R
 \name{addSex}
 \alias{addSex}
-\title{It creates a mock database for testing CohortProfiles package}
+\title{It adds a column sex information to the individuals of a table}
 \usage{
 addSex(x, cdm, name = "sex", compute = TRUE)
 }
@@ -19,7 +19,7 @@ addSex(x, cdm, name = "sex", compute = TRUE)
 table x with the added column with sex information
 }
 \description{
-It creates a mock database for testing CohortProfiles package
+It adds a column sex information to the individuals of a table
 }
 \examples{
 \dontrun{
