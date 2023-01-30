@@ -51,24 +51,31 @@ library(duckdb)
 library(tibble)
 library(CohortProfiles)
 cohort1 <- tibble::tibble(
-  cohort_definition_id = c("1", "1", "1"),
-  subject_id = c("1", "2", "3"),
-  cohort_start_date = c(
-    as.Date("2010-01-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
-  ),
-  cohort_end_date = c(
-    as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
-  )
+cohort_definition_id = c("1", "1", "1"),
+subject_id = c("1", "2", "3"),
+cohort_start_date = c(
+ as.Date("2010-03-03"),
+ as.Date("2010-03-01"),
+ as.Date("2010-02-01")
+),
+cohort_end_date = c(
+ as.Date("2015-01-01"),
+ as.Date("2013-01-01"),
+ as.Date("2013-01-01")
 )
+)
+cdm <- mockCohortProfiles(seed = 100, cohort1 = cohort1)
 
-person <- tibble::tibble(
-  person_id = c("1", "2", "3"),
-  gender_concept_id = c("8507", "8532", "8507"),
-  year_of_birth = c(2000, 1995, NA),
-  month_of_birth = c(NA, 07, 08),
-  day_of_birth = c(01, 25, 03)
-)
-cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
-addAge(x = cdm[["cohort1"]], cdm = cdm)
+
+
+
+addEvent(
+   cdm$cohort1,
+   cdm,
+   "drug_exposure",
+   window = c(0, 10000),
+   eventDate = "drug_exposure_start_date",
+   order = "first"
+ )
 }
 }
