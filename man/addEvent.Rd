@@ -2,13 +2,13 @@
 % Please edit documentation in R/addEvent.R
 \name{addEvent}
 \alias{addEvent}
-\title{It creates a mock database for testing CohortProfiles package}
+\title{It adds columns of user defined events for individual in a cohort table}
 \usage{
 addEvent(
   x,
   cdm,
   eventTableName,
-  eventId,
+  filter = NULL,
   window = c(NA, NA),
   name = "event",
   eventDate = "cohort_start_date",
@@ -18,26 +18,57 @@ addEvent(
 )
 }
 \arguments{
-\item{x}{...}
+\item{x}{table containing the individual for which the event to be attached as extra columns}
 
-\item{cdm}{...}
+\item{cdm}{cdm containing the tables}
 
-\item{eventTableName}{...}
+\item{eventTableName}{name of the table of the cdm containing the events
+of interest}
 
-\item{eventId}{...}
+\item{filter}{condition to apply to the events table for what events to class as event}
 
-\item{window}{...}
+\item{window}{window to consider events of, from date of reference in table x
+to date of event at event table}
 
-\item{name}{...}
+\item{name}{the name of the column containing the event date of the event.}
 
-\item{eventDate}{...}
+\item{eventDate}{name of the date field to use as date in the event table}
 
-\item{eventAt}{...}
+\item{eventAt}{name of the date field to use as date in table x}
 
-\item{order}{...}
+\item{order}{define which event to include first = include earliest event for each individual in x,
+last= include last event for each individual in x or all = include all event.}
 
-\item{compute}{...}
+\item{compute}{if TRUE compute the output}
 }
 \description{
-It creates a mock database for testing CohortProfiles package
+It adds columns of user defined events for individual in a cohort table
+}
+\examples{
+\dontrun{
+library(DBI)
+library(duckdb)
+library(tibble)
+library(CohortProfiles)
+cohort1 <- tibble::tibble(
+  cohort_definition_id = c("1", "1", "1"),
+  subject_id = c("1", "2", "3"),
+  cohort_start_date = c(
+    as.Date("2010-01-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
+  ),
+  cohort_end_date = c(
+    as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
+  )
+)
+
+person <- tibble::tibble(
+  person_id = c("1", "2", "3"),
+  gender_concept_id = c("8507", "8532", "8507"),
+  year_of_birth = c(2000, 1995, NA),
+  month_of_birth = c(NA, 07, 08),
+  day_of_birth = c(01, 25, 03)
+)
+cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
+addAge(x = cdm[["cohort1"]], cdm = cdm)
+}
 }
