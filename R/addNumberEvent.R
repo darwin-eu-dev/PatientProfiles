@@ -146,10 +146,10 @@ addNumberEvent <- function(x,
       }
     }
   }, error = function(e){
-    message("An error occurred.")
+    message("An error occurred while running filter.")
     message(e)
   }, warning = function(w) {
-    message("A warning occurred")
+    message("A warning occurred while running filter.")
     message(w)
   }
 )
