@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It creates a mock database for testing CohortProfiles package
+#' It adds a column sex information to the individuals of a table
 #'
 #' @param x cohort table to which add Sex
 #' @param cdm object containing the person table
