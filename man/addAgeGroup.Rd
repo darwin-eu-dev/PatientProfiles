@@ -4,17 +4,61 @@
 \alias{addAgeGroup}
 \title{It creates a mock database for testing CohortProfiles package}
 \usage{
-addAgeGroup(x, ageGroup = NULL, name = "age_group", compute = TRUE)
+addAgeGroup(
+  x,
+  ageGroup = NULL,
+  cdm = NULL,
+  ageGroupNames = NULL,
+  compute = TRUE
+)
 }
 \arguments{
-\item{x}{x}
+\item{x}{Tibble with the individuals want to get age group, need to be from a cdm object if does not have "age" column}
 
-\item{ageGroup}{...}
+\item{ageGroup}{a list of ageGroup vectors. e.g. list(c(0,10),c(11,20)). Default: 0, 150}
 
-\item{name}{...}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a cdm reference.}
 
-\item{compute}{...}
+\item{ageGroupNames}{a vector of character. names for age groups, if not provided, default combines characters in ageGroup. e.g. 0;150 if no ageGroup and ageGroupNames provided}
+
+\item{compute}{Whether resultant table will be computed as temporal table. By default: TRUE.}
+}
+\value{
+
 }
 \description{
 It creates a mock database for testing CohortProfiles package
+}
+\examples{
+#'
+\dontrun{
+library(DBI)
+library(duckdb)
+library(tibble)
+library(CohortProfiles)
+cohort1 <- tibble::tibble(
+  cohort_definition_id = c("1", "1", "1"),
+  subject_id = c("1", "2", "3"),
+  cohort_start_date = c(
+    as.Date("2010-03-03"), as.Date("2010-03-01"), as.Date("2010-02-01")
+  ),
+  cohort_end_date = c(
+    as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2013-01-01")
+  )
+)
+
+person <- tibble::tibble(
+  person_id = c("1", "2", "3"),
+  gender_concept_id = c("8507", "8507", "8507"),
+  year_of_birth = c(1980, 1970, 2000),
+  month_of_birth = c(03, 07, NA),
+  day_of_birth = c(NA, 02, 01)
+)
+
+cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
+
+result <- addAgeGroup(
+  x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)), cdm = cdm
+)
+}
 }
