@@ -85,20 +85,20 @@ test_that("check dug exposure and patient table size", {
 
 test_that("add cdm with person, cohort1 and observation_period", {
   cdm <- mockCohortProfiles(
-    person = tibble(
+    person = tibble::tibble(
       person_id = c(1, 2, 3, 4),
       gender_concept_id = c(8507, 8532, 8532, 8507),
       year_of_birth = c(1993, 1991, 1995, 1998),
       month_of_birth = c(4, 7, 8, 10),
       day_of_birth = c(19, 5, 10, 22)
     ),
-    cohort1 = tibble(
+    cohort1 = tibble::tibble(
       cohort_definition_id = c(1, 1, 1, 2, 2, 2, 2),
       subject_id = c(1, 2, 3, 3, 4, 4, 5),
       cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2020-01-01", "2020-01-01", "2020-01-01", "2020-01-01", "2020-01-01")),
       cohort_end_date = as.Date(c("2022-01-01", "2022-01-01", "2022-01-01", "2022-01-01", "2022-01-01", "2022-01-01", "2022-01-01")),
     ),
-    observation_period = tibble(
+    observation_period = tibble::tibble(
       observation_period_id = c(1, 2, 3, 4),
       person_id = c(1, 2, 3, 4),
       observation_period_start_date = as.Date(c("2000-01-01", "2005-12-15", "1998-12-31", "2012-08-19")),
