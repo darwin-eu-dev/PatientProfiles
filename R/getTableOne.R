@@ -1,6 +1,6 @@
 # Copyright 2022 DARWIN EU (C)
 #
-# This file is part of DrugUtilizationCharacteristics
+# This file is part of CohortProfiles
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -383,26 +383,4 @@ addVisit <- function(cohortDb,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     dplyr::select(dplyr::all_of(colnames(cohortDb)), "number_visits")
-}
-
-#' @noRd
-obscureSummary <- function(result, minimumCellCounts) {
-  values_to_osbcure <- suppressWarnings(as.numeric(result$value)) <
-    minimumCellCounts &
-    suppressWarnings(as.numeric(result$value)) > 0
-  obscured_values <- result$estimate == "count" & values_to_osbcure
-  obscured_cohort <- unique(result$cohort_definition_id[
-    result$estimate == "count" &
-      result$variable == "number_observations" &
-      values_to_osbcure
-  ])
-  result$value[obscured_values] <- paste0("<", minimumCellCounts)
-  result$value[
-    result$cohort_definition_id %in% obscured_cohort
-  ] <- as.character(NA)
-  result$value[
-    result$cohort_definition_id %in% obscured_cohort &
-      result$variable == "number_observations"
-  ] <- paste0("<", minimumCellCounts)
-  return(result)
 }
