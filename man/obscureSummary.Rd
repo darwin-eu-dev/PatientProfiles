@@ -28,3 +28,16 @@ table with the required cells obscured
 \description{
 This function is used to obscure small counts in population summary tables
 }
+\examples{
+\dontrun{
+db <- DBI::dbConnect(" Your database connection here")
+cdm <- CDMConnector::cdm_from_con(
+  con = db,
+  cdm_schema = "cdm schema name"
+)
+summary_c1 <- getTableOne(cdm,cohort1)
+summary_obscured <- obscureSummary(summary_c1)
+}
+
+
+}

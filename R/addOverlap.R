@@ -20,7 +20,7 @@
 #' @param cdm cdm containing the tables
 #' @param overlapCohortName name of the cohort that we want to check if
 #' overlaps with the target cohort
-#' @param filter ...
+#' @param filter condition to filer the overlapCohortIdName table.
 #' @param window window to consider events of, from date of reference in table x
 #' to date of event at event table
 #' @param name name of the new column created for the overlap indicator
@@ -31,10 +31,49 @@
 #'
 #' @examples
 #'
+#'
+#'
+#' \dontrun{
+#'  cohort1 <- tibble::tibble(
+#' cohort_definition_id = c(1, 1, 1, 1),
+#' subject_id = c(1, 1, 2, 3),
+#' cohort_start_date = c(
+#'   as.Date("2010-01-01"), as.Date("2013-01-01"),
+#'   as.Date("2010-01-02"), as.Date("2010-01-01")),
+#' cohort_end_date = c(
+#'   as.Date("2012-01-01"), as.Date("2015-01-01"),
+#'   as.Date("2015-01-01"), as.Date("2015-01-01"))
+#' )
+#'
+#' cohort2 <- tibble::tibble(
+#'   cohort_definition_id = c(2, 2, 2, 3),
+#'   subject_id = c(1, 2, 2, 2),
+#'   cohort_start_date = c(
+#'    as.Date("2009-12-01"), as.Date("2009-01-01"),
+#'     as.Date("2009-11-01"), as.Date("2009-11-01")),
+#'   cohort_end_date = c(
+#'     as.Date("2011-01-01"), as.Date("2009-01-02"),
+#'     as.Date("2015-01-01"), as.Date("2015-01-01"))
+#' )
+#'
+#' cdm <- mockCohortProfiles(cohort1 = cohort1, cohort2 = cohort2)
+#'
+#' result_1 <- addOverlap(
+#'   cdm$cohort1,
+#'   cdm = cdm,
+#'   overlapCohortName = "cohort2",
+#'   filter = NULL,
+#'   window = c(0, 0),
+#'   name = "overlap",
+#'   compute = TRUE
+#' )
+#'
+#' }
 addOverlap <- function(x,
                        cdm,
                        overlapCohortName,
                        overlapCohortId = NULL,
+                       filter = NULL,
                        window = c(NA, NA),
                        name = "overlap",
                        compute = TRUE) {
