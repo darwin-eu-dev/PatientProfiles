@@ -2,7 +2,7 @@
 % Please edit documentation in R/addOverlap.R
 \name{addOverlap}
 \alias{addOverlap}
-\title{It creates a mock database for testing CohortProfiles package}
+\title{It creates a column to indicate overlaps with the overlapcohort}
 \usage{
 addOverlap(
   x,
@@ -10,22 +10,27 @@ addOverlap(
   overlapCohortName,
   filter = NULL,
   window = c(NA, NA),
-  name = "overlap"
+  name = "overlap",
+  compute = TRUE
 )
 }
 \arguments{
-\item{x}{...}
+\item{x}{table containing the individual for which the overlap indicator to be attached as extra columns}
 
-\item{cdm}{...}
+\item{cdm}{cdm containing the tables}
 
-\item{overlapCohortName}{...}
+\item{overlapCohortName}{name of the cohort that we want to check if
+overlaps with the target cohort}
 
 \item{filter}{...}
 
-\item{window}{...}
+\item{window}{window to consider events of, from date of reference in table x
+to date of event at event table}
 
-\item{name}{...}
+\item{name}{name of the new column created for the overlap indicator}
+
+\item{compute}{if TRUE compute the output}
 }
 \description{
-It creates a mock database for testing CohortProfiles package
+It creates a column to indicate overlaps with the overlapcohort
 }
