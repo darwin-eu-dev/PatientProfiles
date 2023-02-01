@@ -95,7 +95,7 @@ test_that("filter", {
     cdm$cohort1,
     cdm = cdm,
     overlapCohortName = "cohort2",
-    filter = list(cohort_definition_id = c(2),subject_id = c(1)),
+    filter = list(cohort_definition_id = c(2),subject_id = c(1,1)),
     window = c(0, 0),
     name = "overlap",
     compute = TRUE
