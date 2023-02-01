@@ -8,7 +8,6 @@ addOverlap(
   x,
   cdm,
   overlapCohortName,
-  overlapCohortId = NULL,
   filter = NULL,
   window = c(NA, NA),
   name = "overlap",

@@ -264,16 +264,14 @@ mockCohortProfiles <- function(drug_exposure = NULL,
         ##  days_supply = as.numeric(days_supply)
       )
   }
-
+  # person table
+  id <- sample(seq(1:patient_size))
+  # person gender
+  gender_id <- sample(c("8507", "8532"),
+                      patient_size,
+                      replace = TRUE)
 
   if (is.null(person) | is.null(observation_period)) {
-    # person table
-    id <- sample(seq(1:patient_size))
-    # person gender
-    gender_id <- sample(c("8507", "8532"),
-                        patient_size,
-                        replace = TRUE
-    )
 
     # Define earliest possible date of birth for person table
     if (is.null(earliest_date_of_birth)) {
