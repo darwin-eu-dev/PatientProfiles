@@ -17,7 +17,7 @@
 #' Add a column to the current tibble with the age of the subject_id at a
 #' certain date
 #'
-#' @param x Tibble with the individuals that we want to add the age.
+#' @param x Tibble with the individuals that we want to add the age. Need to be in cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param ageAt Variable that points the date to compute the age. By default:
@@ -75,19 +75,27 @@ addAge <- function(x,
 
   checkmate::assertClass(cdm, "cdm_reference", add = messageStore)
 
-  #check if ageAt length = 1 and is in table x
+  # check if ageAt length = 1 and is in table x
   checkmate::assertCharacter(ageAt, len = 1, add = messageStore)
-  
+
   ageAtExists <- checkmate::assertTRUE(ageAt %in% colnames(x), add = messageStore)
+
+  subjectExists <- checkmate::assertTRUE("subject_id" %in% colnames(x), add = messageStore)
+
   if (!isTRUE(ageAtExists)) {
     messageStore$push("- ageAt not found in table")
   }
 
-  #check if default imputation value for month and day are within range allowed
+  if (!isTRUE(subjectExists)) {
+    messageStore$push("- subject_id not found in table")
+  }
+
+
+  # check if default imputation value for month and day are within range allowed
   checkmate::assertInt(defaultMonth, lower = 1, upper = 12)
   checkmate::assertInt(defaultDay, lower = 1, upper = 31)
 
-  #check if imposeMonth imposeDay and compute are logical
+  # check if imposeMonth imposeDay and compute are logical
   checkmate::assertLogical(imposeMonth, add = messageStore)
   checkmate::assertLogical(imposeDay, add = messageStore)
   checkmate::assertLogical(compute, add = messageStore)
@@ -161,8 +169,8 @@ sqlGetAge <- function(dialect,
   SqlRender::translate(
     SqlRender::render("((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
                       DAY(@date_of_interest)-(YEAR(@dob)* 10000 + MONTH(@dob) * 100 + DAY(@dob))) / 10000)",
-                      dob = dob,
-                      date_of_interest = dateOfInterest
+      dob = dob,
+      date_of_interest = dateOfInterest
     ),
     targetDialect = dialect
   )

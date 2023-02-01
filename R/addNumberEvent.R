@@ -14,19 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It creates a mock database for testing CohortProfiles package
+#' It adds a column of counts of desired events per individual to an events
+#' table
 #'
-#' @param x ...
-#' @param cdm ...
-#' @param eventTableName ...
-#' @param filter ...
-#' @param window ...
-#' @param name ...
-#' @param eventAt ...
-#' @param eventDate ...
-#' @param compute ...
+#' @param x table containing the individuals for which the number of events
+#' wants to be counted
+#' @param cdm containing the events table
+#' @param eventTableName name of the table of the cdm containing the events
+#' of interest
+#' @param filter condition to apply to the events table for what events to count
+#' @param window window to consider events of, from date of reference in table x
+#' to date of event at event table
+#' @param name name of the column containing the counts per individual
+#' @param eventAt date of reference in table x
+#' @param eventDate date to consider in event table
+#' @param compute whether compute functionality is wanted
 #'
-#' @return
+#' @return a table with all the individuals in x with a column containing counts
+#' of desired events
 #' @export
 #'
 #' @examples
@@ -39,17 +44,115 @@ addNumberEvent <- function(x,
                            eventAt = "cohort_start_date",
                            eventDate = "cohort_start_date",
                            compute = TRUE) {
-  events <- cdm[[eventTableName]]
-  if (!is.null(filter)) {
-    namesFilter <- names(filter)
-    for (k in 1:length(filter)) {
-      events <- events %>%
-        dplyr::filter_at(
-          dplyr::vars(dplyr::all_of(namesFilter[k])),
-          dplyr::any_vars(. == !!filter[[k]])
-        )
+
+  ## check for standard types of user error
+  errorMessage <- checkmate::makeAssertCollection()
+  xCheck <- inherits(x, "tbl_dbi")
+  if (!isTRUE(xCheck)) {
+    errorMessage$push(
+      "- x is not a table"
+    )
+  }
+  cdmCheck <- inherits(cdm, "cdm_reference")
+  if (!isTRUE(cdmCheck)) {
+    errorMessage$push(
+      "- cdm must be a CDMConnector CDM reference object"
+    )
+  }
+  checkmate::reportAssertions(collection = errorMessage)
+  errorMessage <- checkmate::makeAssertCollection()
+  checkmate::assertCharacter(eventTableName, len = 1,
+                             add = errorMessage,
+  )
+  column2Check <- eventTableName %in% names(cdm)
+  if (!isTRUE(column2Check)) {
+    errorMessage$push(
+      "- `eventTableName` is not found in cdm"
+    )
+  }
+  checkmate::reportAssertions(collection = errorMessage)
+  errorMessage <- checkmate::makeAssertCollection()
+  columnCheck <- ("subject_id" %in% colnames(cdm[[eventTableName]]) ||
+                    "person_id" %in% colnames(cdm[[eventTableName]]))
+  if (!isTRUE(columnCheck)) {
+    errorMessage$push(
+      "- neither `subject_id` nor `person_id` are columns of cdm[[eventTableName]"
+    )
+  }
+  columnCheck2 <- !(all(c("subject_id","person_id") %in% colnames(cdm[[eventTableName]])))
+  if (!isTRUE(columnCheck2)) {
+    errorMessage$push(
+      "- `subject_id` and `person_id` are both columns of cdm[[eventTableName]]"
+    )
+  }
+  checkmate::assert_integerish(window, len = 2, null.ok = TRUE)
+  column2Check <- "subject_id" %in% colnames(x)
+  if (!isTRUE(column2Check)) {
+    errorMessage$push(
+      "- `subject_id` is not a column of x"
+    )
+  }
+  checkmate::assertList(filter,null.ok = TRUE)
+  if(!is.null(filter)) {
+    checkmate::assertCharacter(names(filter),
+                               add = errorMessage,
+    )
+    columnsfilterCheck <- names(filter) %in% colnames(cdm[[eventTableName]])
+    if (!isTRUE(columnsfilterCheck)) {
+      errorMessage$push(
+        "- `the variables in filter` are not found in cdm[[eventTableName]]"
+      )
     }
   }
+  checkmate::assertCharacter(eventDate, len = 1,
+                             add = errorMessage,
+  )
+  column3Check <- eventDate %in% colnames(cdm[[eventTableName]])
+  if (!isTRUE(column3Check)) {
+    errorMessage$push(
+      "- `eventDate` is not found in cdm[[eventTableName]]"
+    )
+  }
+  checkmate::assertCharacter(eventAt, len = 1,
+                             add = errorMessage,
+  )
+  column4Check <- eventAt %in% colnames(x)
+  if (!isTRUE(column4Check)) {
+    errorMessage$push(
+      "- `eventAt` is not found in x"
+    )
+  }
+  checkmate::assertCharacter(name, len = 1,
+                             add = errorMessage,
+  )
+  checkmate::assert_logical(compute, len = 1,
+                            add = errorMessage
+  )
+
+  checkmate::reportAssertions(collection = errorMessage)
+
+  # Start code
+
+  events <- cdm[[eventTableName]]
+  tryCatch({
+    if (!is.null(filter)) {
+      namesFilter <- names(filter)
+      for (k in 1:length(filter)) {
+        events <- events %>%
+          dplyr::filter_at(
+            dplyr::vars(dplyr::all_of(namesFilter[k])),
+            dplyr::any_vars(. == !!filter[[k]])
+          )
+      }
+    }
+  }, error = function(e){
+    message("An error occurred while running filter.")
+    message(e)
+  }, warning = function(w) {
+    message("A warning occurred while running filter.")
+    message(w)
+  }
+)
   if ("person_id" %in% colnames(events)) {
     events <- events %>%
       dplyr::rename("subject_id" = "person_id")

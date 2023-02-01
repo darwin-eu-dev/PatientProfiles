@@ -34,7 +34,7 @@
 addOverlap <- function(x,
                        cdm,
                        overlapCohortName,
-                       filter = NULL,
+                       overlapCohortId = NULL,
                        window = c(NA, NA),
                        name = "overlap",
                        compute = TRUE) {

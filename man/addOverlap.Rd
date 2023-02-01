@@ -8,7 +8,7 @@ addOverlap(
   x,
   cdm,
   overlapCohortName,
-  filter = NULL,
+  overlapCohortId = NULL,
   window = c(NA, NA),
   name = "overlap",
   compute = TRUE
@@ -22,7 +22,7 @@ addOverlap(
 \item{overlapCohortName}{name of the cohort that we want to check if
 overlaps with the target cohort}
 
-\item{filter}{...}
+\item{overlapCohortId}{...}
 
 \item{window}{window to consider events of, from date of reference in table x
 to date of event at event table}

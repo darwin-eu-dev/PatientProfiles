@@ -2,17 +2,33 @@
 % Please edit documentation in R/addSex.R
 \name{addSex}
 \alias{addSex}
-\title{It creates a mock database for testing CohortProfiles package}
+\title{It adds a column sex information to the individuals of a table}
 \usage{
-addSex(x, cdm, compute = TRUE)
+addSex(x, cdm, name = "sex", compute = TRUE)
 }
 \arguments{
-\item{x}{...}
+\item{x}{cohort table to which add Sex}
 
-\item{cdm}{...}
+\item{cdm}{object containing the person table}
 
-\item{compute}{...}
+\item{name}{name of the new column to be added}
+
+\item{compute}{whether compute functionality is desired}
+}
+\value{
+table x with the added column with sex information
 }
 \description{
-It creates a mock database for testing CohortProfiles package
+It adds a column sex information to the individuals of a table
+}
+\examples{
+\dontrun{
+db <- DBI::dbConnect(" Your database connection here")
+cdm <- CDMConnector::cdm_from_con(
+  con = db,
+  cdm_schema = "cdm schema name"
+)
+cdm$cohort <- addSex(cdm$cohort,cdm)
+}
+
 }
