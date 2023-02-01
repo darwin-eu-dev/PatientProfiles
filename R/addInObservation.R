@@ -38,7 +38,7 @@
 #' cdm$cohort <- inObservation(cdm$cohort,cdm)
 #' }
 #'
-inObservation <- function(x,
+addInObservation <- function(x,
                           cdm,
                           observationAt = "cohort_start_date",
                           name = "in_observation",
