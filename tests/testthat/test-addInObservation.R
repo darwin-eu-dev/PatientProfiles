@@ -6,9 +6,9 @@ test_that("addInObservation, different settings", {
   result3 <- addInObservation(cdm$cohort1 %>% dplyr::rename(person_id = subject_id),cdm)
 
   expect_true("in_observation" %in% colnames(result1))
-  expect_true(all(result1 %>% dplyr::select(in_observation) %>% dplyr::pull() == c(TRUE,TRUE,FALSE,TRUE)))
+  expect_true(all(result1 %>% dplyr::select(in_observation) %>% dplyr::pull() == c(1,1,0,1)))
   expect_true("in_observation" %in% colnames(result1))
-  expect_true(all(result2 %>% dplyr::select(in_observation) %>% dplyr::pull() == c(TRUE,FALSE,TRUE,TRUE,TRUE)))
+  expect_true(all(result2 %>% dplyr::select(in_observation) %>% dplyr::pull() == c(1,0,1,1,1)))
   expect_true(all(result1 %>% dplyr::select(in_observation) %>% dplyr::pull() == result3 %>% dplyr::select(in_observation) %>% dplyr::pull()))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)

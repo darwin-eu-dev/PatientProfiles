@@ -38,6 +38,7 @@
 #' cdm$cohort <- inObservation(cdm$cohort,cdm)
 #' }
 #'
+#' @noRd
 addInObservation <- function(x,
                           cdm,
                           observationAt = "cohort_start_date",
@@ -172,8 +173,8 @@ addInObservation <- function(x,
         !!name := dplyr::if_else(
           .data[[observationAt]] >= .data$observation_period_start_date &
             .data[[observationAt]] <= .data$observation_period_end_date,
-          TRUE,
-          FALSE
+          1,
+          0
         )
       ) %>%
       dplyr::select(
