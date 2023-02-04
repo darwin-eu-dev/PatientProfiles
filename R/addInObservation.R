@@ -26,7 +26,6 @@
 #' @param compute whether to add compute functionality
 #'
 #' @return cohort table with the added column assessing inObservation
-#' @export
 #'
 #' @examples
 #' \dontrun{
