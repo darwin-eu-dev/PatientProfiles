@@ -40,9 +40,6 @@ missing for all the individuals. By default: TRUE.}
 \item{compute}{Whether resultant table will be computed as temporal table. By
 default: TRUE.}
 }
-\value{
-
-}
 \description{
 Add a column to the current tibble with the age of the subject_id at a
 certain date

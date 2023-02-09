@@ -23,9 +23,6 @@ addAgeGroup(
 
 \item{compute}{Whether resultant table will be computed as temporal table. By default: TRUE.}
 }
-\value{
-
-}
 \description{
 It creates a mock database for testing CohortProfiles package
 }
@@ -55,7 +52,7 @@ person <- tibble::tibble(
   day_of_birth = c(NA, 02, 01)
 )
 
-cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
+cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
 
 result <- addAgeGroup(
   x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)), cdm = cdm
