@@ -2,14 +2,15 @@
 % Please edit documentation in R/addSex.R
 \name{addSex}
 \alias{addSex}
-\title{It adds a column sex information to the individuals of a table}
+\title{Adds a column with sex information to the individuals of a table}
 \usage{
 addSex(x, cdm, name = "sex", compute = TRUE)
 }
 \arguments{
 \item{x}{cohort table to which add Sex}
 
-\item{cdm}{object containing the person table}
+\item{cdm}{object containing the person table with the sex information
+in gender_concept_id column}
 
 \item{name}{name of the new column to be added}
 
@@ -19,7 +20,7 @@ addSex(x, cdm, name = "sex", compute = TRUE)
 table x with the added column with sex information
 }
 \description{
-It adds a column sex information to the individuals of a table
+Adds a column with sex information to the individuals of a table
 }
 \examples{
 \dontrun{
@@ -28,7 +29,7 @@ cdm <- CDMConnector::cdm_from_con(
   con = db,
   cdm_schema = "cdm schema name"
 )
-cdm$cohort <- addSex(cdm$cohort,cdm)
+cdm$cohort \%>\% addSex(cdm)
 }
 
 }
