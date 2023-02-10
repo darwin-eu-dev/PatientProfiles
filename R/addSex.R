@@ -14,10 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It adds a column sex information to the individuals of a table
+#' Adds a column with sex information to the individuals of a table
 #'
 #' @param x cohort table to which add Sex
-#' @param cdm object containing the person table
+#' @param cdm object containing the person table with the sex information
+#' in gender_concept_id column
 #' @param name name of the new column to be added
 #' @param compute whether compute functionality is desired
 #'
@@ -31,7 +32,7 @@
 #'   con = db,
 #'   cdm_schema = "cdm schema name"
 #' )
-#' cdm$cohort <- addSex(cdm$cohort,cdm)
+#' cdm$cohort %>% addSex(cdm)
 #' }
 #'
 addSex <- function(x,
