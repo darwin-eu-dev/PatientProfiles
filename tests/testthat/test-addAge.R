@@ -1,3 +1,44 @@
+test_that("check input length and type for each of the arguments", {
+  cdm <-
+    mockCohortProfiles(seed = 1,
+                       patient_size = 5)
+
+  expect_error(addAge("cdm$cohort1", cdm))
+
+  expect_error(addAge(cdm$cohort1, "cdm"))
+
+  expect_error(addAge(cdm$cohort1, cdm, ageAt = "subject_id"))
+
+  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", defaultMonth = "1"))
+
+  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", defaultDay = "1"))
+
+  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", imposeMonth = "TRUE"))
+
+  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", imposeDay = "TRUE"))
+
+  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", compute = "TRUE"))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+
+})
+
+test_that("check condition_occurrence and cohort1 work", {
+  cdm <-
+    mockCohortProfiles(seed = 1,
+                       patient_size = 5)
+
+  expect_true(typeof(cdm$cohort1 %>% addAge(cdm) %>% dplyr::collect()) == "list")
+  expect_true("age" %in% colnames(cdm$cohort1 %>% addAge(cdm)))
+
+  expect_true(typeof(cdm$condition_occurrence %>% addAge(cdm,ageAt = "condition_start_date") %>% dplyr::collect()) == "list")
+  expect_true("age" %in% colnames(cdm$condition_occurrence %>% addAge(cdm,ageAt = "condition_start_date")))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
+
 test_that("age at cohort entry, missing year/month/day of birth", {
   cohort1 <- tibble::tibble(
     cohort_definition_id = c("1", "1", "1"),
