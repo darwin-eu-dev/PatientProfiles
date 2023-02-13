@@ -62,15 +62,25 @@ addAgeGroup <- function(x,
                         cdm = NULL,
                         ageGroupNames = NULL,
                         compute = TRUE) {
-  messageStore <- checkmate::makeAssertCollection()
+  errorMessage <- checkmate::makeAssertCollection()
+
+
+  # check cdm exist
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
 
 
   # if age column not found in x, we need cdm object and addAge function to impute age
 
   if (!isTRUE("age" %in% colnames(x))) {
-    checkmate::assertClass(cdm, classes = "cdm_reference", add = messageStore)
+    checkmate::assertClass(cdm, classes = "cdm_reference", add = errorMessage)
     print("- age column not found, will be imputed by addAge function")
-    x <- addAge(x, cdm)
+
+     if (!isTRUE("condition_start_date" %in% colnames(x))) {
+      x <- addAge(x, cdm)
+     } else {
+
+      x <- addAge(x, cdm, ageAt = "condition_start_date")
+     }
   }
 
 
@@ -79,7 +89,7 @@ addAgeGroup <- function(x,
     if (length(ageGroup) == 2) {
       ageGroup <- list(ageGroup)
     } else {
-      messageStore$push("- ageGroup needs to be a numeric vector of length two,
+      errorMessage$push("- ageGroup needs to be a numeric vector of length two,
                         or a list contains multiple length two vectors")
     }
   }
@@ -87,16 +97,16 @@ addAgeGroup <- function(x,
   # after changing vector to list, we check it is a list with numeric
   checkmate::assertList(ageGroup,
     types = "integerish", null.ok = TRUE,
-    add = messageStore
+    add = errorMessage
   )
 
   # each vector in the list has to have length 2, push error if not
   if (!is.null(ageGroup)) {
     lengthsAgeGroup <- checkmate::assertTRUE(unique(lengths(ageGroup)) == 2,
-      add = messageStore
+      add = errorMessage
     )
     if (!isTRUE(lengthsAgeGroup)) {
-      messageStore$push("- ageGroup needs to be a numeric vector of length two,
+      errorMessage$push("- ageGroup needs to be a numeric vector of length two,
                         or a list contains multiple length two vectors")
     }
 
@@ -108,7 +118,7 @@ addAgeGroup <- function(x,
       x[1] <= x[2]
     }))
     checkmate::assertTRUE(all(checkAgeGroup, na.rm = TRUE),
-      add = messageStore
+      add = errorMessage
     )
 
     # check ageGroup overlap
@@ -122,9 +132,9 @@ addAgeGroup <- function(x,
     list2 <- unlist(list2[lengths(list2) != 0])
 
     # the first value of the interval needs to be larger than the second value of previous vector
-    checkOverlap <- checkmate::assertTRUE(all(list2 - list1 > 0), add = messageStore)
+    checkOverlap <- checkmate::assertTRUE(all(list2 - list1 > 0), add = errorMessage)
     if (!isTRUE(checkOverlap)) {
-      messageStore$push("- ageGroup can not have overlapping intervals")
+      errorMessage$push("- ageGroup can not have overlapping intervals")
     }
   }
 
@@ -139,10 +149,10 @@ addAgeGroup <- function(x,
   # if ageGroupNames is provided, it needs to be the same length as ageGroup
   checkmate::assertCharacter(ageGroupNames,
     len = length(ageGroup),
-    null.ok = TRUE, add = messageStore
+    null.ok = TRUE, add = errorMessage
   )
 
-  checkmate::reportAssertions(collection = messageStore)
+  checkmate::reportAssertions(collection = errorMessage)
 
 
   # if no ageGroup provided, use 0;150 as ageGroup and ageGroupName

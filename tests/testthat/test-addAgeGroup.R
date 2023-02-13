@@ -1,3 +1,41 @@
+test_that("check input length and type for each of the arguments", {
+  cdm <-
+    mockCohortProfiles(seed = 1,
+                       patient_size = 5)
+
+  expect_error(addAgeGroup("cdm$cohort1", cdm = cdm))
+
+  expect_error(addAgeGroup(cdm$cohort1, "cdm"))
+
+  expect_error(addAgeGroup(cdm$cohort1, cdm,ageGroupNames = 1 ))
+
+  expect_error(addAgeGroup(cdm$cohort1, cdm,ageGroup = 1 ))
+
+  expect_error(addAgeGroup(cdm$cohort1, cdm,compute = "FALSE" ))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+
+})
+
+test_that("check condition_occurrence and cohort1 work", {
+
+
+  cdm <-
+    mockCohortProfiles(seed = 1,
+                       patient_size = 3)
+  cdm$person
+  expect_true(typeof(cdm$cohort1 %>% addAgeGroup(cdm = cdm) %>% dplyr::collect()) == "list")
+  expect_true("ageGroupNames" %in% colnames(cdm$cohort1 %>% addAgeGroup(cdm = cdm)))
+
+  expect_true(typeof(cdm$condition_occurrence %>% addAgeGroup(cdm = cdm) %>% dplyr::collect()) == "list")
+  expect_true("ageGroupNames" %in% colnames(cdm$condition_occurrence %>% addAgeGroup(cdm = cdm)))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
+
+
 test_that("NULL age group name, but given age groups, age not in table", {
   cohort1 <- tibble::tibble(
     cohort_definition_id = c("1", "1", "1"),
