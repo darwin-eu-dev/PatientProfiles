@@ -71,48 +71,76 @@ addAge <- function(x,
                    imposeMonth = TRUE,
                    imposeDay = TRUE,
                    compute = TRUE) {
-  messageStore <- checkmate::makeAssertCollection()
 
-  checkmate::assertClass(cdm, "cdm_reference", add = messageStore)
+  errorMessage <- checkmate::makeAssertCollection()
+
+  xCheck <- inherits(x, "tbl_dbi")
+  if (!isTRUE(xCheck)) {
+    errorMessage$push(
+      "- x is not a table"
+    )
+  }
+  # check cdm exist
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
 
   # check if ageAt length = 1 and is in table x
-  checkmate::assertCharacter(ageAt, len = 1, add = messageStore)
+  checkmate::assertCharacter(ageAt, len = 1, add = errorMessage)
 
-  ageAtExists <- checkmate::assertTRUE(ageAt %in% colnames(x), add = messageStore)
-
-  subjectExists <- checkmate::assertTRUE("subject_id" %in% colnames(x), add = messageStore)
+  ageAtExists <-
+    checkmate::assertTRUE(ageAt %in% colnames(x), add = errorMessage)
 
   if (!isTRUE(ageAtExists)) {
-    messageStore$push("- ageAt not found in table")
+    errorMessage$push("- ageAt not found in table")
   }
 
-  if (!isTRUE(subjectExists)) {
-    messageStore$push("- subject_id not found in table")
+  columnCheck <- ("subject_id" %in% colnames(x) || "person_id" %in% colnames(x))
+  if (!isTRUE(columnCheck)) {
+    errorMessage$push(
+      "- neither `subject_id` nor `person_id` are columns of x"
+    )
   }
 
+  PersonExists <- "person" %in% names(cdm)
+  if (!isTRUE(PersonExists)) {
+    errorMessage$push(
+      "- `person` is not found in cdm"
+    )
+  }
+  PersonCheck <- inherits(cdm$person, "tbl_dbi")
+  if (!isTRUE(PersonCheck)) {
+    errorMessage$push(
+      "- table `person` is not of the right type"
+    )
+  }
 
   # check if default imputation value for month and day are within range allowed
   checkmate::assertInt(defaultMonth, lower = 1, upper = 12)
   checkmate::assertInt(defaultDay, lower = 1, upper = 31)
 
   # check if imposeMonth imposeDay and compute are logical
-  checkmate::assertLogical(imposeMonth, add = messageStore)
-  checkmate::assertLogical(imposeDay, add = messageStore)
-  checkmate::assertLogical(compute, add = messageStore)
+  checkmate::assertLogical(imposeMonth, add = errorMessage)
+  checkmate::assertLogical(imposeDay, add = errorMessage)
+  checkmate::assertLogical(compute, add = errorMessage)
 
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)
 
-  checkmate::reportAssertions(collection = messageStore)
+  checkmate::reportAssertions(collection = errorMessage)
+
+# rename so both x and person table contain subject_id
+  if ("subject_id" %in% colnames(x) == FALSE) {
+    x <- x %>%
+      dplyr::rename("subject_id" = "person_id")
+  } else {
+    x <- x
+  }
 
   person <- cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
-    dplyr::inner_join(
-      x %>%
-        dplyr::select("subject_id", dplyr::all_of(ageAt)) %>%
-        dplyr::distinct(),
-      by = "subject_id"
-    )
+    dplyr::inner_join(x %>%
+                        dplyr::select("subject_id", dplyr::all_of(ageAt)) %>%
+                        dplyr::distinct(),
+                      by = "subject_id")
 
   if (imposeMonth == TRUE) {
     person <- person %>%
@@ -143,16 +171,22 @@ addAge <- function(x,
     dplyr::mutate(year_of_birth1 = as.character(as.integer(.data$year_of_birth))) %>%
     dplyr::mutate(month_of_birth1 = as.character(as.integer(.data$month_of_birth))) %>%
     dplyr::mutate(day_of_birth1 = as.character(as.integer(.data$day_of_birth))) %>%
-    dplyr::mutate(birth_date = as.Date(paste0(
-      .data$year_of_birth1, "-",
-      .data$month_of_birth1, "-",
-      .data$day_of_birth1
+    dplyr::mutate(birth_date = as.Date(
+      paste0(
+        .data$year_of_birth1,
+        "-",
+        .data$month_of_birth1,
+        "-",
+        .data$day_of_birth1
+      )
+    )) %>%
+    dplyr::mutate(age = floor(dbplyr::sql(
+      sqlGetAge(
+        dialect = CDMConnector::dbms(cdm),
+        dob = "birth_date",
+        dateOfInterest = ageAt
+      )
     ))) %>%
-    dplyr::mutate(age = floor(dbplyr::sql(sqlGetAge(
-      dialect = CDMConnector::dbms(cdm),
-      dob = "birth_date",
-      dateOfInterest = ageAt
-    )))) %>%
     dplyr::select("subject_id", dplyr::all_of(ageAt), "age") %>%
     dplyr::right_join(x, by = c("subject_id", ageAt)) %>%
     dplyr::select(dplyr::all_of(colnames(x)), "age")
@@ -167,7 +201,8 @@ sqlGetAge <- function(dialect,
                       dob,
                       dateOfInterest) {
   SqlRender::translate(
-    SqlRender::render("((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
+    SqlRender::render(
+      "((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
                       DAY(@date_of_interest)-(YEAR(@dob)* 10000 + MONTH(@dob) * 100 + DAY(@dob))) / 10000)",
       dob = dob,
       date_of_interest = dateOfInterest
