@@ -24,7 +24,7 @@ test_that("check condition_occurrence and cohort1 work", {
   cdm <-
     mockCohortProfiles(seed = 1,
                        patient_size = 3)
-  cdm$person
+
   expect_true(typeof(cdm$cohort1 %>% addAgeGroup(cdm = cdm) %>% dplyr::collect()) == "list")
   expect_true("ageGroupNames" %in% colnames(cdm$cohort1 %>% addAgeGroup(cdm = cdm)))
 
