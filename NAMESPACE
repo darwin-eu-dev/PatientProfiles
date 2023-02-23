@@ -3,6 +3,7 @@
 export("%>%")
 export(addAge)
 export(addAgeGroup)
+export(addCohortIntersect)
 export(addCovariates)
 export(addEvent)
 export(addInObservation)
