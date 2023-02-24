@@ -2,19 +2,68 @@
 % Please edit documentation in R/addPriorHistory.R
 \name{addPriorHistory}
 \alias{addPriorHistory}
-\title{It creates a mock database for testing CohortProfiles package}
+\title{Add a column to the current tibble with the prior history of the subject_id at a
+certain date}
 \usage{
 addPriorHistory(x, cdm, priorHistoryAt = "cohort_start_date", compute = TRUE)
 }
 \arguments{
-\item{x}{...}
+\item{x}{cohort table to which add prior history to}
 
-\item{cdm}{...}
+\item{cdm}{object containing the person table}
 
-\item{priorHistoryAt}{...}
+\item{priorHistoryAt}{name of the date field to use as date in table x}
 
-\item{compute}{...}
+\item{compute}{whether compute functionality is desired}
 }
 \description{
-It creates a mock database for testing CohortProfiles package
+Add a column to the current tibble with the prior history of the subject_id at a
+certain date
+}
+\examples{
+\dontrun{
+library(DBI)
+library(duckdb)
+library(tibble)
+library(CohortProfiles)
+cohort1 <- tibble::tibble(
+  cohort_definition_id = c("1", "1", "1"),
+  subject_id = c("1", "2", "3"),
+  cohort_start_date = c(
+    as.Date("2010-03-03"),
+    as.Date("2010-03-01"),
+    as.Date("2010-02-01")
+  ),
+  cohort_end_date = c(
+    as.Date("2015-01-01"),
+    as.Date("2013-01-01"),
+    as.Date("2013-01-01")
+  )
+)
+
+obs_1 <- tibble::tibble(
+  observation_period_id = c("1", "2", "3"),
+  person_id = c("1", "2", "3"),
+  observation_period_start_date = c(
+    as.Date("2010-02-03"),
+    as.Date("2010-02-01"),
+    as.Date("2010-01-01")
+  ),
+  observation_period_end_date = c(
+    as.Date("2014-01-01"),
+    as.Date("2012-01-01"),
+    as.Date("2012-01-01")
+  )
+)
+
+cdm <-
+  mockCohortProfiles(
+   seed = 1,
+   cohort1 = cohort1,
+    observation_period = obs_1
+
+  )
+
+result <- cdm$cohort1 \%>\% addPriorHistory(cdm)
+}
 }
