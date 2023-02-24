@@ -208,7 +208,7 @@ addCohortIntersect <- function(x,
       tidyr::pivot_wider(
         names_from = c("overlapCohortTableName", "overlap_id"),
         values_from = c("number", "binary"),
-        names_glue = "{.value}_{cohortTableName}_{overlap_id}",
+        names_glue = "{.value}_{overlapCohortTableName}_{overlap_id}",
         values_fill = 0
       )  %>%
       dplyr::right_join(x,
@@ -260,7 +260,7 @@ addCohortIntersect <- function(x,
       tidyr::pivot_wider(
         names_from = c("overlapCohortTableName", "overlap_id"),
         values_from = c("min_time", "min_date", "max_time", "max_date"),
-        names_glue = "{.value}_{cohortTableName}_{overlap_id}",
+        names_glue = "{.value}_{overlapCohortTableName}_{overlap_id}",
         values_fill = NA
       )  %>%
       dplyr::right_join(x,
