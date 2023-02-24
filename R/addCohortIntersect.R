@@ -243,8 +243,8 @@ addCohortIntersect <- function(x,
       dplyr::distinct() %>%
       dplyr::group_by(.data$subject_id, .data$overlap_id, .data$cohort_start_date, .data$cohort_end_date) %>%
       dplyr::mutate(
-        min_date = dplyr::min(.data$overlap_start_date),
-        max_date = dplyr::max(.data$overlap_start_date)
+        min_date = min(.data$overlap_start_date),
+        max_date = max(.data$overlap_start_date)
       ) %>%
       dplyr::mutate(
         min_time = !!CDMConnector::datediff("cohort_start_date", "min_date", interval = "day"),
