@@ -159,7 +159,7 @@ addCohortIntersect <- function(x,
         "overlap_start_date" = "cohort_start_date",
         "overlap_end_date" = "cohort_end_date",
         "overlap_id" = "cohort_definition_id"
-      ) %>% dplyr::filter(overlap_id %in% .env$cohortId)
+      ) %>% dplyr::filter(.data$overlap_id %in% .env$cohortId)
   } else {
     overlapCohort <- overlapCohort %>%
       dplyr::rename(
@@ -243,8 +243,8 @@ addCohortIntersect <- function(x,
       dplyr::distinct() %>%
       dplyr::group_by(.data$subject_id, .data$overlap_id, .data$cohort_start_date, .data$cohort_end_date) %>%
       dplyr::mutate(
-        min_date = dplyr::min(overlap_start_date),
-        max_date = dplyr::max(overlap_start_date)
+        min_date = dplyr::min(.data$overlap_start_date),
+        max_date = dplyr::max(.data$overlap_start_date)
       ) %>%
       dplyr::mutate(
         min_time = !!CDMConnector::datediff("cohort_start_date", "min_date", interval = "day"),
@@ -271,13 +271,13 @@ addCohortIntersect <- function(x,
       result_dt <-
         result_dt  %>%
         dplyr::select(-dplyr::starts_with("max_")) %>%
-        dplyr::rename_with( ~ stringr::str_remove_all(., "min_"), contains("min_"))
+        dplyr::rename_with( ~ stringr::str_remove_all(., "min_"), dplyr::contains("min_"))
     } else
     {
       result_dt <-
         result_dt  %>%
         dplyr::select(-dplyr::starts_with("min_")) %>%
-        dplyr::rename_with( ~ stringr::str_remove_all(., "max_"), contains("max_"))
+        dplyr::rename_with( ~ stringr::str_remove_all(., "max_"), dplyr::contains("max_"))
     }
 
   } else {
