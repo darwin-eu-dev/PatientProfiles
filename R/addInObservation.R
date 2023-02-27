@@ -22,10 +22,11 @@
 #' @param observationAt name of the column with the dates to test the
 #' inObservation command
 #' @param name name of the column to hold the result of the enquiry:
-#' TRUE if in individual observation, FALSE if not
+#' 1 if the individual is in observation, 0 if not
 #' @param compute whether to add compute functionality
 #'
-#' @return cohort table with the added column assessing inObservation
+#' @return cohort table with the added binary column assessing inObservation
+#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -34,10 +35,9 @@
 #'   con = db,
 #'   cdm_schema = "cdm schema name"
 #' )
-#' cdm$cohort <- inObservation(cdm$cohort,cdm)
+#' cdm$cohort %>% inObservation(cdm)
 #' }
 #'
-#' @noRd
 addInObservation <- function(x,
                           cdm,
                           observationAt = "cohort_start_date",
@@ -76,7 +76,7 @@ addInObservation <- function(x,
   cdmObsPeriodCheck <- inherits(cdm$observation_period, "tbl_dbi")
   if (!isTRUE(cdmObsPeriodCheck)) {
     errorMessage$push(
-      "- table `observation_period` is not found in cdm"
+      "- `observation_period` in cdm is not a table "
     )
   }
   checkmate::reportAssertions(collection = errorMessage)
@@ -150,8 +150,8 @@ addInObservation <- function(x,
         !!name := dplyr::if_else(
           .data[[observationAt]] >= .data$observation_period_start_date &
             .data[[observationAt]] <= .data$observation_period_end_date,
-          TRUE,
-          FALSE
+          1,
+          0
         )
       ) %>%
       dplyr::select(
