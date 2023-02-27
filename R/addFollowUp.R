@@ -83,6 +83,13 @@ addFollowUp <- function(x,
                              add = errorMessage,
   )
 
+  namecolumnCheck <- name %in% colnames(x)
+  if (isTRUE(namecolumnCheck)) {
+    warning$push(
+      "- `name` is already a column of x"
+    )
+  }
+
   checkmate::assert_logical(compute, len = 1,
                             add = errorMessage
   )
@@ -97,8 +104,9 @@ addFollowUp <- function(x,
       !!name := CDMConnector::datediff(
         start = !!start_date,
         end = !!end_date
-    )
+    ) + 1
   )
+
   if (isTRUE(compute)) {
     x <- x %>% dplyr::compute()
   }

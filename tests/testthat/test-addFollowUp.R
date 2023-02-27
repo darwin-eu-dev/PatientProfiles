@@ -6,6 +6,7 @@ test_that("addFollowUp, input length and type", {
   expect_error(addFollowUp(cohort_table, end = FALSE))
   expect_error(addFollowUp(cohort_table, name = c("follow","up")))
   expect_error(addFollowUp(cohort_table, name = 20))
+  expect_error(addFollowUp(cohort_table, name = "subject_id"))
   expect_error(addFollowUp(cohort_table, compute = c(TRUE, FALSE)))
 })
 
@@ -16,9 +17,9 @@ test_that("addFollowUp, cohort and condition_occurrence", {
   cdm$condition_occurrence <- cdm$condition_occurrence %>% addFollowUp(start = "condition_start_date", end = "condition_end_date")
 
   expect_true("follow_up" %in% colnames(cdm$cohort1))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(91,61,31,60)))
+  expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(92,62,32,61)))
   expect_true("follow_up" %in% colnames(cdm$condition_occurrence))
-  expect_true(all(cdm$condition_occurrence %>% dplyr::select(follow_up) %>% dplyr::pull() == c(273,356,946,452,442,779,667,937,247,933)))
+  expect_true(all(cdm$condition_occurrence %>% dplyr::select(follow_up) %>% dplyr::pull() == c(274,357,947,453,443,780,668,938,248,934)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -35,15 +36,15 @@ test_that("addFollowUp, parameters", {
   cdm$cohort1 <- cdm$cohort1 %>% addFollowUp(start = "cohort_end_date")
 
   expect_true("follow_up" %in% colnames(cdm$cohort1))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(0,0,0,0,0)))
+  expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(1,1,1,1,1)))
 
   cdm$cohort1 <- cdm$cohort1 %>% addFollowUp(name = "followup", start = "cohort_end_date")
 
   expect_true("followup" %in% colnames(cdm$cohort1))
   expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up) %>% dplyr::pull() == cdm$cohort1 %>% dplyr::select(followup) %>% dplyr::pull()))
 
-  cdm$cohort1 <- cdm$cohort1 %>% addFollowUp(name = "follow_up")
-  expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(730,8,772,3256,0)))
+  cdm$cohort1 <- cdm$cohort1 %>% addFollowUp(name = "follow_up2")
+  expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up2) %>% dplyr::pull() == c(731,9,773,3257,1)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
