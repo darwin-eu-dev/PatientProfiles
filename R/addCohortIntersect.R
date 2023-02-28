@@ -28,7 +28,7 @@
 #' @param name naming of the added column
 #' @param compute compute/not compute
 #'
-#' @return
+#' @return table with added columns with overlap information
 #' @export
 #'
 #' @examples
@@ -86,7 +86,8 @@
 #'
 #'cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
 #'
-#'result <- cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date") %>% dplyr::collect()
+#'result <- cdm$cohort1 %>% addCohortIntersect(cdm = cdm,
+#'cohortTableName = "cohort2", value = "date") %>% dplyr::collect()
 #'}
 #'
 addCohortIntersect <- function(x,

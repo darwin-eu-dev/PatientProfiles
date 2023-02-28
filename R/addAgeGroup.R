@@ -22,7 +22,7 @@
 #' @param ageGroupNames a vector of character. names for age groups, if not provided, default combines characters in ageGroup. e.g. 0;150 if no ageGroup and ageGroupNames provided
 #' @param compute Whether resultant table will be computed as temporal table. By default: TRUE.
 #'
-#' @return
+#' @return tibble with the age group column added
 #' @export
 #'
 #' @examples

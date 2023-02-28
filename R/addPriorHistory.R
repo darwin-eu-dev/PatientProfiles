@@ -22,7 +22,8 @@
 #' @param priorHistoryAt name of the date field to use as date in table x
 #' @param compute whether compute functionality is desired
 #'
-#' @return
+#' @return cohort table with added column containing prior history of the
+#' individuals
 #' @export
 #'
 #' @examples

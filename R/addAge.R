@@ -33,7 +33,7 @@
 #' @param compute Whether resultant table will be computed as temporal table. By
 #' default: TRUE.
 #'
-#' @return
+#' @return tibble with the age column added
 #' @export
 #'
 #' @examples
