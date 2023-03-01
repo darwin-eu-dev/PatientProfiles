@@ -22,12 +22,12 @@ addInObservation(
 inObservation command}
 
 \item{name}{name of the column to hold the result of the enquiry:
-TRUE if in individual observation, FALSE if not}
+1 if the individual is in observation, 0 if not}
 
 \item{compute}{whether to add compute functionality}
 }
 \value{
-cohort table with the added column assessing inObservation
+cohort table with the added binary column assessing inObservation
 }
 \description{
 It adds a column to a cohort table indicating whether its individuals are
@@ -40,7 +40,7 @@ cdm <- CDMConnector::cdm_from_con(
   con = db,
   cdm_schema = "cdm schema name"
 )
-cdm$cohort <- inObservation(cdm$cohort,cdm)
+cdm$cohort \%>\% inObservation(cdm)
 }
 
 }
