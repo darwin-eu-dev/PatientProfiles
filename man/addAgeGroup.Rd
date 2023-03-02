@@ -23,6 +23,9 @@ addAgeGroup(
 
 \item{compute}{Whether resultant table will be computed as temporal table. By default: TRUE.}
 }
+\value{
+tibble with the age group column added
+}
 \description{
 It creates a mock database for testing CohortProfiles package
 }

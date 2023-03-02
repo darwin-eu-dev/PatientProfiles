@@ -16,6 +16,10 @@ addPriorHistory(x, cdm, priorHistoryAt = "cohort_start_date", compute = TRUE)
 
 \item{compute}{whether compute functionality is desired}
 }
+\value{
+cohort table with added column containing prior history of the
+individuals
+}
 \description{
 Add a column to the current tibble with the prior history of the subject_id at a
 certain date
