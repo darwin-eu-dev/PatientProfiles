@@ -1,18 +1,4 @@
-# Copyright 2022 DARWIN EU (C)
-#
 # This file is part of CohortProfiles
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 #' It adds a column to a cohort table indicating whether its individuals are
 #' in observation at the desired time
@@ -22,10 +8,11 @@
 #' @param observationAt name of the column with the dates to test the
 #' inObservation command
 #' @param name name of the column to hold the result of the enquiry:
-#' TRUE if in individual observation, FALSE if not
+#' 1 if the individual is in observation, 0 if not
 #' @param compute whether to add compute functionality
 #'
-#' @return cohort table with the added column assessing inObservation
+#' @return cohort table with the added binary column assessing inObservation
+#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -34,10 +21,9 @@
 #'   con = db,
 #'   cdm_schema = "cdm schema name"
 #' )
-#' cdm$cohort <- inObservation(cdm$cohort,cdm)
+#' cdm$cohort %>% inObservation(cdm)
 #' }
 #'
-#' @noRd
 addInObservation <- function(x,
                           cdm,
                           observationAt = "cohort_start_date",
@@ -76,7 +62,7 @@ addInObservation <- function(x,
   cdmObsPeriodCheck <- inherits(cdm$observation_period, "tbl_dbi")
   if (!isTRUE(cdmObsPeriodCheck)) {
     errorMessage$push(
-      "- table `observation_period` is not found in cdm"
+      "- `observation_period` in cdm is not a table "
     )
   }
   checkmate::reportAssertions(collection = errorMessage)
@@ -150,8 +136,8 @@ addInObservation <- function(x,
         !!name := dplyr::if_else(
           .data[[observationAt]] >= .data$observation_period_start_date &
             .data[[observationAt]] <= .data$observation_period_end_date,
-          TRUE,
-          FALSE
+          1,
+          0
         )
       ) %>%
       dplyr::select(
