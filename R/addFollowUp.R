@@ -86,11 +86,6 @@ addFollowUp <- function(x,
     )
   }
 
-  if (!is.null(tablePrefix)){
-    checkmate::assert_logical(tablePrefix, len = 1,
-                              add = errorMessage
-    )}
-
   checkmate::reportAssertions(collection = errorMessage)
 
   # Start code
