@@ -11,7 +11,6 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addAgeGroup(cdm$cohort1, cdm,ageGroup = 1 ))
 
-  expect_error(addAgeGroup(cdm$cohort1, cdm,compute = "FALSE" ))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
@@ -222,7 +221,7 @@ test_that("throw errors", {
   # but if age in x columns, does not need to be in cdm, should not have error
   cohort1$age <- c(1, 2, 3)
   # throw error if when age is in x columns, function still throw error
-  expect_error(expect_error(addAgeGroup(
+  expect_error((addAgeGroup(
     x = cohort1,
     ageGroup = list(c(1, 2), c(3, 20)),
     cdm = cdm

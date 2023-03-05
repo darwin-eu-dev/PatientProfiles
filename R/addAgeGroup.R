@@ -51,6 +51,12 @@ addAgeGroup <- function(x,
   errorMessage <- checkmate::makeAssertCollection()
 
 
+  xCheck <- inherits(x, "tbl_dbi")
+  if (!isTRUE(xCheck)) {
+    errorMessage$push(
+      "- x is not a table"
+    )
+  }
   # check cdm exist
   checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
 
@@ -177,10 +183,10 @@ addAgeGroup <- function(x,
   x <- x %>%
     dplyr::left_join(ageGroup, by = "age", copy = TRUE)
   if(is.null(tablePrefix)){
-    result_all <- result_all %>%
+    x <- x %>%
       CDMConnector::computeQuery()
   } else {
-    result_all <- result_all %>%
+    x <- x %>%
       CDMConnector::computeQuery(name = paste0(tablePrefix,
                                                "_person_sample"),
                                  temporary = FALSE,

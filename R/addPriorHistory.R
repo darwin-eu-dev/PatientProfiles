@@ -6,7 +6,7 @@
 #' @param x cohort table to which add prior history to
 #' @param cdm object containing the person table
 #' @param priorHistoryAt name of the date field to use as date in table x
-#' @param compute whether compute functionality is desired
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return
 #' @export
@@ -94,6 +94,11 @@ addPriorHistory <- function(x,
     errorMessage$push("- `observation_period` is not found in cdm")
   }
 
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
+
   checkmate::reportAssertions(collection = errorMessage)
 
   #rename
@@ -121,8 +126,16 @@ addPriorHistory <- function(x,
     dplyr::right_join(x,
                       by = c("subject_id", priorHistoryAt)) %>%
     dplyr::select(dplyr::all_of(colnames(x)), "prior_history")
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    x <- x %>%
+      CDMConnector::computeQuery()
+  } else {
+    x <- x %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(x)
 }

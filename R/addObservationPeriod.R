@@ -109,6 +109,10 @@ addObservationPeriod <- function(x,
   #checks for name and column
   checkmate::assertCharacter(column, len = 2, add = errorMessage)
   checkmate::assertCharacter(name, len = 2, add = errorMessage)
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
 
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -144,10 +148,10 @@ addObservationPeriod <- function(x,
   }
 
   if(is.null(tablePrefix)){
-    result_all <- result_all %>%
+    xOutput <- xOutput %>%
       CDMConnector::computeQuery()
   } else {
-    result_all <- result_all %>%
+    xOutput <- xOutput %>%
       CDMConnector::computeQuery(name = paste0(tablePrefix,
                                                "_person_sample"),
                                  temporary = FALSE,

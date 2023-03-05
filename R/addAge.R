@@ -102,10 +102,13 @@ addAge <- function(x,
   checkmate::assertInt(defaultMonth, lower = 1, upper = 12)
   checkmate::assertInt(defaultDay, lower = 1, upper = 31)
 
-  # check if imposeMonth imposeDay and compute are logical
+  # check if imposeMonth and compute and tablePrefix are logical
   checkmate::assertLogical(imposeMonth, add = errorMessage)
   checkmate::assertLogical(imposeDay, add = errorMessage)
-  checkmate::assertLogical(compute, add = errorMessage)
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
 
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)
@@ -175,8 +178,16 @@ addAge <- function(x,
     dplyr::select("subject_id", dplyr::all_of(ageAt), "age") %>%
     dplyr::right_join(x, by = c("subject_id", ageAt)) %>%
     dplyr::select(dplyr::all_of(colnames(x)), "age")
-  if (isTRUE(compute)) {
-    person <- person %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    person <- person %>%
+      CDMConnector::computeQuery()
+  } else {
+    person <- person %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(person)
 }

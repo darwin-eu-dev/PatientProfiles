@@ -128,6 +128,11 @@ addCohortIntersect <- function(x,
 
   checkmate::assert_character(name, len = 1)
 
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
+
   checkmate::reportAssertions(collection = errorMessage)
 
 

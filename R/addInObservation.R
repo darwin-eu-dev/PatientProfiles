@@ -112,9 +112,10 @@ addInObservation <- function(x,
                              add = errorMessage,
   )
 
-  checkmate::assert_logical(compute, len = 1,
+  if (!is.null(tablePrefix)){
+  checkmate::assert_logical(tablePrefix, len = 1,
                             add = errorMessage
-  )
+  )}
 
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -168,10 +169,10 @@ addInObservation <- function(x,
   }
 
   if(is.null(tablePrefix)){
-    result_all <- result_all %>%
+    x <- x %>%
       CDMConnector::computeQuery()
   } else {
-    result_all <- result_all %>%
+    x <- x %>%
       CDMConnector::computeQuery(name = paste0(tablePrefix,
                                                "_person_sample"),
                                  temporary = FALSE,
