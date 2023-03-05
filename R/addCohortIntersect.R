@@ -12,7 +12,7 @@
 #' @param order last or first date to use for date calculation
 #' @param cohortName name to give cohortId
 #' @param name naming of the added column
-#' @param tablePrefix compute/not compute
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return
 #' @export

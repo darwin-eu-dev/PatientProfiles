@@ -9,7 +9,7 @@
 #' inObservation command
 #' @param name name of the column to hold the result of the enquiry:
 #' 1 if the individual is in observation, 0 if not
-#' @param compute whether to add compute functionality
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return cohort table with the added binary column assessing inObservation
 #' @export
@@ -167,8 +167,16 @@ addInObservation <- function(x,
       )
   }
 
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    result_all <- result_all %>%
+      CDMConnector::computeQuery()
+  } else {
+    result_all <- result_all %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(x)
 

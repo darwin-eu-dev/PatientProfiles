@@ -16,8 +16,7 @@
 #' as missing for all the individuals. By default: TRUE.
 #' @param imposeDay Whether the day of the date of birth will be considered as
 #' missing for all the individuals. By default: TRUE.
-#' @param compute Whether resultant table will be computed as temporal table. By
-#' default: TRUE.
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return
 #' @export
@@ -56,7 +55,7 @@ addAge <- function(x,
                    defaultDay = 1,
                    imposeMonth = TRUE,
                    imposeDay = TRUE,
-                   compute = TRUE) {
+                   tablePrefix = NULL) {
 
   errorMessage <- checkmate::makeAssertCollection()
 

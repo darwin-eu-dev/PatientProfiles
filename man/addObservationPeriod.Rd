@@ -25,7 +25,7 @@ addObservationPeriod(
 \item{name}{name of the columns added for observation start
 date and end date in form of "name for start date","name for end date"}
 
-\item{compute}{whether compute functionality is desired}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \description{
 Add a column to the current tibble with the observation period from observation_period table

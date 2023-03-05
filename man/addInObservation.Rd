@@ -24,7 +24,7 @@ inObservation command}
 \item{name}{name of the column to hold the result of the enquiry:
 1 if the individual is in observation, 0 if not}
 
-\item{compute}{whether to add compute functionality}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \value{
 cohort table with the added binary column assessing inObservation

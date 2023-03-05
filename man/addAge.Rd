@@ -13,7 +13,7 @@ addAge(
   defaultDay = 1,
   imposeMonth = TRUE,
   imposeDay = TRUE,
-  compute = TRUE
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -37,8 +37,7 @@ as missing for all the individuals. By default: TRUE.}
 \item{imposeDay}{Whether the day of the date of birth will be considered as
 missing for all the individuals. By default: TRUE.}
 
-\item{compute}{Whether resultant table will be computed as temporal table. By
-default: TRUE.}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \description{
 Add a column to the current tibble with the age of the subject_id at a

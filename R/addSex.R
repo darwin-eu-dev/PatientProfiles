@@ -6,7 +6,7 @@
 #' @param cdm object containing the person table with the sex information
 #' in gender_concept_id column
 #' @param name name of the new column to be added
-#' @param compute whether compute functionality is desired
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return table x with the added column with sex information
 #' @export
@@ -120,8 +120,16 @@ addSex <- function(x,
       dplyr::right_join(x, by = "person_id") %>%
       dplyr::select(dplyr::all_of(colnames(x)), !!name)
   }
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    result_all <- result_all %>%
+      CDMConnector::computeQuery()
+  } else {
+    result_all <- result_all %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(x)
 }

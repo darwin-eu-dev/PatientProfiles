@@ -6,7 +6,7 @@
 #' @param ageGroup a list of ageGroup vectors. e.g. list(c(0,10),c(11,20)). Default: 0, 150
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a cdm reference.
 #' @param ageGroupNames a vector of character. names for age groups, if not provided, default combines characters in ageGroup. e.g. 0;150 if no ageGroup and ageGroupNames provided
-#' @param compute Whether resultant table will be computed as temporal table. By default: TRUE.
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return
 #' @export
@@ -47,7 +47,7 @@ addAgeGroup <- function(x,
                         ageGroup = NULL,
                         cdm = NULL,
                         ageGroupNames = NULL,
-                        compute = TRUE) {
+                        tablePrefix = NULL) {
   errorMessage <- checkmate::makeAssertCollection()
 
 
@@ -176,8 +176,16 @@ addAgeGroup <- function(x,
     dplyr::select("age", ageGroupNames)
   x <- x %>%
     dplyr::left_join(ageGroup, by = "age", copy = TRUE)
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    result_all <- result_all %>%
+      CDMConnector::computeQuery()
+  } else {
+    result_all <- result_all %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(x)
 }

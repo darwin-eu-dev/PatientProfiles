@@ -14,7 +14,7 @@ in gender_concept_id column}
 
 \item{name}{name of the new column to be added}
 
-\item{compute}{whether compute functionality is desired}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \value{
 table x with the added column with sex information

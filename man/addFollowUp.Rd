@@ -22,7 +22,7 @@ addFollowUp(
 \item{name}{name of the column to hold the result of the enquiry:
 number of days of follow up}
 
-\item{compute}{whether to add compute functionality}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \value{
 cohort table with the added column with follow up days

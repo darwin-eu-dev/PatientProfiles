@@ -37,7 +37,7 @@ to date of event at event table}
 
 \item{name}{naming of the added column}
 
-\item{tablePrefix}{compute/not compute}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \description{
 It creates columns to indicate overlaps information

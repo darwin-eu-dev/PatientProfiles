@@ -9,7 +9,7 @@
 #' @param column name of the observational start date and end date in the observation_period table
 #' @param name name of the columns added for observation start
 #' date and end date in form of "name for start date","name for end date"
-#' @param compute whether compute functionality is desired
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return
 #' @export
@@ -76,6 +76,8 @@ addObservationPeriod <- function(x,
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
 
+
+
   xCheck <- inherits(x, "tbl_dbi")
   if (!isTRUE(xCheck)) {
     errorMessage$push("- x is not a table")
@@ -141,8 +143,16 @@ addObservationPeriod <- function(x,
     )
   }
 
-  if (isTRUE(compute)) {
-    xOutput <- xOutput %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    result_all <- result_all %>%
+      CDMConnector::computeQuery()
+  } else {
+    result_all <- result_all %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
 
   return(xOutput)
