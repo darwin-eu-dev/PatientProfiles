@@ -5,7 +5,12 @@
 \title{Add a column to the current tibble with the prior history of the subject_id at a
 certain date}
 \usage{
-addPriorHistory(x, cdm, priorHistoryAt = "cohort_start_date", compute = TRUE)
+addPriorHistory(
+  x,
+  cdm,
+  priorHistoryAt = "cohort_start_date",
+  tablePrefix = TRUE
+)
 }
 \arguments{
 \item{x}{cohort table to which add prior history to}

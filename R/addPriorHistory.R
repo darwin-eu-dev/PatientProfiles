@@ -60,7 +60,7 @@
 addPriorHistory <- function(x,
                             cdm,
                             priorHistoryAt = "cohort_start_date",
-                            compute = TRUE) {
+                            tablePrefix = TRUE) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
 
