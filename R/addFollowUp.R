@@ -17,12 +17,10 @@
 #' It adds a column to a cohort table with the number of days of follow up
 #'
 #' @param x cohort table in which to add follow up of individuals
-#' @param cdm name of the cdm object
 #' @param start_date name of the column containing the start dates
 #' @param end_date name of the column containing the end dates
 #' @param name name of the column to hold the result of the enquiry:
 #' number of days of follow up
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return cohort table with the added column with follow up days
 #' @export
@@ -38,11 +36,9 @@
 #' }
 #'
 addFollowUp <- function(x,
-                        cdm,
                         start_date = "cohort_start_date",
                         end_date = "cohort_end_date",
-                        name = "follow_up",
-                        tablePrefix = TRUE) {
+                        name = "follow_up") {
 
   ## check for standard types of user error
 
@@ -51,10 +47,6 @@ addFollowUp <- function(x,
   xCheck <- inherits(x, "tbl_dbi")
   if (!isTRUE(xCheck)) {
     errorMessage$push("- x is not a table")
-  }
-  cdmCheck <- inherits(cdm, "cdm_reference")
-  if (!isTRUE(cdmCheck)) {
-    errorMessage$push("- cdm must be a CDMConnector CDM reference object")
   }
 
   checkmate::reportAssertions(collection = errorMessage)
@@ -112,17 +104,6 @@ addFollowUp <- function(x,
     ) + 1
   )
 
-  if(is.null(tablePrefix)){
-    x <- x %>%
-      CDMConnector::computeQuery()
-  } else {
-    x <- x %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_person_sample"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
-  }
   return(x)
 
 }
