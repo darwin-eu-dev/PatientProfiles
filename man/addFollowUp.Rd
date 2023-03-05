@@ -6,6 +6,7 @@
 \usage{
 addFollowUp(
   x,
+  cdm,
   start_date = "cohort_start_date",
   end_date = "cohort_end_date",
   name = "follow_up",
@@ -14,6 +15,8 @@ addFollowUp(
 }
 \arguments{
 \item{x}{cohort table in which to add follow up of individuals}
+
+\item{cdm}{name of the cdm object}
 
 \item{start_date}{name of the column containing the start dates}
 
@@ -37,7 +40,7 @@ cdm <- CDMConnector::cdm_from_con(
   con = db,
   cdm_schema = "cdm schema name"
 )
-cdm$cohort \%>\% addFollowUp(cdm)
+cdm$cohort \%>\% addFollowUp()
 }
 
 }
