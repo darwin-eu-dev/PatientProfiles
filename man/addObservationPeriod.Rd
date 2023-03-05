@@ -10,7 +10,7 @@ addObservationPeriod(
   observationAt = "cohort_start_date",
   column = c("observation_period_start_date", "observation_period_end_date"),
   name = NULL,
-  compute = TRUE
+  tablePrefix = TRUE
 )
 }
 \arguments{

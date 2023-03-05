@@ -9,7 +9,7 @@ addFollowUp(
   start_date = "cohort_start_date",
   end_date = "cohort_end_date",
   name = "follow_up",
-  compute = TRUE
+  tablePrefix = TRUE
 )
 }
 \arguments{

@@ -10,7 +10,7 @@ addInObservation(
   cdm,
   observationAt = "cohort_start_date",
   name = "in_observation",
-  compute = TRUE
+  tablePrefix = TRUE
 )
 }
 \arguments{

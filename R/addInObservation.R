@@ -28,7 +28,7 @@ addInObservation <- function(x,
                           cdm,
                           observationAt = "cohort_start_date",
                           name = "in_observation",
-                          compute = TRUE) {
+                          tablePrefix = TRUE) {
 
   ## check for standard types of user error
 

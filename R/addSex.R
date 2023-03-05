@@ -24,7 +24,7 @@
 addSex <- function(x,
                    cdm,
                    name = "sex",
-                   compute = TRUE) {
+                   tablePrefix = TRUE) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
 

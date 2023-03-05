@@ -4,7 +4,7 @@
 \alias{addSex}
 \title{Adds a column with sex information to the individuals of a table}
 \usage{
-addSex(x, cdm, name = "sex", compute = TRUE)
+addSex(x, cdm, name = "sex", tablePrefix = TRUE)
 }
 \arguments{
 \item{x}{cohort table to which add Sex}
