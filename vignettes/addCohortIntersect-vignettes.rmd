@@ -9,7 +9,7 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Get cohort intersect using CohortProfiles
+  %\VignetteIndexEntry{Get cohort intersect using CohortProfiles}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
