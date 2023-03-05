@@ -13,8 +13,8 @@ addCohortIntersect(
   window = c(0, NA),
   order = "first",
   cohortName = NA,
-  name = "{cohortName}_{value}",
-  compute = TRUE
+  name = "{value}_{tableName}_{window}_{order}",
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -37,7 +37,7 @@ to date of event at event table}
 
 \item{name}{naming of the added column}
 
-\item{compute}{compute/not compute}
+\item{tablePrefix}{compute/not compute}
 }
 \description{
 It creates columns to indicate overlaps information
