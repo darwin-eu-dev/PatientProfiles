@@ -13,14 +13,14 @@ test_that("addFollowUp, input length and type", {
 test_that("addFollowUp, cohort and condition_occurrence", {
   cdm <- mockCohortProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
 
-  cdm$cohort1 <- cdm$cohort1 %>% addFollowUp()
-  expect_true("follow_up" %in% colnames(cdm$cohort1))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(92,62,32,61)))
+  test1 <- cdm$cohort1 %>% addFollowUp()
+  expect_true("follow_up" %in% colnames(test1))
+  expect_true(all(test1 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(92,62,32,61)))
 
-  cdm$condition_occurrence <- cdm$condition_occurrence %>% addFollowUp(start = "condition_start_date", end = "condition_end_date")
+  test2 <- cdm$condition_occurrence %>% addFollowUp(start = "condition_start_date", end = "condition_end_date")
 
-  expect_true("follow_up" %in% colnames(cdm$condition_occurrence))
-  expect_true(all(cdm$condition_occurrence %>% dplyr::select(follow_up) %>% dplyr::pull() == c(274,357,947,453,443,780,668,938,248,934)))
+  expect_true("follow_up" %in% colnames(test2))
+  expect_true(all(test2 %>% dplyr::select(follow_up) %>% dplyr::pull() == c(274,357,947,453,443,780,668,938,248,934)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
