@@ -136,9 +136,9 @@ addObservationPeriod <- function(x,
                                          .data[[observationAt]] <= .data[[column[2]]],
                                        1,
                                        0)) %>% dplyr::mutate(
-                                         !!column[[1]] := dplyr::if_else(ins == 0, NA, .data[[column[1]]]),!!column[[2]] := dplyr::if_else(ins == 0, NA, .data[[column[2]]])
+                                         !!column[[1]] := dplyr::if_else(.data$ins == 0, NA, .data[[column[1]]]),!!column[[2]] := dplyr::if_else(.data$ins == 0, NA, .data[[column[2]]])
                                        ) %>%
-    dplyr::select(-ins) %>%
+    dplyr::select(-"ins") %>%
     dplyr::rename(!!name[[1]] := .data[[column[1]]],!!name[[2]] := .data[[column[2]]])
   # Warning message if multiple obersvational_period are found
   if ((dplyr::count(xOutput) %>% dplyr::collect()) > (dplyr::count(x) %>% dplyr::collect())) {

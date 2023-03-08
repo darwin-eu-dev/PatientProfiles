@@ -103,8 +103,8 @@ addTableIntersect <- function(x,
   overlaptable <- overlaptable %>% dplyr::mutate(
     "overlap_start_date" = .data[[name_start_date]],
     "overlap_end_date" = .data[[name_end_date]],
-    "subject_id" = person_id
-    ) %>% dplyr::select(-person_id)
+    "subject_id" = .data$person_id
+    ) %>% dplyr::select(-"person_id")
 
   result <- x %>%
     dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
@@ -227,9 +227,9 @@ addTableIntersect <- function(x,
         dplyr::left_join(result_dt_min, by = c("subject_id","cohort_start_date","cohort_end_date","overlap_start_date")) %>%
         dplyr::left_join(result_dt_max, by = c("subject_id","cohort_start_date","cohort_end_date","overlap_start_date")) %>%
         dplyr::group_by(.data$subject_id, .data$cohort_start_date, .data$cohort_end_date) %>%
-        dbplyr::window_order(overlap_start_date) %>%
-        tidyr::fill(min_value, .direction = "down") %>%
-        tidyr::fill(max_value, .direction = "up") %>%
+        dbplyr::window_order(.data$overlap_start_date) %>%
+        tidyr::fill(.data$min_value, .direction = "down") %>%
+        tidyr::fill(.data$max_value, .direction = "up") %>%
         dbplyr::window_order() %>%
         dplyr::select(-c("overlap_start_date")) %>%
         dplyr::ungroup() %>%
