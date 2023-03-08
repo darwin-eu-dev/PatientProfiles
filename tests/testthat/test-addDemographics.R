@@ -20,13 +20,61 @@ test_that("addDemographics, cohort and condition_occurrence", {
   cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(cdm,demographicsAt = "condition_start_date")
 
   expect_true(all(c("age","sex","prior_history") %in% colnames(cdm$cohort1)))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(age) %>% dplyr::pull() == c(60,53,58,53)))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(sex) %>% dplyr::pull() == c("Female","Female","Male","Female")))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(prior_history) %>% dplyr::pull() == c(5221,5447,4562,5295)))
+  s <- cdm$cohort1 %>%
+    dplyr::filter(
+      .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")
+    ) %>%
+    dplyr::collect()
+  expect_true(s$age == 53)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_history == 5295)
+  s <- cdm$cohort1 %>%
+    dplyr::filter(
+      .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
+    ) %>%
+    dplyr::collect()
+  expect_true(s$age == 53)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_history == 5447)
+  s <- cdm$cohort1 %>%
+    dplyr::filter(.data$subject_id == 2) %>%
+    dplyr::collect()
+  expect_true(s$age == 60)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_history == 5221)
+  s <- cdm$cohort1 %>%
+    dplyr::filter(.data$subject_id == 3) %>%
+    dplyr::collect()
+  expect_true(s$age == 58)
+  expect_true(s$sex == "Male")
+  expect_true(s$prior_history == 4562)
+
   expect_true(all(c("age","sex","prior_history") %in% colnames(cdm$condition_occurrence)))
-  expect_true(all(cdm$condition_occurrence %>% dplyr::select(age) %>% dplyr::pull() == c(39,58,31,43,97,39,54,40,53,78)))
-  expect_true(all(cdm$condition_occurrence %>% dplyr::select(sex) %>% dplyr::pull() == c("Female","Female","Female","Female","Male","Female","Male","Male","Female","Male")))
-  expect_true(all(cdm$condition_occurrence %>% dplyr::select(prior_history) %>% dplyr::pull() == c(3553, 4714, 2763, 1711, 5145, 2304, 3160,  697, -390, 3209)))
+  expected_age <- c(43, 58, 54, 39, 53, 39, 31, 97, 40, 78)
+  expected_sex <- c(
+    "Female", "Female", "Male", "Female", "Female", "Female", "Female", "Male",
+    "Male", "Male"
+  )
+  expected_prior_history <- c(
+    1711, 4714, 3160, 2304, -390, 3553, 2763, 5145, 697, 3209
+  )
+  for (k in 1:length(expected_age)) {
+    expect_true(
+      cdm$condition_occurrence %>%
+        dplyr::filter(.data$subject_id == k) %>%
+        dplyr::pull("age") == expected_age[k]
+    )
+    expect_true(
+      cdm$condition_occurrence %>%
+        dplyr::filter(.data$subject_id == k) %>%
+        dplyr::pull("sex") == expected_sex[k]
+    )
+    expect_true(
+      cdm$condition_occurrence %>%
+        dplyr::filter(.data$subject_id == k) %>%
+        dplyr::pull("prior_history") == expected_prior_history[k]
+    )
+  }
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -36,10 +84,38 @@ test_that("addDemographics, parameters", {
   cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm,demographicsAt = "cohort_end_date",ageGroup = list(c(0,40),c(41,120)))
 
   expect_true(all(c("age","sex","prior_history","ageGroupNames") %in% colnames(cdm$cohort1)))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(age) %>% dplyr::pull() == c(53,58,60,53)))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(sex) %>% dplyr::pull() == c("Female","Male","Female","Female")))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(prior_history) %>% dplyr::pull() == c(5386,4622,5252,5508)))
-  expect_true(all(cdm$cohort1 %>% dplyr::select(ageGroupNames) %>% dplyr::pull() == c("41;120","41;120","41;120","41;120")))
+  s <- cdm$cohort1 %>%
+    dplyr::filter(
+      .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")
+    ) %>%
+    dplyr::collect()
+  expect_true(s$age == 53)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_history == 5386)
+  expect_true(s$ageGroupNames == "41;120")
+  s <- cdm$cohort1 %>%
+    dplyr::filter(
+      .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
+    ) %>%
+    dplyr::collect()
+  expect_true(s$age == 53)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_history == 5508)
+  expect_true(s$ageGroupNames == "41;120")
+  s <- cdm$cohort1 %>%
+    dplyr::filter(.data$subject_id == 2) %>%
+    dplyr::collect()
+  expect_true(s$age == 60)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_history == 5252)
+  expect_true(s$ageGroupNames == "41;120")
+  s <- cdm$cohort1 %>%
+    dplyr::filter(.data$subject_id == 3) %>%
+    dplyr::collect()
+  expect_true(s$age == 58)
+  expect_true(s$sex == "Male")
+  expect_true(s$prior_history == 4622)
+  expect_true(s$ageGroupNames == "41;120")
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
