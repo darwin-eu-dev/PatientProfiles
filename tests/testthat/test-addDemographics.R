@@ -8,7 +8,7 @@ test_that("addDemographics, input length and type", {
   expect_error(addDemographics(cdm$cohort1,cdm,demographicsAt = "condition_start_date"))
   expect_error(addDemographics(cdm$cohort1,cdm,demographicsAt = c("cohort_start_date","cohort_end_date")))
   expect_error(addDemographics(cdm$cohort1,cdm,ageGroup = 10))
-  expect_error(addDemographics(cdm$cohort1,cdm,compute = c(FALSE,TRUE)))
+  expect_error(addDemographics(cdm$cohort1,cdm,tablePrefix = 1))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

@@ -12,7 +12,7 @@
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
-#' @return
+#' @return table with added columns with obersvation information
 #' @export
 #'
 #' @examples

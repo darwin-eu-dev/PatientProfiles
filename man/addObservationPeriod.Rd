@@ -28,6 +28,9 @@ date and end date in form of "name for start date","name for end date"}
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
 }
+\value{
+table with added columns with obersvation information
+}
 \description{
 Add a column to the current tibble with the observation period from observation_period table
 }
