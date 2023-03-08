@@ -9,7 +9,7 @@
 #' inObservation command
 #' @param name name of the column to hold the result of the enquiry:
 #' 1 if the individual is in observation, 0 if not
-#' @param compute whether to add compute functionality
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return cohort table with the added binary column assessing inObservation
 #' @export
@@ -28,7 +28,7 @@ addInObservation <- function(x,
                           cdm,
                           observationAt = "cohort_start_date",
                           name = "in_observation",
-                          compute = TRUE) {
+                          tablePrefix = TRUE) {
 
   ## check for standard types of user error
 
@@ -112,9 +112,10 @@ addInObservation <- function(x,
                              add = errorMessage,
   )
 
-  checkmate::assert_logical(compute, len = 1,
+  if (!is.null(tablePrefix)){
+  checkmate::assert_logical(tablePrefix, len = 1,
                             add = errorMessage
-  )
+  )}
 
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -167,8 +168,16 @@ addInObservation <- function(x,
       )
   }
 
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    x <- x %>%
+      CDMConnector::computeQuery()
+  } else {
+    x <- x %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(x)
 

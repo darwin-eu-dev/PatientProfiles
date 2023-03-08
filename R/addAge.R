@@ -16,8 +16,7 @@
 #' as missing for all the individuals. By default: TRUE.
 #' @param imposeDay Whether the day of the date of birth will be considered as
 #' missing for all the individuals. By default: TRUE.
-#' @param compute Whether resultant table will be computed as temporal table. By
-#' default: TRUE.
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return
 #' @export
@@ -56,7 +55,7 @@ addAge <- function(x,
                    defaultDay = 1,
                    imposeMonth = TRUE,
                    imposeDay = TRUE,
-                   compute = TRUE) {
+                   tablePrefix = NULL) {
 
   errorMessage <- checkmate::makeAssertCollection()
 
@@ -103,10 +102,13 @@ addAge <- function(x,
   checkmate::assertInt(defaultMonth, lower = 1, upper = 12)
   checkmate::assertInt(defaultDay, lower = 1, upper = 31)
 
-  # check if imposeMonth imposeDay and compute are logical
+  # check if imposeMonth and compute and tablePrefix are logical
   checkmate::assertLogical(imposeMonth, add = errorMessage)
   checkmate::assertLogical(imposeDay, add = errorMessage)
-  checkmate::assertLogical(compute, add = errorMessage)
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
 
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)
@@ -176,8 +178,16 @@ addAge <- function(x,
     dplyr::select("subject_id", dplyr::all_of(ageAt), "age") %>%
     dplyr::right_join(x, by = c("subject_id", ageAt)) %>%
     dplyr::select(dplyr::all_of(colnames(x)), "age")
-  if (isTRUE(compute)) {
-    person <- person %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    person <- person %>%
+      CDMConnector::computeQuery()
+  } else {
+    person <- person %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(person)
 }

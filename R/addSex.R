@@ -6,7 +6,7 @@
 #' @param cdm object containing the person table with the sex information
 #' in gender_concept_id column
 #' @param name name of the new column to be added
-#' @param compute whether compute functionality is desired
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return table x with the added column with sex information
 #' @export
@@ -24,7 +24,7 @@
 addSex <- function(x,
                    cdm,
                    name = "sex",
-                   compute = TRUE) {
+                   tablePrefix = TRUE) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
 
@@ -59,6 +59,11 @@ addSex <- function(x,
     )
   }
 
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
+
   checkmate::reportAssertions(collection = errorMessage)
 
   errorMessage <- checkmate::makeAssertCollection()
@@ -79,10 +84,6 @@ addSex <- function(x,
 
   checkmate::assertCharacter(name, len = 1,
                              add = errorMessage,
-  )
-
-  checkmate::assert_logical(compute, len = 1,
-                            add = errorMessage
   )
 
   checkmate::reportAssertions(collection = errorMessage)
@@ -120,8 +121,16 @@ addSex <- function(x,
       dplyr::right_join(x, by = "person_id") %>%
       dplyr::select(dplyr::all_of(colnames(x)), !!name)
   }
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    x <- x %>%
+      CDMConnector::computeQuery()
+  } else {
+    x <- x %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(x)
 }

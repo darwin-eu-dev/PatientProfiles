@@ -14,13 +14,6 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addObservationPeriod(cdm$cohort1, cdm, observationAt = "end_date"))
 
-  expect_error(addObservationPeriod(
-    cdm$cohort1,
-    cdm,
-    observationAt = "cohort_start_date",
-    compute = s
-  ))
-
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 

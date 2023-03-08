@@ -4,7 +4,7 @@
 \alias{addSex}
 \title{Adds a column with sex information to the individuals of a table}
 \usage{
-addSex(x, cdm, name = "sex", compute = TRUE)
+addSex(x, cdm, name = "sex", tablePrefix = TRUE)
 }
 \arguments{
 \item{x}{cohort table to which add Sex}
@@ -14,7 +14,7 @@ in gender_concept_id column}
 
 \item{name}{name of the new column to be added}
 
-\item{compute}{whether compute functionality is desired}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \value{
 table x with the added column with sex information

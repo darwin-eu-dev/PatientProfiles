@@ -9,7 +9,7 @@
 #' @param column name of the observational start date and end date in the observation_period table
 #' @param name name of the columns added for observation start
 #' date and end date in form of "name for start date","name for end date"
-#' @param compute whether compute functionality is desired
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return
 #' @export
@@ -64,7 +64,7 @@ addObservationPeriod <- function(x,
                                  column = c("observation_period_start_date",
                                             "observation_period_end_date"),
                                  name = NULL,
-                                 compute = TRUE) {
+                                 tablePrefix = TRUE) {
   # if name is NULL replace name with column
 
   if (is.null(name)) {
@@ -75,6 +75,8 @@ addObservationPeriod <- function(x,
 
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
+
+
 
   xCheck <- inherits(x, "tbl_dbi")
   if (!isTRUE(xCheck)) {
@@ -107,6 +109,10 @@ addObservationPeriod <- function(x,
   #checks for name and column
   checkmate::assertCharacter(column, len = 2, add = errorMessage)
   checkmate::assertCharacter(name, len = 2, add = errorMessage)
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
 
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -141,8 +147,16 @@ addObservationPeriod <- function(x,
     )
   }
 
-  if (isTRUE(compute)) {
-    xOutput <- xOutput %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    xOutput <- xOutput %>%
+      CDMConnector::computeQuery()
+  } else {
+    xOutput <- xOutput %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
 
   return(xOutput)
