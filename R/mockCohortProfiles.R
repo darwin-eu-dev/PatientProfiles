@@ -54,7 +54,7 @@
 #' @param cohort1 cohort table for test to run in getindication
 #' @param cohort2 cohort table for test to run in getindication
 #' @param ... user self defined tibble table to put in cdm, it can input as many as the user want
-#' @return
+#' @return cdm of the mock database following user's specifications
 #' @export
 #'
 #' @examples

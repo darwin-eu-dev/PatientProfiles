@@ -9,7 +9,8 @@
 #' inObservation command
 #' @param name name of the column to hold the result of the enquiry:
 #' 1 if the individual is in observation, 0 if not
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return cohort table with the added binary column assessing inObservation
 #' @export
@@ -28,7 +29,7 @@ addInObservation <- function(x,
                           cdm,
                           observationAt = "cohort_start_date",
                           name = "in_observation",
-                          tablePrefix = TRUE) {
+                          tablePrefix = NULL) {
 
   ## check for standard types of user error
 
@@ -112,10 +113,9 @@ addInObservation <- function(x,
                              add = errorMessage,
   )
 
-  if (!is.null(tablePrefix)){
-  checkmate::assert_logical(tablePrefix, len = 1,
-                            add = errorMessage
-  )}
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   checkmate::reportAssertions(collection = errorMessage)
 

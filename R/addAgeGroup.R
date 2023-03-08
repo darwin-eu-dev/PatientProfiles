@@ -6,9 +6,10 @@
 #' @param ageGroup a list of ageGroup vectors. e.g. list(c(0,10),c(11,20)). Default: 0, 150
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a cdm reference.
 #' @param ageGroupNames a vector of character. names for age groups, if not provided, default combines characters in ageGroup. e.g. 0;150 if no ageGroup and ageGroupNames provided
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
-#' @return
+#' @return tibble with the age group column added
 #' @export
 #'
 #' @examples
@@ -59,7 +60,9 @@ addAgeGroup <- function(x,
   }
   # check cdm exist
   checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
-
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   # if age column not found in x, we need cdm object and addAge function to impute age
 

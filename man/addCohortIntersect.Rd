@@ -37,7 +37,11 @@ to date of event at event table}
 
 \item{name}{naming of the added column}
 
-\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
+}
+\value{
+table with added columns with overlap information
 }
 \description{
 It creates columns to indicate overlaps information
@@ -97,7 +101,8 @@ cohort2 <- dplyr::tibble(
 
 cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
 
-result <- cdm$cohort1 \%>\% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date") \%>\% dplyr::collect()
+result <- cdm$cohort1 \%>\% addCohortIntersect(cdm = cdm,
+cohortTableName = "cohort2", value = "date") \%>\% dplyr::collect()
 }
 
 }

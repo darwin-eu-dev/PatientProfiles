@@ -113,6 +113,9 @@ mockCohortProfiles(
 
 \item{...}{user self defined tibble table to put in cdm, it can input as many as the user want}
 }
+\value{
+cdm of the mock database following user's specifications
+}
 \description{
 It creates a mock database for testing CohortProfiles package
 }

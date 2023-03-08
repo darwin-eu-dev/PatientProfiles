@@ -6,9 +6,11 @@
 #' @param x cohort table to which add prior history to
 #' @param cdm object containing the person table
 #' @param priorHistoryAt name of the date field to use as date in table x
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
-#' @return
+#' @return cohort table with added column containing prior history of the
+#' individuals
 #' @export
 #'
 #' @examples
@@ -60,7 +62,7 @@
 addPriorHistory <- function(x,
                             cdm,
                             priorHistoryAt = "cohort_start_date",
-                            tablePrefix = TRUE) {
+                            tablePrefix = NULL) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
 
@@ -94,10 +96,9 @@ addPriorHistory <- function(x,
     errorMessage$push("- `observation_period` is not found in cdm")
   }
 
-  if (!is.null(tablePrefix)){
-    checkmate::assert_logical(tablePrefix, len = 1,
-                              add = errorMessage
-    )}
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   checkmate::reportAssertions(collection = errorMessage)
 

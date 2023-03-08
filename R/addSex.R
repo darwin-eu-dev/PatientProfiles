@@ -6,7 +6,8 @@
 #' @param cdm object containing the person table with the sex information
 #' in gender_concept_id column
 #' @param name name of the new column to be added
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table x with the added column with sex information
 #' @export
@@ -24,7 +25,7 @@
 addSex <- function(x,
                    cdm,
                    name = "sex",
-                   tablePrefix = TRUE) {
+                   tablePrefix = NULL) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
 
@@ -59,10 +60,9 @@ addSex <- function(x,
     )
   }
 
-  if (!is.null(tablePrefix)){
-    checkmate::assert_logical(tablePrefix, len = 1,
-                              add = errorMessage
-    )}
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   checkmate::reportAssertions(collection = errorMessage)
 

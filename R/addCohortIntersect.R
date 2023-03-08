@@ -12,9 +12,10 @@
 #' @param order last or first date to use for date calculation
 #' @param cohortName name to give cohortId
 #' @param name naming of the added column
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
-#' @return
+#' @return table with added columns with overlap information
 #' @export
 #'
 #' @examples
@@ -72,7 +73,8 @@
 #'
 #'cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
 #'
-#'result <- cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date") %>% dplyr::collect()
+#'result <- cdm$cohort1 %>% addCohortIntersect(cdm = cdm,
+#'cohortTableName = "cohort2", value = "date") %>% dplyr::collect()
 #'}
 #'
 addCohortIntersect <- function(x,
@@ -128,10 +130,9 @@ addCohortIntersect <- function(x,
 
   checkmate::assert_character(name, len = 1)
 
-  if (!is.null(tablePrefix)){
-    checkmate::assert_logical(tablePrefix, len = 1,
-                              add = errorMessage
-    )}
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   checkmate::reportAssertions(collection = errorMessage)
 
