@@ -14,12 +14,6 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addPriorHistory(cdm$cohort1, cdm, priorHistoryAt = "end_date"))
 
-  expect_error(addPriorHistory(
-    cdm$cohort1,
-    cdm,
-    priorHistoryAt = "cohort_start_date",
-    compute = s
-  ))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 

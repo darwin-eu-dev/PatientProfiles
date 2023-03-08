@@ -21,7 +21,6 @@
 #' @param end_date name of the column containing the end dates
 #' @param name name of the column to hold the result of the enquiry:
 #' number of days of follow up
-#' @param compute whether to add compute functionality
 #'
 #' @return cohort table with the added column with follow up days
 #' @export
@@ -33,14 +32,13 @@
 #'   con = db,
 #'   cdm_schema = "cdm schema name"
 #' )
-#' cdm$cohort %>% addFollowUp(cdm)
+#' cdm$cohort %>% addFollowUp()
 #' }
 #'
 addFollowUp <- function(x,
                         start_date = "cohort_start_date",
                         end_date = "cohort_end_date",
-                          name = "follow_up",
-                          compute = TRUE) {
+                        name = "follow_up") {
 
   ## check for standard types of user error
 
@@ -48,9 +46,7 @@ addFollowUp <- function(x,
 
   xCheck <- inherits(x, "tbl_dbi")
   if (!isTRUE(xCheck)) {
-    errorMessage$push(
-      "- x is not a table"
-    )
+    errorMessage$push("- x is not a table")
   }
 
   checkmate::reportAssertions(collection = errorMessage)
@@ -90,10 +86,6 @@ addFollowUp <- function(x,
     )
   }
 
-  checkmate::assert_logical(compute, len = 1,
-                            add = errorMessage
-  )
-
   checkmate::reportAssertions(collection = errorMessage)
 
   # Start code
@@ -107,9 +99,6 @@ addFollowUp <- function(x,
     ) + 1
   )
 
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
-  }
   return(x)
 
 }

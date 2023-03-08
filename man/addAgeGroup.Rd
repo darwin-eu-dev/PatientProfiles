@@ -9,7 +9,7 @@ addAgeGroup(
   ageGroup = NULL,
   cdm = NULL,
   ageGroupNames = NULL,
-  compute = TRUE
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ addAgeGroup(
 
 \item{ageGroupNames}{a vector of character. names for age groups, if not provided, default combines characters in ageGroup. e.g. 0;150 if no ageGroup and ageGroupNames provided}
 
-\item{compute}{Whether resultant table will be computed as temporal table. By default: TRUE.}
+\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
 }
 \value{
 tibble with the age group column added

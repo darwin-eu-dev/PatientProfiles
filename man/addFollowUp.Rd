@@ -8,8 +8,7 @@ addFollowUp(
   x,
   start_date = "cohort_start_date",
   end_date = "cohort_end_date",
-  name = "follow_up",
-  compute = TRUE
+  name = "follow_up"
 )
 }
 \arguments{
@@ -21,8 +20,6 @@ addFollowUp(
 
 \item{name}{name of the column to hold the result of the enquiry:
 number of days of follow up}
-
-\item{compute}{whether to add compute functionality}
 }
 \value{
 cohort table with the added column with follow up days
@@ -37,7 +34,7 @@ cdm <- CDMConnector::cdm_from_con(
   con = db,
   cdm_schema = "cdm schema name"
 )
-cdm$cohort \%>\% addFollowUp(cdm)
+cdm$cohort \%>\% addFollowUp()
 }
 
 }

@@ -12,7 +12,7 @@
 #' @param order last or first date to use for date calculation
 #' @param cohortName name to give cohortId
 #' @param name naming of the added column
-#' @param compute compute/not compute
+#' @param tablePrefix Whether resultant table will rename. By default: NULL
 #'
 #' @return table with added columns with overlap information
 #' @export
@@ -84,8 +84,8 @@ addCohortIntersect <- function(x,
                                window = c(0, NA),
                                order = "first",
                                cohortName = NA,
-                               name = "{cohortName}_{value}",
-                               compute = TRUE) {
+                               name = "{value}_{tableName}_{window}_{order}",
+                               tablePrefix = NULL) {
   ## check for user inputs
   errorMessage <- checkmate::makeAssertCollection()
 
@@ -129,6 +129,11 @@ addCohortIntersect <- function(x,
 
   checkmate::assert_character(name, len = 1)
 
+  if (!is.null(tablePrefix)){
+    checkmate::assert_logical(tablePrefix, len = 1,
+                              add = errorMessage
+    )}
+
   checkmate::reportAssertions(collection = errorMessage)
 
 
@@ -137,6 +142,10 @@ addCohortIntersect <- function(x,
 
   # define overlapcohort table from cdm containing the events of interests
   overlapCohort <- cdm[[cohortTableName]]
+
+  # get the window as character for the naming of the output columns later
+  window_pre <- ifelse(is.na(window[1]),"NA",as.character(window[1]))
+  window_post <- ifelse(is.na(window[2]),"NA",as.character(window[2]))
 
   #generate overlappingcohort using code from getoverlappingcohort
   #filter by cohortId
@@ -192,10 +201,13 @@ addCohortIntersect <- function(x,
         overlap_id = as.numeric(.data$overlap_id),
         overlapCohortTableName = .env$cohortTableName
       ) %>%
+      dplyr::mutate(
+        window_char = paste0("(",.env$window_pre,",",.env$window_post,")")
+      ) %>%
       tidyr::pivot_wider(
-        names_from = c("overlapCohortTableName", "overlap_id"),
+        names_from = c("overlapCohortTableName", "overlap_id","window_char"),
         values_from = c("number", "binary"),
-        names_glue = "{.value}_{overlapCohortTableName}_{overlap_id}",
+        names_glue = "{.value}_{overlapCohortTableName}_{window_char}_{overlap_id}",
         values_fill = 0
       )  %>%
       dplyr::right_join(x,
@@ -244,10 +256,14 @@ addCohortIntersect <- function(x,
         overlap_id = as.numeric(.data$overlap_id),
         overlapCohortTableName = .env$cohortTableName
       ) %>%
+      dplyr::mutate(
+        window_char = paste0("(",.env$window_pre,",",.env$window_post,")")
+      ) %>%
+      dplyr::mutate(order_var = .env$order) %>%
       tidyr::pivot_wider(
-        names_from = c("overlapCohortTableName", "overlap_id"),
+        names_from = c("overlapCohortTableName", "overlap_id","window_char","order_var"),
         values_from = c("min_time", "min_date", "max_time", "max_date"),
-        names_glue = "{.value}_{overlapCohortTableName}_{overlap_id}",
+        names_glue = "{.value}_{overlapCohortTableName}_{window_char}_{order_var}_{overlap_id}",
         values_fill = NA
       )  %>%
       dplyr::right_join(x,
@@ -289,8 +305,16 @@ addCohortIntersect <- function(x,
     ) %>% dplyr::select("cohort_definition_id", dplyr::everything()) %>%
     dplyr::select(-dplyr::starts_with(valueDrop))
 
-  if (isTRUE(compute)) {
-    result_all <- result_all %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    result_all <- result_all %>%
+      CDMConnector::computeQuery()
+  } else {
+    result_all <- result_all %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
 
   return(result_all)

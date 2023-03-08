@@ -5,7 +5,6 @@ test_that("addSex, check imput length and type",{
   expect_error(addSex(cdm$drug_strength,cdm))
   expect_error(addSex(cdm$cohort1,cdm, name = 2))
   expect_error(addSex(cdm$cohort1,cdm, name = c("name1","name2")))
-  expect_error(addSex(cdm$cohort1,cdm, compute = "compute"))
   expect_error(addSex(cdm,cdm))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
