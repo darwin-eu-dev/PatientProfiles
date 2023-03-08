@@ -16,7 +16,8 @@
 #' as missing for all the individuals. By default: TRUE.
 #' @param imposeDay Whether the day of the date of birth will be considered as
 #' missing for all the individuals. By default: TRUE.
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return tibble with the age column added
 #' @export
@@ -105,10 +106,9 @@ addAge <- function(x,
   # check if imposeMonth and compute and tablePrefix are logical
   checkmate::assertLogical(imposeMonth, add = errorMessage)
   checkmate::assertLogical(imposeDay, add = errorMessage)
-  if (!is.null(tablePrefix)){
-    checkmate::assert_logical(tablePrefix, len = 1,
-                              add = errorMessage
-    )}
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)

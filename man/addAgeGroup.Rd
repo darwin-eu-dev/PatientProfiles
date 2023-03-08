@@ -21,7 +21,8 @@ addAgeGroup(
 
 \item{ageGroupNames}{a vector of character. names for age groups, if not provided, default combines characters in ageGroup. e.g. 0;150 if no ageGroup and ageGroupNames provided}
 
-\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 tibble with the age group column added

@@ -37,7 +37,8 @@ as missing for all the individuals. By default: TRUE.}
 \item{imposeDay}{Whether the day of the date of birth will be considered as
 missing for all the individuals. By default: TRUE.}
 
-\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 tibble with the age column added

@@ -9,7 +9,8 @@
 #' @param column name of the observational start date and end date in the observation_period table
 #' @param name name of the columns added for observation start
 #' date and end date in form of "name for start date","name for end date"
-#' @param tablePrefix Whether resultant table will rename. By default: NULL
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return
 #' @export
@@ -64,7 +65,7 @@ addObservationPeriod <- function(x,
                                  column = c("observation_period_start_date",
                                             "observation_period_end_date"),
                                  name = NULL,
-                                 tablePrefix = TRUE) {
+                                 tablePrefix = NULL) {
   # if name is NULL replace name with column
 
   if (is.null(name)) {
@@ -109,10 +110,9 @@ addObservationPeriod <- function(x,
   #checks for name and column
   checkmate::assertCharacter(column, len = 2, add = errorMessage)
   checkmate::assertCharacter(name, len = 2, add = errorMessage)
-  if (!is.null(tablePrefix)){
-    checkmate::assert_logical(tablePrefix, len = 1,
-                              add = errorMessage
-    )}
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   checkmate::reportAssertions(collection = errorMessage)
 

@@ -37,7 +37,8 @@ to date of event at event table}
 
 \item{name}{naming of the added column}
 
-\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 table with added columns with overlap information

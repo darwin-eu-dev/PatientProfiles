@@ -10,7 +10,7 @@ addObservationPeriod(
   observationAt = "cohort_start_date",
   column = c("observation_period_start_date", "observation_period_end_date"),
   name = NULL,
-  tablePrefix = TRUE
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -25,7 +25,8 @@ addObservationPeriod(
 \item{name}{name of the columns added for observation start
 date and end date in form of "name for start date","name for end date"}
 
-\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \description{
 Add a column to the current tibble with the observation period from observation_period table

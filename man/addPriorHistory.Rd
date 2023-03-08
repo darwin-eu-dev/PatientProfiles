@@ -9,7 +9,7 @@ addPriorHistory(
   x,
   cdm,
   priorHistoryAt = "cohort_start_date",
-  tablePrefix = TRUE
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -19,7 +19,8 @@ addPriorHistory(
 
 \item{priorHistoryAt}{name of the date field to use as date in table x}
 
-\item{tablePrefix}{Whether resultant table will rename. By default: NULL}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 cohort table with added column containing prior history of the
