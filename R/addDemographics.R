@@ -7,7 +7,8 @@
 #' @param demographicsAt name of the column with the date at which consider
 #' demographic information
 #' @param ageGroup if not NULL, a list of ageGroup vectors
-#' @param compute whether to add compute functionality
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return cohort table with the added demographic information columns
 #' @export
@@ -26,7 +27,7 @@ addDemographics <- function(x,
                         cdm,
                         demographicsAt = "cohort_start_date",
                         ageGroup = NULL,
-                        compute = TRUE) {
+                        tablePrefix = NULL) {
 
   ## check for standard types of user error
 
@@ -114,8 +115,8 @@ addDemographics <- function(x,
     }
   }
 
-  checkmate::assert_logical(compute, len = 1,
-                            add = errorMessage
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
   )
 
   checkmate::reportAssertions(collection = errorMessage)
@@ -129,8 +130,16 @@ addDemographics <- function(x,
     x <- x %>%
       addAgeGroup(cdm, ageGroup = ageGroup)
   }
-  if (isTRUE(compute)) {
-    x <- x %>% dplyr::compute()
+  if(is.null(tablePrefix)){
+    x <- x %>%
+      CDMConnector::computeQuery()
+  } else {
+    x <- x %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
   }
   return(x)
 

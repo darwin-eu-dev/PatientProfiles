@@ -10,7 +10,7 @@ addDemographics(
   cdm,
   demographicsAt = "cohort_start_date",
   ageGroup = NULL,
-  compute = TRUE
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -24,7 +24,8 @@ demographic information}
 
 \item{ageGroup}{if not NULL, a list of ageGroup vectors}
 
-\item{compute}{whether to add compute functionality}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 cohort table with the added demographic information columns
