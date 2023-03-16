@@ -51,7 +51,7 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
+  cdm <- mockPatientProfiles(cohort1=cohort1, cohort2=cohort2)
 
   result <- cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date") %>% dplyr::collect()
 
@@ -198,7 +198,7 @@ test_that("check input length and type for each of the arguments", {
     ),
   )
 
-  cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
+  cdm <- mockPatientProfiles(cohort1=cohort1, cohort2=cohort2)
 
   expect_error(addCohortIntersect("cdm$cohort1", cdm))
 

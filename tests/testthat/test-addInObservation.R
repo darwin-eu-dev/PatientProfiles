@@ -1,5 +1,5 @@
 test_that("addInObservation, input length and type", {
-  cdm <- mockCohortProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
 
   expect_error(addInObservation(2,cdm))
   expect_error(addInObservation(cdm$cohort2,"cdm"))
@@ -14,7 +14,7 @@ test_that("addInObservation, input length and type", {
 })
 
 test_that("addInObservation, cohort and condition_occurrence", {
-  cdm <- mockCohortProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
 
   result1 <- addInObservation(cdm$cohort1,cdm)
   expect_true("in_observation" %in% colnames(result1))
@@ -36,7 +36,7 @@ test_that("addInObservation, cohort and condition_occurrence", {
 })
 
 test_that("addInObservation, parameters", {
-  cdm <- mockCohortProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
 
   result1 <- addInObservation(cdm$condition_occurrence,cdm,observationAt = "condition_end_date",name="observ")
   expect_true("observ" %in% colnames(result1))

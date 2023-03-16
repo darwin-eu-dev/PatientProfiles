@@ -1,10 +1,10 @@
 ## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
-library(CohortProfiles)
+library(PatientProfiles)
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  library(DBI)
 #  library(CDMConnector)
-#  library(CohortProfiles)
+#  library(PatientProfiles)
 #  con <- DBI::dbConnect(RPostgres::Postgres(),
 #                        dbname = Sys.getenv("CDM5_POSTGRESQL_DBNAME"),
 #                        host = Sys.getenv("CDM5_POSTGRESQL_HOST"),
@@ -17,7 +17,7 @@ library(CohortProfiles)
 library(DBI)
 library(duckdb)
 library(tibble)
-library(CohortProfiles)
+library(PatientProfiles)
 cohort1 <- tibble::tibble(
   subject_id = c("1", "2", "3"),
   cohort_start_date = c(

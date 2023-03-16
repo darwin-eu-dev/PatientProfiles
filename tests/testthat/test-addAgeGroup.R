@@ -1,6 +1,6 @@
 test_that("check input length and type for each of the arguments", {
   cdm <-
-    mockCohortProfiles(seed = 1,
+    mockPatientProfiles(seed = 1,
                        patient_size = 5)
 
   expect_error(addAgeGroup("cdm$cohort1", cdm = cdm))
@@ -21,7 +21,7 @@ test_that("check condition_occurrence and cohort1 work", {
 
 
   cdm <-
-    mockCohortProfiles(seed = 1,
+    mockPatientProfiles(seed = 1,
                        patient_size = 3)
 
   expect_true(typeof(cdm$cohort1 %>% addAgeGroup(cdm = cdm) %>% dplyr::collect()) == "list")
@@ -55,7 +55,7 @@ test_that("NULL age group name, but given age groups, age not in table", {
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   result1 <- addAgeGroup(
     x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)), cdm = cdm
@@ -123,7 +123,7 @@ test_that("when NULL ageGRoup provided, ageGroupNames is 0;150 if not provided,
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   # if NULL ageGroup, 1 ageGroupNames provided, use it in ageGroupNames column in output
   result <- addAgeGroup(
@@ -174,7 +174,7 @@ test_that("throw errors", {
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   # error if overlapping ageGroyp
   expect_error(addAgeGroup(

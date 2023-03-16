@@ -1,4 +1,3 @@
-# This file is part of CohortProfiles
 
 #' It adds a column to a cohort table indicating whether its individuals are
 #' in observation at the desired time

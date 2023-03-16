@@ -1,6 +1,6 @@
 test_that("check input length and type for each of the arguments", {
   cdm <-
-    mockCohortProfiles(
+    mockPatientProfiles(
       seed = 1,
       patient_size = 5,
       latest_observation_start_date = "2019-01-01",
@@ -24,7 +24,7 @@ test_that("check condition_occurrence and cohort1 work", {
 
 #mock data
   cdm <-
-    mockCohortProfiles(
+    mockPatientProfiles(
       seed = 1,
       patient_size = 5,
       latest_observation_start_date = "2005-01-01",
@@ -75,7 +75,7 @@ test_that("check working example with cohort1",{
   )
 
   cdm <-
-    mockCohortProfiles(
+    mockPatientProfiles(
       seed = 1,
       cohort1 = cohort1,
       observation_period = obs_1
@@ -124,7 +124,7 @@ test_that("check working example with condition_occurrence", {
   )
 
   cdm <-
-    mockCohortProfiles(
+    mockPatientProfiles(
       seed = 1,
       condition_occurrence = condition_occurrence,
       observation_period = obs_1
