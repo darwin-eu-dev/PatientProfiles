@@ -1,5 +1,5 @@
 ---
-title: "Get cohort intersect using CohortProfiles"
+title: "Get cohort intersect using PatientProfiles"
 author: "Marti Catala, Mike Du, Yuchen Guo and Kim Lopez-Guell"
 output: 
   html_document:
@@ -9,18 +9,18 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Get cohort intersect using CohortProfiles}
+  %\VignetteIndexEntry{Get cohort intersect using PatientProfiles}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-library(CohortProfiles)
+library(PatientProfiles)
 ```
 
 ## Introduction
 
-This document demonstrate how to use the `addCohortIntersect()` function in CohortProfiles to obtain cohort intersect information for each individual in your CDM cohort table. 
+This document demonstrate how to use the `addCohortIntersect()` function in PatientProfiles to obtain cohort intersect information for each individual in your CDM cohort table. 
 
 When using `addCohortIntersect()` you would need two input table.
 
@@ -43,7 +43,7 @@ Below is an example of `addCohortIntersect()` generated using mock data.
 library(DBI)
 library(duckdb)
 library(tibble)
-library(CohortProfiles)
+library(PatientProfiles)
 
   #functionality
   cohort1 <- dplyr::tibble(
@@ -96,7 +96,7 @@ library(CohortProfiles)
     ),
   )
 
-  cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
+  cdm <- mockPatientProfiles(cohort1=cohort1, cohort2=cohort2)
 
 ```
 

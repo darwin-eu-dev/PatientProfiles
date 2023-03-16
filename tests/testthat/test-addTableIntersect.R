@@ -54,7 +54,7 @@ test_that("working examples", {
     class = c("A","B","B","A","A","A","B")
   )
 
-  cdm <- mockCohortProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
+  cdm <- mockPatientProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
 
   result_first <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", value = c("binary","number","quantity"), filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
   result_last <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", value = c("binary","number","quantity"), order = "last", filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
@@ -187,7 +187,7 @@ test_that("check input length and type for each of the arguments", {
     quantity = c(20,10,3,5,12,44,9)
   )
 
-  cdm <- mockCohortProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
+  cdm <- mockPatientProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
 
   expect_error(addCohortIntersect("cdm$cohort1", cdm))
 

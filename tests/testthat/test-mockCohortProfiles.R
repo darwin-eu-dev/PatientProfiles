@@ -22,8 +22,8 @@ test_that("test user define table", {
       as.Date("2015-01-01"), as.Date("2015-01-01"))
   )
 
-  cdm_1 <- mockCohortProfiles(test_table_1 = test_table_1)
-  cdm_2 <- mockCohortProfiles(test_table_1 = test_table_1,test_table_2 = test_table_2)
+  cdm_1 <- mockPatientProfiles(test_table_1 = test_table_1)
+  cdm_2 <- mockPatientProfiles(test_table_1 = test_table_1,test_table_2 = test_table_2)
 
 expect_true(dplyr::all_equal(cdm_1$test_table_1 %>% dplyr::collect(),test_table_1))
 expect_true(length(cdm_1)==10)
@@ -48,8 +48,8 @@ test_that("check working example with cohort table", {
       as.Date("2015-01-01"), as.Date("2015-01-01"))
   )
 
-  cdm_1 <- mockCohortProfiles(cohort1 = test_table_1)
-  cdm_2 <- mockCohortProfiles(cohort2 = test_table_1)
+  cdm_1 <- mockPatientProfiles(cohort1 = test_table_1)
+  cdm_2 <- mockPatientProfiles(cohort2 = test_table_1)
 
   expect_true(dplyr::all_equal(cdm_1$cohort1 %>% dplyr::collect(),test_table_1))
   expect_error(expect_true(dplyr::all_equal(cdm_1$cohort2 %>% dplyr::collect(),test_table_1)))
@@ -63,7 +63,7 @@ test_that("check working example with cohort table", {
 
 
 test_that("check working example with defaults", {
-  cdm <- mockCohortProfiles()
+  cdm <- mockPatientProfiles()
 
   expect_true(length(cdm)==9)
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect())==10)
@@ -75,7 +75,7 @@ test_that("check working example with defaults", {
 
 
 test_that("check dug exposure and patient table size", {
-  cdm <- mockCohortProfiles(drug_exposure_size = 200, patient_size = 200)
+  cdm <- mockPatientProfiles(drug_exposure_size = 200, patient_size = 200)
 
   expect_true(length(cdm)==9)
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect())==200)
@@ -86,7 +86,7 @@ test_that("check dug exposure and patient table size", {
 })
 
 test_that("add cdm with person, cohort1 and observation_period", {
-  cdm <- mockCohortProfiles(
+  cdm <- mockPatientProfiles(
     person = tibble::tibble(
       person_id = c(1, 2, 3, 4),
       gender_concept_id = c(8507, 8532, 8532, 8507),

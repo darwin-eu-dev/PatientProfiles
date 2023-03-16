@@ -1,4 +1,3 @@
-# This file is part of CohortProfiles
 
 #' Adds a column with sex information to the individuals of a table
 #'

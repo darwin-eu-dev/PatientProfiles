@@ -1,4 +1,3 @@
-# This file is part of CohortProfiles
 
 #' It creates a mock database for testing CohortProfiles package
 #'

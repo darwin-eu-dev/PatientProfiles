@@ -1,6 +1,6 @@
-Package: CohortProfiles
+Package: PatientProfiles
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Identify characteristics of patients in the OMOP Common Data Model
 Version: 0.1.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", role = c("aut", "cre")),
@@ -9,8 +9,7 @@ Authors@R: c(
     person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut"))
     )
 Maintainer: The package maintainer <marti.catalasabate@ndorms.ox.ac.uk>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Identify demographics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true

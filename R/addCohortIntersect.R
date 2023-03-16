@@ -1,4 +1,3 @@
-# This file is part of CohortProfiles
 
 #' It creates columns to indicate overlaps information
 #'

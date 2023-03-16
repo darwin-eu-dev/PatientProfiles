@@ -1,6 +1,6 @@
 test_that("check input length and type for each of the arguments", {
   cdm <-
-    mockCohortProfiles(seed = 1,
+    mockPatientProfiles(seed = 1,
                        patient_size = 5)
 
   expect_error(addAge("cdm$cohort1", cdm))
@@ -26,7 +26,7 @@ test_that("check input length and type for each of the arguments", {
 
 test_that("check condition_occurrence and cohort1 work", {
   cdm <-
-    mockCohortProfiles(seed = 1,
+    mockPatientProfiles(seed = 1,
                        patient_size = 5)
 
   expect_true(typeof(cdm$cohort1 %>% addAge(cdm) %>% dplyr::collect()) == "list")
@@ -59,7 +59,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   result <- addAge(x = cdm$cohort1, cdm = cdm, imposeMonth = FALSE, imposeDay = FALSE,
                    defaultMonth = 4, defaultDay = 4) %>% dplyr::collect()
@@ -93,7 +93,7 @@ test_that("age at cohort end, no missing, check age computation", {
     day_of_birth = c(01, 01)
   )
 
-  cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   #check if exact age is computed, ie, dob 2000-01-01, target date 2000-12-01  --> age 0
   #dob 2000-01-01, target date 2001-01-02  --> age 1
@@ -102,7 +102,7 @@ test_that("age at cohort end, no missing, check age computation", {
 })
 
 test_that("check expected errors", {
-  cdm <- mockCohortProfiles()
+  cdm <- mockPatientProfiles()
 
   expect_error(result <- addAge(cdm = "a"))
   expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, imposeDay = 1))
@@ -134,7 +134,7 @@ test_that("multiple cohortIds, check age at cohort end", {
     month_of_birth = c(NA, 01, 01),
     day_of_birth = c(01, 01, 01)
   )
-  cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageAt = "cohort_end_date") %>% dplyr::collect()
 

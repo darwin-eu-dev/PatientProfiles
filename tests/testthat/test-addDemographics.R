@@ -1,7 +1,7 @@
-# must be changed once PriorHistory is updated in CohortProfiles online
+# must be changed once PriorHistory is updated in PatientProfiles online
 
 test_that("addDemographics, input length and type", {
-  cdm <- mockCohortProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
 
   expect_error(addDemographics(2,cdm))
   expect_error(addDemographics(cdm$cohort1, cdm$concept_ancestor))
@@ -14,7 +14,7 @@ test_that("addDemographics, input length and type", {
 })
 
 test_that("addDemographics, cohort and condition_occurrence", {
-  cdm <- mockCohortProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
 
   cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm)
   cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(cdm,demographicsAt = "condition_start_date")
@@ -80,7 +80,7 @@ test_that("addDemographics, cohort and condition_occurrence", {
 })
 
 test_that("addDemographics, parameters", {
-  cdm <- mockCohortProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
   cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm,demographicsAt = "cohort_end_date",ageGroup = list(c(0,40),c(41,120)))
 
   expect_true(all(c("age","sex","prior_history","ageGroupNames") %in% colnames(cdm$cohort1)))

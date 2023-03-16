@@ -11,7 +11,7 @@ test_that("addFollowUp, input length and type", {
 })
 
 test_that("addFollowUp, cohort and condition_occurrence", {
-  cdm <- mockCohortProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
 
   test1 <- cdm$cohort1 %>% addFollowUp()
   expect_true("follow_up" %in% colnames(test1))
@@ -33,7 +33,7 @@ test_that("addFollowUp, parameters", {
     cohort_end_date = c(as.Date("2018-11-12"),as.Date("2017-10-18"),as.Date("2022-02-11"),as.Date("1996-04-21"),as.Date("1998-06-02"))
   )
 
-  cdm <- mockCohortProfiles(patient_size = 5, cohort1 = cohort_table)
+  cdm <- mockPatientProfiles(patient_size = 5, cohort1 = cohort_table)
   test1 <- cdm$cohort1 %>% addFollowUp(start = "cohort_end_date")
 
   expect_true("follow_up" %in% colnames(test1))

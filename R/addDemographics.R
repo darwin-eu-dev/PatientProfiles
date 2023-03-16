@@ -1,3 +1,4 @@
+
 #' It adds all demographics columns to the given cohort table: Age, Sex,
 #' PriorHistory, and ageGroup if desired
 #'
