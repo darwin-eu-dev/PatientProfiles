@@ -34,3 +34,4 @@ Imports:
     duckdb,
     rlang
 VignetteBuilder: knitr
+URL: https://oxford-pharmacoepi.github.io/PatientProfiles/
