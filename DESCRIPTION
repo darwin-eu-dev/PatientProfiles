@@ -6,10 +6,11 @@ Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", role = c("aut", "cre")),
     person("Yuchen", "Guo", , "yuchen.guo@ndorms.ox.ac.uk", role = c("aut")),
     person("Mike", "Du", , "mike.du@ndorms.ox.ac.uk", role = c("aut")),
-    person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut"))
+    person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut")),
+    person("Edward", "Burn", , "edward.burn@ndorms.ox.ac.uk", role = c("aut")) 
     )
 Maintainer: The package maintainer <marti.catalasabate@ndorms.ox.ac.uk>
-Description: Identify demographics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
+Description: Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true

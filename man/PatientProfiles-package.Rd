@@ -6,7 +6,14 @@
 \alias{PatientProfiles-package}
 \title{PatientProfiles: Identify characteristics of patients in the OMOP Common Data Model}
 \description{
-Identify demographics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
+Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://oxford-pharmacoepi.github.io/PatientProfiles/}
+}
+
 }
 \author{
 \strong{Maintainer}: Marti Catala \email{marti.catalasabate@ndorms.ox.ac.uk}
@@ -16,6 +23,7 @@ Authors:
   \item Yuchen Guo \email{yuchen.guo@ndorms.ox.ac.uk}
   \item Mike Du \email{mike.du@ndorms.ox.ac.uk}
   \item Kim Lopez-Guell \email{kim.lopez@spc.ox.ac.uk}
+  \item Edward Burn \email{edward.burn@ndorms.ox.ac.uk}
 }
 
 }

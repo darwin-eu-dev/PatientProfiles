@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^LICENSE
 ^doc$
 ^Meta$
 ^README\.Rmd$
@@ -8,3 +9,5 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^extras
+^cran-comments\.md$
