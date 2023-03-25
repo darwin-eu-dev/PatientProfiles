@@ -9,7 +9,14 @@ addDemographics(
   x,
   cdm,
   demographicsAt = "cohort_start_date",
+  age = TRUE,
+  ageDefaultMonth = 1,
+  ageDefaultDay = 1,
+  ageImposeMonth = TRUE,
+  ageImposeDay = TRUE,
   ageGroup = NULL,
+  sex = TRUE,
+  priorHistory = TRUE,
   tablePrefix = NULL
 )
 }
@@ -22,7 +29,27 @@ for the individuals in the cohort}
 \item{demographicsAt}{name of the column with the date at which consider
 demographic information}
 
+\item{age}{TRUE or FALSE. If TRUE, age will be calculated relative to
+demographicsAt}
+
+\item{ageDefaultMonth}{Month of the year assigned to individuals with missing
+month of birth. By default: 1.}
+
+\item{ageDefaultDay}{day of the month assigned to individuals with missing day
+of birth. By default: 1.}
+
+\item{ageImposeMonth}{Whether the month of the date of birth will be considered
+as missing for all the individuals. By default: TRUE.}
+
+\item{ageImposeDay}{Whether the day of the date of birth will be considered as
+missing for all the individuals. By default: TRUE.}
+
 \item{ageGroup}{if not NULL, a list of ageGroup vectors}
+
+\item{sex}{TRUE or FALSE. If TRUE, sex will be identified}
+
+\item{priorHistory}{TRUE or FALSE. If TRUE, days of prior history will
+be calculated relative to demographicsAt}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
