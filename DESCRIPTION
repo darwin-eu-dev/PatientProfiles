@@ -19,7 +19,8 @@ Suggests:
     covr,
     testthat (>= 3.1.5),
     knitr,
-    rmarkdown
+    rmarkdown,
+    glue
 Imports: 
     magrittr,
     CDMConnector,
