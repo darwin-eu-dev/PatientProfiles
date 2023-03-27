@@ -1,5 +1,3 @@
-# must be changed once PriorHistory is updated in PatientProfiles online
-
 test_that("addDemographics, input length and type", {
   cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
 
@@ -120,3 +118,57 @@ test_that("addDemographics, parameters", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
+test_that("partial demographics", {
+  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
+
+  # only age
+  cdm$cohort1a <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    demographicsAt = "cohort_end_date",
+                    age = TRUE,
+                    ageGroup = NULL,
+                    sex = FALSE,
+                    priorHistory = FALSE)
+  # age and age group
+  expect_true(c("age")  %in%   names(cdm$cohort1a))
+  expect_true(all(!c("sex", "age_group", "prior_history")  %in%
+                    names(cdm$cohort1a)))
+
+  # only sex
+  cdm$cohort1b <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    demographicsAt = "cohort_end_date",
+                    age = FALSE,
+                    ageGroup = NULL,
+                    sex = TRUE,
+                    priorHistory = FALSE)
+  expect_true(c("sex")  %in%   names(cdm$cohort1b))
+  expect_true(all(!c("age", "age_group", "prior_history") %in%
+                    names(cdm$cohort1b)))
+
+  # only prior history
+  cdm$cohort1c <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    demographicsAt = "cohort_end_date",
+                    age = FALSE,
+                    ageGroup = NULL,
+                    sex = FALSE,
+                    priorHistory = TRUE)
+  expect_true(c("prior_history")  %in%   names(cdm$cohort1c))
+  expect_true(all(!c("age", "age_group", "sex") %in%
+                    names(cdm$cohort1c)))
+
+  # all
+  cdm$cohort1d <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    demographicsAt = "cohort_end_date",
+                    age = TRUE,
+                    ageGroup = list(c(0,100)),
+                    sex = TRUE,
+                    priorHistory = TRUE)
+  # age and age group
+  expect_true(all(c("age","sex", "ageGroupNames", "prior_history")
+              %in%   names(cdm$cohort1d)))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
