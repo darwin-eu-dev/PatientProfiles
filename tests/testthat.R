@@ -1,4 +1,4 @@
 library(testthat)
-library(CohortProfiles)
+library(PatientProfiles)
 
-test_check("CohortProfiles")
+test_check("PatientProfiles")

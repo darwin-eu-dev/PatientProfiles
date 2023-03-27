@@ -1,20 +1,20 @@
-Package: CohortProfiles
+Package: PatientProfiles
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Identify characteristics of patients in the OMOP Common Data Model
 Version: 0.1.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", role = c("aut", "cre")),
     person("Yuchen", "Guo", , "yuchen.guo@ndorms.ox.ac.uk", role = c("aut")),
     person("Mike", "Du", , "mike.du@ndorms.ox.ac.uk", role = c("aut")),
-    person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut"))
+    person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut")),
+    person("Edward", "Burn", , "edward.burn@ndorms.ox.ac.uk", role = c("aut")) 
     )
 Maintainer: The package maintainer <marti.catalasabate@ndorms.ox.ac.uk>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests: 
     covr,
     testthat (>= 3.1.5),
@@ -35,3 +35,4 @@ Imports:
     duckdb,
     rlang
 VignetteBuilder: knitr
+URL: https://oxford-pharmacoepi.github.io/PatientProfiles/

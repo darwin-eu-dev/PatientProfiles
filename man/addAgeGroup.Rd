@@ -9,7 +9,7 @@ addAgeGroup(
   ageGroup = NULL,
   cdm = NULL,
   ageGroupNames = NULL,
-  compute = TRUE
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -21,10 +21,11 @@ addAgeGroup(
 
 \item{ageGroupNames}{a vector of character. names for age groups, if not provided, default combines characters in ageGroup. e.g. 0;150 if no ageGroup and ageGroupNames provided}
 
-\item{compute}{Whether resultant table will be computed as temporal table. By default: TRUE.}
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
-
+tibble with the age group column added
 }
 \description{
 It creates a mock database for testing CohortProfiles package
@@ -55,7 +56,7 @@ person <- tibble::tibble(
   day_of_birth = c(NA, 02, 01)
 )
 
-cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
+cdm <- mockCohortProfiles(person = person, cohort1 = cohort1)
 
 result <- addAgeGroup(
   x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)), cdm = cdm

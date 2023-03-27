@@ -1,20 +1,5 @@
-# Copyright 2022 DARWIN EU (C)
-#
-# This file is part of CohortProfiles
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
-#' It creates a mock database for testing CohortProfiles package
+#' It creates a mock database for testing PatientProfiles package
 #'
 #'
 #' @param drug_exposure default null user can define its own table
@@ -54,11 +39,11 @@
 #' @param cohort1 cohort table for test to run in getindication
 #' @param cohort2 cohort table for test to run in getindication
 #' @param ... user self defined tibble table to put in cdm, it can input as many as the user want
-#' @return
+#' @return cdm of the mock database following user's specifications
 #' @export
 #'
 #' @examples
-mockCohortProfiles <- function(drug_exposure = NULL,
+mockPatientProfiles <- function(drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
                                 condition_occurrence = NULL,
@@ -264,16 +249,14 @@ mockCohortProfiles <- function(drug_exposure = NULL,
         ##  days_supply = as.numeric(days_supply)
       )
   }
-
+  # person table
+  id <- sample(seq(1:patient_size))
+  # person gender
+  gender_id <- sample(c("8507", "8532"),
+                      patient_size,
+                      replace = TRUE)
 
   if (is.null(person) | is.null(observation_period)) {
-    # person table
-    id <- sample(seq(1:patient_size))
-    # person gender
-    gender_id <- sample(c("8507", "8532"),
-                        patient_size,
-                        replace = TRUE
-    )
 
     # Define earliest possible date of birth for person table
     if (is.null(earliest_date_of_birth)) {
@@ -592,6 +575,8 @@ mockCohortProfiles <- function(drug_exposure = NULL,
   if (length(listTables) > 0) {
     cdm <- CDMConnector::cdm_from_con(
       db,
+      cdm_schema = "main",
+      write_schema = "main",
       cdm_tables = c(
         "drug_strength",
         "drug_exposure",
@@ -606,6 +591,8 @@ mockCohortProfiles <- function(drug_exposure = NULL,
   } else {
     cdm <- CDMConnector::cdm_from_con(
       db,
+      cdm_schema = "main",
+      write_schema = "main",
       cdm_tables = c(
         "drug_strength",
         "drug_exposure",
