@@ -40,11 +40,19 @@ checkName <- function(name, parameters) {
 
 #' @noRd
 tidyName <- function(name, parameters, colnamesTable) {
-  possibleNames <- expand.grid(parameters) %>%
+  nameEquivalence <- expand.grid(parameters) %>%
     dplyr::as_tibble() %>%
     dplyr::distinct() %>%
-    dplyr::mutate(proposed_name = .env$name) %>%
-    dplyr::mutate(proposed_name = glue::glue(.data$proposed_name))
-  proposedNames <- possibleNames %>%
-    dplyr::pull("proposed_name")
+    dplyr::mutate(generated_name = glue::glue(.env$name)) %>%
+    dplyr::mutate(corrected_name = .data$generated_name) %>%
+    dplyr::select("generated_name", "corrected_name")
+  k <- 1
+  id <- which(nameEquivalence$generated_name %in% colnamesTable)
+  while(length(id) > 0) {
+    nameEquivalence$corrected_name[id] <-
+      paste0(nameEquivalence$generated_name[id], "_", k)
+    id <- which(nameEquivalence$corrected_name %in% colnamesTable)
+    k <- k + 1
+  }
+  return(nameEquivalence)
 }
