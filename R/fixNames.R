@@ -27,5 +27,24 @@ checkName <- function(name, parameters) {
   if (length(x) > 0) {
     stop(paste0("variables: ", paste0(x, collapse = ", "), " not included in name."))
   }
+  elements <- elements[!(elements %in% names(parameters))]
+  if (length(elemenets) >0 ) {
+    stop(paste0(
+      "variables: ",
+      paste0(elements, collapse = ", "),
+      " contained in name and not included in iput parameters."
+    ))
+  }
   invisible(NULL)
+}
+
+#' @noRd
+tidyName <- function(name, parameters, colnamesTable) {
+  possibleNames <- expand.grid(parameters) %>%
+    dplyr::as_tibble() %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(proposed_name = .env$name) %>%
+    dplyr::mutate(proposed_name = glue::glue(.data$proposed_name))
+  proposedNames <- possibleNames %>%
+    dplyr::pull("proposed_name")
 }
