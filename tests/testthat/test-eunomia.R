@@ -95,6 +95,20 @@ test_that("test methods against eunomia duck db", {
     expect_true(s$sex == "Female")
     expect_true(s$prior_history == 19892)
 
+    #addFollowUp
+    result <- cdm$cohort_table %>% addFollowUp()
+    expect_true("follow_up" %in% colnames(result))
+
+    result <- cdm$condition_occurrence %>% addFollowUp(start = "condition_start_date", end = "condition_end_date")
+    expect_true("follow_up" %in% colnames(result))
+
+    result <- cdm$cohort_table %>% addFollowUp(name = "followup", start = "cohort_end_date")
+    expect_true("followup" %in% colnames(result))
+    expect_true(all(1 == result %>%
+                      dplyr::select(followup) %>% dplyr::pull()))
+
+    #addCohortIntersect
+
 
     DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
