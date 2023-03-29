@@ -8,7 +8,7 @@ PriorHistory, and ageGroup if desired}
 addDemographics(
   x,
   cdm,
-  demographicsAt = "cohort_start_date",
+  indexDate = "cohort_start_date",
   age = TRUE,
   ageDefaultMonth = 1,
   ageDefaultDay = 1,
@@ -26,11 +26,11 @@ addDemographics(
 \item{cdm}{cdm with the person and observation_period tables to get the info
 for the individuals in the cohort}
 
-\item{demographicsAt}{name of the column with the date at which consider
+\item{indexDate}{name of the column with the date at which consider
 demographic information}
 
 \item{age}{TRUE or FALSE. If TRUE, age will be calculated relative to
-demographicsAt}
+indexDate}
 
 \item{ageDefaultMonth}{Month of the year assigned to individuals with missing
 month of birth. By default: 1.}
@@ -49,7 +49,7 @@ missing for all the individuals. By default: TRUE.}
 \item{sex}{TRUE or FALSE. If TRUE, sex will be identified}
 
 \item{priorHistory}{TRUE or FALSE. If TRUE, days of prior history will
-be calculated relative to demographicsAt}
+be calculated relative to indexDate}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}

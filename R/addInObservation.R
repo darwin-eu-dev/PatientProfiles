@@ -4,7 +4,7 @@
 #'
 #' @param x cohort table in which the inObservation command wants to be tested
 #' @param cdm where the observation_period table is stored
-#' @param observationAt name of the column with the dates to test the
+#' @param indexDate name of the column with the dates to test the
 #' inObservation command
 #' @param name name of the column to hold the result of the enquiry:
 #' 1 if the individual is in observation, 0 if not
@@ -26,7 +26,7 @@
 #'
 addInObservation <- function(x,
                           cdm,
-                          observationAt = "cohort_start_date",
+                          indexDate = "cohort_start_date",
                           name = "in_observation",
                           tablePrefix = NULL) {
 
@@ -69,14 +69,14 @@ addInObservation <- function(x,
 
   errorMessage <- checkmate::makeAssertCollection()
 
-  checkmate::assertCharacter(observationAt, len = 1,
+  checkmate::assertCharacter(indexDate, len = 1,
                              add = errorMessage,
   )
 
-  column1Check <- observationAt %in% colnames(x)
+  column1Check <- indexDate %in% colnames(x)
   if (!isTRUE(column1Check)) {
     errorMessage$push(
-      "- `observationAt` is not a column of x"
+      "- `indexDate` is not a column of x"
     )
   }
 
@@ -134,8 +134,8 @@ addInObservation <- function(x,
       ) %>%
       dplyr::mutate(
         !!name := dplyr::if_else(
-          .data[[observationAt]] >= .data$observation_period_start_date &
-            .data[[observationAt]] <= .data$observation_period_end_date,
+          .data[[indexDate]] >= .data$observation_period_start_date &
+            .data[[indexDate]] <= .data$observation_period_end_date,
           1,
           0
         )
@@ -156,8 +156,8 @@ addInObservation <- function(x,
       ) %>%
       dplyr::mutate(
         !!name := dplyr::if_else(
-          .data[[observationAt]] >= .data$observation_period_start_date &
-            .data[[observationAt]] <= .data$observation_period_end_date,
+          .data[[indexDate]] >= .data$observation_period_start_date &
+            .data[[indexDate]] <= .data$observation_period_end_date,
           1,
           0
         )

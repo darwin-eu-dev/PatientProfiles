@@ -5,10 +5,10 @@
 #' @param x cohort table in which to add follow up of individuals
 #' @param cdm cdm with the person and observation_period tables to get the info
 #' for the individuals in the cohort
-#' @param demographicsAt name of the column with the date at which consider
+#' @param indexDate name of the column with the date at which consider
 #' demographic information
 #' @param age  TRUE or FALSE. If TRUE, age will be calculated relative to
-#' demographicsAt
+#' indexDate
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing
 #' month of birth. By default: 1.
 #' @param ageDefaultDay day of the month assigned to individuals with missing day
@@ -20,7 +20,7 @@
 #' @param ageGroup if not NULL, a list of ageGroup vectors
 #' @param sex TRUE or FALSE. If TRUE, sex will be identified
 #' @param priorHistory TRUE or FALSE. If TRUE, days of prior history will
-#' be calculated relative to demographicsAt
+#' be calculated relative to indexDate
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -39,7 +39,7 @@
 #'
 addDemographics <- function(x,
                         cdm,
-                        demographicsAt = "cohort_start_date",
+                        indexDate = "cohort_start_date",
                         age = TRUE,
                         ageDefaultMonth = 1,
                         ageDefaultDay = 1,
@@ -68,13 +68,13 @@ addDemographics <- function(x,
   checkmate::reportAssertions(collection = errorMessage)
 
   errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(demographicsAt, len = 1,
+  checkmate::assertCharacter(indexDate, len = 1,
                              add = errorMessage,
   )
-  column1Check <- demographicsAt %in% colnames(x)
+  column1Check <- indexDate %in% colnames(x)
   if (!isTRUE(column1Check)) {
     errorMessage$push(
-      "- `demographicsAt` is not a column of x"
+      "- `indexDate` is not a column of x"
     )
   }
   # check for ageGroup, change it to a list if it is a vector of length 2,
@@ -136,7 +136,7 @@ addDemographics <- function(x,
   if(isTRUE(age)){
     x <- x %>%
       addAge(cdm = cdm,
-             ageAt = demographicsAt,
+             indexDate = indexDate,
              defaultMonth = ageDefaultMonth,
              defaultDay = ageDefaultDay,
              imposeMonth = ageImposeMonth,
@@ -157,7 +157,7 @@ addDemographics <- function(x,
 
   if(isTRUE(priorHistory)){
     x <- x %>%
-      addPriorHistory(cdm, priorHistoryAt = demographicsAt,
+      addPriorHistory(cdm, indexDate = indexDate,
                       tablePrefix = tablePrefix)
   }
 

@@ -12,7 +12,7 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addObservationPeriod(cdm$cohort1, "cdm"))
 
-  expect_error(addObservationPeriod(cdm$cohort1, cdm, observationAt = "end_date"))
+  expect_error(addObservationPeriod(cdm$cohort1, cdm, indexDate = "end_date"))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
@@ -35,9 +35,9 @@ test_that("check condition_occurrence and cohort1 work", {
   expect_true("observation_period_start_date" %in% colnames(cdm$cohort1 %>% addObservationPeriod(cdm)))
   expect_true("observation_period_end_date" %in% colnames(cdm$cohort1 %>% addObservationPeriod(cdm)))
   #check it works with condition_occurrence table in mockdb
-  expect_true(typeof(cdm$condition_occurrence %>% addObservationPeriod(cdm,observationAt = "condition_start_date") %>% dplyr::collect()) == "list")
-  expect_true("observation_period_start_date" %in% colnames(cdm$condition_occurrence %>% addObservationPeriod(cdm,observationAt = "condition_start_date")))
-  expect_true("observation_period_end_date" %in% colnames(cdm$condition_occurrence %>% addObservationPeriod(cdm,observationAt = "condition_start_date")))
+  expect_true(typeof(cdm$condition_occurrence %>% addObservationPeriod(cdm,indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
+  expect_true("observation_period_start_date" %in% colnames(cdm$condition_occurrence %>% addObservationPeriod(cdm,indexDate = "condition_start_date")))
+  expect_true("observation_period_end_date" %in% colnames(cdm$condition_occurrence %>% addObservationPeriod(cdm,indexDate = "condition_start_date")))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
@@ -143,7 +143,7 @@ test_that("check working example with condition_occurence", {
         )
 
       result <-
-        cdm$condition_occurrence %>% addObservationPeriod(cdm, observationAt = "condition_start_date") %>% dplyr::collect()
+        cdm$condition_occurrence %>% addObservationPeriod(cdm, indexDate = "condition_start_date") %>% dplyr::collect()
 
 
       expect_true(all(colnames(condition_occurrence) %in% colnames(result)))
