@@ -75,7 +75,7 @@ addAge <- function(x,
     checkmate::assertTRUE(ageAt %in% colnames(x), add = errorMessage)
 
   if (!isTRUE(ageAtExists)) {
-    errorMessage$push("- ageAt not found in table")
+    errorMessage$push(glue::glue('- ageAt "{ageAt}" not found in table'))
   }
 
   columnCheck <- ("subject_id" %in% colnames(x) || "person_id" %in% colnames(x))
