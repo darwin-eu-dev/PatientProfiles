@@ -33,7 +33,7 @@ checkWindow <- function(window) {
   # change inf to NA to check for floats, as Inf won't pass integerish check
   window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
 
-  checkmate::assertList(window, len = 1, types = "integerish")
+  checkmate::assertList(window, types = "integerish")
 
   # change NA back to Inf
   window <- lapply(window, function(x) replace(x, is.na(x), Inf))
