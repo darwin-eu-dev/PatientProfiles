@@ -19,7 +19,7 @@ checkName <- function(name, parameters) {
     stop(paste0("variables: ", paste0(x, collapse = ", "), " not included in name."))
   }
   elements <- elements[!(elements %in% names(parameters))]
-  if (length(elemenets) >0 ) {
+  if (length(elemenets) > 0) {
     stop(paste0(
       "variables: ",
       paste0(elements, collapse = ", "),
@@ -39,7 +39,7 @@ repairName <- function(name, parameters, colnamesTable) {
     dplyr::select("generated_name", "corrected_name")
   k <- 1
   id <- which(nameEquivalence$generated_name %in% colnamesTable)
-  while(length(id) > 0) {
+  while (length(id) > 0) {
     nameEquivalence$corrected_name[id] <-
       paste0(nameEquivalence$generated_name[id], "_", k)
     id <- which(nameEquivalence$corrected_name %in% colnamesTable)

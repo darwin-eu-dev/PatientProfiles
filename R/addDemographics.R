@@ -38,17 +38,17 @@
 #' }
 #'
 addDemographics <- function(x,
-                        cdm,
-                        indexDate = "cohort_start_date",
-                        age = TRUE,
-                        ageDefaultMonth = 1,
-                        ageDefaultDay = 1,
-                        ageImposeMonth = TRUE,
-                        ageImposeDay = TRUE,
-                        ageGroup = NULL,
-                        sex = TRUE,
-                        priorHistory = TRUE,
-                        tablePrefix = NULL) {
+                            cdm,
+                            indexDate = "cohort_start_date",
+                            age = TRUE,
+                            ageDefaultMonth = 1,
+                            ageDefaultDay = 1,
+                            ageImposeMonth = TRUE,
+                            ageImposeDay = TRUE,
+                            ageGroup = NULL,
+                            sex = TRUE,
+                            priorHistory = TRUE,
+                            tablePrefix = NULL) {
 
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
@@ -68,8 +68,9 @@ addDemographics <- function(x,
   checkmate::reportAssertions(collection = errorMessage)
 
   errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(indexDate, len = 1,
-                             add = errorMessage,
+  checkmate::assertCharacter(indexDate,
+    len = 1,
+    add = errorMessage,
   )
   column1Check <- indexDate %in% colnames(x)
   if (!isTRUE(column1Check)) {
@@ -89,13 +90,13 @@ addDemographics <- function(x,
   }
   # after changing vector to list, we check it is a list with numeric
   checkmate::assertList(ageGroup,
-                        types = "integerish", null.ok = TRUE,
-                        add = errorMessage
+    types = "integerish", null.ok = TRUE,
+    add = errorMessage
   )
   # each vector in the list has to have length 2, push error if not
   if (!is.null(ageGroup)) {
     lengthsAgeGroup <- checkmate::assertTRUE(unique(lengths(ageGroup)) == 2,
-                                             add = errorMessage
+      add = errorMessage
     )
     if (!isTRUE(lengthsAgeGroup)) {
       errorMessage$push("- ageGroup needs to be a numeric vector of length two,
@@ -109,7 +110,7 @@ addDemographics <- function(x,
       x[1] <= x[2]
     }))
     checkmate::assertTRUE(all(checkAgeGroup, na.rm = TRUE),
-                          add = errorMessage
+      add = errorMessage
     )
     # check ageGroup overlap
     list1 <- lapply(dplyr::lag(ageGroup), function(x) {
@@ -127,40 +128,39 @@ addDemographics <- function(x,
     }
   }
   checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+    tablePrefix,
+    len = 1, null.ok = TRUE, add = errorMessage
   )
   checkmate::reportAssertions(collection = errorMessage)
 
   # Start code
 
-  if(isTRUE(age)){
+  if (isTRUE(age)) {
     x <- x %>%
-      addAge(cdm = cdm,
-             indexDate = indexDate,
-             defaultMonth = ageDefaultMonth,
-             defaultDay = ageDefaultDay,
-             imposeMonth = ageImposeMonth,
-             imposeDay = ageImposeDay,
-             tablePrefix = tablePrefix
-             )
-  }
-  if (!is.null(ageGroup)) {
-    x <- x %>%
-      addAgeGroup(cdm, ageGroup = ageGroup,
-                  tablePrefix = tablePrefix)
+      addAge(
+        cdm = cdm,
+        indexDate = indexDate,
+        ageGroup = ageGroup,
+        ageDefaultMonth = ageDefaultMonth,
+        ageDefaultDay = ageDefaultDay,
+        ageImposeMonth = ageImposeMonth,
+        ageImposeDay = ageImposeDay,
+        tablePrefix = tablePrefix
+      )
   }
 
-  if(isTRUE(sex)){
+  if (isTRUE(sex)) {
     x <- x %>%
       addSex(cdm)
   }
 
-  if(isTRUE(priorHistory)){
+  if (isTRUE(priorHistory)) {
     x <- x %>%
-      addPriorHistory(cdm, indexDate = indexDate,
-                      tablePrefix = tablePrefix)
+      addPriorHistory(cdm,
+        indexDate = indexDate,
+        tablePrefix = tablePrefix
+      )
   }
 
   return(x)
-
 }
