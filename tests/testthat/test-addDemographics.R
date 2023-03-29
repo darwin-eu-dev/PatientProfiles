@@ -3,8 +3,8 @@ test_that("addDemographics, input length and type", {
 
   expect_error(addDemographics(2,cdm))
   expect_error(addDemographics(cdm$cohort1, cdm$concept_ancestor))
-  expect_error(addDemographics(cdm$cohort1,cdm,demographicsAt = "condition_start_date"))
-  expect_error(addDemographics(cdm$cohort1,cdm,demographicsAt = c("cohort_start_date","cohort_end_date")))
+  expect_error(addDemographics(cdm$cohort1,cdm,indexDate = "condition_start_date"))
+  expect_error(addDemographics(cdm$cohort1,cdm,indexDate = c("cohort_start_date","cohort_end_date")))
   expect_error(addDemographics(cdm$cohort1,cdm,ageGroup = 10))
   expect_error(addDemographics(cdm$cohort1,cdm,tablePrefix = 1))
 
@@ -15,7 +15,7 @@ test_that("addDemographics, cohort and condition_occurrence", {
   cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
 
   cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm)
-  cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(cdm,demographicsAt = "condition_start_date")
+  cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(cdm,indexDate = "condition_start_date")
 
   expect_true(all(c("age","sex","prior_history") %in% colnames(cdm$cohort1)))
   s <- cdm$cohort1 %>%
@@ -79,7 +79,7 @@ test_that("addDemographics, cohort and condition_occurrence", {
 
 test_that("addDemographics, parameters", {
   cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
-  cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm,demographicsAt = "cohort_end_date",ageGroup = list(c(0,40),c(41,120)))
+  cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm,indexDate = "cohort_end_date",ageGroup = list(c(0,40),c(41,120)))
 
   expect_true(all(c("age","sex","prior_history","ageGroupNames") %in% colnames(cdm$cohort1)))
   s <- cdm$cohort1 %>%
@@ -124,7 +124,7 @@ test_that("partial demographics", {
   # only age
   cdm$cohort1a <- cdm$cohort1 %>%
     addDemographics(cdm,
-                    demographicsAt = "cohort_end_date",
+                    indexDate = "cohort_end_date",
                     age = TRUE,
                     ageGroup = NULL,
                     sex = FALSE,
@@ -137,7 +137,7 @@ test_that("partial demographics", {
   # only sex
   cdm$cohort1b <- cdm$cohort1 %>%
     addDemographics(cdm,
-                    demographicsAt = "cohort_end_date",
+                    indexDate = "cohort_end_date",
                     age = FALSE,
                     ageGroup = NULL,
                     sex = TRUE,
@@ -149,7 +149,7 @@ test_that("partial demographics", {
   # only prior history
   cdm$cohort1c <- cdm$cohort1 %>%
     addDemographics(cdm,
-                    demographicsAt = "cohort_end_date",
+                    indexDate = "cohort_end_date",
                     age = FALSE,
                     ageGroup = NULL,
                     sex = FALSE,
@@ -161,7 +161,7 @@ test_that("partial demographics", {
   # all
   cdm$cohort1d <- cdm$cohort1 %>%
     addDemographics(cdm,
-                    demographicsAt = "cohort_end_date",
+                    indexDate = "cohort_end_date",
                     age = TRUE,
                     ageGroup = list(c(0,100)),
                     sex = TRUE,

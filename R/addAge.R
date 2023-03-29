@@ -5,8 +5,8 @@
 #' @param x Tibble with the individuals that we want to add the age. Need to be in cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param ageAt Variable that points the date to compute the age. By default:
-#' 'cohort_start_date'
+#' @param indexDate Variable that points the date to compute the age. By
+#' default: 'cohort_start_date'
 #' @param defaultMonth Month of the year assigned to individuals with missing
 #' month of birth. By default: 1.
 #' @param defaultDay day of the month assigned to individuals with missing day
@@ -50,7 +50,7 @@
 #' }
 addAge <- function(x,
                    cdm,
-                   ageAt = "cohort_start_date",
+                   indexDate = "cohort_start_date",
                    defaultMonth = 1,
                    defaultDay = 1,
                    imposeMonth = TRUE,
@@ -68,14 +68,14 @@ addAge <- function(x,
   # check cdm exist
   checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
 
-  # check if ageAt length = 1 and is in table x
-  checkmate::assertCharacter(ageAt, len = 1, add = errorMessage)
+  # check if indexDate length = 1 and is in table x
+  checkmate::assertCharacter(indexDate, len = 1, add = errorMessage)
 
-  ageAtExists <-
-    checkmate::assertTRUE(ageAt %in% colnames(x), add = errorMessage)
+  indexDateExists <-
+    checkmate::assertTRUE(indexDate %in% colnames(x), add = errorMessage)
 
-  if (!isTRUE(ageAtExists)) {
-    errorMessage$push(glue::glue('- ageAt "{ageAt}" not found in table'))
+  if (!isTRUE(indexDateExists)) {
+    errorMessage$push(glue::glue('- indexDate "{indexDate}" not found in table'))
   }
 
   columnCheck <- ("subject_id" %in% colnames(x) || "person_id" %in% colnames(x))
@@ -125,7 +125,7 @@ addAge <- function(x,
   person <- cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
     dplyr::inner_join(x %>%
-                        dplyr::select("subject_id", dplyr::all_of(ageAt)) %>%
+                        dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
                         dplyr::distinct(),
                       by = "subject_id")
 
@@ -171,11 +171,11 @@ addAge <- function(x,
       sqlGetAge(
         dialect = CDMConnector::dbms(cdm),
         dob = "birth_date",
-        dateOfInterest = ageAt
+        dateOfInterest = indexDate
       )
     ))) %>%
-    dplyr::select("subject_id", dplyr::all_of(ageAt), "age") %>%
-    dplyr::right_join(x, by = c("subject_id", ageAt)) %>%
+    dplyr::select("subject_id", dplyr::all_of(indexDate), "age") %>%
+    dplyr::right_join(x, by = c("subject_id", indexDate)) %>%
     dplyr::select(dplyr::all_of(colnames(x)), "age")
   if(is.null(tablePrefix)){
     person <- person %>%
