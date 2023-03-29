@@ -39,7 +39,7 @@ checkName <- function(name, parameters) {
 }
 
 #' @noRd
-tidyName <- function(name, parameters, colnamesTable) {
+repairName <- function(name, parameters, colnamesTable) {
   nameEquivalence <- expand.grid(parameters) %>%
     dplyr::as_tibble() %>%
     dplyr::distinct() %>%
