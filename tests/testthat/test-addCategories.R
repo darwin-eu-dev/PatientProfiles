@@ -1,37 +1,35 @@
 test_that("check input length and type for each of the arguments", {
   cdm <-
-    mockPatientProfiles(seed = 1,
-                       patient_size = 5)
+    mockPatientProfiles(
+      seed = 1,
+      patient_size = 5
+    )
 
-  expect_error(addAgeGroup("cdm$cohort1", cdm = cdm))
+  expect_error(addCategories("cdm$cohort1"))
 
-  expect_error(addAgeGroup(cdm$cohort1, "cdm"))
-
-  expect_error(addAgeGroup(cdm$cohort1, cdm,ageGroupNames = 1 ))
-
-  expect_error(addAgeGroup(cdm$cohort1, cdm,ageGroup = 1 ))
-
+  expect_error(addCategories(cdm$cohort1, "cdm"))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
-
 })
 
 test_that("check condition_occurrence and cohort1 work", {
-
-
   cdm <-
-    mockPatientProfiles(seed = 1,
-                       patient_size = 3)
+    mockPatientProfiles(
+      seed = 1,
+      patient_size = 3
+    )
 
-  expect_true(typeof(cdm$cohort1 %>% addAgeGroup(cdm = cdm) %>% dplyr::collect()) == "list")
-  expect_true("ageGroupNames" %in% colnames(cdm$cohort1 %>% addAgeGroup(cdm = cdm)))
+  cdm$cohort1 <- cdm$cohort1 %>% addAge(cdm)
+  cdm$condition_occurrence <- cdm$condition_occurrence %>% addAge(cdm, indexDate = "condition_start_date")
+  categories <- list("age_group" = list(c(0,20)))
 
-  expect_true(typeof(cdm$condition_occurrence %>% addAgeGroup(cdm = cdm) %>% dplyr::collect()) == "list")
-  expect_true("ageGroupNames" %in% colnames(cdm$condition_occurrence %>% addAgeGroup(cdm = cdm)))
+  expect_true(typeof(cdm$cohort1 %>% addCategories("age", categories) %>% dplyr::collect()) == "list")
+  expect_true("age_group" %in% colnames(cdm$cohort1 %>% addCategories("age", categories)))
+
+  expect_true(typeof(cdm$condition_occurrence %>% addCategories("age", categories) %>% dplyr::collect()) == "list")
+  expect_true("age_group" %in% colnames(cdm$condition_occurrence %>% addCategories("age", categories)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
 })
 
 
@@ -57,7 +55,7 @@ test_that("NULL age group name, but given age groups, age not in table", {
 
   cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
-  result1 <- addAgeGroup(
+  result1 <- addCategories(
     x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)), cdm = cdm
   ) %>%
     dplyr::collect() %>%
@@ -66,7 +64,7 @@ test_that("NULL age group name, but given age groups, age not in table", {
   expect_true(all(result1$ageGroupNames == c("1;20", "21;30", "31;40")))
 
   # change the order of ageGroup provided, result should be the same
-  result2 <- addAgeGroup(
+  result2 <- addCategories(
     x = cdm$cohort1, ageGroup = list(c(21, 30), c(1, 20), c(31, 40)), cdm = cdm
   ) %>%
     dplyr::collect() %>%
@@ -74,8 +72,8 @@ test_that("NULL age group name, but given age groups, age not in table", {
 
   expect_true(identical(result1, result2))
 
-  #if provided ageGroupNames as follow, should be the same as result2
-  result3 <- addAgeGroup(
+  # if provided ageGroupNames as follow, should be the same as result2
+  result3 <- addCategories(
     x = cdm$cohort1, ageGroup = list(c(1, 20), c(21, 30), c(31, 40)),
     ageGroupNames = c("1;20", "21;30", "31;40"), cdm = cdm
   ) %>%
@@ -85,13 +83,13 @@ test_that("NULL age group name, but given age groups, age not in table", {
   expect_true(identical(result3, result2))
 
   # allow vector of length 2 as ageGroup, same output as if input as list
-  result1 <- addAgeGroup(
+  result1 <- addCategories(
     x = cdm$cohort1, ageGroup = c(1, 20), cdm = cdm
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
 
-  result2 <- addAgeGroup(
+  result2 <- addCategories(
     x = cdm$cohort1, ageGroup = list(c(1, 20)), cdm = cdm
   ) %>%
     dplyr::collect() %>%
@@ -126,7 +124,7 @@ test_that("when NULL ageGRoup provided, ageGroupNames is 0;150 if not provided,
   cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   # if NULL ageGroup, 1 ageGroupNames provided, use it in ageGroupNames column in output
-  result <- addAgeGroup(
+  result <- addCategories(
     x = cdm$cohort1,
     ageGroupNames = c("1"), cdm = cdm
   ) %>% dplyr::collect()
@@ -136,7 +134,7 @@ test_that("when NULL ageGRoup provided, ageGroupNames is 0;150 if not provided,
 
   # if NULL for both ageGroup and ageGroupNames, use 0;150 for ageGroup and ageGroupNames
 
-  result <- addAgeGroup(
+  result <- addCategories(
     x = cdm$cohort1, cdm = cdm
   ) %>% dplyr::collect()
 
@@ -144,7 +142,7 @@ test_that("when NULL ageGRoup provided, ageGroupNames is 0;150 if not provided,
 
 
   # if NULL ageGroup, but more than 1 ageGroupNames provided, report error
-  expect_error(addAgeGroup(
+  expect_error(addCategories(
     x = cdm$cohort1, cdm = cdm,
     ageGroupNames = c("1", "2")
   ))
@@ -177,7 +175,7 @@ test_that("throw errors", {
   cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
   # error if overlapping ageGroyp
-  expect_error(addAgeGroup(
+  expect_error(addCategories(
     x = cdm$cohort1,
     ageGroup = list(c(1, 22), c(19, 30), c(31, 40)),
     ageGroupNames = c("1"), cdm = cdm
@@ -185,33 +183,33 @@ test_that("throw errors", {
 
   # error if length of ageGroup provided is different from
   # length of ageGroupNames provided
-  expect_error(addAgeGroup(
+  expect_error(addCategories(
     x = cdm$cohort1,
     ageGroup = list(c(1, 20), c(21, 30), c(31, 40)),
     ageGroupNames = c("1"), cdm = cdm
   ))
 
-  expect_error(addAgeGroup(
+  expect_error(addCategories(
     x = cdm$cohort1,
     ageGroup = list(c(1, 20)),
     ageGroupNames = c("1", "2"), cdm = cdm
   ))
 
   # throw error if length of vector in agegroup is not 2
-  expect_error(addAgeGroup(
+  expect_error(addCategories(
     x = cdm$cohort1,
     ageGroup = list(c(1, 20, 30)),
     cdm = cdm
   ))
 
-  expect_error(addAgeGroup(
+  expect_error(addCategories(
     x = cdm$cohort1,
     ageGroup = list(c(1, 2), c(1, 20, 30)),
     cdm = cdm
   ))
 
   # if x does not have "age" column, it has to be in cdm
-  expect_error(addAgeGroup(
+  expect_error(addCategories(
     x = cohort1,
     ageGroup = list(c(1, 2), c(3, 20)),
     cdm = cdm
@@ -221,7 +219,7 @@ test_that("throw errors", {
   # but if age in x columns, does not need to be in cdm, should not have error
   cohort1$age <- c(1, 2, 3)
   # throw error if when age is in x columns, function still throw error
-  expect_error((addAgeGroup(
+  expect_error((addCategories(
     x = cohort1,
     ageGroup = list(c(1, 2), c(3, 20)),
     cdm = cdm
