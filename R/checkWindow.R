@@ -14,7 +14,15 @@ checkWindow <- function(window) {
     window <- list(c(window, window))
     warning("Only 1 window value provided, use as both window start and window end")
   }
-
+  
+  if (length(window) > 1 && any(lengths(window) == 1)) {
+    window[lengths(window)==1]<- lapply(window[lengths(window)==1],
+                                        function(x) c(unlist(x[lengths(x)==1]),unlist(x[lengths(x)==1])))
+    warning("Window list contains element with only 1 value provided, 
+            use it as both window start and window end")
+  }
+  
+  
   if (is.vector(window) & !is.list(window)) {
     window <- list(window)
   }
@@ -24,11 +32,6 @@ checkWindow <- function(window) {
     warning("NA found in window, changed to Inf")
   }
 
-  # if input in a format of list(x,y), throw warning and change to list(c(x,y))
-  if (length(window) == 2 && all(lengths(window)==1)) {
-    window <- list(c(window[[1]], window[[2]]))
-    warning("Change input format from list(windowStart,windowEnd) to list(c(windowStart,windowEnd))")
-  }
 
   # change inf to NA to check for floats, as Inf won't pass integerish check
   window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
