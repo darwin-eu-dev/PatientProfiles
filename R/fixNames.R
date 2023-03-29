@@ -21,18 +21,18 @@ computeName <- function(parameters) {
 checkName <- function(name, parameters) {
   checkmate::assertCharacter(name, len = 1, min.chars = 1, any.missing = FALSE)
   x <- varyingParameters(parameters)
-  elements <- str_match_all(name, "\\{([^\\{\\}]+)\\}")
+  elements <- stringr::str_match_all(name, "\\{([^\\{\\}]+)\\}")
   elements <- elements[[1]][, 2]
   x <- x[!(x %in% elements)]
   if (length(x) > 0) {
     stop(paste0("variables: ", paste0(x, collapse = ", "), " not included in name."))
   }
   elements <- elements[!(elements %in% names(parameters))]
-  if (length(elemenets) >0 ) {
+  if (length(elements) >0 ) {
     stop(paste0(
       "variables: ",
       paste0(elements, collapse = ", "),
-      " contained in name and not included in iput parameters."
+      " contained in name and not included in input parameters."
     ))
   }
   invisible(NULL)
@@ -56,3 +56,15 @@ tidyName <- function(name, parameters, colnamesTable) {
   }
   return(nameEquivalence)
 }
+
+#' @noRd
+getWindowNames <- function(window) {
+  getname <- function(element) {
+    element <- as.character(element)
+    element <- gsub("-", "m", element)
+    return(paste0(element[1],"_to_",element[2]))
+  }
+  windowNames <- lapply(window, getname)
+  return(windowNames)
+}
+

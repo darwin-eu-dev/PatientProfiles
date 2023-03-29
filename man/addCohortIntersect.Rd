@@ -9,36 +9,45 @@ addCohortIntersect(
   cdm,
   cohortTableName,
   cohortId = NULL,
-  value = c("number", "binary", "date", "time"),
-  window = c(0, NA),
+  value = NULL,
+  window = list(c(0, Inf)),
+  indexDate = "cohort_start_date",
+  targetStartDate = "cohort_start_date",
+  targetEndDate = "cohort_end_date",
   order = "first",
-  cohortName = NA,
-  name = "{value}_{tableName}_{window}_{order}",
+  nameStyle = "{cohortName}_{window}",
   tablePrefix = NULL
 )
 }
 \arguments{
-\item{x}{table containing the individual for which the overlap indicator to be attached as extra columns}
+\item{x}{table containing the individual for which the overlap indicator to
+be attached as extra columns}
 
 \item{cdm}{cdm containing the tables}
 
 \item{cohortTableName}{name of the cohort that we want to check for overlap}
 
-\item{cohortId}{cohort definition Id to include it can be a list if multiple}
+\item{cohortId}{vector of cohort definition ids to include}
 
-\item{value}{value of interest to added it can be number,binary,date or time}
+\item{value}{value of interest to add: it can be number, binary, date or time}
 
-\item{window}{window to consider events of, from date of reference in table x
-to date of event at event table}
+\item{window}{window to consider events of}
 
-\item{order}{last or first date to use for date calculation}
+\item{indexDate}{date of reference in table x}
 
-\item{cohortName}{name to give cohortId}
+\item{targetStartDate}{date of reference in cohort table, either for start
+(in overlap) or on its own (for incidence)}
 
-\item{name}{naming of the added column}
+\item{order}{last or first date to use for date/time calculations}
+
+\item{nameStyle}{naming of the added column or columns, should include
+required parameters}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
+
+\item{targetEndDare}{date of reference in cohort table, either for end
+(overlap) or NULL (if incidence)}
 }
 \value{
 table with added columns with overlap information
