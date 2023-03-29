@@ -73,7 +73,7 @@ addAgeGroup <- function(x,
       x <- addAge(x, cdm)
      } else {
 
-      x <- addAge(x, cdm, ageAt = "condition_start_date")
+      x <- addAge(x, cdm, indexDate = "condition_start_date")
      }
   }
 

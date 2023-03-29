@@ -8,7 +8,7 @@ certain date}
 addAge(
   x,
   cdm,
-  ageAt = "cohort_start_date",
+  indexDate = "cohort_start_date",
   defaultMonth = 1,
   defaultDay = 1,
   imposeMonth = TRUE,
@@ -22,8 +22,8 @@ addAge(
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
 
-\item{ageAt}{Variable that points the date to compute the age. By default:
-'cohort_start_date'}
+\item{indexDate}{Variable that points the date to compute the age. By
+default: 'cohort_start_date'}
 
 \item{defaultMonth}{Month of the year assigned to individuals with missing
 month of birth. By default: 1.}

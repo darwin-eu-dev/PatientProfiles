@@ -9,15 +9,6 @@ varyingParameters <- function(parameters) {
 }
 
 #' @noRd
-computeName <- function(parameters) {
-  x <- varyingParameters(parameters)
-  if (length(x) > 0) {
-    x <- paste0("{", paste0(x, collapse = "}_{"), "}")
-  }
-  return(x)
-}
-
-#' @noRd
 checkName <- function(name, parameters) {
   checkmate::assertCharacter(name, len = 1, min.chars = 1, any.missing = FALSE)
   x <- varyingParameters(parameters)

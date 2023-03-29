@@ -80,7 +80,7 @@ cdm$condition_occurrence %>%
   glimpse()
 #> Rows: ??
 #> Columns: 5
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ condition_occurrence_id <int> 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…
 #> $ person_id               <int> 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…
 #> $ condition_concept_id    <int> 4, 5, 1, 2, 3, 4, 3, 2, 1, 2, 1, 5, 3, 4, 4, 1…
@@ -88,14 +88,14 @@ cdm$condition_occurrence %>%
 #> $ condition_end_date      <date> 2006-06-14, 2007-06-05, 2011-06-24, 2009-01-0…
 
 cdm$condition_occurrence <- cdm$condition_occurrence  %>% 
-  addAge(cdm = cdm, ageAt = "condition_start_date")  %>% 
+  addAge(cdm = cdm, indexDate = "condition_start_date")  %>% 
   addSex(cdm)
 
 cdm$condition_occurrence %>% 
   glimpse()
 #> Rows: ??
 #> Columns: 7
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ condition_occurrence_id <int> 314, 234, 277, 26, 656, 275, 150, 822, 239, 26…
 #> $ subject_id              <int> 314, 234, 277, 26, 656, 275, 150, 822, 239, 26…
 #> $ condition_concept_id    <int> 4, 2, 2, 1, 3, 4, 4, 2, 2, 2, 3, 1, 1, 1, 4, 4…
@@ -113,7 +113,7 @@ cdm$condition_occurrence  %>%
   filter(age >= 18 & age <= 65) %>%
   filter(sex == "Male")
 #> # Source:   SQL [?? x 7]
-#> # Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> # Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #>    condition_occurrence_id subject_id condit…¹ conditio…² conditio…³   age sex  
 #>                      <int>      <int>    <int> <date>     <date>     <dbl> <chr>
 #>  1                     314        314        4 2005-08-25 2006-06-14    58 Male 
@@ -140,7 +140,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -152,7 +152,7 @@ like so
 
 ``` r
 cdm$cohort1 <- cdm$cohort1 %>% 
-  addAge(cdm = cdm, ageAt = "cohort_start_date") %>% 
+  addAge(cdm = cdm, indexDate = "cohort_start_date") %>% 
   addAgeGroup(cdm = cdm, ageGroup = list(c(0, 18), 
                                          c(19, 65),
                                          c(66, 100))) %>% 
@@ -163,7 +163,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 8
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 2, 1, 1, 1
 #> $ subject_id           <dbl> 3, 1, 2, 1
 #> $ cohort_start_date    <date> 2020-01-01, 2020-01-01, 2020-01-02, 2020-06-01
@@ -182,7 +182,7 @@ cohort start date like so
 cdm$cohort1  %>%
   filter(prior_history >= 365)
 #> # Source:   SQL [4 x 8]
-#> # Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> # Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #>   cohort_definition_id subje…¹ cohort_s…² cohort_e…³   age ageGr…⁴ sex   prior…⁵
 #>                  <dbl>   <dbl> <date>     <date>     <dbl> <chr>   <chr>   <dbl>
 #> 1                    2       3 2020-01-01 2020-03-01    43 19;65   Fema…    4635
@@ -208,7 +208,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -225,11 +225,11 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 5
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id           <dbl> 1, 2, 1, 1
-#> $ subject_id                     <dbl> 1, 3, 1, 2
-#> $ cohort_start_date              <date> 2020-06-01, 2020-01-01, 2020-01-01, 202…
-#> $ cohort_end_date                <date> 2020-08-01, 2020-03-01, 2020-04-01, 202…
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> $ cohort_definition_id           <dbl> 2, 1, 1, 1
+#> $ subject_id                     <dbl> 3, 1, 1, 2
+#> $ cohort_start_date              <date> 2020-01-01, 2020-01-01, 2020-06-01, 202…
+#> $ cohort_end_date                <date> 2020-03-01, 2020-04-01, 2020-08-01, 202…
 #> $ `binary_drug_exposure_(NA,-1)` <dbl> 1, 1, 1, 0
 ```
 
@@ -244,7 +244,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -253,7 +253,7 @@ cdm$cohort2 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 2, 3, 1
 #> $ subject_id           <dbl> 1, 3, 1, 2, 1
 #> $ cohort_start_date    <date> 2019-12-30, 2020-01-01, 2020-05-25, 2020-01-01, 2…
@@ -278,7 +278,7 @@ cdm$cohort2 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.6.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 2, 3, 1
 #> $ subject_id           <dbl> 1, 3, 1, 2, 1
 #> $ cohort_start_date    <date> 2019-12-30, 2020-01-01, 2020-05-25, 2020-01-01, 2…
