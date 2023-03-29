@@ -58,7 +58,7 @@ PriorHistory, and ageGroup if desired</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addDemographics</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">cdm</span>,</span>
-<span>  demographicsAt <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
+<span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>  age <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ageDefaultMonth <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ageDefaultDay <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -82,14 +82,14 @@ PriorHistory, and ageGroup if desired</p>
 for the individuals in the cohort</p></dd>
 
 
-<dt>demographicsAt</dt>
+<dt>indexDate</dt>
 <dd><p>name of the column with the date at which consider
 demographic information</p></dd>
 
 
 <dt>age</dt>
 <dd><p>TRUE or FALSE. If TRUE, age will be calculated relative to
-demographicsAt</p></dd>
+indexDate</p></dd>
 
 
 <dt>ageDefaultMonth</dt>
@@ -122,7 +122,7 @@ missing for all the individuals. By default: TRUE.</p></dd>
 
 <dt>priorHistory</dt>
 <dd><p>TRUE or FALSE. If TRUE, days of prior history will
-be calculated relative to demographicsAt</p></dd>
+be calculated relative to indexDate</p></dd>
 
 
 <dt>tablePrefix</dt>
