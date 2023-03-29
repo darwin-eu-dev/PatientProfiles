@@ -10,11 +10,12 @@
 #'
 checkWindow <- function(window) {
   # if input in a single value, use it as both window start and end
-  if (length(window) == 1 && lengths(window) == 1) {
-    window <- list(c(window, window))
+  if (length(window) == 1 && lengths(window) == 1 |length(unique(unlist(window))) == 1) {
+    window <- list(c(unique(unlist(window)), unique(unlist(window))))
     warning("Only 1 window value provided, use as both window start and window end")
   }
   
+  #
   if (length(window) > 1 && any(lengths(window) == 1)) {
     window[lengths(window)==1]<- lapply(window[lengths(window)==1],
                                         function(x) c(unlist(x[lengths(x)==1]),unlist(x[lengths(x)==1])))
