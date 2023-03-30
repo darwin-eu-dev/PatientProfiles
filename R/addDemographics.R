@@ -68,9 +68,8 @@ addDemographics <- function(x,
   checkmate::reportAssertions(collection = errorMessage)
 
   errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(indexDate,
-    len = 1,
-    add = errorMessage,
+  checkmate::assertCharacter(indexDate, len = 1,
+                             add = errorMessage,
   )
   column1Check <- indexDate %in% colnames(x)
   if (!isTRUE(column1Check)) {
@@ -78,89 +77,182 @@ addDemographics <- function(x,
       "- `indexDate` is not a column of x"
     )
   }
-  # check for ageGroup, change it to a list if it is a vector of length 2,
-  # push error if other length
-  if (isTRUE(checkmate::checkIntegerish(ageGroup))) {
-    if (length(ageGroup) == 2) {
-      ageGroup <- list(ageGroup)
-    } else {
-      errorMessage$push("- ageGroup needs to be a numeric vector of length two,
-                        or a list contains multiple length two vectors")
-    }
-  }
-  # after changing vector to list, we check it is a list with numeric
-  checkmate::assertList(ageGroup,
-    types = "integerish", null.ok = TRUE,
-    add = errorMessage
-  )
-  # each vector in the list has to have length 2, push error if not
+  checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
   if (!is.null(ageGroup)) {
-    lengthsAgeGroup <- checkmate::assertTRUE(unique(lengths(ageGroup)) == 2,
-      add = errorMessage
-    )
-    if (!isTRUE(lengthsAgeGroup)) {
-      errorMessage$push("- ageGroup needs to be a numeric vector of length two,
-                        or a list contains multiple length two vectors")
+    if (is.numeric(ageGroup[[1]])) {
+      ageGroup <- list("age_group" = ageGroup)
     }
-    # first sort ageGroup by first value
-    ageGroup <- ageGroup[order(sapply(ageGroup, function(x) x[1], simplify = TRUE), decreasing = FALSE)]
-
-    # check lower bound is smaller than upper bound, allow NA in ageGroup at the moment
-    checkAgeGroup <- unlist(lapply(ageGroup, function(x) {
-      x[1] <= x[2]
-    }))
-    checkmate::assertTRUE(all(checkAgeGroup, na.rm = TRUE),
-      add = errorMessage
-    )
-    # check ageGroup overlap
-    list1 <- lapply(dplyr::lag(ageGroup), function(x) {
-      x[2]
-    })
-    list1 <- unlist(list1[lengths(list1) != 0])
-    list2 <- lapply(dplyr::lead(ageGroup), function(x) {
-      x[1]
-    })
-    list2 <- unlist(list2[lengths(list2) != 0])
-    # the first value of the interval needs to be larger than the second value of previous vector
-    checkOverlap <- checkmate::assertTRUE(all(list2 - list1 > 0), add = errorMessage)
-    if (!isTRUE(checkOverlap)) {
-      errorMessage$push("- ageGroup can not have overlapping intervals")
+    for (k in seq_along(ageGroup)) {
+      invisible(checkCategory(ageGroup[[k]]))
+    }
+    if (is.null(names(ageGroup))) {
+      names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
+    }
+    if ("" %in% names(ageGroup)) {
+      id <- which(names(ageGroup) == "")
+      names(ageGroup)[id] <- paste0("age_group_", id)
     }
   }
   checkmate::assertCharacter(
-    tablePrefix,
-    len = 1, null.ok = TRUE, add = errorMessage
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
   )
   checkmate::reportAssertions(collection = errorMessage)
 
   # Start code
 
-  if (isTRUE(age)) {
+  xType <- dplyr::if_else("person_id" %in% names(x),
+                          "cdm_table", "cohort")
+  startNames <- names(x)
+
+  if(xType == "cdm_table"){
     x <- x %>%
-      addAge(
-        cdm = cdm,
-        indexDate = indexDate,
-        ageGroup = ageGroup,
-        ageDefaultMonth = ageDefaultMonth,
-        ageDefaultDay = ageDefaultDay,
-        ageImposeMonth = ageImposeMonth,
-        ageImposeDay = ageImposeDay,
-        tablePrefix = tablePrefix
-      )
+      dplyr::rename("subject_id" = "person_id")
   }
 
-  if (isTRUE(sex)) {
-    x <- x %>%
-      addSex(cdm)
+  personDetails <- cdm[["person"]] %>%
+    dplyr::select("person_id",
+                  "gender_concept_id",
+                  "year_of_birth",
+                  "month_of_birth",
+                  "day_of_birth")
+  if(priorHistory == TRUE) {
+    # most recent observation period (in case there are multiple)
+    personDetails <- personDetails %>%
+      dplyr::left_join(x %>%
+                         dplyr::select("subject_id",
+                                       indexDate) %>%
+                         dplyr::rename("person_id" = "subject_id") %>%
+                         dplyr::inner_join(cdm[["observation_period"]]  %>%
+                                             dplyr::select("person_id",
+                                                           "observation_period_start_date"),
+                                           by = "person_id") %>%
+                         dplyr::filter(.data$observation_period_start_date <=
+                                         !!rlang::sym(indexDate)) %>%
+                         dplyr::group_by(dplyr::across(dplyr::all_of(c("person_id", indexDate)))) %>%
+                         dplyr::summarise(observation_period_start_date =
+                                            max(.data$observation_period_start_date, na.rm = TRUE)) %>%
+                         dplyr::select(!indexDate) %>%
+                         dplyr::distinct(),
+                       by = "person_id")
   }
 
-  if (isTRUE(priorHistory)) {
-    x <- x %>%
-      addPriorHistory(cdm,
-        indexDate = indexDate,
-        tablePrefix = tablePrefix
-      )
+  # update dates
+  if (ageImposeMonth == TRUE) {
+    personDetails <- personDetails %>%
+      dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
+  } else {
+    personDetails <- personDetails %>%
+      dplyr::mutate(month_of_birth = dplyr::if_else(
+        is.na(.data$month_of_birth),
+        .env$ageDefaultMonth,
+        .data$month_of_birth
+      ))
   }
+
+  if (ageImposeDay == TRUE) {
+    personDetails <- personDetails %>%
+      dplyr::mutate(day_of_birth = .env$ageDefaultDay)
+  } else {
+    personDetails <- personDetails %>%
+      dplyr::mutate(day_of_birth = dplyr::if_else(
+        is.na(.data$day_of_birth),
+        .env$ageDefaultDay,
+        .data$day_of_birth
+      ))
+  }
+
+  personDetails <- personDetails %>%
+    dplyr::mutate(year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
+                  month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
+                  day_of_birth1 = as.character(as.integer(.data$day_of_birth))) %>%
+    dplyr::mutate(birth_date = as.Date(
+      paste0(
+        .data$year_of_birth1,
+        "-",
+        .data$month_of_birth1,
+        "-",
+        .data$day_of_birth1
+      )
+    ))
+
+  x <- x  %>%
+    dplyr::left_join(personDetails %>%
+                       dplyr::rename("subject_id" = "person_id") %>%
+                       dplyr::select(dplyr::any_of(c("subject_id",
+                                                     "birth_date",
+                                                     "gender_concept_id",
+                                                     "observation_period_start_date"))),
+                     by = "subject_id")
+
+  if(age == TRUE) {
+    ageQuery <-glue::glue('floor(dbplyr::sql(
+    sqlGetAge(
+      dialect = CDMConnector::dbms(cdm),
+      dob = "birth_date",
+      dateOfInterest = "{indexDate}"
+    )
+  ))') %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(glue::glue("age"))
+  } else {
+    ageQuery <- NULL
+  }
+
+  if(sex == TRUE) {
+    sexQuery <- glue::glue('dplyr::case_when(
+      .data$gender_concept_id == 8507 ~ "Male",
+      .data$gender_concept_id == 8532 ~ "Female",
+      TRUE ~ as.character(NA))') %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(glue::glue("sex"))
+  } else {
+    sexQuery <- NULL
+  }
+
+  if(priorHistory == TRUE) {
+    pHQuery <- glue::glue('CDMConnector::datediff("observation_period_start_date",
+                      "{indexDate}")') %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(glue::glue("prior_history"))
+  } else {
+    pHQuery <- NULL
+  }
+
+  x <- x %>%
+    dplyr::mutate(!!!ageQuery,
+                  !!!sexQuery,
+                  !!!pHQuery)
+
+  if(xType == "cdm_table"){
+    x <- x %>%
+      dplyr::rename("person_id" = "subject_id")
+  }
+
+  x <- x %>%
+    dplyr::select(dplyr::all_of(startNames),
+                  dplyr::any_of(c("age", "sex", "prior_history")))
+
+  if(is.null(tablePrefix)){
+    x <- x %>%
+      CDMConnector::computeQuery()
+  } else {
+    x <- x %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_demographics_added"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
+
+  if (!is.null(ageGroup)) {
+    x <- addCategories(x,
+                       cdm = cdm,
+                       variable = "age",
+                       categories = ageGroup,
+                       tablePrefix = tablePrefix)
+  }
+
 
   return(x)
+
 }

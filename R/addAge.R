@@ -219,7 +219,7 @@ addAge <- function(x,
   }
 
   if (!is.null(ageGroup)) {
-    person <- addCategories(person, "age", ageGroup, tablePrefix)
+    person <- addCategories(person, cdm, "age", ageGroup, tablePrefix)
   }
 
   return(person)
