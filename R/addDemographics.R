@@ -124,9 +124,12 @@ addDemographics <- function(x,
                          dplyr::rename("person_id" = "subject_id") %>%
                          dplyr::inner_join(cdm[["observation_period"]]  %>%
                                              dplyr::select("person_id",
-                                                           "observation_period_start_date"),
+                                                           "observation_period_start_date",
+                                                           "observation_period_end_date"),
                                            by = "person_id") %>%
                          dplyr::filter(.data$observation_period_start_date <=
+                                         !!rlang::sym(indexDate) &
+                                      .data$observation_period_end_date >=
                                          !!rlang::sym(indexDate)) %>%
                          dplyr::group_by(dplyr::across(dplyr::all_of(c("person_id", indexDate)))) %>%
                          dplyr::summarise(observation_period_start_date =

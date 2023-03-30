@@ -258,6 +258,54 @@ test_that("partial demographics - omop tables", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
+test_that("priorHistory - outside of observation period", {
+
+  # priorHistory should be NA if index date is outside of an observation period
+
+  person <- tibble::tibble(
+    person_id = c(1,2),
+    gender_concept_id = 1,
+    year_of_birth = 1980,
+    month_of_birth = 01,
+    day_of_birth = 01
+  )
+  observation_period <- tibble::tibble(
+    observation_period_id = c(1,2),
+    person_id = c(1, 2),
+    observation_period_start_date = c(as.Date("2000-01-01"),
+                                      as.Date("2014-01-01")),
+    observation_period_end_date = c(as.Date("2001-01-01"),
+                                    as.Date("2015-01-01"))
+  )
+  cohort1 <- tibble::tibble(
+    cohort_definition_id = 1,
+    subject_id = c(1,2),
+    cohort_start_date = as.Date(c("2012-02-01")),
+    cohort_end_date = as.Date(c("2013-02-01"))
+  )
+
+  cdm <- mockPatientProfiles(person = person,
+                             observation_period = observation_period,
+                             cohort1 = cohort1
+  )
+
+  cdm$cohort1a <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = FALSE,
+                    ageGroup = NULL,
+                    sex = FALSE,
+                    priorHistory = TRUE
+    )
+  # both should be NA
+  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+
+})
+
+
 test_that("priorHistory - multiple observation periods", {
 
   # with multiple observation periods,
