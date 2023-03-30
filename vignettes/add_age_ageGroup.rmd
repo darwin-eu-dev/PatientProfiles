@@ -80,8 +80,8 @@ Also can be computed using addCategories
 ```{r, message=FALSE, warning=FALSE}
 cdm$cohort1 %>%
   addAge(cdm) %>%
-  addCategories(
-    "age",
-    list("age_group" = list(c(0, 29), c(30, 59), c(60, 150)))
+  addCategories(cdm = cdm,
+    variable = "age",
+    categories = list("age_group" = list(c(0, 29), c(30, 59), c(60, 150)))
   )
 ```

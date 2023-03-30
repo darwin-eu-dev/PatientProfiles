@@ -4,10 +4,12 @@
 \alias{addCategories}
 \title{It creates categories from a numeric variable.}
 \usage{
-addCategories(x, variable, categories, tablePrefix = NULL)
+addCategories(x, cdm, variable, categories, tablePrefix = NULL)
 }
 \arguments{
 \item{x}{Table in the database.}
+
+\item{cdm}{cdm reference}
 
 \item{variable}{Target variable that we want to categorize.}
 

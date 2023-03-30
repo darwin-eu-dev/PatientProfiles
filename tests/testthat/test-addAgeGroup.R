@@ -23,11 +23,11 @@ test_that("check condition_occurrence and cohort1 work", {
   cdm$condition_occurrence <- cdm$condition_occurrence %>% addAge(cdm, indexDate = "condition_start_date")
   categories <- list("age_group" = list(c(0,20)))
 
-  expect_true(typeof(cdm$cohort1 %>% addCategories("age", categories) %>% dplyr::collect()) == "list")
-  expect_true("age_group" %in% colnames(cdm$cohort1 %>% addCategories("age", categories)))
+  expect_true(typeof(cdm$cohort1 %>% addCategories(cdm, "age", categories) %>% dplyr::collect()) == "list")
+  expect_true("age_group" %in% colnames(cdm$cohort1 %>% addCategories(cdm, "age", categories)))
 
-  expect_true(typeof(cdm$condition_occurrence %>% addCategories("age", categories) %>% dplyr::collect()) == "list")
-  expect_true("age_group" %in% colnames(cdm$condition_occurrence %>% addCategories("age", categories)))
+  expect_true(typeof(cdm$condition_occurrence %>% addCategories(cdm, "age", categories) %>% dplyr::collect()) == "list")
+  expect_true("age_group" %in% colnames(cdm$condition_occurrence %>% addCategories(cdm, "age", categories)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -58,7 +58,7 @@ test_that("NULL age group name, but given age groups, age not in table", {
     addAge(cdm)
 
   result1 <- addCategories(
-    x, "age", list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
+    x, cdm, "age", list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -67,7 +67,7 @@ test_that("NULL age group name, but given age groups, age not in table", {
 
   # change the order of ageGroup provided, result should be the same
   result2 <- addCategories(
-    x, "age", list("age_group" = list(c(21, 30), c(1, 20), c(31, 40)))
+    x, cdm, "age", list("age_group" = list(c(21, 30), c(1, 20), c(31, 40)))
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -109,21 +109,21 @@ test_that("throw errors", {
   # error if overlapping ageGroyp
   expect_error(addCategories(
     cdm$cohort1,
-    "age",
+    cdm, "age",
     list("age_group" = list(c(1, 22), c(19, 30), c(31, 40)))
   ))
 
   # throw error if length of vector in agegroup is not 2
   expect_error(addCategories(
     cdm$cohort1,
-    "age",
+    cdm, "age",
     list("age_group" = list(c(1, 2, 3)))
   ))
 
   # if x does not have "age" column, it has to be in cdm
   expect_error(addCategories(
     cdm$cohort2,
-    "age",
+    cdm,  "age",
     list("age_group" = list(c(1, 2)))
   ))
 

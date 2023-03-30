@@ -1,6 +1,7 @@
 #' It creates categories from a numeric variable.
 #'
 #' @param x Table in the database.
+#' @param cdm cdm reference
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
@@ -49,6 +50,7 @@
 #'   )
 #' }
 addCategories <- function(x,
+                          cdm,
                           variable,
                           categories,
                           tablePrefix = NULL) {
@@ -97,7 +99,12 @@ addCategories <- function(x,
     }
     if (!is.null(tablePrefix)) {
       x <- CDMConnector::computeQuery(
-        x, tablePrefix, attr(cdm, "write_schema"), TRUE
+        x,
+        name = paste0(tablePrefix,
+                      "_categories_added"),
+        temporary = FALSE,
+        schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
       )
     } else {
       x <- CDMConnector::computeQuery(x)
