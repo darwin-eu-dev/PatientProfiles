@@ -69,9 +69,19 @@ cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 ```
 After getting the cdm object, we can then run the function addAge().
 ```{r, message= FALSE, warning=FALSE}
-addAge(x = cdm$cohort1, cdm = cdm, defaultMonth = 12, defaultDay = 3)
+cdm$cohort1 %>% addAge(cdm = cdm, ageDefaultMonth = 12, ageDefaultDay = 3)
 ```
 After getting age for your cohort, addAgeGroup function can add age group to the cohort. In this case, age column is not provided in x, age will automatically computed by addAge function. So x needs to be in cdm to get the age computed. Output of addAgeGroup will be the same table as previous addAge example with one extra column: ageGroupNames. Here, as ageGroupNames is not provided, default setting of the function will combine ageGroup provided.
 ```{r, message= FALSE, warning=FALSE}
-addAgeGroup(x = cdm$cohort1, cdm = cdm, ageGroup = list(c(20, 30), c(1, 19)))
+cdm$cohort1 %>% 
+  addAge(cdm = cdm, ageGroup = list(c(0, 29), c(30, 59), c(60, 150)))
+```
+Also can be computed using addCategories
+```{r, message=FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addAge(cdm) %>%
+  addCategories(cdm = cdm,
+    variable = "age",
+    categories = list("age_group" = list(c(0, 29), c(30, 59), c(60, 150)))
+  )
 ```

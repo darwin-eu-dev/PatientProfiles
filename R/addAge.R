@@ -2,19 +2,21 @@
 #' Add a column to the current tibble with the age of the subject_id at a
 #' certain date
 #'
-#' @param x Tibble with the individuals that we want to add the age. Need to be in cdm.
+#' @param x Tibble with the individuals that we want to add the age. Need to be
+#' in cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param indexDate Variable that points the date to compute the age. By
-#' default: 'cohort_start_date'
-#' @param defaultMonth Month of the year assigned to individuals with missing
+#' @param indexDate Variable that points the date to compute the age.
+#' @param name Name of the new column that contains age.
+#' @param ageGroup List of age groups to be added.
+#' @param ageDefaultMonth Month of the year assigned to individuals with missing
 #' month of birth. By default: 1.
-#' @param defaultDay day of the month assigned to individuals with missing day
-#' of birth. By default: 1.
-#' @param imposeMonth Whether the month of the date of birth will be considered
-#' as missing for all the individuals. By default: TRUE.
-#' @param imposeDay Whether the day of the date of birth will be considered as
-#' missing for all the individuals. By default: TRUE.
+#' @param ageDefaultDay day of the month assigned to individuals with missing
+#' day of birth. By default: 1.
+#' @param ageImposeMonth Whether the month of the date of birth will be
+#' considered as missing for all the individuals.
+#' @param ageImposeDay Whether the day of the date of birth will be considered
+#' as missing for all the individuals.
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -26,7 +28,7 @@
 #' library(DBI)
 #' library(duckdb)
 #' library(tibble)
-#' library(CohortProfiles)
+#' library(PatientProfiles)
 #' cohort1 <- tibble::tibble(
 #'   cohort_definition_id = c("1", "1", "1"),
 #'   subject_id = c("1", "2", "3"),
@@ -51,12 +53,13 @@
 addAge <- function(x,
                    cdm,
                    indexDate = "cohort_start_date",
-                   defaultMonth = 1,
-                   defaultDay = 1,
-                   imposeMonth = TRUE,
-                   imposeDay = TRUE,
+                   name = "age",
+                   ageGroup = NULL,
+                   ageDefaultMonth = 1,
+                   ageDefaultDay = 1,
+                   ageImposeMonth = TRUE,
+                   ageImposeDay = TRUE,
                    tablePrefix = NULL) {
-
   errorMessage <- checkmate::makeAssertCollection()
 
   xCheck <- inherits(x, "tbl_dbi")
@@ -99,22 +102,46 @@ addAge <- function(x,
   }
 
   # check if default imputation value for month and day are within range allowed
-  checkmate::assertInt(defaultMonth, lower = 1, upper = 12)
-  checkmate::assertInt(defaultDay, lower = 1, upper = 31)
+  checkmate::assertInt(ageDefaultMonth, lower = 1, upper = 12)
+  checkmate::assertInt(ageDefaultDay, lower = 1, upper = 31)
 
-  # check if imposeMonth and compute and tablePrefix are logical
-  checkmate::assertLogical(imposeMonth, add = errorMessage)
-  checkmate::assertLogical(imposeDay, add = errorMessage)
+  # check if ageImposeMonth and compute and tablePrefix are logical
+  checkmate::assertLogical(ageImposeMonth, add = errorMessage)
+  checkmate::assertLogical(ageImposeDay, add = errorMessage)
   checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+    tablePrefix,
+    len = 1, null.ok = TRUE, add = errorMessage
   )
 
-  defaultMonth <- as.integer(defaultMonth)
-  defaultDay <- as.integer(defaultDay)
+  ageDefaultMonth <- as.integer(ageDefaultMonth)
+  ageDefaultDay <- as.integer(ageDefaultDay)
 
   checkmate::reportAssertions(collection = errorMessage)
 
-# rename so both x and person table contain subject_id
+  checkmate::assertCharacter(name, len = 1, any.missing = FALSE)
+  if (name %in% colnames(x)) {
+    warning(glue::glue("Column {name} found in x and will be overwrite."))
+    x <- x %>% dplyr::select(-dplyr::all_of(name))
+  }
+
+  checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
+  if (!is.null(ageGroup)) {
+    if (is.numeric(ageGroup[[1]])) {
+      ageGroup <- list("age_group" = ageGroup)
+    }
+    for (k in seq_along(ageGroup)) {
+      invisible(checkCategory(ageGroup[[k]]))
+    }
+    if (is.null(names(ageGroup))) {
+      names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
+    }
+    if ("" %in% names(ageGroup)) {
+      id <- which(names(ageGroup) == "")
+      names(ageGroup)[id] <- paste0("age_group_", id)
+    }
+  }
+
+  # rename so both x and person table contain subject_id
   if ("subject_id" %in% colnames(x) == FALSE) {
     x <- x %>%
       dplyr::rename("subject_id" = "person_id")
@@ -125,30 +152,31 @@ addAge <- function(x,
   person <- cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
     dplyr::inner_join(x %>%
-                        dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
-                        dplyr::distinct(),
-                      by = "subject_id")
+      dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
+      dplyr::distinct(),
+    by = "subject_id"
+    )
 
-  if (imposeMonth == TRUE) {
+  if (ageImposeMonth == TRUE) {
     person <- person %>%
-      dplyr::mutate(month_of_birth = .env$defaultMonth)
+      dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
   } else {
     person <- person %>%
       dplyr::mutate(month_of_birth = dplyr::if_else(
         is.na(.data$month_of_birth),
-        .env$defaultMonth,
+        .env$ageDefaultMonth,
         .data$month_of_birth
       ))
   }
 
-  if (imposeDay == TRUE) {
+  if (ageImposeDay == TRUE) {
     person <- person %>%
-      dplyr::mutate(day_of_birth = .env$defaultDay)
+      dplyr::mutate(day_of_birth = .env$ageDefaultDay)
   } else {
     person <- person %>%
       dplyr::mutate(day_of_birth = dplyr::if_else(
         is.na(.data$day_of_birth),
-        .env$defaultDay,
+        .env$ageDefaultDay,
         .data$day_of_birth
       ))
   }
@@ -167,27 +195,33 @@ addAge <- function(x,
         .data$day_of_birth1
       )
     )) %>%
-    dplyr::mutate(age = floor(dbplyr::sql(
+    dplyr::mutate(!!name := floor(dbplyr::sql(
       sqlGetAge(
         dialect = CDMConnector::dbms(cdm),
         dob = "birth_date",
         dateOfInterest = indexDate
       )
     ))) %>%
-    dplyr::select("subject_id", dplyr::all_of(indexDate), "age") %>%
+    dplyr::select(dplyr::all_of(c("subject_id", indexDate, name))) %>%
     dplyr::right_join(x, by = c("subject_id", indexDate)) %>%
-    dplyr::select(dplyr::all_of(colnames(x)), "age")
-  if(is.null(tablePrefix)){
+    dplyr::select(dplyr::all_of(c(colnames(x), name)))
+  if (is.null(tablePrefix)) {
     person <- person %>%
       CDMConnector::computeQuery()
   } else {
     person <- person %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_person_sample"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
+      CDMConnector::computeQuery(
+        name = tablePrefix,
+        temporary = FALSE,
+        schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
+
+  if (!is.null(ageGroup)) {
+    person <- addCategories(person, cdm, "age", ageGroup, tablePrefix)
+  }
+
   return(person)
 }
 
