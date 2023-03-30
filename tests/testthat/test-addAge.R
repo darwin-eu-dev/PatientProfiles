@@ -1,42 +1,43 @@
 test_that("check input length and type for each of the arguments", {
   cdm <-
-    mockPatientProfiles(seed = 1,
-                       patient_size = 5)
+    mockPatientProfiles(
+      seed = 1,
+      patient_size = 5
+    )
 
   expect_error(addAge("cdm$cohort1", cdm))
 
   expect_error(addAge(cdm$cohort1, "cdm"))
 
-  expect_error(addAge(cdm$cohort1, cdm, ageAt = "subject_id"))
+  expect_error(addAge(cdm$cohort1, cdm, indexDate = "subject_id"))
 
-  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", defaultMonth = "1"))
+  expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageDefaultMonth = "1"))
 
-  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", defaultDay = "1"))
+  expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageDefaultDay = "1"))
 
-  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", imposeMonth = "TRUE"))
+  expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageImposeMonth = "TRUE"))
 
-  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", imposeDay = "TRUE"))
+  expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageImposeDay = "TRUE"))
 
-  expect_error(addAge(cdm$cohort1, cdm, ageAt = "cohort_start_date", compute = "TRUE"))
+  expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", tablePrefix = 1))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
-
 })
 
 test_that("check condition_occurrence and cohort1 work", {
   cdm <-
-    mockPatientProfiles(seed = 1,
-                       patient_size = 5)
+    mockPatientProfiles(
+      seed = 1,
+      patient_size = 5
+    )
 
   expect_true(typeof(cdm$cohort1 %>% addAge(cdm) %>% dplyr::collect()) == "list")
   expect_true("age" %in% colnames(cdm$cohort1 %>% addAge(cdm)))
 
-  expect_true(typeof(cdm$condition_occurrence %>% addAge(cdm,ageAt = "condition_start_date") %>% dplyr::collect()) == "list")
-  expect_true("age" %in% colnames(cdm$condition_occurrence %>% addAge(cdm,ageAt = "condition_start_date")))
+  expect_true(typeof(cdm$condition_occurrence %>% addAge(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
+  expect_true("age" %in% colnames(cdm$condition_occurrence %>% addAge(cdm, indexDate = "condition_start_date")))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
 })
 
 test_that("age at cohort entry, missing year/month/day of birth", {
@@ -61,14 +62,16 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 
   cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
-  result <- addAge(x = cdm$cohort1, cdm = cdm, imposeMonth = FALSE, imposeDay = FALSE,
-                   defaultMonth = 4, defaultDay = 4) %>% dplyr::collect()
+  result <- addAge(
+    x = cdm$cohort1, cdm = cdm, ageImposeMonth = FALSE, ageImposeDay = FALSE,
+    ageDefaultMonth = 4, ageDefaultDay = 4
+  ) %>% dplyr::collect()
 
   expect_true(all(c(colnames(cohort1), "age") %in% colnames(result)))
 
   expect_equal(nrow(result), 3)
 
-  expect_true(identical(result$age,c(9,9,NA)))
+  expect_true(identical(result$age, c(9, 9, NA)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -95,9 +98,9 @@ test_that("age at cohort end, no missing, check age computation", {
 
   cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
-  #check if exact age is computed, ie, dob 2000-01-01, target date 2000-12-01  --> age 0
-  #dob 2000-01-01, target date 2001-01-02  --> age 1
-  result <- addAge(x = cdm[["cohort1"]], cdm = cdm, imposeMonth = FALSE, imposeDay = FALSE) %>% dplyr::collect()
+  # check if exact age is computed, ie, dob 2000-01-01, target date 2000-12-01  --> age 0
+  # dob 2000-01-01, target date 2001-01-02  --> age 1
+  result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageImposeMonth = FALSE, ageImposeDay = FALSE) %>% dplyr::collect()
   expect_true(identical(result$age, c(0, 1)))
 })
 
@@ -105,11 +108,11 @@ test_that("check expected errors", {
   cdm <- mockPatientProfiles()
 
   expect_error(result <- addAge(cdm = "a"))
-  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, imposeDay = 1))
-  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, imposeMonth = 1))
-  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageAt = "date"))
-  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, defaultMonth = 1.1))
-  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, defaultDay = 1.1))
+  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageImposeDay = 1))
+  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageImposeMonth = 1))
+  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, indexDate = "date"))
+  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageDefaultMonth = 1.1))
+  expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageDefaultDay = 1.1))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -136,7 +139,7 @@ test_that("multiple cohortIds, check age at cohort end", {
   )
   cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 
-  result <- addAge(x = cdm[["cohort1"]], cdm = cdm, ageAt = "cohort_end_date") %>% dplyr::collect()
+  result <- addAge(x = cdm[["cohort1"]], cdm = cdm, indexDate = "cohort_end_date") %>% dplyr::collect()
 
   expect_true(identical(result$subject_id, c("1", "2", "3")))
   expect_true(identical(result$age, c(15, 13, NA)))

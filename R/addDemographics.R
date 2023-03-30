@@ -5,10 +5,10 @@
 #' @param x cohort table in which to add follow up of individuals
 #' @param cdm cdm with the person and observation_period tables to get the info
 #' for the individuals in the cohort
-#' @param demographicsAt name of the column with the date at which consider
+#' @param indexDate name of the column with the date at which consider
 #' demographic information
 #' @param age  TRUE or FALSE. If TRUE, age will be calculated relative to
-#' demographicsAt
+#' indexDate
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing
 #' month of birth. By default: 1.
 #' @param ageDefaultDay day of the month assigned to individuals with missing day
@@ -20,7 +20,7 @@
 #' @param ageGroup if not NULL, a list of ageGroup vectors
 #' @param sex TRUE or FALSE. If TRUE, sex will be identified
 #' @param priorHistory TRUE or FALSE. If TRUE, days of prior history will
-#' be calculated relative to demographicsAt
+#' be calculated relative to indexDate
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -38,17 +38,17 @@
 #' }
 #'
 addDemographics <- function(x,
-                        cdm,
-                        demographicsAt = "cohort_start_date",
-                        age = TRUE,
-                        ageDefaultMonth = 1,
-                        ageDefaultDay = 1,
-                        ageImposeMonth = TRUE,
-                        ageImposeDay = TRUE,
-                        ageGroup = NULL,
-                        sex = TRUE,
-                        priorHistory = TRUE,
-                        tablePrefix = NULL) {
+                            cdm,
+                            indexDate = "cohort_start_date",
+                            age = TRUE,
+                            ageDefaultMonth = 1,
+                            ageDefaultDay = 1,
+                            ageImposeMonth = TRUE,
+                            ageImposeDay = TRUE,
+                            ageGroup = NULL,
+                            sex = TRUE,
+                            priorHistory = TRUE,
+                            tablePrefix = NULL) {
 
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
@@ -68,13 +68,14 @@ addDemographics <- function(x,
   checkmate::reportAssertions(collection = errorMessage)
 
   errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(demographicsAt, len = 1,
-                             add = errorMessage,
+  checkmate::assertCharacter(indexDate,
+    len = 1,
+    add = errorMessage,
   )
-  column1Check <- demographicsAt %in% colnames(x)
+  column1Check <- indexDate %in% colnames(x)
   if (!isTRUE(column1Check)) {
     errorMessage$push(
-      "- `demographicsAt` is not a column of x"
+      "- `indexDate` is not a column of x"
     )
   }
   # check for ageGroup, change it to a list if it is a vector of length 2,
@@ -89,13 +90,13 @@ addDemographics <- function(x,
   }
   # after changing vector to list, we check it is a list with numeric
   checkmate::assertList(ageGroup,
-                        types = "integerish", null.ok = TRUE,
-                        add = errorMessage
+    types = "integerish", null.ok = TRUE,
+    add = errorMessage
   )
   # each vector in the list has to have length 2, push error if not
   if (!is.null(ageGroup)) {
     lengthsAgeGroup <- checkmate::assertTRUE(unique(lengths(ageGroup)) == 2,
-                                             add = errorMessage
+      add = errorMessage
     )
     if (!isTRUE(lengthsAgeGroup)) {
       errorMessage$push("- ageGroup needs to be a numeric vector of length two,
@@ -109,7 +110,7 @@ addDemographics <- function(x,
       x[1] <= x[2]
     }))
     checkmate::assertTRUE(all(checkAgeGroup, na.rm = TRUE),
-                          add = errorMessage
+      add = errorMessage
     )
     # check ageGroup overlap
     list1 <- lapply(dplyr::lag(ageGroup), function(x) {
@@ -127,40 +128,39 @@ addDemographics <- function(x,
     }
   }
   checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+    tablePrefix,
+    len = 1, null.ok = TRUE, add = errorMessage
   )
   checkmate::reportAssertions(collection = errorMessage)
 
   # Start code
 
-  if(isTRUE(age)){
+  if (isTRUE(age)) {
     x <- x %>%
-      addAge(cdm = cdm,
-             ageAt = demographicsAt,
-             defaultMonth = ageDefaultMonth,
-             defaultDay = ageDefaultDay,
-             imposeMonth = ageImposeMonth,
-             imposeDay = ageImposeDay,
-             tablePrefix = tablePrefix
-             )
-  }
-  if (!is.null(ageGroup)) {
-    x <- x %>%
-      addAgeGroup(cdm, ageGroup = ageGroup,
-                  tablePrefix = tablePrefix)
+      addAge(
+        cdm = cdm,
+        indexDate = indexDate,
+        ageGroup = ageGroup,
+        ageDefaultMonth = ageDefaultMonth,
+        ageDefaultDay = ageDefaultDay,
+        ageImposeMonth = ageImposeMonth,
+        ageImposeDay = ageImposeDay,
+        tablePrefix = tablePrefix
+      )
   }
 
-  if(isTRUE(sex)){
+  if (isTRUE(sex)) {
     x <- x %>%
       addSex(cdm)
   }
 
-  if(isTRUE(priorHistory)){
+  if (isTRUE(priorHistory)) {
     x <- x %>%
-      addPriorHistory(cdm, priorHistoryAt = demographicsAt,
-                      tablePrefix = tablePrefix)
+      addPriorHistory(cdm,
+        indexDate = indexDate,
+        tablePrefix = tablePrefix
+      )
   }
 
   return(x)
-
 }

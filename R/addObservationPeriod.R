@@ -5,7 +5,7 @@
 #'
 #' @param x cohort table to which add prior history to
 #' @param cdm object containing the person table
-#' @param observationAt name of the date field to use as date in table x
+#' @param indexDate name of the date field to use as date in table x
 #' @param column name of the observational start date and end date in the observation_period table
 #' @param name name of the columns added for observation start
 #' date and end date in form of "name for start date","name for end date"
@@ -61,7 +61,7 @@
 
 addObservationPeriod <- function(x,
                                  cdm,
-                                 observationAt = "cohort_start_date",
+                                 indexDate = "cohort_start_date",
                                  column = c("observation_period_start_date",
                                             "observation_period_end_date"),
                                  name = NULL,
@@ -90,9 +90,9 @@ addObservationPeriod <- function(x,
     errorMessage$push("- neither `subject_id` nor `person_id` are columns of x")
   }
 
-  column1Check <- observationAt %in% colnames(x)
+  column1Check <- indexDate %in% colnames(x)
   if (!isTRUE(column1Check)) {
-    errorMessage$push("- `observationAt` is not a column of x")
+    errorMessage$push("- `indexDate` is not a column of x")
   }
 
   #check cdm object
@@ -132,8 +132,8 @@ addObservationPeriod <- function(x,
                       dplyr::all_of(column)),
       by = "subject_id"
     ) %>%
-    dplyr::mutate(ins = dplyr::if_else(.data[[observationAt]] >= .data[[column[1]]] &
-                                         .data[[observationAt]] <= .data[[column[2]]],
+    dplyr::mutate(ins = dplyr::if_else(.data[[indexDate]] >= .data[[column[1]]] &
+                                         .data[[indexDate]] <= .data[[column[2]]],
                                        1,
                                        0)) %>% dplyr::mutate(
                                          !!column[[1]] := dplyr::if_else(.data$ins == 0, NA, .data[[column[1]]]),!!column[[2]] := dplyr::if_else(.data$ins == 0, NA, .data[[column[2]]])

@@ -7,7 +7,7 @@
 addObservationPeriod(
   x,
   cdm,
-  observationAt = "cohort_start_date",
+  indexDate = "cohort_start_date",
   column = c("observation_period_start_date", "observation_period_end_date"),
   name = NULL,
   tablePrefix = NULL
@@ -18,7 +18,7 @@ addObservationPeriod(
 
 \item{cdm}{object containing the person table}
 
-\item{observationAt}{name of the date field to use as date in table x}
+\item{indexDate}{name of the date field to use as date in table x}
 
 \item{column}{name of the observational start date and end date in the observation_period table}
 

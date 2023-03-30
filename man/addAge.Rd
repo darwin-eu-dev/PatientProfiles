@@ -8,34 +8,40 @@ certain date}
 addAge(
   x,
   cdm,
-  ageAt = "cohort_start_date",
-  defaultMonth = 1,
-  defaultDay = 1,
-  imposeMonth = TRUE,
-  imposeDay = TRUE,
+  indexDate = "cohort_start_date",
+  name = "age",
+  ageGroup = NULL,
+  ageDefaultMonth = 1,
+  ageDefaultDay = 1,
+  ageImposeMonth = TRUE,
+  ageImposeDay = TRUE,
   tablePrefix = NULL
 )
 }
 \arguments{
-\item{x}{Tibble with the individuals that we want to add the age. Need to be in cdm.}
+\item{x}{Tibble with the individuals that we want to add the age. Need to be
+in cdm.}
 
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
 
-\item{ageAt}{Variable that points the date to compute the age. By default:
-'cohort_start_date'}
+\item{indexDate}{Variable that points the date to compute the age.}
 
-\item{defaultMonth}{Month of the year assigned to individuals with missing
+\item{name}{Name of the new column that contains age.}
+
+\item{ageGroup}{List of age groups to be added.}
+
+\item{ageDefaultMonth}{Month of the year assigned to individuals with missing
 month of birth. By default: 1.}
 
-\item{defaultDay}{day of the month assigned to individuals with missing day
-of birth. By default: 1.}
+\item{ageDefaultDay}{day of the month assigned to individuals with missing
+day of birth. By default: 1.}
 
-\item{imposeMonth}{Whether the month of the date of birth will be considered
-as missing for all the individuals. By default: TRUE.}
+\item{ageImposeMonth}{Whether the month of the date of birth will be
+considered as missing for all the individuals.}
 
-\item{imposeDay}{Whether the day of the date of birth will be considered as
-missing for all the individuals. By default: TRUE.}
+\item{ageImposeDay}{Whether the day of the date of birth will be considered
+as missing for all the individuals.}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
@@ -52,7 +58,7 @@ certain date
 library(DBI)
 library(duckdb)
 library(tibble)
-library(CohortProfiles)
+library(PatientProfiles)
 cohort1 <- tibble::tibble(
   cohort_definition_id = c("1", "1", "1"),
   subject_id = c("1", "2", "3"),
