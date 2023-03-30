@@ -7,7 +7,7 @@
 #' checkWindow(x)
 #' }
 #' }
-#'
+#' @noRd
 checkWindow <- function(window) {
   # if input in a single value, use it as both window start and end
   if (length(window) == 1 && lengths(window) == 1 |length(unique(unlist(window))) == 1) {
@@ -39,14 +39,15 @@ checkWindow <- function(window) {
 
   checkmate::assertList(window, types = "integerish")
 
-  # change NA back to Inf
-  window <- lapply(window, function(x) replace(x, is.na(x), Inf))
-
   # if any element of window list has length over 2, throw error
   if (any(lengths(window) > 2)) {
     stop("window can only contain two values: windowStart and windowEnd")
   }
 
+  # change NA back to Inf
+  window <- lapply(window, function(x) replace(x, is.na(x) & which(is.na(x)) == 2, Inf))
+  window <- lapply(window, function(x) replace(x, is.na(x) & which(is.na(x)) == 1, -Inf))
+  
   checkValues <- function(x) {
     tryCatch(
       {
