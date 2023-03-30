@@ -406,14 +406,15 @@ addCohortIntersect <- function(x,
   colnames_repeated <- colnames_repeated[!(colnames_repeated %in% c("cohort_definition_id", "cohort_start_date", "cohort_end_date", "subject_id"))]
 
   for(col in colnames_repeated) {
+    col_x <- col
     num <- 1
     col_new <- paste0(col,"_", num)
     while(col_new %in% colnames(x)) {
       num <- num + 1
-      col <- col_new
+      col_x <- col_new
       col_new <- paste0(col,"_",num)
     }
-    warning("New column has been named `",col_new,"` because `", col,"` already exists in x")
+    warning("New column has been named `",col_new,"` because `", col_x,"` already exists in x")
 
     col_new <- rlang::enquo(col_new)
       result_all <- result_all %>%

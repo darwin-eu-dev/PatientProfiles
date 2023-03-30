@@ -100,12 +100,16 @@ First we use `mockCohorProfiles()` to generate two cohort table in the cdm envir
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date") %>% 
+  dplyr::rename(date_intersect = all_0_to_Inf) %>%
   addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "time") %>% 
+    dplyr::rename(time_intersect = all_0_to_Inf) %>%
   addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "count") %>% 
-  addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "flag")
+    dplyr::rename(count_intersect = all_0_to_Inf) %>%
+  addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "flag") %>%
+  dplyr::rename(flag_intersect = all_0_to_Inf) 
 ```
 
-As you see from the result above, it added 4 extra columns "all_0_to_Inf","all_0_to_Inf_1","all_0_to_Inf_2","all_0_to_Inf_3". The columns are name as "{cohortNames}_{window}_{window of interests}_{number_if_repeated}".
+As you see from the result above, it added 4 extra columns named "all_0_to_Inf" (they would have been by default "all_0_to_Inf", "all_0_to_Inf_1","all_0_to_Inf_2","all_0_to_Inf_3") before we renamed them to "date_intersect", "time_intersect", "count_intersect", "flag_intersect". The columns are name as "{cohortNames}_{window}_{window of interests}_{number_if_repeated}".
 
 To change it to return to last cohort start date we can use the `order` option in the function
 
