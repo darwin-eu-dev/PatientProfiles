@@ -20,7 +20,7 @@
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
-#' @export
+#' @noRd
 #'
 #' @examples
 #'
@@ -115,7 +115,7 @@ addCohortIntersect <- function(x,
   }
   checkmate::assert_integerish(cohortId, null.ok = TRUE)
 
-  # window <- checkWindow(window) #to be done soon by Mimi
+  # window <- checkWindow(window) # Update when available
 
   checkmate::assert_character(value, len = 1)
   valueCheck <-
@@ -151,8 +151,8 @@ addCohortIntersect <- function(x,
   }
 
   cohortName <- CDMConnector::cohortSet(cdm[[cohortTableName]])
-  if(!is.null(cohortName) && !is.null(cohortId)) {
-    cohortName <- cohortName %>% dplyr::rename(cohortName <- cohort_name)
+  if(!is.null(cohortName)) {
+    cohortName <- cohortName %>% dplyr::rename(cohortName = cohort_name)
   }
   # If we cannot get the cohort names, let them be the cohort ids
   if(is.null(cohortName) && !is.null(cohortId)) {
@@ -267,7 +267,7 @@ addCohortIntersect <- function(x,
           CDMConnector::computeQuery()
       }
 
-    # add count and binary
+    # add count or binary
     if ("number" %in% value | "binary" %in% value) {
       result_cb_w <- result_w %>%
         dplyr::select("subject_id",
@@ -303,7 +303,7 @@ addCohortIntersect <- function(x,
     }
 
 
-    # add date and time
+    # add date or time
     if ("date" %in% value | "time" %in% value) {
 
       workingWindow <- ifelse(workingWindow == Inf,0,workingWindow)
@@ -442,10 +442,4 @@ addCohortIntersect <- function(x,
   }
 
   return(result_all)
-
 }
-
-
-
-
-

@@ -28,7 +28,7 @@ checkName <- function(name, parameters) {
     stop(paste0("variables: ", paste0(x, collapse = ", "), " not included in name."))
   }
   elements <- elements[!(elements %in% names(parameters))]
-  if (length(elements) >0 ) {
+  if (length(elements) > 0 ) {
     stop(paste0(
       "variables: ",
       paste0(elements, collapse = ", "),

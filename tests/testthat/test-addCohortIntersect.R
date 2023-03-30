@@ -93,8 +93,6 @@ test_that("working examples", {
   expect_true(all(result_2$all_0_to_Inf_1 == c(4, 4, 3, 3, 1)))
   expect_true(all(result_2$all_0_to_Inf_3 == c(1, 1, 1, 1, 1)))
 
-  # Here
-  # Also check: cohortIds/cohortName, new name, etc.
   result_3 <-
     cdm$cohort1 %>% addCohortIntersect(cdm = cdm,
                                        cohortTableName = "cohort2",
@@ -161,6 +159,73 @@ test_that("working examples", {
  )))
 
  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
+
+test_that("working examples with cohort_end_date", {
+
+  #functionality
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-20",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    )
+  )
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+  )
+
+  cdm <- mockPatientProfiles(cohort1=cohort1, cohort2=cohort2)
+
+  result <- cdm$cohort1 %>%
+    addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date",
+                       indexDate = "cohort_end_date") %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(result$all_0_to_Inf == as.Date(c("2020-01-25", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
 
@@ -315,7 +380,7 @@ test_that("working examples calculating as incidence target cohort", {
 
 })
 
-test_that("working examples wih more than one window", {
+test_that("working examples with more than one window", {
 
   #functionality
   cohort1 <- dplyr::tibble(
@@ -391,6 +456,43 @@ test_that("working examples wih more than one window", {
   expect_true(all(compareNA(result$all_mInf_to_0, result_1$all_mInf_to_0)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
+
+test_that("working examples for cohortName from cohortSet", {
+
+  skip_if_not_installed("duckdb")
+  skip_if_not(CDMConnector::eunomia_is_available())
+  skip_if_not_installed("CirceR")
+
+  # Connect to Eunomia cdm
+  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = CDMConnector::eunomia_dir())
+  write_schema <- "main"
+  cdm_schema <- "main"
+
+  cdm <- CDMConnector::cdm_from_con(con,
+                      cdm_schema = cdm_schema,
+                      cdm_tables = c(CDMConnector::tbl_group("default")),
+                      write_schema = write_schema)
+
+  # Read jsons form inst
+  cohortSet <- CDMConnector::readCohortSet(path = system.file("cohorts",
+                                                              package = "PatientProfiles"))
+  expect_equal(nrow(cohortSet), 3)
+
+  # Generate small cohort sets and check
+  cdm <- CDMConnector::generateCohortSet(cdm, cohortSet, name = "testpp", computeAttrition = FALSE)
+
+  expect_s3_class(CDMConnector::cohortSet(cdm$testpp), "tbl_dbi")
+
+  # Try functionality of addCohortIntersect
+  result <- cdm$testpp %>% addCohortIntersect(cdm, cohortTableName = "testpp", value = "binary") %>%
+    dplyr::collect()
+
+  expect_true(result %>% dplyr::tally() %>% dplyr::pull() == cdm$testpp %>% dplyr::tally() %>% dplyr::pull())
+  expect_true("GIBleed_male_0_to_Inf" %in% colnames(result))
+
+  DBI::dbDisconnect(con, shutdown = TRUE)
 
 })
 
