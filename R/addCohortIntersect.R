@@ -410,8 +410,11 @@ addCohortIntersect <- function(x,
     col_new <- paste0(col,"_", num)
     while(col_new %in% colnames(x)) {
       num <- num + 1
+      col <- col_new
       col_new <- paste0(col,"_",num)
     }
+    warning("New column has been named `",col_new,"` because `", col,"` already exists in x")
+
     col_new <- rlang::enquo(col_new)
       result_all <- result_all %>%
       dplyr::rename(!!col_new := col) %>%

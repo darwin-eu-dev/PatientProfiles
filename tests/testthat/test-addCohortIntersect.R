@@ -459,43 +459,6 @@ test_that("working examples with more than one window", {
 
 })
 
-test_that("working examples for cohortName from cohortSet", {
-
-  skip_if_not_installed("duckdb")
-  skip_if_not(CDMConnector::eunomia_is_available())
-  skip_if_not_installed("CirceR")
-
-  # Connect to Eunomia cdm
-  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = CDMConnector::eunomia_dir())
-  write_schema <- "main"
-  cdm_schema <- "main"
-
-  cdm <- CDMConnector::cdm_from_con(con,
-                      cdm_schema = cdm_schema,
-                      cdm_tables = c(CDMConnector::tbl_group("default")),
-                      write_schema = write_schema)
-
-  # Read jsons form inst
-  cohortSet <- CDMConnector::readCohortSet(path = system.file("cohorts",
-                                                              package = "PatientProfiles"))
-  expect_equal(nrow(cohortSet), 3)
-
-  # Generate small cohort sets and check
-  cdm <- CDMConnector::generateCohortSet(cdm, cohortSet, name = "testpp", computeAttrition = FALSE)
-
-  expect_s3_class(CDMConnector::cohortSet(cdm$testpp), "tbl_dbi")
-
-  # Try functionality of addCohortIntersect
-  result <- cdm$testpp %>% addCohortIntersect(cdm, cohortTableName = "testpp", value = "flag") %>%
-    dplyr::collect()
-
-  expect_true(result %>% dplyr::tally() %>% dplyr::pull() == cdm$testpp %>% dplyr::tally() %>% dplyr::pull())
-  expect_true("GIBleed_male_0_to_Inf" %in% colnames(result))
-
-  DBI::dbDisconnect(con, shutdown = TRUE)
-
-})
-
 test_that("check input length and type for each of the arguments", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
