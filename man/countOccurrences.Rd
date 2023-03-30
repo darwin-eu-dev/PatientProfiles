@@ -33,6 +33,9 @@ be attached as extra columns}
 \item{targetStartDate}{date of reference in cohort table, either for start
 (in overlap) or on its own (for incidence)}
 
+\item{targetEndDate}{date of reference in cohort table, either for end
+(overlap) or NULL (if incidence)}
+
 \item{window}{window to consider events of}
 
 \item{nameStyle}{naming of the added column or columns, should include
@@ -40,9 +43,6 @@ required parameters}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
-
-\item{targetEndDare}{date of reference in cohort table, either for end
-(overlap) or NULL (if incidence)}
 }
 \value{
 table with added columns with overlap information

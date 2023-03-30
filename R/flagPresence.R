@@ -8,7 +8,7 @@
 #' @param indexDate date of reference in table x
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
-#' @param targetEndDare date of reference in cohort table, either for end
+#' @param targetEndDate date of reference in cohort table, either for end
 #' (overlap) or NULL (if incidence)
 #' @param window window to consider events of
 #' @param nameStyle naming of the added column or columns, should include
@@ -90,7 +90,7 @@ flagPresence <- function(x, cdm, tableName, cohortId = NULL,
   # Checks done in the internal addCohortIntersect function
 
   x <- x %>%
-    addCohortIntersect(cdm, tableName, cohortId = cohortId, value = "binary",
+    addCohortIntersect(cdm, tableName, cohortId = cohortId, value = "flag",
                        indexDate = indexDate, targetStartDate = targetStartDate,
                        targetEndDate = targetEndDate, window = window,
                        nameStyle = nameStyle, tablePrefix = tablePrefix) %>%

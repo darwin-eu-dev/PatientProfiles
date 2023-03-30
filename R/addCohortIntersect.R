@@ -6,12 +6,12 @@
 #' @param cdm cdm containing the tables
 #' @param cohortTableName name of the cohort that we want to check for overlap
 #' @param cohortId vector of cohort definition ids to include
-#' @param value value of interest to add: it can be number, binary, date or time
+#' @param value value of interest to add: it can be count, flag, date or time
 #' @param window window to consider events of
 #' @param indexDate date of reference in table x
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
-#' @param targetEndDare date of reference in cohort table, either for end
+#' @param targetEndDate date of reference in cohort table, either for end
 #' (overlap) or NULL (if incidence)
 #' @param order last or first date to use for date/time calculations
 #' @param nameStyle naming of the added column or columns, should include
@@ -20,7 +20,7 @@
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
-#' @noRd
+#' @export
 #'
 #' @examples
 #'
@@ -115,13 +115,13 @@ addCohortIntersect <- function(x,
   }
   checkmate::assert_integerish(cohortId, null.ok = TRUE)
 
-  # window <- checkWindow(window) # Update when available
+  window <- checkWindow(window) # Update when available
 
   checkmate::assert_character(value, len = 1)
   valueCheck <-
-    value %>% dplyr::intersect(c("number", "binary", "date", "time")) %>% dplyr::setequal(value)
+    value %>% dplyr::intersect(c("count", "flag", "date", "time")) %>% dplyr::setequal(value)
   if (!isTRUE(valueCheck)) {
-    errorMessage$push("- `value` must be either 'count','binary','date' or 'time' ")
+    errorMessage$push("- `value` must be either 'count','flag','date' or 'time' ")
   }
 
   orderCheck <- order %in% c("first", "last")
@@ -267,8 +267,8 @@ addCohortIntersect <- function(x,
           CDMConnector::computeQuery()
       }
 
-    # add count or binary
-    if ("number" %in% value | "binary" %in% value) {
+    # add count or flag
+    if ("count" %in% value | "flag" %in% value) {
       result_cb_w <- result_w %>%
         dplyr::select("subject_id",
                       "cohort_start_date",
@@ -276,9 +276,9 @@ addCohortIntersect <- function(x,
                       "cohort_end_date",
                       "overlap_id") %>%
         dplyr::group_by(.data$subject_id, .data$cohort_start_date, .data$cohort_end_date, .data$overlap_id) %>%
-        dplyr::summarise(number = dplyr::n(), .groups = "drop") %>%
+        dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
         dplyr::mutate(
-          binary = 1,
+          flag = 1,
           overlap_id = as.numeric(.data$overlap_id),
           window_name = window_name
         ) %>%
@@ -286,14 +286,14 @@ addCohortIntersect <- function(x,
         dplyr::select(-"overlap_id") %>%
         tidyr::pivot_wider(
           names_from = c("cohortName", "window_name"),
-          values_from = c("number", "binary"),
+          values_from = c("count", "flag"),
           names_glue = paste0("{.value}_",nameStyle),
           values_fill = 0
         )  %>%
         dplyr::right_join(x %>% dplyr::select(c("subject_id", "cohort_start_date", "cohort_end_date", "cohort_definition_id")),
                           by = c("subject_id", "cohort_start_date", "cohort_end_date")) %>%
         dplyr::mutate(dplyr::across(dplyr::starts_with(c(
-          "binary", "number"
+          "flag", "count"
         )),
         ~ dplyr::if_else(is.na(.x), 0, .x))) %>%
         CDMConnector::computeQuery()
@@ -375,7 +375,7 @@ addCohortIntersect <- function(x,
   }
 
   #drop columns not needed
-  valueDrop <- c("number", "binary", "date", "time") %>%
+  valueDrop <- c("count", "flag", "date", "time") %>%
     dplyr::setdiff(value)
 
 
@@ -394,8 +394,8 @@ addCohortIntersect <- function(x,
     CDMConnector::computeQuery()
 
   result_all <- result_all %>%
-    dplyr::rename_with( ~ stringr::str_remove_all(., "binary_"), dplyr::contains("binary_")) %>%
-    dplyr::rename_with( ~ stringr::str_remove_all(., "number_"), dplyr::contains("number_")) %>%
+    dplyr::rename_with( ~ stringr::str_remove_all(., "flag_"), dplyr::contains("flag_")) %>%
+    dplyr::rename_with( ~ stringr::str_remove_all(., "count_"), dplyr::contains("count_")) %>%
     dplyr::rename_with( ~ stringr::str_remove_all(., "date_"), dplyr::contains("date_")) %>%
     dplyr::rename_with( ~ stringr::str_remove_all(., "time_"), dplyr::contains("time_")) %>%
     dplyr::distinct() %>%

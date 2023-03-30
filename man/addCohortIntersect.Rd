@@ -29,7 +29,7 @@ be attached as extra columns}
 
 \item{cohortId}{vector of cohort definition ids to include}
 
-\item{value}{value of interest to add: it can be number, binary, date or time}
+\item{value}{value of interest to add: it can be count, flag, date or time}
 
 \item{window}{window to consider events of}
 
@@ -38,6 +38,9 @@ be attached as extra columns}
 \item{targetStartDate}{date of reference in cohort table, either for start
 (in overlap) or on its own (for incidence)}
 
+\item{targetEndDate}{date of reference in cohort table, either for end
+(overlap) or NULL (if incidence)}
+
 \item{order}{last or first date to use for date/time calculations}
 
 \item{nameStyle}{naming of the added column or columns, should include
@@ -45,9 +48,6 @@ required parameters}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
-
-\item{targetEndDare}{date of reference in cohort table, either for end
-(overlap) or NULL (if incidence)}
 }
 \value{
 table with added columns with overlap information
