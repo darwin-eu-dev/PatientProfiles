@@ -5,19 +5,14 @@
 \title{Add a column to the current tibble with the prior history of the subject_id at a
 certain date}
 \usage{
-addPriorHistory(
-  x,
-  cdm,
-  priorHistoryAt = "cohort_start_date",
-  tablePrefix = NULL
-)
+addPriorHistory(x, cdm, indexDate = "cohort_start_date", tablePrefix = NULL)
 }
 \arguments{
 \item{x}{cohort table to which add prior history to}
 
 \item{cdm}{object containing the person table}
 
-\item{priorHistoryAt}{name of the date field to use as date in table x}
+\item{indexDate}{name of the date field to use as date in table x}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}

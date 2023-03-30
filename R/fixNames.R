@@ -9,15 +9,6 @@ varyingParameters <- function(parameters) {
 }
 
 #' @noRd
-computeName <- function(parameters) {
-  x <- varyingParameters(parameters)
-  if (length(x) > 0) {
-    x <- paste0("{", paste0(x, collapse = "}_{"), "}")
-  }
-  return(x)
-}
-
-#' @noRd
 checkName <- function(name, parameters) {
   checkmate::assertCharacter(name, len = 1, min.chars = 1, any.missing = FALSE)
   x <- varyingParameters(parameters)
@@ -39,7 +30,7 @@ checkName <- function(name, parameters) {
 }
 
 #' @noRd
-tidyName <- function(name, parameters, colnamesTable) {
+repairName <- function(name, parameters, colnamesTable) {
   nameEquivalence <- expand.grid(parameters) %>%
     dplyr::as_tibble() %>%
     dplyr::distinct() %>%
@@ -48,7 +39,7 @@ tidyName <- function(name, parameters, colnamesTable) {
     dplyr::select("generated_name", "corrected_name")
   k <- 1
   id <- which(nameEquivalence$generated_name %in% colnamesTable)
-  while(length(id) > 0) {
+  while (length(id) > 0) {
     nameEquivalence$corrected_name[id] <-
       paste0(nameEquivalence$generated_name[id], "_", k)
     id <- which(nameEquivalence$corrected_name %in% colnamesTable)

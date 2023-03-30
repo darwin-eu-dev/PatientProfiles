@@ -2,7 +2,7 @@
 
 export("%>%")
 export(addAge)
-export(addAgeGroup)
+export(addCategories)
 export(addDemographics)
 export(addFollowUp)
 export(addInObservation)

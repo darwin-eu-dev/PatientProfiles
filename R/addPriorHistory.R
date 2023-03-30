@@ -4,7 +4,7 @@
 #'
 #' @param x cohort table to which add prior history to
 #' @param cdm object containing the person table
-#' @param priorHistoryAt name of the date field to use as date in table x
+#' @param indexDate name of the date field to use as date in table x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -60,7 +60,7 @@
 #' }
 addPriorHistory <- function(x,
                             cdm,
-                            priorHistoryAt = "cohort_start_date",
+                            indexDate = "cohort_start_date",
                             tablePrefix = NULL) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
@@ -77,12 +77,12 @@ addPriorHistory <- function(x,
     )
   }
 
-  # check if ageAt length = 1 and is in table x
-  checkmate::assertCharacter(priorHistoryAt, len = 1, add = errorMessage)
+  # check if indexDate length = 1 and is in table x
+  checkmate::assertCharacter(indexDate, len = 1, add = errorMessage)
 
-  priorHistoryExists <- priorHistoryAt %in% colnames(x)
+  priorHistoryExists <- indexDate %in% colnames(x)
   if (!isTRUE(priorHistoryExists)) {
-    errorMessage$push("- priorHistoryAt is not found in x")
+    errorMessage$push("- indexDate is not found in x")
   }
 #check cdm object
   cdmCheck <- inherits(cdm, "cdm_reference")
@@ -116,15 +116,15 @@ addPriorHistory <- function(x,
   x <- cdm[["observation_period"]] %>%
     dplyr::select("subject_id" = "person_id", "observation_period_start_date") %>%
     dplyr::inner_join(x %>%
-                        dplyr::select("subject_id", dplyr::all_of(priorHistoryAt)) %>%
+                        dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
                         dplyr::distinct(),
                       by = "subject_id") %>%
     dplyr::mutate(
       prior_history = CDMConnector::datediff(start = "observation_period_start_date",
-                                             end = !!priorHistoryAt)
+                                             end = !!indexDate)
     ) %>%
     dplyr::right_join(x,
-                      by = c("subject_id", priorHistoryAt)) %>%
+                      by = c("subject_id", indexDate)) %>%
     dplyr::select(dplyr::all_of(colnames(x)), "prior_history")
   if(is.null(tablePrefix)){
     x <- x %>%
