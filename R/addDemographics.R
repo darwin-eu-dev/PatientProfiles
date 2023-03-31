@@ -55,52 +55,23 @@ addDemographics <- function(x,
                             tablePrefix = NULL) {
 
   ## check for standard types of user error
-  errorMessage <- checkmate::makeAssertCollection()
-
-  xCheck <- inherits(x, "tbl_dbi")
-  if (!isTRUE(xCheck)) {
-    errorMessage$push(
-      "- x is not a table"
-    )
-  }
-  cdmCheck <- inherits(cdm, "cdm_reference")
-  if (!isTRUE(cdmCheck)) {
-    errorMessage$push(
-      "- cdm must be a CDMConnector CDM reference object"
-    )
-  }
-  checkmate::reportAssertions(collection = errorMessage)
-
-  errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(indexDate, len = 1,
-                             add = errorMessage,
+  person_vaiable <- checkX(x)
+  checkCdm(cdm)
+  checkIndexDate(indexDate,x)
+  checkmate::assertLogical(age, any.missing = FALSE, len = 1)
+  checkmate::assertIntegerish(
+    ageDefaultMonth, lower = 1, upper = 31, any.missing = FALSE, len = 1
   )
-  column1Check <- indexDate %in% colnames(x)
-  if (!isTRUE(column1Check)) {
-    errorMessage$push(
-      "- `indexDate` is not a column of x"
-    )
-  }
-  checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
-  if (!is.null(ageGroup)) {
-    if (is.numeric(ageGroup[[1]])) {
-      ageGroup <- list("age_group" = ageGroup)
-    }
-    for (k in seq_along(ageGroup)) {
-      invisible(checkCategory(ageGroup[[k]]))
-    }
-    if (is.null(names(ageGroup))) {
-      names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
-    }
-    if ("" %in% names(ageGroup)) {
-      id <- which(names(ageGroup) == "")
-      names(ageGroup)[id] <- paste0("age_group_", id)
-    }
-  }
-  checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  checkmate::assertIntegerish(
+    ageDefaultDay, lower = 1, upper = 31, any.missing = FALSE, len = 1
   )
-  checkmate::reportAssertions(collection = errorMessage)
+  checkmate::assertLogical(ageImposeMonth, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(ageImposeDay, any.missing = FALSE, len = 1)
+  ageGroup <- checkAgeGroup(ageGroup)
+  checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(priorHistory, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(furureObservation, any.missing = FALSE, len = 1)
+  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
   # Start code
   startNames <- names(x)
