@@ -389,6 +389,92 @@ test_that("priorHistory - multiple observation periods", {
 
 })
 
+test_that("check that no extra rows are added", {
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 2, 1, 2, 1),
+    subject_id = c(1, 1, 1, 1, 1),
+    cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2021-01-01", "2021-01-01", "2022-01-01")),
+    cohort_end_date = as.Date(c("2020-01-01", "2020-01-01", "2021-01-01", "2021-01-01", "2022-01-01"))
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 1, 1),
+    observation_period_start_date = as.Date(c("2015-06-30", "2019-06-30", "2021-06-30")),
+    observation_period_end_date = as.Date(c("2018-06-30", "2020-06-30", "2022-06-30"))
+  )
+  cdm <- mockPatientProfiles(
+    cohort1 = cohort1, observation_period = observation_period
+  )
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = TRUE,
+                    ageGroup = list(c(10,100)),
+                    sex = FALSE,
+                    priorHistory = FALSE,
+                    furureObservation = FALSE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = FALSE,
+                    sex = TRUE,
+                    priorHistory = FALSE,
+                    furureObservation = FALSE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = FALSE,
+                    sex = FALSE,
+                    priorHistory = TRUE,
+                    furureObservation = FALSE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = FALSE,
+                    sex = FALSE,
+                    priorHistory = FALSE,
+                    furureObservation = TRUE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
+
 test_that("temp and permanent tables", {
   cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
   # using temp
