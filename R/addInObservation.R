@@ -1,4 +1,3 @@
-
 #' It adds a column to a cohort table indicating whether its individuals are
 #' in observation at the desired time
 #'
@@ -25,32 +24,18 @@
 #' }
 #'
 addInObservation <- function(x,
-                          cdm,
-                          indexDate = "cohort_start_date",
-                          name = "in_observation",
-                          tablePrefix = NULL) {
+                             cdm,
+                             indexDate = "cohort_start_date",
+                             name = "in_observation",
+                             tablePrefix = NULL) {
 
   ## check for standard types of user error
-
-  errorMessage <- checkmate::makeAssertCollection()
-
-  xCheck <- inherits(x, "tbl_dbi")
-  if (!isTRUE(xCheck)) {
-    errorMessage$push(
-      "- x is not a table"
-    )
-  }
-
-  cdmCheck <- inherits(cdm, "cdm_reference")
-  if (!isTRUE(cdmCheck)) {
-    errorMessage$push(
-      "- cdm must be a CDMConnector CDM reference object"
-    )
-  }
-
-  checkmate::reportAssertions(collection = errorMessage)
-
-  errorMessage <- checkmate::makeAssertCollection()
+  person_vaiable <- checkX(x)
+  checkCdm(cdm)
+  checkIndexDate(indexDate,x)
+  checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
+  name <- checkNewName(name, x)
+  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
   ObsperiodExists <- "observation_period" %in% names(cdm)
   if (!isTRUE(ObsperiodExists)) {
