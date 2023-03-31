@@ -17,6 +17,7 @@ addDemographics(
   ageGroup = NULL,
   sex = TRUE,
   priorHistory = TRUE,
+  furureObservation = TRUE,
   tablePrefix = NULL
 )
 }
@@ -33,23 +34,27 @@ demographic information}
 indexDate}
 
 \item{ageDefaultMonth}{Month of the year assigned to individuals with missing
-month of birth. By default: 1.}
+month of birth.}
 
-\item{ageDefaultDay}{day of the month assigned to individuals with missing day
-of birth. By default: 1.}
+\item{ageDefaultDay}{day of the month assigned to individuals
+with missing day of birth.}
 
-\item{ageImposeMonth}{Whether the month of the date of birth will be considered
-as missing for all the individuals. By default: TRUE.}
+\item{ageImposeMonth}{TRUE or FALSE. Whether the month of the date of birth
+will be considered as missing for all the individuals.}
 
-\item{ageImposeDay}{Whether the day of the date of birth will be considered as
-missing for all the individuals. By default: TRUE.}
+\item{ageImposeDay}{TRUE or FALSE. Whether the day of the date of birth
+will be considered as missing for all the individuals.}
 
 \item{ageGroup}{if not NULL, a list of ageGroup vectors}
 
 \item{sex}{TRUE or FALSE. If TRUE, sex will be identified}
 
-\item{priorHistory}{TRUE or FALSE. If TRUE, days of prior history will
-be calculated relative to indexDate}
+\item{priorHistory}{TRUE or FALSE. If TRUE, days of between the start
+of the current observation period and the indexDate will be calculated}
+
+\item{furureObservation}{TRUE or FALSE. If TRUE, days between the
+indexDate and the end of the current observation period will be
+calculated}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
