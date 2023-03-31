@@ -63,61 +63,31 @@ addDemographics <- function(x,
                             tablePrefix = NULL) {
 
   ## check for standard types of user error
-  errorMessage <- checkmate::makeAssertCollection()
-
-  xCheck <- inherits(x, "tbl_dbi")
-  if (!isTRUE(xCheck)) {
-    errorMessage$push(
-      "- x is not a table"
-    )
-  }
-  cdmCheck <- inherits(cdm, "cdm_reference")
-  if (!isTRUE(cdmCheck)) {
-    errorMessage$push(
-      "- cdm must be a CDMConnector CDM reference object"
-    )
-  }
-  checkmate::reportAssertions(collection = errorMessage)
-
-  errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(indexDate, len = 1,
-                             add = errorMessage,
-                             null.ok = TRUE
+  person_variable <- checkX(x)
+  checkCdm(cdm, c("person", "observation_period"))
+  checkmate::assertLogical(age, any.missing = FALSE, len = 1)
+  checkmate::assertIntegerish(
+    ageDefaultMonth, lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    null.ok = !age
   )
-  if(!is.null(indexDate)){
-  column1Check <- indexDate %in% colnames(x)
-  if (!isTRUE(column1Check)) {
-    errorMessage$push(
-      "- `indexDate` is not a column of x"
-    )
-  }
-  }
-  checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
-  if (!is.null(ageGroup)) {
-    if (is.numeric(ageGroup[[1]])) {
-      ageGroup <- list("age_group" = ageGroup)
-    }
-    for (k in seq_along(ageGroup)) {
-      invisible(checkCategory(ageGroup[[k]]))
-    }
-    if (is.null(names(ageGroup))) {
-      names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
-    }
-    if ("" %in% names(ageGroup)) {
-      id <- which(names(ageGroup) == "")
-      names(ageGroup)[id] <- paste0("age_group_", id)
-    }
-  }
-  checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  checkmate::assertIntegerish(
+    ageDefaultDay, lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    null.ok = !age
   )
-  checkmate::reportAssertions(collection = errorMessage)
+  checkmate::assertLogical(ageImposeMonth, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(ageImposeDay, any.missing = FALSE, len = 1)
+  ageGroup <- checkAgeGroup(ageGroup)
+  checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(priorHistory, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(furureObservation, any.missing = FALSE, len = 1)
+  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  checkIndexDate(indexDate, x, !(age | priorHistory | furureObservation))
+  if (!(age | sex | priorHistory | furureObservation)) {
+    cli::cli_abort("age, sex, priorHistory, furureObservation can not be FALSE")
+  }
 
   # Start code
   startNames <- names(x)
-
-  person_vaiable <- dplyr::if_else("person_id" %in% names(x),
-                                   "person_id", "subject_id")
 
   personDetails <- cdm[["person"]] %>%
     dplyr::select("person_id",
@@ -125,21 +95,21 @@ addDemographics <- function(x,
                   "year_of_birth",
                   "month_of_birth",
                   "day_of_birth") %>%
-    dplyr::rename(!!person_vaiable := "person_id")
+    dplyr::rename(!!person_variable := "person_id")
 
   if (priorHistory == TRUE || furureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
     obsPeriodDetails <- x %>%
-      dplyr::select(dplyr::all_of(c(person_vaiable, indexDate))) %>%
+      dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
       dplyr::distinct() %>%
       dplyr::inner_join(cdm[["observation_period"]] %>%
-        dplyr::rename(!!person_vaiable := "person_id") %>%
+        dplyr::rename(!!person_variable := "person_id") %>%
         dplyr::select(
-          dplyr::all_of(person_vaiable),
+          dplyr::all_of(person_variable),
           "observation_period_start_date",
           "observation_period_end_date"
         ),
-      by = person_vaiable
+      by = person_variable
       ) %>%
       dplyr::filter(.data$observation_period_start_date <=
                       .data[[indexDate]] &
@@ -148,28 +118,31 @@ addDemographics <- function(x,
   }
 
   # update dates
-  if (ageImposeMonth == TRUE) {
-    personDetails <- personDetails %>%
-      dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
-  } else {
-    personDetails <- personDetails %>%
-      dplyr::mutate(month_of_birth = dplyr::if_else(
-        is.na(.data$month_of_birth),
-        .env$ageDefaultMonth,
-        .data$month_of_birth
-      ))
-  }
-
-  if (ageImposeDay == TRUE) {
-    personDetails <- personDetails %>%
-      dplyr::mutate(day_of_birth = .env$ageDefaultDay)
-  } else {
-    personDetails <- personDetails %>%
-      dplyr::mutate(day_of_birth = dplyr::if_else(
-        is.na(.data$day_of_birth),
-        .env$ageDefaultDay,
-        .data$day_of_birth
-      ))
+  if (age) {
+    # impose month
+    if (ageImposeMonth == TRUE) {
+      personDetails <- personDetails %>%
+        dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
+    } else {
+      personDetails <- personDetails %>%
+        dplyr::mutate(month_of_birth = dplyr::if_else(
+          is.na(.data$month_of_birth),
+          .env$ageDefaultMonth,
+          .data$month_of_birth
+        ))
+    }
+    # impose day
+    if (ageImposeDay == TRUE) {
+      personDetails <- personDetails %>%
+        dplyr::mutate(day_of_birth = .env$ageDefaultDay)
+    } else {
+      personDetails <- personDetails %>%
+        dplyr::mutate(day_of_birth = dplyr::if_else(
+          is.na(.data$day_of_birth),
+          .env$ageDefaultDay,
+          .data$day_of_birth
+        ))
+    }
   }
 
   personDetails <- personDetails %>%
@@ -189,17 +162,17 @@ addDemographics <- function(x,
 
   x <- x  %>%
     dplyr::left_join(personDetails %>%
-                       dplyr::select(dplyr::any_of(c(person_vaiable,
+                       dplyr::select(dplyr::any_of(c(person_variable,
                                                      "birth_date",
                                                      "gender_concept_id",
                                                      "observation_period_start_date",
                                                      "observation_period_end_date"))),
-                     by = person_vaiable)
+                     by = person_variable)
 
   if(priorHistory == TRUE || furureObservation == TRUE) {
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
-                       by= c(person_vaiable, indexDate))
+                       by= c(person_variable, indexDate))
   }
 
   if(age == TRUE) {

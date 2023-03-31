@@ -64,52 +64,16 @@ addPriorHistory <- function(x,
                             indexDate = "cohort_start_date",
                             priorHistoryName = "prior_history",
                             tablePrefix = NULL) {
-  ## check for standard types of user error
-  errorMessage <- checkmate::makeAssertCollection()
-
-  xCheck <- inherits(x, "tbl_dbi")
-  if (!isTRUE(xCheck)) {
-    errorMessage$push("- x is not a table")
-  }
-
-  columnCheck <- ("subject_id" %in% colnames(x) || "person_id" %in% colnames(x))
-  if (!isTRUE(columnCheck)) {
-    errorMessage$push(
-      "- neither `subject_id` nor `person_id` are columns of x"
-    )
-  }
-
-  # check if indexDate length = 1 and is in table x
-  checkmate::assertCharacter(indexDate, len = 1, add = errorMessage)
-  checkmate::assertCharacter(priorHistoryName, len = 1,
-                             add = errorMessage,
-  )
-  priorHistoryExists <- indexDate %in% colnames(x)
-  if (!isTRUE(priorHistoryExists)) {
-    errorMessage$push("- indexDate is not found in x")
-  }
-#check cdm object
-  cdmCheck <- inherits(cdm, "cdm_reference")
-  if (!isTRUE(cdmCheck)) {
-    errorMessage$push("- cdm must be a CDMConnector CDM reference object")
-  }
-
-  observationPeriodExists <- "observation_period" %in% names(cdm)
-  if (!isTRUE(observationPeriodExists)) {
-    errorMessage$push("- `observation_period` is not found in cdm")
-  }
-
-  checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
-  )
-
-  checkmate::reportAssertions(collection = errorMessage)
 
   x <- x %>%
     addDemographics(cdm = cdm,
                     indexDate = indexDate,
                     age = FALSE,
                     ageGroup = NULL,
+                    ageDefaultDay = NULL,
+                    ageDefaultMonth = NULL,
+                    ageImposeDay =  FALSE,
+                    ageImposeMonth = FALSE,
                     sex = FALSE,
                     priorHistory = TRUE,
                     priorHistoryName = priorHistoryName,
