@@ -55,7 +55,7 @@ addCategories <- function(x,
                           categories,
                           tablePrefix = NULL) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
-    stop("x is not a table")
+    cli::cli_abort("x is not a table")
   }
 
   checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)

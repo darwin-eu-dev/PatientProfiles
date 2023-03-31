@@ -16,11 +16,13 @@ checkName <- function(name, parameters) {
   elements <- elements[[1]][, 2]
   x <- x[!(x %in% elements)]
   if (length(x) > 0) {
-    stop(paste0("variables: ", paste0(x, collapse = ", "), " not included in name."))
+    cli::cli_abort(paste0(
+      "variables: ", paste0(x, collapse = ", "), " not included in name."
+    ))
   }
   elements <- elements[!(elements %in% names(parameters))]
   if (length(elemenets) > 0) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "variables: ",
       paste0(elements, collapse = ", "),
       " contained in name and not included in iput parameters."
@@ -51,16 +53,16 @@ repairName <- function(name, parameters, colnamesTable) {
 #' @noRd
 checkX <- function(x) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
-    stop("x is not a valid table")
+    cli::cli_abort("x is not a valid table")
   }
   if ("person_id" %in% colnames(x) && "subject_id" %in% colnames(x)) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "x can only contain an individual identifier, please remove 'person_id'",
       " or 'subject_id'"
     ))
   }
   if (!("person_id" %in% colnames(x)) && !("subject_id" %in% colnames(x))) {
-    stop(paste0(
+    cli::cli_abort(paste0(
       "x must contain an individual identifier ('person_id'",
       " or 'subject_id')"
     ))
@@ -74,12 +76,12 @@ checkX <- function(x) {
 #' @noRd
 checkCdm <- function(cdm, tables = NULL) {
   if (!isTRUE(inherits(cdm, "cdm_reference"))) {
-    stop("cdm must be a CDMConnector CDM reference object")
+    cli::cli_abort("cdm must be a CDMConnector CDM reference object")
   }
   if (!is.null(tables)) {
     tables <- tables[!(tables %in% names(cdm))]
     if (length(tables) > 0) {
-      stop(paste0(
+      cli::cli_abort(paste0(
         "tables: ",
         paste0(tables, collapse = ", "),
         "are nor present in the cdm object"
@@ -93,7 +95,7 @@ checkCdm <- function(cdm, tables = NULL) {
 checkIndexDate <- function(indexDate, x) {
   checkmate::assertCharacter(indexDate, any.missing = FALSE, len = 1)
   if (!(indexDate %in% colnames(x))) {
-    stop(glue::glue("indexDate ({indexDate}) should be a column in x"))
+    cli::cli_abort(glue::glue("indexDate ({indexDate}) should be a column in x"))
   }
   invisible(NULL)
 }
@@ -114,7 +116,7 @@ checkCategory <- function (category) {
     if (length(x) == 1) {
       x <- c(x, x)
     } else if (length(x) > 2) {
-      stop(
+      cli::cli_abort(
         paste0(
           "Categories should be formed by a lower bound and an upper bound, ",
           "no more than two elements should be provided."
@@ -130,7 +132,7 @@ checkCategory <- function (category) {
     x[1] <= x[2]
   }))
   if (!(all(checkLower))) {
-    stop("Lower bound should be equal or smaller than upper bound")
+    cli::cli_abort("Lower bound should be equal or smaller than upper bound")
   }
 
   # built tibble
@@ -151,7 +153,7 @@ checkCategory <- function (category) {
     lower <- result$lower_bound[2:nrow(result)]
     upper <- result$upper_bound[1:(nrow(result)-1)]
     if (!all(lower > upper)) {
-      stop("There can not be overlap between categories")
+      cli::cli_abort("There can not be overlap between categories")
     }
   }
   return(result)
