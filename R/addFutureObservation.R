@@ -1,6 +1,5 @@
 
-#' Add a column to the current tibble with the prior history of the subject_id at a
-#' certain date
+#' Add a column with the days of future observation for an individual
 #'
 #' @param x cohort table to which add prior history to
 #' @param cdm object containing the person table
@@ -9,7 +8,7 @@
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
-#' @return cohort table with added column containing prior history of the
+#' @return cohort table with added column containing future observation of the
 #' individuals
 #' @export
 #'
@@ -57,12 +56,12 @@
 #'
 #'   )
 #'
-#' result <- cdm$cohort1 %>% addPriorHistory(cdm)
+#' result <- cdm$cohort1 %>% addFutureObservation(cdm)
 #' }
-addPriorHistory <- function(x,
+addFutureObservation <- function(x,
                             cdm,
                             indexDate = "cohort_start_date",
-                            name = "prior_history",
+                            name = "future_observation",
                             tablePrefix = NULL) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
@@ -139,7 +138,7 @@ addPriorHistory <- function(x,
                      by = "subject_id")
 
   x <- x %>%
-   dplyr::mutate(!!!priorHistoryQuery(indexDate, name = name)) %>%
+   dplyr::mutate(!!!futureObservationQuery(indexDate, name = name)) %>%
    dplyr::select(!c("observation_period_start_date",
                     "observation_period_end_date"))
 

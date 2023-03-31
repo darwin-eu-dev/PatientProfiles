@@ -89,37 +89,28 @@ addSex <- function(x,
 
   # Start code
 
-  name <- rlang::enquo(name)
-  if("subject_id" %in% colnames(x)){
-    x <- cdm[["person"]] %>%
-      dplyr::rename("subject_id" = "person_id") %>%
-      dplyr::inner_join(
-        x %>% dplyr::select("subject_id") %>% dplyr::distinct(),
-        by = c("subject_id")
-      ) %>%
-      dplyr::mutate(!!name := dplyr::case_when(
-        .data$gender_concept_id == 8507 ~ "Male",
-        .data$gender_concept_id == 8532 ~ "Female",
-        TRUE ~ as.character(NA)
-      )) %>%
-      dplyr::select("subject_id", !!name) %>%
-      dplyr::right_join(x, by = "subject_id") %>%
-      dplyr::select(dplyr::all_of(colnames(x)), !!name)
-  } else {
-    x <- cdm[["person"]] %>%
-      dplyr::inner_join(
-        x %>% dplyr::select("person_id") %>% dplyr::distinct(),
-        by = c("person_id")
-      ) %>%
-      dplyr::mutate(!!name := dplyr::case_when(
-        .data$gender_concept_id == 8507 ~ "Male",
-        .data$gender_concept_id == 8532 ~ "Female",
-        TRUE ~ as.character(NA)
-      )) %>%
-      dplyr::select("person_id", !!name) %>%
-      dplyr::right_join(x, by = "person_id") %>%
-      dplyr::select(dplyr::all_of(colnames(x)), !!name)
+  xType <- dplyr::if_else("person_id" %in% names(x),
+                          "cdm_table", "cohort")
+  startNames <- names(x)
+  if(xType == "cdm_table"){
+    x <- x %>%
+      dplyr::rename("subject_id" = "person_id")
   }
+
+ x <- x %>%
+   dplyr::inner_join(
+   cdm[["person"]] %>%
+      dplyr::select("person_id", "gender_concept_id") %>%
+      dplyr::rename("subject_id" = "person_id"),
+   by = c("subject_id")) %>%
+   dplyr::mutate(!!!sexQuery(name = name)) %>%
+   dplyr::select(!"gender_concept_id")
+
+ if(xType == "cdm_table"){
+   x <- x %>%
+     dplyr::rename("person_id" = "subject_id")
+ }
+
   if(is.null(tablePrefix)){
     x <- x %>%
       CDMConnector::computeQuery()

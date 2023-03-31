@@ -195,16 +195,11 @@ addAge <- function(x,
         .data$day_of_birth1
       )
     )) %>%
-    dplyr::mutate(!!name := floor(dbplyr::sql(
-      sqlGetAge(
-        dialect = CDMConnector::dbms(cdm),
-        dob = "birth_date",
-        dateOfInterest = indexDate
-      )
-    ))) %>%
+    dplyr::mutate(!!!ageQuery(indexDate, name = name)) %>%
     dplyr::select(dplyr::all_of(c("subject_id", indexDate, name))) %>%
     dplyr::right_join(x, by = c("subject_id", indexDate)) %>%
     dplyr::select(dplyr::all_of(c(colnames(x), name)))
+
   if (is.null(tablePrefix)) {
     person <- person %>%
       CDMConnector::computeQuery()
