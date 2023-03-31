@@ -12,7 +12,7 @@ varyingParameters <- function(parameters) {
 checkName <- function(name, parameters) {
   checkmate::assertCharacter(name, len = 1, min.chars = 1, any.missing = FALSE)
   x <- varyingParameters(parameters)
-  elements <- str_match_all(name, "\\{([^\\{\\}]+)\\}")
+  elements <- stringr::str_match_all(name, "\\{([^\\{\\}]+)\\}")
   elements <- elements[[1]][, 2]
   x <- x[!(x %in% elements)]
   if (length(x) > 0) {
@@ -65,7 +65,10 @@ checkX <- function(x) {
       " or 'subject_id')"
     ))
   }
-  return(dplyr::if_else("person_id" %in% colnames(x), "cdm_table", "cohort"))
+  person_variable <- dplyr::if_else(
+    "person_id" %in% colnames(x), "person_id", "subject_id"
+  )
+  return(person_variable)
 }
 
 #' @noRd
@@ -277,6 +280,8 @@ checkNewName <- function(name, x) {
       warning(glue::glue(
         "{name[k]} already exists in x, it was renamed to {newName}"
       ))
+      name[k] <- newName
     }
   }
+  return(name)
 }

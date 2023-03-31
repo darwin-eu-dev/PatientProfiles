@@ -30,73 +30,50 @@ addInObservation <- function(x,
                              tablePrefix = NULL) {
 
   ## check for standard types of user error
-  person_vaiable <- checkX(x)
+  person_variable <- checkX(x)
   checkCdm(cdm, c("observation_period"))
-  checkIndexDate(indexDate,x)
+  checkIndexDate(indexDate, x)
   checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
   name <- checkNewName(name, x)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
   # Start code
-  name = rlang::enquo(name)
+  name <- rlang::enquo(name)
 
-  if("subject_id" %in% colnames(x)) {
-    x <- x %>%
-      dplyr::left_join(
-        cdm$observation_period %>%
-          dplyr::select(
-            "subject_id" = "person_id",
-            "observation_period_start_date",
-            "observation_period_end_date"
-          ),
-        by = "subject_id"
-      ) %>%
-      dplyr::mutate(
-        !!name := dplyr::if_else(
-          .data[[indexDate]] >= .data$observation_period_start_date &
-            .data[[indexDate]] <= .data$observation_period_end_date,
-          1,
-          0
-        )
-      ) %>%
-      dplyr::select(
-        -"observation_period_start_date", - "observation_period_end_date"
-      )
-  } else {
-    x <- x %>%
-      dplyr::left_join(
-        cdm$observation_period %>%
-          dplyr::select(
-            "person_id",
-            "observation_period_start_date",
-            "observation_period_end_date"
-          ),
-        by = "person_id"
-      ) %>%
-      dplyr::mutate(
-        !!name := dplyr::if_else(
-          .data[[indexDate]] >= .data$observation_period_start_date &
-            .data[[indexDate]] <= .data$observation_period_end_date,
-          1,
-          0
-        )
-      ) %>%
-      dplyr::select(
-        -"observation_period_start_date", - "observation_period_end_date"
-      )
-  }
+  x <- x %>%
+    dplyr::left_join(
+      cdm$observation_period %>%
+        dplyr::select(
+          !!person_variable := "person_id",
+          "observation_period_start_date",
+          "observation_period_end_date"
+        ),
+      by = person_variable
+    ) %>%
+    dplyr::mutate(
+      !!name := as.numeric(dplyr::if_else(
+        .data[[indexDate]] >= .data$observation_period_start_date &
+          .data[[indexDate]] <= .data$observation_period_end_date,
+        1,
+        0
+      ))
+    ) %>%
+    dplyr::select(
+      -"observation_period_start_date", -"observation_period_end_date"
+    )
 
-  if(is.null(tablePrefix)){
+  if (is.null(tablePrefix)) {
     x <- x %>%
       CDMConnector::computeQuery()
   } else {
     x <- x %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_person_sample"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
+      CDMConnector::computeQuery(
+        name = paste0(tablePrefix, "_with_observation"),
+        temporary = FALSE,
+        schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
-  return(x)
 
+  return(x)
 }

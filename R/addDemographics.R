@@ -55,7 +55,7 @@ addDemographics <- function(x,
                             tablePrefix = NULL) {
 
   ## check for standard types of user error
-  person_vaiable <- checkX(x)
+  person_variable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
   checkIndexDate(indexDate,x)
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
@@ -76,30 +76,27 @@ addDemographics <- function(x,
   # Start code
   startNames <- names(x)
 
-  person_vaiable <- dplyr::if_else("person_id" %in% names(x),
-                                   "person_id", "subject_id")
-
   personDetails <- cdm[["person"]] %>%
     dplyr::select("person_id",
                   "gender_concept_id",
                   "year_of_birth",
                   "month_of_birth",
                   "day_of_birth") %>%
-    dplyr::rename(!!person_vaiable := "person_id")
+    dplyr::rename(!!person_variable := "person_id")
 
   if (priorHistory == TRUE || furureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
     obsPeriodDetails <- x %>%
-      dplyr::select(dplyr::all_of(c(person_vaiable, indexDate))) %>%
+      dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
       dplyr::distinct() %>%
       dplyr::inner_join(cdm[["observation_period"]] %>%
-        dplyr::rename(!!person_vaiable := "person_id") %>%
+        dplyr::rename(!!person_variable := "person_id") %>%
         dplyr::select(
-          dplyr::all_of(person_vaiable),
+          dplyr::all_of(person_variable),
           "observation_period_start_date",
           "observation_period_end_date"
         ),
-      by = person_vaiable
+      by = person_variable
       ) %>%
       dplyr::filter(.data$observation_period_start_date <=
         !!rlang::sym(indexDate) &
@@ -148,17 +145,17 @@ addDemographics <- function(x,
 
   x <- x  %>%
     dplyr::left_join(personDetails %>%
-                       dplyr::select(dplyr::any_of(c(person_vaiable,
+                       dplyr::select(dplyr::any_of(c(person_variable,
                                                      "birth_date",
                                                      "gender_concept_id",
                                                      "observation_period_start_date",
                                                      "observation_period_end_date"))),
-                     by = person_vaiable)
+                     by = person_variable)
 
   if(priorHistory == TRUE || furureObservation == TRUE) {
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
-                       by= c(person_vaiable, indexDate))
+                       by= c(person_variable, indexDate))
   }
 
   if(age == TRUE) {

@@ -60,7 +60,7 @@ addCategories <- function(x,
 
   checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)
   checkmate::assertTRUE(variable %in% colnames(x))
-  checkmate::assertNumeric(dplyr::pull(head(x, 1), variable))
+  checkmate::assertNumeric(dplyr::pull(utils::head(x, 1), variable))
   checkmate::assertList(
     categories, types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
