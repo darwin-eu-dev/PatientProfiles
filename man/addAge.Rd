@@ -9,7 +9,7 @@ addAge(
   x,
   cdm,
   indexDate = "cohort_start_date",
-  name = "age",
+  ageName = "age",
   ageGroup = NULL,
   ageDefaultMonth = 1,
   ageDefaultDay = 1,
@@ -27,7 +27,7 @@ cdm reference.}
 
 \item{indexDate}{Variable that points the date to compute the age.}
 
-\item{name}{Name of the new column that contains age.}
+\item{ageName}{Name of the new column that contains age.}
 
 \item{ageGroup}{List of age groups to be added.}
 

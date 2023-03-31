@@ -4,7 +4,7 @@
 \alias{addSex}
 \title{Adds a column with sex information to the individuals of a table}
 \usage{
-addSex(x, cdm, name = "sex", tablePrefix = NULL)
+addSex(x, cdm, sexName = "sex", tablePrefix = NULL)
 }
 \arguments{
 \item{x}{cohort table to which add Sex}
@@ -12,7 +12,7 @@ addSex(x, cdm, name = "sex", tablePrefix = NULL)
 \item{cdm}{object containing the person table with the sex information
 in gender_concept_id column}
 
-\item{name}{name of the new column to be added}
+\item{sexName}{name of the new column to be added}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}

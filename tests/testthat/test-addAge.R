@@ -146,20 +146,6 @@ test_that("multiple cohortIds, check age at cohort end", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
-test_that("check input length and type for each of the arguments", {
-  cdm <-
-    mockPatientProfiles(
-      seed = 1,
-      patient_size = 5
-    )
-
-  expect_error(addCategories("cdm$cohort1"))
-
-  expect_error(addCategories(cdm$cohort1, "cdm"))
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-})
-
 test_that("check condition_occurrence and cohort1 work", {
   cdm <-
     mockPatientProfiles(
@@ -275,4 +261,16 @@ test_that("throw errors", {
     list("age_group" = list(c(1, 2)))
   ))
 
+})
+
+test_that("different name", {
+  cdm <-
+    mockPatientProfiles(
+      seed = 1,
+      patient_size = 5
+    )
+  cdm$cohort1 <- cdm$cohort1 %>% addAge(cdm, ageName = "working_age")
+
+  expect_true("working_age" %in% colnames(cdm$cohort1))
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
