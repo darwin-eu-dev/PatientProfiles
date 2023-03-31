@@ -117,7 +117,6 @@ test_that("check expected errors", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
-
 test_that("multiple cohortIds, check age at cohort end", {
   cohort1 <- tibble::tibble(
     cohort_definition_id = c("1", "2", "3"),
@@ -144,5 +143,17 @@ test_that("multiple cohortIds, check age at cohort end", {
   expect_true(identical(result$subject_id, c("1", "2", "3")))
   expect_true(identical(result$age, c(15, 13, NA)))
 
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+test_that("different name", {
+  cdm <-
+    mockPatientProfiles(
+      seed = 1,
+      patient_size = 5
+    )
+  cdm$cohort1 <- cdm$cohort1 %>% addAge(cdm, ageName = "working_age")
+
+  expect_true("working_age" %in% colnames(cdm$cohort1))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

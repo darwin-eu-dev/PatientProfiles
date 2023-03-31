@@ -5,7 +5,7 @@
 #' @param x cohort table to which add prior history to
 #' @param cdm object containing the person table
 #' @param indexDate name of the date field to use as date in table x
-#' @param name name of the new column to be added
+#' @param priorHistoryName name of the new column to be added
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -62,7 +62,7 @@
 addPriorHistory <- function(x,
                             cdm,
                             indexDate = "cohort_start_date",
-                            name = "prior_history",
+                            priorHistoryName = "prior_history",
                             tablePrefix = NULL) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
@@ -81,7 +81,7 @@ addPriorHistory <- function(x,
 
   # check if indexDate length = 1 and is in table x
   checkmate::assertCharacter(indexDate, len = 1, add = errorMessage)
-  checkmate::assertCharacter(name, len = 1,
+  checkmate::assertCharacter(priorHistoryName, len = 1,
                              add = errorMessage,
   )
   priorHistoryExists <- indexDate %in% colnames(x)
@@ -105,54 +105,17 @@ addPriorHistory <- function(x,
 
   checkmate::reportAssertions(collection = errorMessage)
 
-  # rename so x contain subject_id
-  xType <- dplyr::if_else("person_id" %in% names(x),
-                          "cdm_table", "cohort")
-
-  if(xType == "cdm_table"){
-    x <- x %>%
-      dplyr::rename("subject_id" = "person_id")
-  }
-
-  # add current observation period
   x <- x %>%
-    dplyr::left_join(x %>%
-                       dplyr::select("subject_id",
-                                     indexDate) %>%
-                       dplyr::inner_join(cdm[["observation_period"]]  %>%
-                                           dplyr::rename("subject_id"="person_id") %>%
-                                           dplyr::select("subject_id",
-                                                         "observation_period_start_date",
-                                                         "observation_period_end_date"),
-                                         by = "subject_id") %>%
-                       dplyr::filter(.data$observation_period_start_date <=
-                                       !!rlang::sym(indexDate) &
-                                       .data$observation_period_end_date >=
-                                       !!rlang::sym(indexDate)) %>%
-                       dplyr::select(!indexDate) %>%
-                       dplyr::distinct(),
-                     by = "subject_id")
+    addDemographics(cdm = cdm,
+                    indexDate = indexDate,
+                    age = FALSE,
+                    ageGroup = NULL,
+                    sex = FALSE,
+                    priorHistory = TRUE,
+                    priorHistoryName = priorHistoryName,
+                    furureObservation = FALSE,
+                    tablePrefix = tablePrefix
+    )
 
-  x <- x %>%
-   dplyr::mutate(!!!priorHistoryQuery(indexDate, name = name)) %>%
-   dplyr::select(!c("observation_period_start_date",
-                    "observation_period_end_date"))
-
-  if(xType == "cdm_table"){
-    x <- x %>%
-      dplyr::rename("person_id" = "subject_id")
-  }
-
-  if(is.null(tablePrefix)){
-    x <- x %>%
-      CDMConnector::computeQuery()
-  } else {
-    x <- x %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_person_sample"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
-  }
   return(x)
 }

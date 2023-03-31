@@ -206,7 +206,7 @@ test_that("different name", {
   cdm$condition_occurrence <-
     cdm$condition_occurrence %>%
     addFutureObservation(cdm, indexDate = "condition_start_date",
-                    name = "fh")
+                         futureObservationName = "fh")
   expect_true("fh" %in% names(cdm$condition_occurrence))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -303,7 +303,7 @@ test_that("multiple observation periods", {
   cdm$cohort1a <- cdm$cohort1 %>%
     addFutureObservation(cdm,
                          indexDate = "cohort_end_date",
-                         name= "fh_from_c_end")
+                         futureObservationName = "fh_from_c_end")
   expect_true(all(cdm$cohort1a %>% dplyr::pull("fh_from_c_end") ==
                     as.numeric(difftime(as.Date("2015-01-01"),
                                         as.Date("2013-02-01"),

@@ -184,7 +184,7 @@ test_that("different name", {
   cdm$condition_occurrence <-
     cdm$condition_occurrence %>%
     addPriorHistory(cdm, indexDate = "condition_start_date",
-                    name = "ph")
+                    priorHistoryName = "ph")
   expect_true("ph" %in% names(cdm$condition_occurrence))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)

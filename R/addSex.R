@@ -4,7 +4,7 @@
 #' @param x cohort table to which add Sex
 #' @param cdm object containing the person table with the sex information
 #' in gender_concept_id column
-#' @param name name of the new column to be added
+#' @param sexName name of the new column to be added
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -23,7 +23,7 @@
 #'
 addSex <- function(x,
                    cdm,
-                   name = "sex",
+                   sexName = "sex",
                    tablePrefix = NULL) {
   ## check for standard types of user error
   errorMessage <- checkmate::makeAssertCollection()
@@ -81,7 +81,7 @@ addSex <- function(x,
     )
   }
 
-  checkmate::assertCharacter(name, len = 1,
+  checkmate::assertCharacter(sexName, len = 1,
                              add = errorMessage,
   )
 
@@ -89,38 +89,22 @@ addSex <- function(x,
 
   # Start code
 
-  xType <- dplyr::if_else("person_id" %in% names(x),
-                          "cdm_table", "cohort")
-  startNames <- names(x)
-  if(xType == "cdm_table"){
-    x <- x %>%
-      dplyr::rename("subject_id" = "person_id")
-  }
+  x <- x %>%
+    addDemographics(cdm = cdm,
+                    indexDate = NULL,
+                    age = FALSE,
+                    ageName = FALSE,
+                    ageGroup = NULL,
+                    ageDefaultDay = FALSE,
+                    ageDefaultMonth = FALSE,
+                    ageImposeDay =  FALSE,
+                    ageImposeMonth = FALSE,
+                    sex = TRUE,
+                    sexName = sexName,
+                    priorHistory = FALSE,
+                    furureObservation = FALSE,
+                    tablePrefix = tablePrefix
+    )
 
- x <- x %>%
-   dplyr::inner_join(
-   cdm[["person"]] %>%
-      dplyr::select("person_id", "gender_concept_id") %>%
-      dplyr::rename("subject_id" = "person_id"),
-   by = c("subject_id")) %>%
-   dplyr::mutate(!!!sexQuery(name = name)) %>%
-   dplyr::select(!"gender_concept_id")
-
- if(xType == "cdm_table"){
-   x <- x %>%
-     dplyr::rename("person_id" = "subject_id")
- }
-
-  if(is.null(tablePrefix)){
-    x <- x %>%
-      CDMConnector::computeQuery()
-  } else {
-    x <- x %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_person_sample"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
-  }
   return(x)
 }

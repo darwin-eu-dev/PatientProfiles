@@ -7,7 +7,7 @@
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param indexDate Variable that points the date to compute the age.
-#' @param name Name of the new column that contains age.
+#' @param ageName Name of the new column that contains age.
 #' @param ageGroup List of age groups to be added.
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing
 #' month of birth. By default: 1.
@@ -53,7 +53,7 @@
 addAge <- function(x,
                    cdm,
                    indexDate = "cohort_start_date",
-                   name = "age",
+                   ageName = "age",
                    ageGroup = NULL,
                    ageDefaultMonth = 1,
                    ageDefaultDay = 1,
@@ -118,10 +118,10 @@ addAge <- function(x,
 
   checkmate::reportAssertions(collection = errorMessage)
 
-  checkmate::assertCharacter(name, len = 1, any.missing = FALSE)
-  if (name %in% colnames(x)) {
-    warning(glue::glue("Column {name} found in x and will be overwrite."))
-    x <- x %>% dplyr::select(-dplyr::all_of(name))
+  checkmate::assertCharacter(ageName, len = 1, any.missing = FALSE)
+  if (ageName %in% colnames(x)) {
+    warning(glue::glue("Column {ageName} found in x and will be overwrite."))
+    x <- x %>% dplyr::select(-dplyr::all_of(ageName))
   }
 
   checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
@@ -141,83 +141,23 @@ addAge <- function(x,
     }
   }
 
-  # rename so both x and person table contain subject_id
-  if ("subject_id" %in% colnames(x) == FALSE) {
-    x <- x %>%
-      dplyr::rename("subject_id" = "person_id")
-  } else {
-    x <- x
-  }
+ x <- x %>%
+    addDemographics(cdm = cdm,
+                    indexDate = indexDate,
+                    age = TRUE,
+                    ageName = ageName,
+                    ageGroup = ageGroup,
+                    ageDefaultDay = ageDefaultDay,
+                    ageDefaultMonth = ageDefaultMonth,
+                    ageImposeDay =  ageImposeDay,
+                    ageImposeMonth = ageImposeMonth,
+                    sex = FALSE,
+                    priorHistory = FALSE,
+                    furureObservation = FALSE,
+                    tablePrefix = tablePrefix
+                    )
 
-  person <- cdm[["person"]] %>%
-    dplyr::rename("subject_id" = "person_id") %>%
-    dplyr::inner_join(x %>%
-      dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
-      dplyr::distinct(),
-    by = "subject_id"
-    )
-
-  if (ageImposeMonth == TRUE) {
-    person <- person %>%
-      dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
-  } else {
-    person <- person %>%
-      dplyr::mutate(month_of_birth = dplyr::if_else(
-        is.na(.data$month_of_birth),
-        .env$ageDefaultMonth,
-        .data$month_of_birth
-      ))
-  }
-
-  if (ageImposeDay == TRUE) {
-    person <- person %>%
-      dplyr::mutate(day_of_birth = .env$ageDefaultDay)
-  } else {
-    person <- person %>%
-      dplyr::mutate(day_of_birth = dplyr::if_else(
-        is.na(.data$day_of_birth),
-        .env$ageDefaultDay,
-        .data$day_of_birth
-      ))
-  }
-
-  person <- person %>%
-    dplyr::filter(!is.na(.data$year_of_birth)) %>%
-    dplyr::mutate(year_of_birth1 = as.character(as.integer(.data$year_of_birth))) %>%
-    dplyr::mutate(month_of_birth1 = as.character(as.integer(.data$month_of_birth))) %>%
-    dplyr::mutate(day_of_birth1 = as.character(as.integer(.data$day_of_birth))) %>%
-    dplyr::mutate(birth_date = as.Date(
-      paste0(
-        .data$year_of_birth1,
-        "-",
-        .data$month_of_birth1,
-        "-",
-        .data$day_of_birth1
-      )
-    )) %>%
-    dplyr::mutate(!!!ageQuery(indexDate, name = name)) %>%
-    dplyr::select(dplyr::all_of(c("subject_id", indexDate, name))) %>%
-    dplyr::right_join(x, by = c("subject_id", indexDate)) %>%
-    dplyr::select(dplyr::all_of(c(colnames(x), name)))
-
-  if (is.null(tablePrefix)) {
-    person <- person %>%
-      CDMConnector::computeQuery()
-  } else {
-    person <- person %>%
-      CDMConnector::computeQuery(
-        name = tablePrefix,
-        temporary = FALSE,
-        schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
-      )
-  }
-
-  if (!is.null(ageGroup)) {
-    person <- addCategories(person, cdm, "age", ageGroup, tablePrefix)
-  }
-
-  return(person)
+ return(x)
 }
 
 
