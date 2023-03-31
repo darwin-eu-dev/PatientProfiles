@@ -58,8 +58,8 @@ test_that("working examples", {
 
   result_first <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", value = c("binary","number","quantity"), filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
   result_last <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", value = c("binary","number","quantity"), order = "last", filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
-  result_first_w2 <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", window = c(NA,0), value = c("binary","number","quantity"), filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
-  result_last_w2 <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", window = c(NA,0), value = c("binary","number","quantity"), order = "last", filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
+  result_first_w2 <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", window = c(-Inf,0), value = c("binary","number","quantity"), filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
+  result_last_w2 <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", window = c(-Inf,0), value = c("binary","number","quantity"), order = "last", filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
   result_first_w3 <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", window = c(-30,30), value = c("binary","number","quantity"), filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
   result_last_w3 <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", window = c(-30,30), value = c("binary","number","quantity"), order = "last", filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()
   result_last_w4 <- cdm$cohort1 %>% addTableIntersect(cdm = cdm, tableName = "drug_exposure", order = "last", window = c(-30,40), value = c("binary","number","quantity"), filter = drug_concept_id %in% c(2,3)) %>% dplyr::collect()

@@ -34,7 +34,7 @@ addTableIntersect <- function(x,
                                cdm,
                                tableName,
                                value = c("number", "binary"),
-                               window = c(0, NA),
+                               window = c(0, Inf),
                                filter = NULL,
                                order = "first",
                                name = "{value}_{tableName}_{window}",
@@ -42,6 +42,8 @@ addTableIntersect <- function(x,
 
   ## check for user inputs
   errorMessage <- checkmate::makeAssertCollection()
+
+  window <- checkWindow(window, list = FALSE)
 
   xCheck <- inherits(x, "tbl_dbi")
   if (!isTRUE(xCheck)) {
@@ -60,7 +62,6 @@ addTableIntersect <- function(x,
   if (!isTRUE(tableCheck)) {
     errorMessage$push("- `tableName` is not found in cdm")
   }
-  checkmate::assert_integerish(window, len = 2, null.ok = TRUE)
 
   value_possibilities <- c("number","binary", colnames(cdm[[tableName]]))
 
@@ -111,7 +112,7 @@ addTableIntersect <- function(x,
     dplyr::distinct() %>%
     dplyr::inner_join(overlaptable, by = "subject_id")
 
-  if (!is.na(window[2])) {
+  if (!is.infinite(window[2])) {
     result <- result %>%
       dplyr::mutate(overlap_start_date = as.Date(dbplyr::sql(
         CDMConnector::dateadd(date = "overlap_start_date",
@@ -119,7 +120,7 @@ addTableIntersect <- function(x,
       ))) %>%
       dplyr::filter(.data$cohort_start_date >= .data$overlap_start_date)
   }
-  if (!is.na(window[1])) {
+  if (!is.infinite(window[1])) {
     result <- result %>%
       dplyr::mutate(overlap_end_date = as.Date(dbplyr::sql(
         CDMConnector::dateadd(date = "overlap_end_date",
@@ -129,8 +130,8 @@ addTableIntersect <- function(x,
   }
 
   # get the window as character for the naming of the output columns later
-  window_pre <- ifelse(is.na(window[1]),"NA",as.character(window[1]))
-  window_post <- ifelse(is.na(window[2]),"NA",as.character(window[2]))
+  window_pre <- as.character(window[1])
+  window_post <- as.character(window[2])
 
   # add count and binary
   if ("number" %in% value | "binary" %in% value) {
@@ -167,7 +168,7 @@ addTableIntersect <- function(x,
 
   # add other values from columns in cdm[[tableName]]
   if (any(colnames(cdm[[tableName]]) %in% value)) {
-    window <- ifelse(is.na(window),0,window)
+    window <- ifelse(is.infinite(window),0,window)
     user_columns <-  colnames(cdm[[tableName]])[colnames(cdm[[tableName]]) %in% value]
     counter <- 0
     for(working_column in user_columns) {

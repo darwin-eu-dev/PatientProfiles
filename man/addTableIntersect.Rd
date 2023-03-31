@@ -9,7 +9,7 @@ addTableIntersect(
   cdm,
   tableName,
   value = c("number", "binary"),
-  window = c(0, NA),
+  window = c(0, Inf),
   filter = NULL,
   order = "first",
   name = "{value}_{tableName}_{window}",
