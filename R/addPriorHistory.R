@@ -129,11 +129,6 @@ addPriorHistory <- function(x,
                                        !!rlang::sym(indexDate) &
                                        .data$observation_period_end_date >=
                                        !!rlang::sym(indexDate)) %>%
-                       dplyr::group_by(dplyr::across(dplyr::all_of(c("subject_id", indexDate)))) %>%
-                       dplyr::summarise(observation_period_start_date =
-                                          max(.data$observation_period_start_date, na.rm = TRUE),
-                                        observation_period_end_date =
-                                          max(.data$observation_period_end_date, na.rm = TRUE)) %>%
                        dplyr::select(!indexDate) %>%
                        dplyr::distinct(),
                      by = "subject_id")
