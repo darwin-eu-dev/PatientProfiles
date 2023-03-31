@@ -11,6 +11,7 @@
 #' indexDate
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing
 #' month of birth.
+#' @param ageName Age variable name
 #' @param ageDefaultDay day of the month assigned to individuals
 #' with missing day of birth.
 #' @param ageImposeMonth TRUE or FALSE. Whether the month of the date of birth
@@ -19,11 +20,14 @@
 #' will be considered as missing for all the individuals.
 #' @param ageGroup if not NULL, a list of ageGroup vectors
 #' @param sex TRUE or FALSE. If TRUE, sex will be identified
+#' @param sexName Sex variable name
 #' @param priorHistory TRUE or FALSE. If TRUE, days of between the start
 #' of the current observation period and the indexDate will be calculated
+#' @param priorHistoryName Prior history variable name
 #' @param furureObservation TRUE or FALSE. If TRUE, days between the
 #' indexDate and the end of the current observation period will be
 #' calculated
+#' @param futureObservationName Future observation variable name
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -44,14 +48,18 @@ addDemographics <- function(x,
                             cdm,
                             indexDate = "cohort_start_date",
                             age = TRUE,
+                            ageName = "age",
                             ageDefaultMonth = 1,
                             ageDefaultDay = 1,
                             ageImposeMonth = TRUE,
                             ageImposeDay = TRUE,
                             ageGroup = NULL,
                             sex = TRUE,
+                            sexName = "sex",
                             priorHistory = TRUE,
+                            priorHistoryName = "prior_history",
                             furureObservation = TRUE,
+                            futureObservationName = "future_observation",
                             tablePrefix = NULL) {
 
   ## check for standard types of user error
@@ -74,12 +82,15 @@ addDemographics <- function(x,
   errorMessage <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(indexDate, len = 1,
                              add = errorMessage,
+                             null.ok = TRUE
   )
+  if(!is.null(indexDate)){
   column1Check <- indexDate %in% colnames(x)
   if (!isTRUE(column1Check)) {
     errorMessage$push(
       "- `indexDate` is not a column of x"
     )
+  }
   }
   checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
   if (!is.null(ageGroup)) {
@@ -162,6 +173,7 @@ addDemographics <- function(x,
   }
 
   personDetails <- personDetails %>%
+    dplyr::filter(!is.na(.data$year_of_birth)) %>%
     dplyr::mutate(year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
                   month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
                   day_of_birth1 = as.character(as.integer(.data$day_of_birth))) %>%
@@ -191,25 +203,25 @@ addDemographics <- function(x,
   }
 
   if(age == TRUE) {
-    aQ <- ageQuery(indexDate, name = "age")
+    aQ <- ageQuery(indexDate, name = ageName)
   } else {
     aQ <- NULL
   }
 
   if(sex == TRUE) {
-    sQ <- sexQuery(name = "sex")
+    sQ <- sexQuery(name = sexName)
   } else {
     sQ <- NULL
   }
 
   if(priorHistory == TRUE) {
-    pHQ <- priorHistoryQuery(indexDate, name = "prior_history")
+    pHQ <- priorHistoryQuery(indexDate, name = priorHistoryName)
   } else {
     pHQ <- NULL
   }
 
   if(furureObservation == TRUE) {
-    fOQ <- futureObservationQuery(indexDate, name = "future_observation")
+    fOQ <- futureObservationQuery(indexDate, name = futureObservationName)
   } else {
     fOQ <- NULL
   }
@@ -222,9 +234,9 @@ addDemographics <- function(x,
 
   x <- x %>%
     dplyr::select(dplyr::all_of(startNames),
-                  dplyr::any_of(c("age", "sex",
-                                  "prior_history",
-                                  "future_observation")))
+                  dplyr::any_of(c(ageName, sexName,
+                                  priorHistoryName,
+                                  futureObservationName)))
 
   if(is.null(tablePrefix)){
     x <- x %>%

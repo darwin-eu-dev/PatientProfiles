@@ -9,7 +9,7 @@ addPriorHistory(
   x,
   cdm,
   indexDate = "cohort_start_date",
-  name = "prior_history",
+  priorHistoryName = "prior_history",
   tablePrefix = NULL
 )
 }
@@ -20,7 +20,7 @@ addPriorHistory(
 
 \item{indexDate}{name of the date field to use as date in table x}
 
-\item{name}{name of the new column to be added}
+\item{priorHistoryName}{name of the new column to be added}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
