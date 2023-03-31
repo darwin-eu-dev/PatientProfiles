@@ -65,13 +65,14 @@ addDemographics <- function(x,
   ## check for standard types of user error
   person_variable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
-  checkIndexDate(indexDate,x)
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
   checkmate::assertIntegerish(
-    ageDefaultMonth, lower = 1, upper = 31, any.missing = FALSE, len = 1
+    ageDefaultMonth, lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    null.ok = !age
   )
   checkmate::assertIntegerish(
-    ageDefaultDay, lower = 1, upper = 31, any.missing = FALSE, len = 1
+    ageDefaultDay, lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    null.ok = !age
   )
   checkmate::assertLogical(ageImposeMonth, any.missing = FALSE, len = 1)
   checkmate::assertLogical(ageImposeDay, any.missing = FALSE, len = 1)
@@ -80,6 +81,10 @@ addDemographics <- function(x,
   checkmate::assertLogical(priorHistory, any.missing = FALSE, len = 1)
   checkmate::assertLogical(furureObservation, any.missing = FALSE, len = 1)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  checkIndexDate(indexDate, x, !(age | priorHistory | furureObservation))
+  if (!(age | sex | priorHistory | furureObservation)) {
+    cli::cli_abort("age, sex, priorHistory, furureObservation can not be FALSE")
+  }
 
   # Start code
   startNames <- names(x)
@@ -113,28 +118,31 @@ addDemographics <- function(x,
   }
 
   # update dates
-  if (ageImposeMonth == TRUE) {
-    personDetails <- personDetails %>%
-      dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
-  } else {
-    personDetails <- personDetails %>%
-      dplyr::mutate(month_of_birth = dplyr::if_else(
-        is.na(.data$month_of_birth),
-        .env$ageDefaultMonth,
-        .data$month_of_birth
-      ))
-  }
-
-  if (ageImposeDay == TRUE) {
-    personDetails <- personDetails %>%
-      dplyr::mutate(day_of_birth = .env$ageDefaultDay)
-  } else {
-    personDetails <- personDetails %>%
-      dplyr::mutate(day_of_birth = dplyr::if_else(
-        is.na(.data$day_of_birth),
-        .env$ageDefaultDay,
-        .data$day_of_birth
-      ))
+  if (age) {
+    # impose month
+    if (ageImposeMonth == TRUE) {
+      personDetails <- personDetails %>%
+        dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
+    } else {
+      personDetails <- personDetails %>%
+        dplyr::mutate(month_of_birth = dplyr::if_else(
+          is.na(.data$month_of_birth),
+          .env$ageDefaultMonth,
+          .data$month_of_birth
+        ))
+    }
+    # impose day
+    if (ageImposeDay == TRUE) {
+      personDetails <- personDetails %>%
+        dplyr::mutate(day_of_birth = .env$ageDefaultDay)
+    } else {
+      personDetails <- personDetails %>%
+        dplyr::mutate(day_of_birth = dplyr::if_else(
+          is.na(.data$day_of_birth),
+          .env$ageDefaultDay,
+          .data$day_of_birth
+        ))
+    }
   }
 
   personDetails <- personDetails %>%

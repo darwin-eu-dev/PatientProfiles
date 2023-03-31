@@ -92,9 +92,11 @@ checkCdm <- function(cdm, tables = NULL) {
 }
 
 #' @noRd
-checkIndexDate <- function(indexDate, x) {
-  checkmate::assertCharacter(indexDate, any.missing = FALSE, len = 1)
-  if (!(indexDate %in% colnames(x))) {
+checkIndexDate <- function(indexDate, x, nullOk = FALSE) {
+  checkmate::assertCharacter(
+    indexDate, any.missing = FALSE, len = 1, null.ok = nullOk
+  )
+  if (!is.null(indexDate) && !(indexDate %in% colnames(x))) {
     cli::cli_abort(glue::glue("indexDate ({indexDate}) should be a column in x"))
   }
   invisible(NULL)
