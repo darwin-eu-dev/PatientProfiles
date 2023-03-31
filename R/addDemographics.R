@@ -142,9 +142,9 @@ addDemographics <- function(x,
       by = person_vaiable
       ) %>%
       dplyr::filter(.data$observation_period_start_date <=
-        !!rlang::sym(indexDate) &
+                      .data[[indexDate]] &
         .data$observation_period_end_date >=
-          !!rlang::sym(indexDate))
+      .data[[indexDate]])
   }
 
   # update dates
