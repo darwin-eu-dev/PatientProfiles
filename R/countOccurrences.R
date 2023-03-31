@@ -91,7 +91,7 @@ countOccurrences <- function(x, cdm, tableName, cohortId = NULL,
   # Checks done in the internal addCohortIntersect function
 
   x <- x %>%
-    addCohortIntersect(cdm, tableName, cohortId = cohortId, value = "count",
+    addIntersect(cdm, tableName, cohortId = cohortId, value = "count",
                        indexDate = indexDate, targetStartDate = targetStartDate,
                        targetEndDate = targetEndDate, window = window,
                        nameStyle = nameStyle, tablePrefix = tablePrefix) %>%

@@ -90,7 +90,7 @@ flagPresence <- function(x, cdm, tableName, cohortId = NULL,
   # Checks done in the internal addCohortIntersect function
 
   x <- x %>%
-    addCohortIntersect(cdm, tableName, cohortId = cohortId, value = "flag",
+    addIntersect(cdm, tableName, cohortId = cohortId, value = "flag",
                        indexDate = indexDate, targetStartDate = targetStartDate,
                        targetEndDate = targetEndDate, window = window,
                        nameStyle = nameStyle, tablePrefix = tablePrefix) %>%
