@@ -56,7 +56,7 @@ addDemographics <- function(x,
 
   ## check for standard types of user error
   person_vaiable <- checkX(x)
-  checkCdm(cdm)
+  checkCdm(cdm, c("person", "observation_period"))
   checkIndexDate(indexDate,x)
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
   checkmate::assertIntegerish(

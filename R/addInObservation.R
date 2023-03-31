@@ -31,77 +31,11 @@ addInObservation <- function(x,
 
   ## check for standard types of user error
   person_vaiable <- checkX(x)
-  checkCdm(cdm)
+  checkCdm(cdm, c("observation_period"))
   checkIndexDate(indexDate,x)
   checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
   name <- checkNewName(name, x)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
-
-  ObsperiodExists <- "observation_period" %in% names(cdm)
-  if (!isTRUE(ObsperiodExists)) {
-    errorMessage$push(
-      "- `observation_period` is not found in cdm"
-    )
-  }
-
-  cdmObsPeriodCheck <- inherits(cdm$observation_period, "tbl_dbi")
-  if (!isTRUE(cdmObsPeriodCheck)) {
-    errorMessage$push(
-      "- `observation_period` in cdm is not a table "
-    )
-  }
-  checkmate::reportAssertions(collection = errorMessage)
-
-  errorMessage <- checkmate::makeAssertCollection()
-
-  checkmate::assertCharacter(indexDate, len = 1,
-                             add = errorMessage,
-  )
-
-  column1Check <- indexDate %in% colnames(x)
-  if (!isTRUE(column1Check)) {
-    errorMessage$push(
-      "- `indexDate` is not a column of x"
-    )
-  }
-
-  column2Check <- ("subject_id" %in% colnames(x) || "person_id" %in% colnames(x))
-  if (!isTRUE(column2Check)) {
-    errorMessage$push(
-      "- neither `subject_id` nor `person_id` are columns of x"
-    )
-  }
-
-  column3Check <- "person_id" %in% colnames(cdm$observation_period)
-  if (!isTRUE(column3Check)) {
-    errorMessage$push(
-      "- `person_id` is not a column of cdm$observation_period"
-    )
-  }
-
-  column4Check <- "observation_period_start_date" %in% colnames(cdm$observation_period)
-  if (!isTRUE(column3Check)) {
-    errorMessage$push(
-      "- `observation_period_start_date` is not a column of cdm$observation_period"
-    )
-  }
-
-  column5Check <- "observation_period_end_date" %in% colnames(cdm$observation_period)
-  if (!isTRUE(column5Check)) {
-    errorMessage$push(
-      "- `observation_period_end_date` is not a column of cdm$observation_period"
-    )
-  }
-
-  checkmate::assertCharacter(name, len = 1,
-                             add = errorMessage,
-  )
-
-  checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
-  )
-
-  checkmate::reportAssertions(collection = errorMessage)
 
   # Start code
   name = rlang::enquo(name)

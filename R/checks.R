@@ -69,9 +69,19 @@ checkX <- function(x) {
 }
 
 #' @noRd
-checkCdm <- function(cdm) {
+checkCdm <- function(cdm, tables = NULL) {
   if (!isTRUE(inherits(cdm, "cdm_reference"))) {
     stop("cdm must be a CDMConnector CDM reference object")
+  }
+  if (!is.null(tables)) {
+    tables <- tables[!(tables %in% names(cdm))]
+    if (length(tables) > 0) {
+      stop(paste0(
+        "tables: ",
+        paste0(tables, collapse = ", "),
+        "are nor present in the cdm object"
+      ))
+    }
   }
   invisible(NULL)
 }
