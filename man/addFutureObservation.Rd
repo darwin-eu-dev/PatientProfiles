@@ -8,7 +8,7 @@ addFutureObservation(
   x,
   cdm,
   indexDate = "cohort_start_date",
-  name = "future_observation",
+  futureObservationName = "future_observation",
   tablePrefix = NULL
 )
 }
@@ -19,7 +19,7 @@ addFutureObservation(
 
 \item{indexDate}{name of the date field to use as date in table x}
 
-\item{name}{name of the new column to be added}
+\item{futureObservationName}{name of the new column to be added}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
