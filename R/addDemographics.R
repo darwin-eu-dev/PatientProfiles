@@ -116,17 +116,24 @@ addDemographics <- function(x,
                   "day_of_birth") %>%
     dplyr::rename(!!person_vaiable := "person_id")
 
-  if(priorHistory == TRUE || furureObservation == TRUE) {
+  if (priorHistory == TRUE || furureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
     obsPeriodDetails <- x %>%
-                         dplyr::select(person_vaiable) %>%
-                         dplyr::distinct() %>%
-                         dplyr::inner_join(cdm[["observation_period"]]  %>%
-                                             dplyr::rename(!!person_vaiable := "person_id") %>%
-                                             dplyr::select(dplyr::all_of(person_vaiable),
-                                                           "observation_period_start_date",
-                                                           "observation_period_end_date"),
-                                           by = person_vaiable)
+      dplyr::select(dplyr::all_of(c(person_vaiable, indexDate))) %>%
+      dplyr::distinct() %>%
+      dplyr::inner_join(cdm[["observation_period"]] %>%
+        dplyr::rename(!!person_vaiable := "person_id") %>%
+        dplyr::select(
+          dplyr::all_of(person_vaiable),
+          "observation_period_start_date",
+          "observation_period_end_date"
+        ),
+      by = person_vaiable
+      ) %>%
+      dplyr::filter(.data$observation_period_start_date <=
+        !!rlang::sym(indexDate) &
+        .data$observation_period_end_date >=
+          !!rlang::sym(indexDate))
   }
 
   # update dates
@@ -178,29 +185,9 @@ addDemographics <- function(x,
                      by = person_vaiable)
 
   if(priorHistory == TRUE || furureObservation == TRUE) {
-    x <- x  %>%
-      dplyr::mutate(row_id = dplyr::row_number())
-
-    # use the closest obs start
-    # (in case we have multiple rows and multiple observation periods)
-    obsPeriodDetails <- x %>%
-      dplyr::left_join(obsPeriodDetails,
-                       by = person_vaiable) %>%
-      dplyr::filter(.data$observation_period_start_date <=
-                      !!rlang::sym(indexDate) &
-                      .data$observation_period_end_date >=
-                      !!rlang::sym(indexDate)) %>%
-      dplyr::group_by(dplyr::across(dplyr::all_of(c(person_vaiable, indexDate,
-                                                    "row_id")))) %>%
-      dplyr::summarise(observation_period_start_date =
-                         max(.data$observation_period_start_date, na.rm = TRUE)) %>%
-      dplyr::left_join(obsPeriodDetails,
-                       by= c(person_vaiable, "observation_period_start_date"))
-
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
-                       by= c(person_vaiable, indexDate, "row_id")) %>%
-      dplyr::select(!"row_id")
+                       by= c(person_vaiable, indexDate))
   }
 
   if(age == TRUE) {
