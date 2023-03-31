@@ -60,14 +60,18 @@ PriorHistory, and ageGroup if desired</p>
 <span>  <span class="va">cdm</span>,</span>
 <span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>  age <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ageName <span class="op">=</span> <span class="st">"age"</span>,</span>
 <span>  ageDefaultMonth <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ageDefaultDay <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ageImposeMonth <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ageImposeDay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ageGroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sexName <span class="op">=</span> <span class="st">"sex"</span>,</span>
 <span>  priorHistory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  priorHistoryName <span class="op">=</span> <span class="st">"prior_history"</span>,</span>
 <span>  furureObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  futureObservationName <span class="op">=</span> <span class="st">"future_observation"</span>,</span>
 <span>  tablePrefix <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -91,6 +95,10 @@ demographic information</p></dd>
 <dt>age</dt>
 <dd><p>TRUE or FALSE. If TRUE, age will be calculated relative to
 indexDate</p></dd>
+
+
+<dt>ageName</dt>
+<dd><p>Age variable name</p></dd>
 
 
 <dt>ageDefaultMonth</dt>
@@ -121,15 +129,27 @@ will be considered as missing for all the individuals.</p></dd>
 <dd><p>TRUE or FALSE. If TRUE, sex will be identified</p></dd>
 
 
+<dt>sexName</dt>
+<dd><p>Sex variable name</p></dd>
+
+
 <dt>priorHistory</dt>
 <dd><p>TRUE or FALSE. If TRUE, days of between the start
 of the current observation period and the indexDate will be calculated</p></dd>
+
+
+<dt>priorHistoryName</dt>
+<dd><p>Prior history variable name</p></dd>
 
 
 <dt>furureObservation</dt>
 <dd><p>TRUE or FALSE. If TRUE, days between the
 indexDate and the end of the current observation period will be
 calculated</p></dd>
+
+
+<dt>futureObservationName</dt>
+<dd><p>Future observation variable name</p></dd>
 
 
 <dt>tablePrefix</dt>
