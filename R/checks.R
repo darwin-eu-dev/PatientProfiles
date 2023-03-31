@@ -1,11 +1,114 @@
+#' @noRd
+varyingParameters <- function(parameters) {
+  x <- lapply(parameters, function(x) {
+    length(unique(x)) == 1
+  }) %>%
+    unlist()
+  x <- names(x[!x])
+  return(x)
+}
+
+#' @noRd
+checkName <- function(name, parameters) {
+  checkmate::assertCharacter(name, len = 1, min.chars = 1, any.missing = FALSE)
+  x <- varyingParameters(parameters)
+  elements <- str_match_all(name, "\\{([^\\{\\}]+)\\}")
+  elements <- elements[[1]][, 2]
+  x <- x[!(x %in% elements)]
+  if (length(x) > 0) {
+    stop(paste0("variables: ", paste0(x, collapse = ", "), " not included in name."))
+  }
+  elements <- elements[!(elements %in% names(parameters))]
+  if (length(elemenets) > 0) {
+    stop(paste0(
+      "variables: ",
+      paste0(elements, collapse = ", "),
+      " contained in name and not included in iput parameters."
+    ))
+  }
+  invisible(NULL)
+}
+
+#' @noRd
+repairName <- function(name, parameters, colnamesTable) {
+  nameEquivalence <- expand.grid(parameters) %>%
+    dplyr::as_tibble() %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(generated_name = glue::glue(.env$name)) %>%
+    dplyr::mutate(corrected_name = .data$generated_name) %>%
+    dplyr::select("generated_name", "corrected_name")
+  k <- 1
+  id <- which(nameEquivalence$generated_name %in% colnamesTable)
+  while (length(id) > 0) {
+    nameEquivalence$corrected_name[id] <-
+      paste0(nameEquivalence$generated_name[id], "_", k)
+    id <- which(nameEquivalence$corrected_name %in% colnamesTable)
+    k <- k + 1
+  }
+  return(nameEquivalence)
+}
+
+#' @noRd
+checkX <- function(x) {
+  if (!isTRUE(inherits(x, "tbl_dbi"))) {
+    stop("x is not a valid table")
+  }
+  if ("person_id" %in% colnames(x) && "subject_id" %in% colnames(x)) {
+    stop(paste0(
+      "x can only contain an individual identifier, please remove 'person_id'",
+      " or 'subject_id'"
+    ))
+  }
+  if (!("person_id" %in% colnames(x)) && !("subject_id" %in% colnames(x))) {
+    stop(paste0(
+      "x must contain an individual identifier ('person_id'",
+      " or 'subject_id')"
+    ))
+  }
+  return(dplyr::if_else("person_id" %in% colnames(x), "cdm_table", "cohort"))
+}
+
+#' @noRd
+checkCdm <- function(cdm) {
+  if (!isTRUE(inherits(cdm, "cdm_reference"))) {
+    stop("cdm must be a CDMConnector CDM reference object")
+  }
+  invisible(NULL)
+}
+
+#' @noRd
+checkIndexDate <- function(indexDate, x) {
+  checkmate::assertCharacter(indexDate, any.missing = FALSE, len = 1)
+  if (!(indexDate %in% colnames(x))) {
+    stop(glue::glue("indexDate ({indexDate}) should be a column in x"))
+  }
+  invisible(NULL)
+}
+
+#' @noRd
+checkAgeGroup <- function(ageGroup) {
+  checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
+  if (!is.null(ageGroup)) {
+    if (is.numeric(ageGroup[[1]])) {
+      ageGroup <- list("age_group" = ageGroup)
+    }
+    for (k in seq_along(ageGroup)) {
+      invisible(checkCategory(ageGroup[[k]]))
+    }
+    if (is.null(names(ageGroup))) {
+      names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
+    }
+    if ("" %in% names(ageGroup)) {
+      id <- which(names(ageGroup) == "")
+      names(ageGroup)[id] <- paste0("age_group_", id)
+    }
+  }
+  return(ageGroup)
+}
+
 #' It checks whether windows are valid
 #' @param window the window input eg (-365, -1)
 #' @return valid window input for functions, or throw error/warnings
-#' @examples
-#' \donttest{
-#' x <- list(1, 2)
-#' checkWindow(x)
-#' }
 #'
 #' @noRd
 checkWindow <- function(window, list = TRUE) {
