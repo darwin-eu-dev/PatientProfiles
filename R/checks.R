@@ -289,3 +289,14 @@ checkNewName <- function(name, x) {
   }
   return(name)
 }
+
+#' @noRd
+getWindowNames <- function(window) {
+  getname <- function(element) {
+    element <- as.character(element)
+    element <- gsub("-", "m", element)
+    return(paste0(element[1],"_to_",element[2]))
+  }
+  windowNames <- lapply(window, getname)
+  return(windowNames)
+}
