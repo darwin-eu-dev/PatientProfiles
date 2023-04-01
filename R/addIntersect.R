@@ -138,74 +138,33 @@ addIntersect <- function(x,
   )
 
   # define overlapcohort table from cdm containing the events of interest
-  overlapCohort <- cdm[[tableName]] %>%
-    #dplyr::filter
+  overlapCohort <- cdm[[tableName]]
+  if (is.null(filterId)) {
+    overlapCohort <- overlapCohort %>%
+      dplyr::filter(.data[[filterVariable]] %in% .env$filterId)
+  } else {
+    filterVariable <- "id"
+    overlapCohort <- dplyr::mutate(overlapCohort, id = 1)
+  }
+  overlapCohort <- overlapCohort %>%
     dplyr::select(
       !!person_variable := dplyr::all_of(person_variable_table),
+      dplyr::all_of(filterVariable),
       "overlap_start_date" = dplyr::all_of(targetStartDate),
       "overlap_end_date" = dplyr::all_of(targetStartDate)
     )
 
-  # generate overlappingcohort using code from getoverlappingcohort
-  # filter by cohortId
-  if (!is.null(cohortId) && !is.null(targetEndDate)) {
-    overlapCohort <- overlapCohort %>%
-      dplyr::rename(
-        "overlap_start_date" = .env$targetStartDate,
-        "overlap_end_date" = .env$targetEndDate,
-        "overlap_id" = dplyr::all_of(conceptIdname)
-      ) %>% dplyr::filter(.data$overlap_id %in% .env$cohortId) %>%
-      CDMConnector::computeQuery()
-  } else if(!is.null(cohortId) && is.null(targetEndDate)) {
-    overlapCohort <- overlapCohort %>%
-      dplyr::rename(
-        "overlap_start_date" = .env$targetStartDate,
-        "overlap_id" = dplyr::all_of(conceptIdname)
-      ) %>% dplyr::filter(.data$overlap_id %in% .env$cohortId) %>%
-      dplyr::mutate(overlap_end_date = .data$overlap_start_date) %>%
-      dplyr::select("overlap_start_date", "overlap_id", "overlap_end_date", "subject_id") %>%
-      CDMConnector::computeQuery()
-  } else if (is.null(cohortId) && !is.null(targetEndDate)){
-    overlapCohort <- overlapCohort %>%
-      dplyr::rename(
-        "overlap_start_date" = .env$targetStartDate,
-        "overlap_end_date" = .env$targetEndDate,
-        "overlap_id" = dplyr::all_of(conceptIdname)
-      ) %>%
-      CDMConnector::computeQuery()
+  result <- x %>%
+    dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
+    dplyr::distinct() %>%
+    dplyr::inner_join(overlapCohort, by = person_variable)
+  if (is.null(tablePrefix)) {
+    result <- CDMConnector::computeQuery(result)
   } else {
-    overlapCohort <- overlapCohort %>%
-      dplyr::rename(
-        "overlap_start_date" = .env$targetStartDate,
-        "overlap_id" = dplyr::all_of(conceptIdname)
-      ) %>%
-      dplyr::mutate(overlap_end_date = .data$overlap_start_date) %>%
-      dplyr::select("overlap_start_date", "overlap_id", "overlap_end_date", "subject_id") %>%
-      CDMConnector::computeQuery()
+    result <- CDMConnector::computeQuery(
+      result, paste0(tablePrefix, "_join"), FALSE, attr(cdm, "cdm_schema"), TRUE
+    )
   }
-
-  if("person_id" %in% colnames(x) && !("subject_id" %in% colnames(x))) {
-    x <- x %>%
-      dplyr::rename("subject_id" = "person_id") %>%
-      CDMConnector::computeQuery()
-  }
-
-    result_cb <- x %>%
-      dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
-      dplyr::distinct() %>%
-      CDMConnector::computeQuery()
-    result_dt <- x %>%
-      dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
-      dplyr::distinct() %>%
-      CDMConnector::computeQuery()
-    result <- x %>%
-      dplyr::select("subject_id", dplyr::all_of(indexDate)) %>%
-      dplyr::distinct() %>%
-      dplyr::inner_join(overlapCohort, by = "subject_id") %>%
-      CDMConnector::computeQuery()
-    columns_interest <- c("subject_id", "overlap_id", indexDate)
-
-  # what if tablePrefix is not NULL? same for all compute -> isn't this okay? we do temporary until in the end we put in permanent table #K
 
   # Start loop for different windows
   for (i in c(1:length(window))) {
