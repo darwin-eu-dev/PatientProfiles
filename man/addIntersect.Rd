@@ -7,9 +7,9 @@
 addIntersect(
   x,
   cdm,
-  cohortTableName,
+  tableName,
   cohortId = NULL,
-  value = NULL,
+  value,
   window = list(c(0, Inf)),
   indexDate = "cohort_start_date",
   targetStartDate = "cohort_start_date",
@@ -25,7 +25,7 @@ be attached as extra columns}
 
 \item{cdm}{cdm containing the tables}
 
-\item{cohortTableName}{name of the cohort that we want to check for overlap}
+\item{tableName}{name of the cohort that we want to check for overlap}
 
 \item{cohortId}{vector of cohort definition ids to include}
 
@@ -111,7 +111,7 @@ cohort2 <- dplyr::tibble(
 cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
 
 result <- cdm$cohort1 \%>\% addCohortIntersect(cdm = cdm,
-cohortTableName = "cohort2", value = "date") \%>\% dplyr::collect()
+tableName = "cohort2", value = "date") \%>\% dplyr::collect()
 }
 
 }
