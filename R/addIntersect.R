@@ -1,4 +1,3 @@
-
 #' It creates columns to indicate overlaps information
 #'
 #' @param x table containing the individual for which the overlap indicator to
@@ -93,97 +92,35 @@ addIntersect <- function(x,
                          order = "first",
                          nameStyle = "{cohortName}_{window}",
                          tablePrefix = NULL) {
-  ## check for user inputs
-  errorMessage <- checkmate::makeAssertCollection()
-
-  xCheck <- inherits(x, "tbl_dbi")
-  if (!isTRUE(xCheck)) {
-    errorMessage$push("- x is not a table")
-  }
-  cdmCheck <- inherits(cdm, "cdm_reference")
-  if (!isTRUE(cdmCheck)) {
-    errorMessage$push("- cdm must be a CDMConnector CDM reference object")
-  }
-  checkmate::reportAssertions(collection = errorMessage)
-
-  ## check for user inputs
-  errorMessage <- checkmate::makeAssertCollection()
-
-  tableCheck <- tableName %in% names(cdm)
-  if (!isTRUE(tableCheck)) {
-    errorMessage$push("- `tableName` is not found in cdm")
-  }
-  checkmate::assert_integerish(cohortId, null.ok = TRUE)
-
+  # initial checks
+  person_variable <- checkX(x)
+  checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
+  checkCdm(cdm, tableName)
+  person_variable_table <- checkX(cdm[[tableName]])
+  checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)
+  checkmate::assertChoice(value, c("flag", "count", "date", "time"))
   window <- checkWindow(window)
+  checkIndexDate(indexDate, x)
+  checkIndexDate(targetStartDate, cdm[[tableName]])
+  checkIndexDate(targetEndDate, cdm[[tableName]], TRUE)
+  checkmate::assertChoice(order, c("first", "last"))
+  # checkNameStyle
+  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
-  checkmate::assert_character(value, len = 1)
-  valueCheck <-
-    value %>% dplyr::intersect(c("count", "flag", "date", "time")) %>% dplyr::setequal(value)
-  if (!isTRUE(valueCheck)) {
-    errorMessage$push("- `value` must be either 'count','flag','date' or 'time' ")
-  }
-
-  orderCheck <- order %in% c("first", "last")
-  if (!isTRUE(orderCheck)) {
-    errorMessage$push("- `order` must be either 'first' or 'last' ")
-  }
-
-  checkmate::assert_character(indexDate, len = 1)
-  checkmate::assert_character(targetStartDate, len = 1)
-  checkmate::assert_character(targetEndDate, len = 1, null.ok = TRUE)
-
-  columnCheck <- targetStartDate %in% colnames(cdm[[tableName]])
-  if (!isTRUE(columnCheck)) {
-    errorMessage$push("- `targetStartdate` is not a column of cdm[[tableName]]")
-  }
-
-  column2Check <- indexDate %in% colnames(x)
-  if (!isTRUE(column2Check)) {
-    errorMessage$push("- `indexDate` is not a column of x")
-  }
-
-  if(!is.null(targetEndDate)) {
-    column3Check <- targetEndDate %in% colnames(cdm[[tableName]])
-    if (!isTRUE(column3Check)) {
-      errorMessage$push("- `targetEndDate` is not a column of cdm[[tableName]]")
-    }
-  }
-
-  if(!is.null(cohortId)) {
-  # Get name of cohorts if available in cdm
-    tryCatch(
-      {cohortName <- CDMConnector::cohortSet(cdm[[tableName]])
-      },
-      error = function(e) {}
-    )
-  # If we cannot get the cohort names, let them be named after the cohort ids
-  if(is.null(cohortName)) {
-    cohortName <- tibble::tibble(cohort_definition_id = cohortId, cohort_name = paste0("cohort",cohortId))
-  }
-  }
-  # If there are no cohorts ids, let the cohort names be "all", implemented directly in the loop
-
-  # Check nameStyle provided contains "window" and "cohortName" parameters
-  parameters <- list("cohortName" = cohortName, "window" = window)
-  checkName(nameStyle, parameters)
-
-  # Change nameStyle to current/new parameter names
-  nameStyle <- sub("window", "window_name", nameStyle)
-  nameStyle <- sub("cohortName", "cohort_name", nameStyle)
+  # to think about how we deal with names
+  # idea:
+  # 1- cohortId --> filterId
+  # 2- add filterVariable argument, by default NULL
+  #    if class(cdm[[tableName]]) == "cohort" --> filterVariable = "cohort_definition_id"
+  #    otherwise check if tableName is a cdm table
+  #    otherwise throw error
+  # 3- add filterName argument, by default NULL
+  #    if class(cdm[[tableName]]) == "cohort" --> filterVariable from cohortSet
+  #    otherwise check if tableName is a cdm table
+  #    otherwise throw error
 
   # Get window names as characters for column names
   windowNames <- getWindowNames(window)
-
-    checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
-  )
-
-  if("person_id" %in% colnames(x) && ("subject_id" %in% colnames(x))) {
-    errorMessage$push("- both `subject_id` and `person_id` cannot be columns of x")
-  }
-
-  checkmate::reportAssertions(collection = errorMessage)
 
   # Start code
   # Get concept id name of the intersection table
@@ -199,14 +136,15 @@ addIntersect <- function(x,
     "condition_era" = "condition_concept_id",
     "specimen" = "specimen_concept_id"
   )
-    conceptIdname <- get_concept[[tableName]]
-
-    if(is.null(conceptIdname)) {
-      conceptIdname <- "cohort_definition_id"
-    }
 
   # define overlapcohort table from cdm containing the events of interest
-  overlapCohort <- cdm[[tableName]]
+  overlapCohort <- cdm[[tableName]] %>%
+    #dplyr::filter
+    dplyr::select(
+      !!person_variable := dplyr::all_of(person_variable_table),
+      "overlap_start_date" = dplyr::all_of(targetStartDate),
+      "overlap_end_date" = dplyr::all_of(targetStartDate)
+    )
 
   # generate overlappingcohort using code from getoverlappingcohort
   # filter by cohortId
