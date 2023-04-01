@@ -1,6 +1,7 @@
 #' It creates categories from a numeric variable.
 #'
 #' @param x Table in the database.
+#' @param cdm cdm reference
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
@@ -49,22 +50,20 @@
 #'   )
 #' }
 addCategories <- function(x,
+                          cdm,
                           variable,
                           categories,
                           tablePrefix = NULL) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
-    stop("x is not a table")
+    cli::cli_abort("x is not a table")
   }
 
   checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)
   checkmate::assertTRUE(variable %in% colnames(x))
-  checkmate::assertNumeric(dplyr::pull(head(x, 1), variable))
-
+  checkmate::assertNumeric(dplyr::pull(utils::head(x, 1), variable))
   checkmate::assertList(
-    categories,
-    types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
+    categories, types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
-
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
   if (is.null(names(categories))) {
@@ -97,7 +96,12 @@ addCategories <- function(x,
     }
     if (!is.null(tablePrefix)) {
       x <- CDMConnector::computeQuery(
-        x, tablePrefix, attr(cdm, "write_schema"), TRUE
+        x,
+        name = paste0(tablePrefix,
+                      "_categories_added"),
+        temporary = FALSE,
+        schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
       )
     } else {
       x <- CDMConnector::computeQuery(x)
@@ -105,63 +109,4 @@ addCategories <- function(x,
   }
 
   return(x)
-}
-
-#' @noRd
-checkCategory <- function (category) {
-  checkmate::assertList(
-    category, types = "integerish", any.missing = FALSE, unique = TRUE,
-    min.len = 1
-  )
-
-  if (is.null(names(category))) {
-    names(category) <- rep("", length(category))
-  }
-
-  # check length
-  category <- lapply(category, function(x) {
-    if (length(x) == 1) {
-      x <- c(x, x)
-    } else if (length(x) > 2) {
-      stop(
-        paste0(
-          "Categories should be formed by a lower bound and an upper bound, ",
-          "no more than two elements should be provided."
-        ),
-        call. = FALSE
-      )
-    }
-    return(x)
-  })
-
-  # check lower bound is smaller than upper bound
-  checkLower <- unlist(lapply(category, function(x) {
-    x[1] <= x[2]
-  }))
-  if (!(all(checkLower))) {
-    stop("Lower bound should be equal or smaller than upper bound")
-  }
-
-  # built tibble
-  result <- lapply(category, function(x) {
-    dplyr::tibble(lower_bound = x[1], upper_bound = x[2])
-  }) %>%
-    dplyr::bind_rows() %>%
-    dplyr::mutate(category_label = names(.env$category)) %>%
-    dplyr::mutate(category_label = dplyr::if_else(
-      .data$category_label == "",
-      paste0(.data$lower_bound, " to ", .data$upper_bound),
-      .data$category_label
-    )) %>%
-    dplyr::arrange(.data$lower_bound)
-
-  # check overlap
-  if (nrow(result) > 1) {
-    lower <- result$lower_bound[2:nrow(result)]
-    upper <- result$upper_bound[1:(nrow(result)-1)]
-    if (!all(lower > upper)) {
-      stop("There can not be overlap between categories")
-    }
-  }
-  return(result)
 }

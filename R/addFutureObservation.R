@@ -1,15 +1,14 @@
 
-#' Add a column to the current tibble with the prior history of the subject_id at a
-#' certain date
+#' Add a column with the days of future observation for an individual
 #'
 #' @param x cohort table to which add prior history to
 #' @param cdm object containing the person table
 #' @param indexDate name of the date field to use as date in table x
-#' @param priorHistoryName name of the new column to be added
+#' @param futureObservationName name of the new column to be added
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
-#' @return cohort table with added column containing prior history of the
+#' @return cohort table with added column containing future observation of the
 #' individuals
 #' @export
 #'
@@ -57,12 +56,12 @@
 #'
 #'   )
 #'
-#' result <- cdm$cohort1 %>% addPriorHistory(cdm)
+#' result <- cdm$cohort1 %>% addFutureObservation(cdm)
 #' }
-addPriorHistory <- function(x,
+addFutureObservation <- function(x,
                             cdm,
                             indexDate = "cohort_start_date",
-                            priorHistoryName = "prior_history",
+                            futureObservationName = "future_observation",
                             tablePrefix = NULL) {
 
   x <- x %>%
@@ -75,9 +74,9 @@ addPriorHistory <- function(x,
                     ageImposeDay =  FALSE,
                     ageImposeMonth = FALSE,
                     sex = FALSE,
-                    priorHistory = TRUE,
-                    priorHistoryName = priorHistoryName,
-                    furureObservation = FALSE,
+                    priorHistory = FALSE,
+                    furureObservation = TRUE,
+                    futureObservationName = futureObservationName,
                     tablePrefix = tablePrefix
     )
 
