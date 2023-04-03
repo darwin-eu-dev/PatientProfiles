@@ -8,7 +8,7 @@
 #' cohort_definition_id)
 #' @param filterId the value of filterVariable that we are interested in, it can
 #' be a vector
-#' @param filterName the name of each filterId, must have same length than
+#' @param idName the name of each filterId, must have same length than
 #' filterId
 #' @param cohortId vector of cohort definition ids to include
 #' @param value value of interest to add: it can be count, flag, date or time
@@ -92,13 +92,13 @@ addIntersect <- function(x,
                          value, # must be only one of the four now
                          filterVariable = NULL,
                          filterId = NULL,
-                         filterName = NULL,
+                         idName = NULL,
                          window = list(c(0, Inf)), #list
                          indexDate = "cohort_start_date",
                          targetStartDate = "cohort_start_date", # this is targetDate for time/event
                          targetEndDate = "cohort_end_date", # can be NULL (incidence)
                          order = "first",
-                         nameStyle = "{cohortName}_{window}",
+                         nameStyle = "{value}_{filter_name}_{window}",
                          tablePrefix = NULL) {
   # initial checks
   person_variable <- checkX(x)
@@ -106,227 +106,180 @@ addIntersect <- function(x,
   checkCdm(cdm, tableName)
   person_variable_table <- checkX(cdm[[tableName]])
   checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)
-  checkmate::assertChoice(value, c("flag", "count", "date", "time"))
-  filterTbl <- checkFilter(filterVariable, filterId, filterName, x)
+  extraValue <- checkValue(value, cdm[[tableName]], tableName)
+  filterTbl <- checkFilter(filterVariable, filterId, idName, x)
   windowTbl <- checkWindow(window)
   checkVariableInX(indexDate, x)
   checkVariableInX(targetStartDate, cdm[[tableName]], FALSE, "targetStartDate")
   checkVariableInX(targetEndDate, cdm[[tableName]], TRUE, "targetEndDate")
   checkmate::assertChoice(order, c("first", "last"))
-  # checkNameStyle
+  checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
-  # to think about how we deal with names
-  # idea:
-  # 1- cohortId --> filterId
-  # 2- add filterVariable argument, by default NULL
-  #    if class(cdm[[tableName]]) == "cohort" --> filterVariable = "cohort_definition_id"
-  #    otherwise check if tableName is a cdm table
-  #    otherwise throw error
-  # 3- add filterName argument, by default NULL
-  #    if class(cdm[[tableName]]) == "cohort" --> filterVariable from cohortSet
-  #    otherwise check if tableName is a cdm table
-  #    otherwise throw error
-
-  # Get window names as characters for column names
-  windowNames <- getWindowNames(window)
-
   # Start code
-  # Get concept id name of the intersection table
-  get_concept <- list(
-    "visit_occurrence" = "visit_concept_id",
-    "condition_occurrence" = "condition_concept_id",
-    "drug_exposure" = "drug_concept_id",
-    "procedure_occurrence" = "procedure_concept_id",
-    "device_exposure" = "device_concept_id",
-    "measurement" = "measurement_concept_id",
-    "observation" = "observation_concept_id",
-    "drug_era" = "drug_concept_id",
-    "condition_era" = "condition_concept_id",
-    "specimen" = "specimen_concept_id"
-  )
-
-  # define overlapcohort table from cdm containing the events of interest
-  overlapCohort <- cdm[[tableName]]
-  if (is.null(filterId)) {
-    overlapCohort <- overlapCohort %>%
+  # define overlapTable that contains the events of interest
+  overlapTable <- cdm[[tableName]]
+  if (!is.null(filterTbl)) {
+    overlapTable <- overlapTable %>%
       dplyr::filter(.data[[filterVariable]] %in% .env$filterId)
   } else {
     filterVariable <- "id"
-    overlapCohort <- dplyr::mutate(overlapCohort, id = 1)
+    filterTbl <- dplyr::tibble(id = 1, filter_name = as.character(NA))
+    overlapTable <- dplyr::mutate(overlapTable, id = 1)
   }
-  overlapCohort <- overlapCohort %>%
+  overlapTable <- overlapTable %>%
     dplyr::select(
       !!person_variable := dplyr::all_of(person_variable_table),
-      dplyr::all_of(filterVariable),
+      "id" = dplyr::all_of(filterVariable),
       "overlap_start_date" = dplyr::all_of(targetStartDate),
-      "overlap_end_date" = dplyr::all_of(targetStartDate)
+      "overlap_end_date" = dplyr::all_of(targetStartDate),
+      dplyr::all_of(extraValue)
     )
 
   result <- x %>%
-    dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
+    dplyr::select(
+      dplyr::all_of(person_variable),
+      "index_date" = dplyr::all_of(indexDate)
+    ) %>%
     dplyr::distinct() %>%
-    dplyr::inner_join(overlapCohort, by = person_variable)
+    dplyr::inner_join(overlapTable, by = person_variable)
 
   if (is.null(tablePrefix)) {
     result <- CDMConnector::computeQuery(result)
   } else {
     result <- CDMConnector::computeQuery(
-      result, paste0(tablePrefix, "_join"), FALSE, attr(cdm, "cdm_schema"), TRUE
+      result, paste0(tablePrefix, "_join"), FALSE, attr(cdm, "write_schema"), TRUE
     )
   }
 
+  resultCountFlag <- list()
+  resultDateTime <- list()
+  resultOther <- list()
   # Start loop for different windows
-  for (i in c(1:length(window))) {
-    workingWindow <- window[[i]]
-    window_name <- windowNames[[i]]
-
+  for (i in c(1:nrow(windowTbl))) {
     result_w <- result
-
-    indexDate <- as.character(indexDate)
-
-    if (workingWindow[2] != Inf) {
+    if (!is.infinete(windowTbl$upper[i])) {
       result_w <- result_w %>%
-      dplyr::mutate(overlap_start_date = as.Date(dbplyr::sql(
-      CDMConnector::dateadd(date = "overlap_start_date",
-                            number = !!-workingWindow[2])
-                            ))) %>%
-      dplyr::filter(.data[[indexDate]] >= .data$overlap_start_date) %>%
-      CDMConnector::computeQuery()
-      }
-    if (workingWindow[1] != -Inf) {
+      dplyr::filter(.data$index_date >= as.Date(!!CDMConnector::dateadd(
+        date = "overlap_start_date", number = !!-windowTbl$upper[i]
+      )))
+    }
+    if (!is.infinete(windowTbl$lower[i])) {
       result_w <- result_w %>%
-      dplyr::mutate(overlap_end_date = as.Date(dbplyr::sql(
-            CDMConnector::dateadd(date = "overlap_end_date",
-                                  number = !!-workingWindow[1])
-          ))) %>%
-      dplyr::filter(.data[[indexDate]] <= .data$overlap_end_date) %>%
-      CDMConnector::computeQuery()
-      }
-
+        dplyr::filter(.data$index_date <= as.Date(!!CDMConnector::dateadd(
+          date = "overlap_end_date", number = !!-windowTbl$lower[i]
+        )))
+    }
+    if (is.null(tablePrefix)) {
+      result_w <- CDMConnector::computeQuery(result_w)
+    } else {
+      result_w <- CDMConnector::computeQuery(
+        result_w, paste0(tablePrefix, "_window"), FALSE, attr(cdm, "write_schema"), TRUE
+      )
+    }
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
-      result_cb_w <- result_w %>%
-        dplyr::select(dplyr::all_of(columns_interest)) %>%
-        dplyr::group_by(.data$subject_id, .data[[indexDate]], .data$overlap_id) %>%
+      resultCountFlag[[i]] <- result_w %>%
+        dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
         dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
-        dplyr::mutate(
-          flag = 1,
-          overlap_id = as.numeric(.data$overlap_id),
-          window_name = window_name
-        ) %>%
-        CDMConnector::computeQuery()
-        if(!is.null(cohortId)) {
-        result_cb_w <- result_cb_w %>%
-        dplyr::left_join(cohortName, by = c("overlap_id" = "cohort_definition_id"), copy = TRUE) %>%
-        CDMConnector::computeQuery()
-        } else {
-        result_cb_w <- result_cb_w %>%
-        dplyr::mutate(cohort_name = "all") %>%
-        CDMConnector::computeQuery()
-        }
-        result_cb_w <- result_cb_w %>%
-        dplyr::select(-"overlap_id") %>%
-        tidyr::pivot_wider(
-          names_from = c("cohort_name", "window_name"),
-          values_from = c("count", "flag"),
-          names_glue = paste0("{.value}_",nameStyle),
-          values_fill = 0
-        )  %>%
-        dplyr::right_join(x %>% dplyr::select("subject_id", dplyr::all_of(indexDate)),
-                          by = c("subject_id", dplyr::all_of(indexDate))) %>%
-        dplyr::mutate(dplyr::across(dplyr::starts_with(c(
-          "flag", "count"
-        )),
-        ~ dplyr::if_else(is.na(.x), 0, .x))) %>%
-        CDMConnector::computeQuery()
-
-    } else {
-      result_cb_w <- result_cb
-    }
-
-
-    # add date or time
-    if ("date" %in% value | "time" %in% value) {
-
-      workingWindow <- ifelse(workingWindow == Inf,0,workingWindow)
-      workingWindow <- ifelse(workingWindow == -Inf,0,workingWindow)
-
-      result_dt_w <- result_w %>%
-        dplyr::select("overlap_start_date", dplyr::all_of(columns_interest)) %>%
-        dplyr::mutate(overlap_start_date = as.Date(dbplyr::sql(
-          CDMConnector::dateadd(date = "overlap_start_date",
-                                number = !!+workingWindow[2])
-        ))) %>%
-        dplyr::distinct() %>%
-        dplyr::group_by(.data$subject_id, .data$overlap_id, .data[[indexDate]]) %>%
-        dplyr::mutate(
-          min_date = min(.data$overlap_start_date),
-          max_date = max(.data$overlap_start_date)
-        ) %>%
-        dplyr::mutate(
-          min_time = !!CDMConnector::datediff(indexDate, "min_date", interval = "day"),
-          max_time = !!CDMConnector::datediff(indexDate, "max_date", interval = "day")
-        ) %>%
-        dplyr::ungroup() %>%
-        dplyr::select(-"overlap_start_date") %>%
-        dplyr::distinct() %>%
-        dplyr::mutate(
-          overlap_id = as.numeric(.data$overlap_id),
-          window_name = window_name
-        ) %>%
-        CDMConnector::computeQuery()
-        if(!is.null(cohortId)) {
-        result_dt_w <- result_dt_w %>%
-        dplyr::left_join(cohortName, by = c("overlap_id" = "cohort_definition_id"), copy = TRUE) %>%
-        CDMConnector::computeQuery()
-        } else {
-        result_dt_w <- result_dt_w %>%
-        dplyr::mutate(cohort_name = "all") %>%
-        CDMConnector::computeQuery()
-        }
-        # Get min or max date/time depending on order parameter
-      if (order == "first") {
-        result_dt_w <-
-          result_dt_w  %>%
-          dplyr::group_by(subject_id, cohort_name, .data[[indexDate]]) %>%
-          dplyr::select(-dplyr::starts_with("max_")) %>%
-          dplyr::filter(min_date == min(min_date)) %>%
-          dplyr::select(-"overlap_id") %>%
-          tidyr::pivot_wider(
-            names_from = c("cohort_name", "window_name"),
-            values_from = c("min_time", "min_date"),
-            names_glue = paste0("{.value}_",nameStyle),
-            values_fill = NA
-          ) %>%
-          dplyr::rename_with( ~ stringr::str_remove_all(., "min_"), dplyr::contains("min_")) %>%
-          CDMConnector::computeQuery()
-      } else {
-        result_dt_w <-
-          result_dt_w  %>%
-          dplyr::group_by(subject_id, cohort_name, .data[[indexDate]]) %>%
-          dplyr::select(-dplyr::starts_with("min_")) %>%
-          dplyr::filter(max_date == max(max_date)) %>%
-          dplyr::select(-"overlap_id") %>%
-          tidyr::pivot_wider(
-            names_from = c("cohort_name", "window_name"),
-            values_from = c("max_time", "max_date"),
-            names_glue = paste0("{.value}_",nameStyle),
-            values_fill = NA
-          ) %>%
-          dplyr::rename_with( ~ stringr::str_remove_all(., "max_"), dplyr::contains("max_")) %>%
-          CDMConnector::computeQuery()
+        dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
+        dplyr::select(-"id") %>%
+        dplyr::mutate("window_name" = !!windowTbl$window_name[i])
+      if ("flag" %in% value) {
+        resultCountFlag[[i]]  <- resultCountFlag[[i]] %>%
+          dplyr::mutate(flag = 1)
       }
-
-    } else {
-      result_dt_w <- result_dt
+      if (!("count" %in% value)) {
+        resultCountFlag[[i]]  <- resultCountFlag[[i]] %>%
+          dplyr::select(-"count")
+      }
+      if (is.null(tablePrefix)) {
+        resultCountFlag[[i]] <- CDMConnector::computeQuery(resultCountFlag[[i]])
+      } else {
+        resultCountFlag[[i]] <- CDMConnector::computeQuery(
+          resultCountFlag[[i]], paste0(tablePrefix, "_count_flag_", i), FALSE,
+          attr(cdm, "write_schema"), TRUE
+        )
+      }
     }
-
-      result_cb <- result_cb %>% dplyr::left_join(result_cb_w, by = c("subject_id", dplyr::all_of(indexDate))) %>%
-        CDMConnector::computeQuery()
-      result_dt <- result_dt %>% dplyr::left_join(result_dt_w, by = c("subject_id", dplyr::all_of(indexDate))) %>%
-        CDMConnector::computeQuery()
+    # add date, time or other
+    if (length(value[!(value %in% c("count", "flag"))]) > 0) {
+      resultDateTime[[i]] <- result_w %>%
+        dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id)
+      if (order == "first") {
+        resultDateTime[[i]] <- resultDateTime[[i]] %>%
+          dplyr::summarise(
+            date = min(.data$overlap_start_date), .groups = "drop"
+          )
+      } else {
+        resultDateTime[[i]] <- resultDateTime[[i]] %>%
+          dplyr::summarise(
+            date = max(.data$overlap_start_date), .groups = "drop"
+          )
+      }
+      if ("time" %in% value) {
+        resultDateTime[[i]] <- resultDateTime[[i]] %>%
+          dplyr::mutate(
+            time = !!CDMConnector::datediff("index_date", "date", interval = "day")
+          )
+      }
+      if (length(extraValue) > 0) {
+        resultDateTime[[i]] <- resultDateTime[[i]] %>%
+          dplyr::left_join(
+            result_w %>%
+              dplyr::select(
+                dplyr::all_of(person_variable), "index_date", "id",
+                "date" = "overlap_start_date", dplyr::all_of(extraValue)
+              ) %>%
+              dplyr::inner_join(
+                resultDateTime[[i]] %>%
+                  dplyr::select(dplyr::all_of(
+                    c(person_variable, "index_date", "id", "date")
+                  )),
+                by = c(
+                  dplyr::all_of(person_variable), "index_date", "id", "date"
+                )
+              ) %>%
+              dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
+              dplyr::summarise(dplyr::across(
+                dplyr::all_of(extraValue), ~ paste0(.x, collapse = TRUE))
+              ),
+            by = c(dplyr::all_of(person_variable), "index_date", "id")
+          )
+      }
+      resultDateTime[[i]] <- resultDateTime[[i]] %>%
+        dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
+        dplyr::select(-"id") %>%
+        dplyr::mutate("window_name" = !!windowTbl$window_name[i])
+      if (!("date" %in% value)) {
+        resultCountFlag[[i]]  <- resultCountFlag[[i]] %>%
+          dplyr::select(-"date")
+      }
+      if (is.null(tablePrefix)) {
+        resultDateTime[[i]] <- CDMConnector::computeQuery(resultDateTime[[i]])
+      } else {
+        resultDateTime[[i]] <- CDMConnector::computeQuery(
+          resultDateTime[[i]], paste0(tablePrefix, "_date_time_", i), FALSE,
+          attr(cdm, "write_schema"), TRUE
+        )
+      }
+    }
   }
+
+  tidyr::pivot_wider(
+    names_from = c("cohort_name", "window_name"),
+    values_from = c("count", "flag"),
+    names_glue = paste0("{.value}_",nameStyle),
+    values_fill = 0
+  )  %>%
+    dplyr::right_join(x %>% dplyr::select("subject_id", dplyr::all_of(indexDate)),
+                      by = c("subject_id", dplyr::all_of(indexDate))) %>%
+    dplyr::mutate(dplyr::across(dplyr::starts_with(c(
+      "flag", "count"
+    )),
+    ~ dplyr::if_else(is.na(.x), 0, .x))) %>%
+    CDMConnector::computeQuery()
+
 
   #drop columns not needed
   valueDrop <- c("count", "flag", "date", "time") %>%

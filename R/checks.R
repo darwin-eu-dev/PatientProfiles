@@ -217,16 +217,16 @@ checkWindow <- function(window) {
   windowTbl <- dplyr::tibble(
     lower = lapply(window, function(x){x[1]}) %>% unlist(),
     upper = lapply(window, function(x){x[2]}) %>% unlist(),
-    name = getWindowNames(window)
+    window_name = getWindowNames(window) %>% unlist()
   )
 
   if (any(windowTbl$lower > window$upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
   }
-  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == window$upper) && sign(window$upper) == 1) {
+  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == windowTbl$upper && sign(windowTbl$upper) == 1)) {
     cli::cli_abort("Not both elements in the window can be +Inf")
   }
-  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == window$upper) && sign(window$upper) == -1) {
+  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == windowTbl$upper && sign(windowTbl$upper) == -1)) {
     cli::cli_abort("Not both elements in the window can be -Inf")
   }
 
@@ -264,27 +264,77 @@ getWindowNames <- function(window) {
 }
 
 #' @noRd
-checkFilter <- function(filterVariable, filterId, filterName, x) {
+checkFilter <- function(filterVariable, filterId, idName, x) {
   if (is.null(filterVariable)) {
     checkmate::testNull(filterId)
-    checkmate::testNull(filterName)
+    checkmate::testNull(idName)
     filterTbl <- NULL
   } else {
     checkVariableInX(filterVariable, x, FALSE, "filterVariable")
     checkmate::assertNumeric(filterId, any.missing = FALSE)
     checkmate::assertNumeric(head(x[[filterVariable]], 1))
-    if (is.null(filterName)) {
-      filterName = paste0("id", filterId)
+    if (is.null(idName)) {
+      idName = paste0("id", filterId)
     } else {
       checkmate::assertCharacter(
-        filterName, any.missing = FALSE, len = length(filterId)
+        idName, any.missing = FALSE, len = length(filterId)
       )
     }
     filterTbl <- dplyr::tibble(
-      filter_variable = filterVariable,
-      filter_id = filterId,
-      filter_name = filterName
+      id = filterId,
+      id_name = idName
     )
   }
   return(filterTbl)
+}
+
+#' @noRd
+checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
+  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE)
+  filterChange <- !is.null(filterTbl) & nrow(filterTbl) > 1
+  windowChange <- !is.null(windowTbl) & nrow(windowTbl) > 1
+  valueChange <- length(value) > 1
+  changed <- c(
+    ifelse(filterChange, "{filter_name}", NULL),
+    ifelse(windowChange, "{window_name}", NULL),
+    ifelse(valueChange, "{value}", NULL)
+  )
+  containWindow <- grepl("{window_name}", nameStyle)
+  containFilter <- grepl("{filter_name}", nameStyle)
+  containValue <- grepl("{value}", nameStyle)
+  contained <- c(
+    ifelse(containWindow, "{filter_name}", NULL),
+    ifelse(containFilter, "{window_name}", NULL),
+    ifelse(containValue, "{value}", NULL)
+  )
+  if (!all(changed %in% contained)) {
+    variablesNotContained <- changed[!(chnaged %in% contained)]
+    cli::cli_abort(paste0(
+      "Variables: ",
+      paste0(variablesNotContained, collapse = ", "),
+      "have multiple possibilities and should be cotained in nameStyle"
+    ))
+  }
+  invisible(NULL)
+}
+
+#' @noRd
+checkValue <- function(value, x, name) {
+  checkmate::assertCharacter(value, any.missing = FALSE)
+  checkmate::asssertTRUE(
+    all(value %in% c("flag", "count", "date", "time", colnames(x)))
+  )
+  valueOptions <- c("flag", "count", "date", "time")
+  valueOptions <- valueOptions[valueOptions %in% colnames(x)]
+  if (length(valueOptions) > 0) {
+    cli::cli_warn(paste0(
+      "Variables: ",
+      paste0(valueOptions, collapse = ", "),
+      " are also present in ",
+      name,
+      ". But have theyr own functionality inside the package. If you want to
+      obtain that column please rename and run again."
+    ))
+  }
+  return(value[!(value %in% c("flag", "count", "date", "time"))])
 }
