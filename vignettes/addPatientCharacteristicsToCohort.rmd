@@ -1,6 +1,6 @@
 ---
 title: "Get cohort patients characteristics"
-author: "Marti Catala, Mike Du, Yuchen Guo and Kim Lopez-Guell"
+author: "Martí Català, Mike Du, Yuchen Guo, Kim Lopez-Guell, Xintong Li, Núria Mercadé-Besora, and Edward Burn"
 date: "`r Sys.Date()`"
 output: 
   html_document:
