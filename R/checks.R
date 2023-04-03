@@ -290,22 +290,22 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
 
 #' @noRd
 checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
-  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE)
-  filterChange <- !is.null(filterTbl) & nrow(filterTbl) > 1
-  windowChange <- !is.null(windowTbl) & nrow(windowTbl) > 1
+  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
+  filterChange <- !is.null(filterTbl) && nrow(filterTbl) > 1
+  windowChange <- !is.null(windowTbl) && nrow(windowTbl) > 1
   valueChange <- length(value) > 1
   changed <- c(
-    ifelse(filterChange, "{filter_name}", NULL),
-    ifelse(windowChange, "{window_name}", NULL),
-    ifelse(valueChange, "{value}", NULL)
+    c("{id_name}")[filterChange],
+    c("{window_name}")[windowChange],
+    c("{value}")[valueChange]
   )
-  containWindow <- grepl("{window_name}", nameStyle)
-  containFilter <- grepl("{filter_name}", nameStyle)
-  containValue <- grepl("{value}", nameStyle)
+  containWindow <- grepl("\\{window_name\\}", nameStyle)
+  containFilter <- grepl("\\{id_name\\}", nameStyle)
+  containValue <- grepl("\\{value\\}", nameStyle)
   contained <- c(
-    ifelse(containWindow, "{filter_name}", NULL),
-    ifelse(containFilter, "{window_name}", NULL),
-    ifelse(containValue, "{value}", NULL)
+    c("{id_name}")[containFilter],
+    c("{window_name}")[containWindow],
+    c("{value}")[containValue]
   )
   if (!all(changed %in% contained)) {
     variablesNotContained <- changed[!(chnaged %in% contained)]
@@ -320,7 +320,7 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
 #' @noRd
 checkValue <- function(value, x, name) {
   checkmate::assertCharacter(value, any.missing = FALSE, min.len = 1)
-  checkmate::asssertTRUE(
+  checkmate::assertTRUE(
     all(value %in% c("flag", "count", "date", "time", colnames(x)))
   )
   valueOptions <- c("flag", "count", "date", "time")

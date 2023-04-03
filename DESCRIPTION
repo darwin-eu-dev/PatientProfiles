@@ -35,6 +35,7 @@ Imports:
     SqlRender,
     duckdb,
     rlang,
-    cli
+    cli,
+    purrr
 VignetteBuilder: knitr
 URL: https://oxford-pharmacoepi.github.io/PatientProfiles/

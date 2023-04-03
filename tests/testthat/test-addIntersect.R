@@ -54,11 +54,11 @@ test_that("working examples", {
   cdm <- mockPatientProfiles(cohort1=cohort1, cohort2=cohort2)
 
   result <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm,tableName = "cohort2", value = "date") %>%
+    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", nameStyle = "xx") %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$all_0_to_Inf == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+  expect_true(all(result$xx == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   result_1 <- cdm$cohort1 %>% addIntersect(cdm = cdm, tableName = "cohort2", value = "count") %>%
     addIntersect(cdm = cdm, tableName = "cohort2", value = "time") %>%
@@ -66,20 +66,28 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_1$all_0_to_Inf ==  c(4, 4, 3, 3, 1)))
-  expect_true(all(result_1$all_0_to_Inf_1 == c(14, 0, 5, 23, 43)))
-  expect_true(all(result_1$all_0_to_Inf_2 == c(1, 1, 1, 1, 1)))
+  expect_true(all(result_1$count_NA_0_to_Inf ==  c(4, 4, 3, 3, 1)))
+  expect_true(all(result_1$time_NA_0_to_Inf == c(14, 0, 5, 23, 43)))
+  expect_true(all(result_1$flag_NA_0_to_Inf == c(1, 1, 1, 1, 1)))
 
   result_2 <-
     cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", order = "last") %>%
     addIntersect(cdm = cdm, tableName = "cohort2", value = "count", order = "last") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "time", order = "last") %>%
     addIntersect(cdm = cdm, tableName = "cohort2", value = "flag", order = "last") %>%
+    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", order = "last") %>%
+    addIntersect(cdm = cdm, tableName = "cohort2", value = "time", order = "last") %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_2$all_0_to_Inf == as.Date(
+  result_6 <-
+    cdm$cohort1 %>%
+    addIntersect(cdm = cdm, tableName = "cohort2", value = c("date", "count", "time", "flag"), order = "last") %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all.equal(result_2, result_6))
+
+  expect_true(all(result_2$date_NA_0_to_Inf == as.Date(
     c(
       "2020-02-16",
       "2020-02-16",
@@ -88,9 +96,9 @@ test_that("working examples", {
       "2020-03-15"
     )
   )))
-  expect_true(all(result_2$all_0_to_Inf_2 == c(46, 32, 27, 74, 43)))
-  expect_true(all(result_2$all_0_to_Inf_1 == c(4, 4, 3, 3, 1)))
-  expect_true(all(result_2$all_0_to_Inf_3 == c(1, 1, 1, 1, 1)))
+  expect_true(all(result_2$time_NA_0_to_Inf == c(46, 32, 27, 74, 43)))
+  expect_true(all(result_2$count_NA_0_to_Inf == c(4, 4, 3, 3, 1)))
+  expect_true(all(result_2$flag_NA_0_to_Inf == c(1, 1, 1, 1, 1)))
 
   result_3 <-
     cdm$cohort1 %>% addIntersect(cdm = cdm,
@@ -108,12 +116,12 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_3$all_mInf_to_0 %in% as.Date(
+  expect_true(all(result_3$date_NA_mInf_to_0 %in% as.Date(
     c(NA, "2020-01-15", "2020-01-15", NA, "2020-01-24")
   )))
-  expect_true(all(result_3$all_mInf_to_0_1 %in% c(NA, 0,-5, NA,-8)))
-  expect_true(all(result_3$all_mInf_to_0_2 == c(0, 1, 1, 0, 2)))
-  expect_true(all(result_3$all_mInf_to_0_3 == c(0, 1, 1, 0, 1)))
+  expect_true(all(result_3$time_NA_mInf_to_0 %in% c(NA, 0,-5, NA,-8)))
+  expect_true(all(result_3$count_NA_mInf_to_0 == c(0, 1, 1, 0, 2)))
+  expect_true(all(result_3$flag_NA_mInf_to_0 == c(0, 1, 1, 0, 1)))
 
  result_4 <- cdm$cohort1 %>%
    addIntersect(cdm = cdm,tableName = "cohort2",window = list(c(-30, 30)), value = "date") %>%
@@ -123,7 +131,7 @@ test_that("working examples", {
    dplyr::arrange(subject_id, cohort_start_date) %>%
    dplyr::collect()
 
- expect_true(all(result_4$all_m30_to_30 == as.Date(
+ expect_true(all(result_4$date_NA_m30_to_30 == as.Date(
    c(
      "2020-01-15",
      "2020-01-15",
@@ -132,9 +140,9 @@ test_that("working examples", {
      "2020-01-24"
    )
  )))
- expect_true(all(result_4$all_m30_to_30_1 == c(14, 0, -5, 23, -8)))
- expect_true(all(result_4$all_m30_to_30_2 == c(3, 3, 4, 2, 2)))
- expect_true(all(result_4$all_m30_to_30_3 == c(1, 1, 1, 1, 1)))
+ expect_true(all(result_4$time_NA_m30_to_30 == c(14, 0, -5, 23, -8)))
+ expect_true(all(result_4$count_NA_m30_to_30 == c(3, 3, 4, 2, 2)))
+ expect_true(all(result_4$flag_NA_m30_to_30 == c(1, 1, 1, 1, 1)))
 
  result_5 <- cdm$cohort1 %>%
    addIntersect(cdm = cdm,tableName = "cohort2",window = list(c(-30, 30)), value = "date", order = "last") %>%
@@ -144,10 +152,10 @@ test_that("working examples", {
    dplyr::arrange(subject_id, cohort_start_date) %>%
    dplyr::collect()
 
- expect_true(all(result_5$all_m30_to_30_2 == c(3, 3, 4, 2, 2)))
- expect_true(all(result_5$all_m30_to_30_3 == c(1, 1, 1, 1, 1)))
- expect_true(all(result_5$all_m30_to_30_1 == c(25, 11, 27, 28, -3)))
- expect_true(all(result_5$all_m30_to_30 == as.Date(
+ expect_true(all(result_5$count_NA_m30_to_30 == c(3, 3, 4, 2, 2)))
+ expect_true(all(result_5$flag_NA_m30_to_30 == c(1, 1, 1, 1, 1)))
+ expect_true(all(result_5$time_NA_m30_to_30 == c(25, 11, 27, 28, -3)))
+ expect_true(all(result_5$date_NA_m30_to_30 == as.Date(
    c(
      "2020-01-26",
      "2020-01-26",
