@@ -315,12 +315,11 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
       "have multiple possibilities and should be cotained in nameStyle"
     ))
   }
-  invisible(NULL)
 }
 
 #' @noRd
 checkValue <- function(value, x, name) {
-  checkmate::assertCharacter(value, any.missing = FALSE)
+  checkmate::assertCharacter(value, any.missing = FALSE, min.len = 1)
   checkmate::asssertTRUE(
     all(value %in% c("flag", "count", "date", "time", colnames(x)))
   )
