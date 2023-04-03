@@ -92,12 +92,12 @@ checkCdm <- function(cdm, tables = NULL) {
 }
 
 #' @noRd
-checkIndexDate <- function(indexDate, x, nullOk = FALSE) {
+checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
   checkmate::assertCharacter(
     indexDate, any.missing = FALSE, len = 1, null.ok = nullOk
   )
   if (!is.null(indexDate) && !(indexDate %in% colnames(x))) {
-    cli::cli_abort(glue::glue("indexDate ({indexDate}) should be a column in x"))
+    cli::cli_abort(glue::glue("{name} ({indexDate}) should be a column in x"))
   }
   invisible(NULL)
 }
@@ -182,93 +182,55 @@ checkAgeGroup <- function(ageGroup) {
   return(ageGroup)
 }
 
-#' It checks whether windows are valid
-#' @param window the window input eg (-365, -1)
-#' @return valid window input for functions, or throw error/warnings
-#'
 #' @noRd
-checkWindow <- function(window, list = TRUE) {
+checkWindow <- function(window) {
+  if (!is.list(window)) {
+    window = list(window)
+  }
+
   # Find if any NA, throw warning that it will be changed to Inf, change it later
   if (any(unlist(lapply(window, is.na)))) {
-    cli::cli_abort("NA found in window, please change no limit to Inf ot -Inf")
+    cli::cli_abort("NA found in window, please change use Inf or -Inf instead")
   }
+
+  originalWindow <- window
+  # change inf to NA to check for floats, as Inf won't pass integerish check
+  window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
+  checkmate::assertList(window, types = "integerish")
+  window <- originalWindow
 
   # if any element of window list has length over 2, throw error
   if (any(lengths(window) > 2)) {
     cli::cli_abort("window can only contain two values: windowStart and windowEnd")
   }
 
-  if (list == TRUE) {
-    # if input in a single value, use it as both window start and end
-    if (length(window) == 1 && lengths(window) == 1 | length(unique(unlist(window))) == 1) {
-      window <- list(c(unique(unlist(window)), unique(unlist(window))))
-      cli::cli_warn("Only 1 window value provided, use as both window start and window end")
-    }
-
-    # eg if list(1,2,3), change to list(c(1,1), c(2,2), c(3,3))
-    if (length(window) > 1 && any(lengths(window) == 1)) {
-      window[lengths(window) == 1] <- lapply(
-        window[lengths(window) == 1],
-        function(x) c(unlist(x[lengths(x) == 1]), unlist(x[lengths(x) == 1]))
-      )
-      cli::cli_warn("Window list contains element with only 1 value provided,
-            use it as both window start and window end")
-    }
-
-
-    if (is.vector(window) & !is.list(window)) {
-      window <- list(window)
-    }
-
-    # change inf to NA to check for floats, as Inf won't pass integerish check
-    window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
-
-    checkmate::assertList(window, types = "integerish")
-
-
-    # change NA back to Inf
-    window <- lapply(window, function(x) replace(x, is.na(x) & which(is.na(x)) == 2, Inf))
-    window <- lapply(window, function(x) replace(x, is.na(x) & which(is.na(x)) == 1, -Inf))
-
-    checkValues <- function(x) {
-      tryCatch(
-        {
-          if (!any(is.infinite(x[1]), is.infinite(x[2]))) {
-            stopifnot(x[1] <= x[2])
-          }
-          x
-        },
-        error = function(e) NULL
-      )
-    }
-
-    if (any(sapply(lapply(window, checkValues), is.null))) {
-      cli::cli_abort("First element in window must be smaller or equal to the second one")
-    }
-  } else {
-    if (is.list(window)) {
-      cli::cli_abort("Input window is a list, please set list = TRUE")
-    }
-
-    # change inf to NA to check for floats, as Inf won't pass integerish check
-    window <- replace(window, is.infinite(window), NA)
-    checkmate::assertIntegerish(window, max.len = 2, min.len = 1)
-    if (length(unique(window)) == 1) {
-      window <- c(unique(window), unique(window))
-      cli::cli_warn("Only 1 window value provided, use as both window start and window end")
-    }
-
-    #change all NA back to Inf. The one on the left to -Inf, right to Inf
-    window <- replace(window, is.na(window) & which(is.na(window)) == 2, Inf)
-    window <- replace(window, is.na(window) & which(is.na(window)) == 1, -Inf)
-
-    #check if window[1] < window[2]
-    if (!isTRUE(window[1] <= window[2])) {
-      cli::cli_abort("First element in window must be smaller or equal to the second one")
-    }
+  # eg if list(1,2,3), change to list(c(1,1), c(2,2), c(3,3))
+  if (length(window) > 1 && any(lengths(window) == 1)) {
+    window[lengths(window) == 1] <- lapply(
+      window[lengths(window) == 1],
+      function(x) c(unlist(x[lengths(x) == 1]), unlist(x[lengths(x) == 1]))
+    )
+    cli::cli_warn("Window list contains element with only 1 value provided,
+          use it as both window start and window end")
   }
 
-  return(window)
+  windowTbl <- dplyr::tibble(
+    lower = lapply(window, function(x){x[1]}) %>% unlist(),
+    upper = lapply(window, function(x){x[2]}) %>% unlist(),
+    name = getWindowNames(window)
+  )
+
+  if (any(windowTbl$lower > window$upper)) {
+    cli::cli_abort("First element in window must be smaller or equal to the second one")
+  }
+  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == window$upper) && sign(window$upper) == 1) {
+    cli::cli_abort("Not both elements in the window can be +Inf")
+  }
+  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == window$upper) && sign(window$upper) == -1) {
+    cli::cli_abort("Not both elements in the window can be -Inf")
+  }
+
+  return(windowTbl)
 }
 
 #' @noRd
@@ -299,4 +261,30 @@ getWindowNames <- function(window) {
   }
   windowNames <- lapply(window, getname)
   return(windowNames)
+}
+
+#' @noRd
+checkFilter <- function(filterVariable, filterId, filterName, x) {
+  if (is.null(filterVariable)) {
+    checkmate::testNull(filterId)
+    checkmate::testNull(filterName)
+    filterTbl <- NULL
+  } else {
+    checkVariableInX(filterVariable, x, FALSE, "filterVariable")
+    checkmate::assertNumeric(filterId, any.missing = FALSE)
+    checkmate::assertNumeric(head(x[[filterVariable]], 1))
+    if (is.null(filterName)) {
+      filterName = paste0("id", filterId)
+    } else {
+      checkmate::assertCharacter(
+        filterName, any.missing = FALSE, len = length(filterId)
+      )
+    }
+    filterTbl <- dplyr::tibble(
+      filter_variable = filterVariable,
+      filter_id = filterId,
+      filter_name = filterName
+    )
+  }
+  return(filterTbl)
 }

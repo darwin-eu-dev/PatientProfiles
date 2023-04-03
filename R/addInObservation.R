@@ -32,7 +32,7 @@ addInObservation <- function(x,
   ## check for standard types of user error
   person_variable <- checkX(x)
   checkCdm(cdm, c("observation_period"))
-  checkIndexDate(indexDate, x)
+  checkVariableInX(indexDate, x)
   checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
   name <- checkNewName(name, x)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)

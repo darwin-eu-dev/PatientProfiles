@@ -4,6 +4,12 @@
 #' be attached as extra columns
 #' @param cdm cdm containing the tables
 #' @param tableName name of the cohort that we want to check for overlap
+#' @param filterVariable the variable that we are going to use to filter (e.g.
+#' cohort_definition_id)
+#' @param filterId the value of filterVariable that we are interested in, it can
+#' be a vector
+#' @param filterName the name of each filterId, must have same length than
+#' filterId
 #' @param cohortId vector of cohort definition ids to include
 #' @param value value of interest to add: it can be count, flag, date or time
 #' @param window window to consider events of
@@ -83,8 +89,10 @@
 addIntersect <- function(x,
                          cdm,
                          tableName,
-                         cohortId = NULL,
                          value, # must be only one of the four now
+                         filterVariable = NULL,
+                         filterId = NULL,
+                         filterName = NULL,
                          window = list(c(0, Inf)), #list
                          indexDate = "cohort_start_date",
                          targetStartDate = "cohort_start_date", # this is targetDate for time/event
@@ -99,10 +107,11 @@ addIntersect <- function(x,
   person_variable_table <- checkX(cdm[[tableName]])
   checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)
   checkmate::assertChoice(value, c("flag", "count", "date", "time"))
-  window <- checkWindow(window)
-  checkIndexDate(indexDate, x)
-  checkIndexDate(targetStartDate, cdm[[tableName]])
-  checkIndexDate(targetEndDate, cdm[[tableName]], TRUE)
+  filterTbl <- checkFilter(filterVariable, filterId, filterName, x)
+  windowTbl <- checkWindow(window)
+  checkVariableInX(indexDate, x)
+  checkVariableInX(targetStartDate, cdm[[tableName]], FALSE, "targetStartDate")
+  checkVariableInX(targetEndDate, cdm[[tableName]], TRUE, "targetEndDate")
   checkmate::assertChoice(order, c("first", "last"))
   # checkNameStyle
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
@@ -158,6 +167,7 @@ addIntersect <- function(x,
     dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
     dplyr::distinct() %>%
     dplyr::inner_join(overlapCohort, by = person_variable)
+
   if (is.null(tablePrefix)) {
     result <- CDMConnector::computeQuery(result)
   } else {
