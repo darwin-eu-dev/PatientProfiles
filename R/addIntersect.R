@@ -106,7 +106,7 @@ addIntersect <- function(x,
   checkCdm(cdm, tableName)
   person_variable_table <- checkX(cdm[[tableName]])
   extraValue <- checkValue(value, cdm[[tableName]], tableName)
-  filterTbl <- checkFilter(filterVariable, filterId, idName, x)
+  filterTbl <- checkFilter(filterVariable, filterId, idName, cdm[[tableName]])
   windowTbl <- checkWindow(window)
   checkVariableInX(indexDate, x)
   checkVariableInX(targetStartDate, cdm[[tableName]], FALSE, "targetStartDate")
@@ -128,14 +128,26 @@ addIntersect <- function(x,
     filterTbl <- dplyr::tibble(id = 1, id_name = "NA")
     overlapTable <- dplyr::mutate(overlapTable, id = 1)
   }
-  overlapTable <- overlapTable %>%
-    dplyr::select(
-      !!person_variable := dplyr::all_of(person_variable_table),
-      "id" = dplyr::all_of(filterVariable),
-      "overlap_start_date" = dplyr::all_of(targetStartDate),
-      "overlap_end_date" = dplyr::all_of(targetStartDate),
-      dplyr::all_of(extraValue)
-    )
+  if (is.null(targetEndDate)) {
+    overlapTable <- overlapTable %>%
+      dplyr::select(
+        !!person_variable := dplyr::all_of(person_variable_table),
+        "id" = dplyr::all_of(filterVariable),
+        "overlap_start_date" = dplyr::all_of(targetStartDate),
+        "overlap_end_date" = dplyr::all_of(targetStartDate),
+        dplyr::all_of(extraValue)
+      )
+  } else {
+    overlapTable <- overlapTable %>%
+      dplyr::select(
+        !!person_variable := dplyr::all_of(person_variable_table),
+        "id" = dplyr::all_of(filterVariable),
+        "overlap_start_date" = dplyr::all_of(targetStartDate),
+        "overlap_end_date" = dplyr::all_of(targetEndDate),
+        dplyr::all_of(extraValue)
+      )
+  }
+
 
   result <- x %>%
     dplyr::select(

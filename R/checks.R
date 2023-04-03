@@ -272,7 +272,7 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
   } else {
     checkVariableInX(filterVariable, x, FALSE, "filterVariable")
     checkmate::assertNumeric(filterId, any.missing = FALSE)
-    checkmate::assertNumeric(head(x[[filterVariable]], 1))
+    checkmate::assertNumeric(head(x, 1) %>% dplyr::pull(dplyr::all_of(filterVariable)))
     if (is.null(idName)) {
       idName = paste0("id", filterId)
     } else {
