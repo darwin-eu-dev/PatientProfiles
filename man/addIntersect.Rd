@@ -8,14 +8,16 @@ addIntersect(
   x,
   cdm,
   tableName,
-  cohortId = NULL,
   value,
+  filterVariable = NULL,
+  filterId = NULL,
+  idName = NULL,
   window = list(c(0, Inf)),
   indexDate = "cohort_start_date",
   targetStartDate = "cohort_start_date",
   targetEndDate = "cohort_end_date",
   order = "first",
-  nameStyle = "{cohortName}_{window}",
+  nameStyle = "{value}_{id_name}_{window_name}",
   tablePrefix = NULL
 )
 }
@@ -27,9 +29,16 @@ be attached as extra columns}
 
 \item{tableName}{name of the cohort that we want to check for overlap}
 
-\item{cohortId}{vector of cohort definition ids to include}
-
 \item{value}{value of interest to add: it can be count, flag, date or time}
+
+\item{filterVariable}{the variable that we are going to use to filter (e.g.
+cohort_definition_id)}
+
+\item{filterId}{the value of filterVariable that we are interested in, it can
+be a vector}
+
+\item{idName}{the name of each filterId, must have same length than
+filterId}
 
 \item{window}{window to consider events of}
 
@@ -48,6 +57,8 @@ required parameters}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
+
+\item{cohortId}{vector of cohort definition ids to include}
 }
 \value{
 table with added columns with overlap information
