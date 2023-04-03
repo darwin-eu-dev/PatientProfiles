@@ -148,7 +148,6 @@ addIntersect <- function(x,
       )
   }
 
-
   result <- x %>%
     dplyr::select(
       dplyr::all_of(person_variable),
@@ -165,8 +164,8 @@ addIntersect <- function(x,
     )
   }
 
-  resultCountFlag <- list()
-  resultDateTimeOther <- list()
+  resultCountFlag <- NULL
+  resultDateTimeOther <- NULL
   # Start loop for different windows
   for (i in c(1:nrow(windowTbl))) {
     result_w <- result
@@ -191,54 +190,57 @@ addIntersect <- function(x,
     }
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
-      resultCountFlag[[i]] <- result_w %>%
+      resultCF <- result_w %>%
         dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
         dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!windowTbl$window_name[i])
       if ("flag" %in% value) {
-        resultCountFlag[[i]]  <- resultCountFlag[[i]] %>%
-          dplyr::mutate(flag = 1)
+        resultCF <- dplyr::mutate(resultCF, flag = 1)
       }
       if (!("count" %in% value)) {
-        resultCountFlag[[i]]  <- resultCountFlag[[i]] %>%
-          dplyr::select(-"count")
+        resultCF <- dplyr::select(resultCF,-"count")
       }
       if (is.null(tablePrefix)) {
-        resultCountFlag[[i]] <- CDMConnector::computeQuery(resultCountFlag[[i]])
+        resultCF <- CDMConnector::computeQuery(resultCF)
       } else {
-        resultCountFlag[[i]] <- CDMConnector::computeQuery(
-          resultCountFlag[[i]], paste0(tablePrefix, "_count_flag_", i), FALSE,
+        resultCF <- CDMConnector::computeQuery(
+          resultCF, paste0(tablePrefix, "_count_flag_", i), FALSE,
           attr(cdm, "write_schema"), TRUE
         )
+      }
+      if (i == 1) {
+        resultCountFlag <- resultCF
+      } else {
+        resultCountFlag <- dplyr::union_all(resultCountFlag, resultCF)
       }
     }
     # add date, time or other
     if (length(value[!(value %in% c("count", "flag"))]) > 0) {
-      resultDateTimeOther[[i]] <- result_w %>%
+      resultDTO <- result_w %>%
         dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id)
       if (order == "first") {
-        resultDateTimeOther[[i]] <- resultDateTimeOther[[i]] %>%
+        resultDTO <- resultDTO %>%
           dplyr::summarise(
             date = min(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
           )
       } else {
-        resultDateTimeOther[[i]] <- resultDateTimeOther[[i]] %>%
+        resultDTO <- resultDTO %>%
           dplyr::summarise(
             date = max(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
           )
       }
       if ("time" %in% value) {
-        resultDateTimeOther[[i]] <- resultDateTimeOther[[i]] %>%
+        resultDTO <- resultDTO %>%
           dplyr::mutate(
             time = !!CDMConnector::datediff("index_date", "date", interval = "day")
           )
       }
       if (length(extraValue) > 0) {
-        resultDateTimeOther[[i]] <- resultDateTimeOther[[i]] %>%
+        resultDTO <- resultDTO %>%
           dplyr::left_join(
             result_w %>%
               dplyr::select(
@@ -246,7 +248,7 @@ addIntersect <- function(x,
                 "date" = "overlap_start_date", dplyr::all_of(extraValue)
               ) %>%
               dplyr::inner_join(
-                resultDateTimeOther[[i]] %>%
+                resultDTO %>%
                   dplyr::select(dplyr::all_of(
                     c(person_variable, "index_date", "id", "date")
                   )),
@@ -261,21 +263,25 @@ addIntersect <- function(x,
             by = c(dplyr::all_of(person_variable), "index_date", "id")
           )
       }
-      resultDateTimeOther[[i]] <- resultDateTimeOther[[i]] %>%
+      resultDTO <- resultDTO %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!windowTbl$window_name[i])
       if (!("date" %in% value)) {
-        resultDateTimeOther[[i]]  <- resultDateTimeOther[[i]] %>%
-          dplyr::select(-"date")
+        resultDTO <- dplyr::select(resultDTO, -"date")
       }
       if (is.null(tablePrefix)) {
-        resultDateTimeOther[[i]] <- CDMConnector::computeQuery(resultDateTimeOther[[i]])
+        resultDTO <- CDMConnector::computeQuery(resultDTO)
       } else {
-        resultDateTimeOther[[i]] <- CDMConnector::computeQuery(
-          resultDateTimeOther[[i]], paste0(tablePrefix, "_date_time_", i), FALSE,
+        resultDTO <- CDMConnector::computeQuery(
+          resultDTO, paste0(tablePrefix, "_date_time_", i), FALSE,
           attr(cdm, "write_schema"), TRUE
         )
+      }
+      if (i == 1) {
+        resultDateTimeOther <- resultDTO
+      } else {
+        resultDateTimeOther <- dplyr::union_all(resultDateTimeOther, resultDTO)
       }
     }
   }
@@ -284,7 +290,6 @@ addIntersect <- function(x,
     x <- x %>%
       dplyr::left_join(
         resultCountFlag %>%
-          purrr::reduce(DBI::dbBind, type = "r") %>%
           tidyr::pivot_longer(
             dplyr::any_of(c("count", "flag")),
             names_to = "value",
@@ -325,9 +330,6 @@ addIntersect <- function(x,
 
   if (length(value[!(value %in% c("count", "flag"))]) > 0) {
     values <- value[!(value %in% c("count", "flag"))]
-    resultDateTimeOther <-purrr::reduce(
-      resultDateTimeOther, DBI::dbBind, type = "r"
-    )
     for (val in values) {
       x <- x %>%
         dplyr::left_join(

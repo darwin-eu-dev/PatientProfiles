@@ -480,12 +480,12 @@ test_that("working examples with more than one window", {
     dplyr::collect()
 
   result_1 <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm,tableName = "cohort2", value = "date", window = list(c(0,Inf),c(-Inf,0))) %>%
+    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", window = list(c(0,Inf),c(-Inf,0))) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$all_0_to_Inf == result_1$all_0_to_Inf))
-  expect_true(all(compareNA(result$all_mInf_to_0, result_1$all_mInf_to_0)))
+  expect_true(all(result$date_NA_0_to_Inf  == result_1$date_NA_0_to_Inf ))
+  expect_true(all(compareNA(result$date_NA_mInf_to_0, result_1$date_NA_mInf_to_0)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
@@ -520,7 +520,7 @@ test_that("working examples with tables, not cohorts", {
   drug_exposure <- dplyr::tibble(
     subject_id = c(1,1),
     drug_concept_id = c(1,2),
-    drug_exposure_start_date = c("2020-02-10", "2019-09-01")
+    drug_exposure_start_date = as.Date(c("2020-02-10", "2019-09-01"))
   )
 
   condition_occurrence <- dplyr::tibble(
@@ -564,20 +564,36 @@ test_that("working examples with tables, not cohorts", {
                  targetEndDate = "condition_occurrence_end_date") %>%
     dplyr::collect()
 
-  expect_true(all(result$all_0_to_Inf == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+  expect_true(all(result$date_NA_0_to_Inf == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   result_1 <- cdm$condition_occurrence %>%
-    addIntersect(cdm = cdm,tableName = "drug_exposure", value = "count",
-                 indexDate = "condition_occurrence_start_date",
-                 targetStartDate = "drug_exposure_start_date",
-                 targetEndDate = NULL,
-                 window = list(c(0,Inf),c(-Inf,0)),
-                 cohortId = c(1,2)) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
+    addIntersect(
+      cdm = cdm, tableName = "drug_exposure", value = "count",
+      indexDate = "condition_occurrence_start_date",
+      targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
+      window = list(c(0, Inf), c(-Inf, 0)), filterVariable = "drug_concept_id",
+      filterId = c(1, 2)
+    ) %>%
+    dplyr::arrange(subject_id, condition_occurrence_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$all_0_to_Inf == result_1$all_0_to_Inf))
-  expect_true(all(compareNA(result$all_mInf_to_0, result_1$all_mInf_to_0)))
+  expect_true(all(result_1$count_id1_0_to_Inf == c(1, 1, 1, 0, 0, 0, 0)))
+  #expect_true(all(result_1$count_id2_0_to_Inf == c(0, 0, 0, 0, 0, 0, 0)))
+  expect_true(all(result_1$count_id1_mInf_to_0 == c(0, 0, 0, 1, 0, 0, 0)))
+  expect_true(all(result_1$count_id2_mInf_to_0 == c(1, 1, 1, 1, 0, 0, 0)))
+
+  result_2 <- cdm$condition_occurrence %>%
+    addIntersect(
+      cdm = cdm, tableName = "drug_exposure", value = "count",
+      indexDate = "condition_occurrence_start_date",
+      targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
+      window = list(c(0, Inf), c(-Inf, 0))
+    ) %>%
+    dplyr::arrange(subject_id, condition_occurrence_start_date) %>%
+    dplyr::collect()
+
+  #expect_true(all(result_1$count_id1_0_to_Inf + result_1$count_id2_0_to_Inf == result_2$count_NA_0_to_Inf))
+  expect_true(all(result_1$count_id1_mInf_to_0 + result_1$count_id2_mInf_to_0 == result_2$count_NA_mInf_to_0))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 

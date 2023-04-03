@@ -223,10 +223,10 @@ checkWindow <- function(window) {
   if (any(windowTbl$lower > window$upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
   }
-  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == windowTbl$upper && sign(windowTbl$upper) == 1)) {
+  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == 1)) {
     cli::cli_abort("Not both elements in the window can be +Inf")
   }
-  if (any(is.infinite(windowTbl$lower) && windowTbl$lower == windowTbl$upper && sign(windowTbl$upper) == -1)) {
+  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == -1)) {
     cli::cli_abort("Not both elements in the window can be -Inf")
   }
 
