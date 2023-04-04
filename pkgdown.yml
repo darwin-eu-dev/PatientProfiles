@@ -2,9 +2,9 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  addCohortIntersect-vignettes: addCohortIntersect-vignettes.html
+  addCohortIntersect_vignettes: addCohortIntersect_vignettes.html
   addPatientCharacteristicsToCohort: addPatientCharacteristicsToCohort.html
-last_built: 2023-04-04T00:19Z
+last_built: 2023-04-04T00:43Z
 urls:
   reference: https://oxford-pharmacoepi.github.io/PatientProfiles/reference
   article: https://oxford-pharmacoepi.github.io/PatientProfiles/articles

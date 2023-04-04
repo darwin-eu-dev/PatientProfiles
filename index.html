@@ -41,7 +41,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/addCohortIntersect-vignettes.html">Get cohort intersect using PatientProfiles</a>
+    <a class="dropdown-item" href="articles/addCohortIntersect_vignettes.html">Get cohort intersect using PatientProfiles</a>
     <a class="dropdown-item" href="articles/addPatientCharacteristicsToCohort.html">Get cohort patients characteristics</a>
   </div>
 </li>
@@ -275,7 +275,7 @@
 <p>If we want to add a variable to cohorts in the cohort table 1 identifying whether an individual was in the cohort table cohort2 and cohort definition id 1 any time prior to the cohort start date. we could add this like so:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/addCohortIntersect.html">addCohortIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,  </span>
+<span>  <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,  </span>
 <span>                     name <span class="op">=</span> <span class="st">"history_of_cohort_2_id_1"</span>,</span>
 <span>                     cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, </span>
 <span>                     cohortId <span class="op">=</span> <span class="fl">1</span>,</span>

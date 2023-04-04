@@ -13,7 +13,7 @@
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/articles/addCohortIntersect-vignettes.html</loc>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/articles/addCohortIntersect_vignettes.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/articles/addPatientCharacteristicsToCohort.html</loc>
@@ -37,9 +37,6 @@
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCategories.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersect.html</loc>
-  </url>
-  <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addDemographics.html</loc>
   </url>
   <url>
@@ -49,10 +46,19 @@
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addInObservation.html</loc>
   </url>
   <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addIntersect.html</loc>
+  </url>
+  <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addPriorHistory.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addSex.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/countOccurrences.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/flagPresence.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/index.html</loc>
