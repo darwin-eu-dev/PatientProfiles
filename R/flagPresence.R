@@ -79,21 +79,46 @@
 #'}
 #'
 
-flagPresence <- function(x, cdm, tableName, cohortId = NULL,
+flagPresence <- function(x,
+                         cdm,
+                         tableName,
+                         cohortId = NULL,
                          indexDate = "cohort_start_date",
                          targetStartDate = "cohort_start_date",
                          targetEndDate = "cohort_end_date", # can be NULL
                          window = list(c(0, Inf)),
-                         nameStyle = "{cohortName}_{window}",
+                         nameStyle = "{cohortName}_{window_name}",
                          tablePrefix = NULL) {
 
   # Checks done in the internal addCohortIntersect function
+  checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)
+  if ("GeneratedCohortSet" %in% class(cdm[[tableName]]) & !is.null(cohortId)) {
+    cohortId <- sort(cohortId)
+    filterVariable <- "cohort_definition_id"
+    if ("cohort_set" %in% names(attributes(cdm[[tableName]]))) {
+      idName <- CDMConnector::cohortSet(cdm[[tableName]]) %>%
+        dplyr::collect() %>%
+        dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) %>%
+        dplyr::arrange(.data$cohort_definition_id) %>%
+        dplyr::pull("cohort_name")
+    } else {
+      idName <- paste0("cohort", cohortId)
+    }
+  } else {
+    idName <- NULL
+    filterVariable <- NULL
+    cohortId <- NULL
+  }
+  nameStyle <- gsub("cohortName", "id_name", nameStyle)
 
   x <- x %>%
-    addIntersect(cdm, tableName, cohortId = cohortId, value = "flag",
-                       indexDate = indexDate, targetStartDate = targetStartDate,
-                       targetEndDate = targetEndDate, window = window,
-                       nameStyle = nameStyle, tablePrefix = tablePrefix) %>%
+    addIntersect(
+      cdm, tableName, filterVariable = filterVariable,
+      filterId = cohortId, idName = idName, value = "flag",
+      indexDate = indexDate, targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate, window = window,
+      nameStyle = nameStyle, tablePrefix = tablePrefix
+    ) %>%
     CDMConnector::computeQuery()
 
   return(x)

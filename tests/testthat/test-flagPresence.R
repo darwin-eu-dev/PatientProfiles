@@ -58,7 +58,7 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$all_0_to_Inf == c(1,1,1,1,1)))
+  expect_true(all(result$NA_0_to_Inf == c(1,1,1,1,1)))
 
   result_1 <- cdm$cohort1 %>%
     flagPresence(cdm = cdm, tableName = "cohort2", cohortId = 2) %>%
