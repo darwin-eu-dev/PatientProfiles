@@ -510,3 +510,4 @@ test_that("temp and permanent tables", {
                                        "dbplyr_")))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+

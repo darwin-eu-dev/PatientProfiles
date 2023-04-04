@@ -62,6 +62,16 @@ addDemographics <- function(x,
                             futureObservationName = "future_observation",
                             tablePrefix = NULL) {
 
+  ## change ageDefaultMonth, ageDefaultDay to integer
+
+  if (typeof(ageDefaultMonth)=="character") {
+    ageDefaultMonth <- as.integer(ageDefaultMonth)
+  }
+
+  if (typeof(ageDefaultDay)=="character") {
+    ageDefaultDay <- as.integer(ageDefaultDay)
+  }
+
   ## check for standard types of user error
   person_variable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
