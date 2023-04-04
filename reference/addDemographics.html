@@ -29,7 +29,7 @@ PriorHistory, and ageGroup if desired"><!-- mathjax --><script src="https://cdnj
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/addCohortIntersect-vignettes.html">Get cohort intersect using PatientProfiles</a>
-    <a class="dropdown-item" href="../articles/add_age_ageGroup.html">Get characterics using PatientProfiles</a>
+    <a class="dropdown-item" href="../articles/addPatientCharacteristicsToCohort.html">Get cohort patients characteristics</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -70,7 +70,7 @@ PriorHistory, and ageGroup if desired</p>
 <span>  sexName <span class="op">=</span> <span class="st">"sex"</span>,</span>
 <span>  priorHistory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  priorHistoryName <span class="op">=</span> <span class="st">"prior_history"</span>,</span>
-<span>  furureObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  futureObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  futureObservationName <span class="op">=</span> <span class="st">"future_observation"</span>,</span>
 <span>  tablePrefix <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -142,7 +142,7 @@ of the current observation period and the indexDate will be calculated</p></dd>
 <dd><p>Prior history variable name</p></dd>
 
 
-<dt>furureObservation</dt>
+<dt>futureObservation</dt>
 <dd><p>TRUE or FALSE. If TRUE, days between the
 indexDate and the end of the current observation period will be
 calculated</p></dd>
