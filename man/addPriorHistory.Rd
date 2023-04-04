@@ -34,11 +34,11 @@ Add a column to the current tibble with the prior history of the subject_id at a
 certain date
 }
 \examples{
-\dontrun{
+\donttest{
 library(DBI)
 library(duckdb)
 library(tibble)
-library(CohortProfiles)
+library(PatientProfiles)
 cohort1 <- tibble::tibble(
   cohort_definition_id = c("1", "1", "1"),
   subject_id = c("1", "2", "3"),
@@ -70,11 +70,10 @@ obs_1 <- tibble::tibble(
 )
 
 cdm <-
-  mockCohortProfiles(
-   seed = 1,
-   cohort1 = cohort1,
+  mockPatientProfiles(
+    seed = 1,
+    cohort1 = cohort1,
     observation_period = obs_1
-
   )
 
 result <- cdm$cohort1 \%>\% addPriorHistory(cdm)

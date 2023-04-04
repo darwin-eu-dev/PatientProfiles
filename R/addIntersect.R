@@ -27,63 +27,66 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' cohort1 <- dplyr::tibble(
+#'   cohort_definition_id = c(1, 1, 1, 1, 1),
+#'   subject_id = c(1, 1, 1, 2, 2),
+#'   cohort_start_date = as.Date(
+#'     c(
+#'       "2020-01-01",
+#'       "2020-01-15",
+#'       "2020-01-20",
+#'       "2020-01-01",
+#'       "2020-02-01"
+#'     )
+#'   ),
+#'   cohort_end_date = as.Date(
+#'     c(
+#'       "2020-01-01",
+#'       "2020-01-15",
+#'       "2020-01-20",
+#'       "2020-01-01",
+#'       "2020-02-01"
+#'     )
+#'   )
+#' )
 #'
-#'\dontrun{
-#'   cohort1 <- dplyr::tibble(
-#'cohort_definition_id = c(1, 1, 1, 1, 1),
-#'subject_id = c(1, 1, 1, 2, 2),
-#'cohort_start_date = as.Date(
-#'  c(
-#'    "2020-01-01",
-#'    "2020-01-15",
-#'    "2020-01-20",
-#'    "2020-01-01",
-#'    "2020-02-01"
-#'  )
-#'),
-#'cohort_end_date = as.Date(
-#'  c(
-#'    "2020-01-01",
-#'    "2020-01-15",
-#'    "2020-01-20",
-#'    "2020-01-01",
-#'    "2020-02-01"
-#'  )
-#')
-#')
+#' cohort2 <- dplyr::tibble(
+#'   cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
+#'   subject_id = c(1, 1, 1, 2, 2, 2, 1),
+#'   cohort_start_date = as.Date(
+#'     c(
+#'       "2020-01-15",
+#'       "2020-01-25",
+#'       "2020-01-26",
+#'       "2020-01-29",
+#'       "2020-03-15",
+#'       "2020-01-24",
+#'       "2020-02-16"
+#'     )
+#'   ),
+#'   cohort_end_date = as.Date(
+#'     c(
+#'       "2020-01-15",
+#'       "2020-01-25",
+#'       "2020-01-26",
+#'       "2020-01-29",
+#'       "2020-03-15",
+#'       "2020-01-24",
+#'       "2020-02-16"
+#'     )
+#'   ),
+#' )
 #'
-#'cohort2 <- dplyr::tibble(
-#'  cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
-#'  subject_id = c(1, 1, 1, 2, 2, 2, 1),
-#'  cohort_start_date = as.Date(
-#'    c(
-#'      "2020-01-15",
-#'      "2020-01-25",
-#'      "2020-01-26",
-#'      "2020-01-29",
-#'      "2020-03-15",
-#'      "2020-01-24",
-#'      "2020-02-16"
-#'    )
-#'  ),
-#'  cohort_end_date = as.Date(
-#'    c(
-#'      "2020-01-15",
-#'      "2020-01-25",
-#'      "2020-01-26",
-#'      "2020-01-29",
-#'      "2020-03-15",
-#'      "2020-01-24",
-#'      "2020-02-16"
-#'    )
-#'  ),
-#')
+#' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 #'
-#'cdm <- mockCohortProfiles(cohort1=cohort1, cohort2=cohort2)
-#'
-#'result <- cdm$cohort1 %>% addCohortIntersect(cdm = cdm,
-#'tableName = "cohort2", value = "date") %>% dplyr::collect()
-#'}
+#' result <- cdm$cohort1 %>%
+#'   addIntersect(
+#'     cdm = cdm,
+#'     tableName = "cohort2", value = "date"
+#'   ) %>%
+#'   dplyr::collect()
+#' }
 #'
 addIntersect <- function(x,
                          cdm,
@@ -92,7 +95,7 @@ addIntersect <- function(x,
                          filterVariable = NULL,
                          filterId = NULL,
                          idName = NULL,
-                         window = list(c(0, Inf)), #list
+                         window = list(c(0, Inf)), # list
                          indexDate = "cohort_start_date",
                          targetStartDate = "cohort_start_date", # this is targetDate for time/event
                          targetEndDate = "cohort_end_date", # can be NULL (incidence)
@@ -171,9 +174,9 @@ addIntersect <- function(x,
     result_w <- result
     if (!is.infinite(windowTbl$upper[i])) {
       result_w <- result_w %>%
-      dplyr::filter(.data$index_date >= as.Date(!!CDMConnector::dateadd(
-        date = "overlap_start_date", number = -windowTbl$upper[i]
-      )))
+        dplyr::filter(.data$index_date >= as.Date(!!CDMConnector::dateadd(
+          date = "overlap_start_date", number = -windowTbl$upper[i]
+        )))
     }
     if (!is.infinite(windowTbl$lower[i])) {
       result_w <- result_w %>%
@@ -200,7 +203,7 @@ addIntersect <- function(x,
         resultCF <- dplyr::mutate(resultCF, flag = 1)
       }
       if (!("count" %in% value)) {
-        resultCF <- dplyr::select(resultCF,-"count")
+        resultCF <- dplyr::select(resultCF, -"count")
       }
       if (is.null(tablePrefix)) {
         resultCF <- CDMConnector::computeQuery(resultCF)
@@ -258,8 +261,8 @@ addIntersect <- function(x,
               ) %>%
               dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
               dplyr::summarise(dplyr::across(
-                dplyr::all_of(extraValue), ~ paste0(.x, collapse = "; "))
-              ),
+                dplyr::all_of(extraValue), ~ paste0(.x, collapse = "; ")
+              )),
             by = c(dplyr::all_of(person_variable), "index_date", "id")
           )
       }
