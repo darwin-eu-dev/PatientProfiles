@@ -25,22 +25,22 @@ addSex <- function(x,
                    cdm,
                    sexName = "sex",
                    tablePrefix = NULL) {
-
   x <- x %>%
-    addDemographics(cdm = cdm,
-                    indexDate = NULL,
-                    age = FALSE,
-                    ageName = FALSE,
-                    ageGroup = NULL,
-                    ageDefaultDay = NULL,
-                    ageDefaultMonth = NULL,
-                    ageImposeDay =  FALSE,
-                    ageImposeMonth = FALSE,
-                    sex = TRUE,
-                    sexName = sexName,
-                    priorHistory = FALSE,
-                    futureObservation = FALSE,
-                    tablePrefix = tablePrefix
+    addDemographics(
+      cdm = cdm,
+      indexDate = NULL,
+      age = FALSE,
+      ageName = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = TRUE,
+      sexName = sexName,
+      priorHistory = FALSE,
+      futureObservation = FALSE,
+      tablePrefix = tablePrefix
     )
 
   return(x)

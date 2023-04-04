@@ -51,10 +51,9 @@
 #'
 #' cdm <-
 #'   mockCohortProfiles(
-#'    seed = 1,
-#'    cohort1 = cohort1,
+#'     seed = 1,
+#'     cohort1 = cohort1,
 #'     observation_period = obs_1
-#'
 #'   )
 #'
 #' result <- cdm$cohort1 %>% addPriorHistory(cdm)
@@ -64,21 +63,21 @@ addPriorHistory <- function(x,
                             indexDate = "cohort_start_date",
                             priorHistoryName = "prior_history",
                             tablePrefix = NULL) {
-
   x <- x %>%
-    addDemographics(cdm = cdm,
-                    indexDate = indexDate,
-                    age = FALSE,
-                    ageGroup = NULL,
-                    ageDefaultDay = NULL,
-                    ageDefaultMonth = NULL,
-                    ageImposeDay =  FALSE,
-                    ageImposeMonth = FALSE,
-                    sex = FALSE,
-                    priorHistory = TRUE,
-                    priorHistoryName = priorHistoryName,
-                    futureObservation = FALSE,
-                    tablePrefix = tablePrefix
+    addDemographics(
+      cdm = cdm,
+      indexDate = indexDate,
+      age = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = FALSE,
+      priorHistory = TRUE,
+      priorHistoryName = priorHistoryName,
+      futureObservation = FALSE,
+      tablePrefix = tablePrefix
     )
 
   return(x)
