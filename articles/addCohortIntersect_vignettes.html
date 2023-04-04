@@ -76,11 +76,10 @@ Mike Du, Yuchen Guo and Kim Lopez-Guell</h4>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This document demonstrate how to use the
-<code>addCohortIntersect()</code> function in PatientProfiles to obtain
-cohort intersect information for each individual in your CDM cohort
-table.</p>
-<p>When using <code>addCohortIntersect()</code> you would need two input
+<p>This document demonstrate how to use the <code><a href="../reference/addIntersect.html">addIntersect()</a></code>
+function in PatientProfiles to obtain cohort intersect information for
+each individual in your CDM cohort table.</p>
+<p>When using <code><a href="../reference/addIntersect.html">addIntersect()</a></code> you would need two input
 table.</p>
 <ol style="list-style-type: decimal">
 <li><p>Table containing cohort the individual for which the intersect
@@ -106,8 +105,8 @@ cohort_start_date of the intersect.</p></li>
 cohort_start_date of the individual and its earliest or the latest
 intersect date.</p></li>
 </ol>
-<p>Below is an example of <code>addCohortIntersect()</code> generated
-using mock data.</p>
+<p>Below is an example of <code><a href="../reference/addIntersect.html">addIntersect()</a></code> generated using
+mock data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://duckdb.org/" class="external-link">duckdb</a></span><span class="op">)</span></span>
@@ -169,13 +168,13 @@ table in the cdm environment and name in <code>cohort1</code> and
 information as column in <code>cohort1</code> from <code>cohort2</code>,
 we run below code.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>date_intersect <span class="op">=</span> <span class="va">all_0_to_Inf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="../reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>time_intersect <span class="op">=</span> <span class="va">all_0_to_Inf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"count"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="../reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"count"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>count_intersect <span class="op">=</span> <span class="va">all_0_to_Inf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"flag"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"flag"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>flag_intersect <span class="op">=</span> <span class="va">all_0_to_Inf</span><span class="op">)</span> </span></code></pre></div>
 <p>As you see from the result above, it added 4 extra columns named
 “all_0_to_Inf” (they would have been by default “all_0_to_Inf”,
@@ -187,16 +186,16 @@ interests}_{number_if_repeated}“.</p>
 <p>To change it to return to last cohort start date we can use the
 <code>order</code> option in the function</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"date"</span>, order <span class="op">=</span> <span class="st">"last"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"date"</span>, order <span class="op">=</span> <span class="st">"last"</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>value</code> option can be use to specified which value you
 want to return.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"flag"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"flag"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>You can use the <code>window</code> option to change the look back
 period from date of reference in table x to date of event at event
 table.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"count"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"count"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

@@ -217,7 +217,7 @@
 <div class="section level4">
 <h4 id="intersections-with-patient-level-data">Intersections with patient-level data<a class="anchor" aria-label="anchor" href="#intersections-with-patient-level-data"></a>
 </h4>
-<p>We can use <code>addCohortIntersect</code> to add the intersection between a cohort table and OMOP CDM tables.</p>
+<p>We can use <code>addIntersect</code> to add the intersection between a cohort table and OMOP CDM tables.</p>
 <p>For example, if we want to identify anyone with a drug exposure prior to their cohort start date we could do this like so:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
@@ -251,7 +251,7 @@
 <div class="section level4">
 <h4 id="intersections-with-another-cohort">Intersections with another cohort<a class="anchor" aria-label="anchor" href="#intersections-with-another-cohort"></a>
 </h4>
-<p>We can use <code>addCohortIntersect</code> to compare two cohort tables.</p>
+<p>We can use <code>addIntersect</code> to compare two cohort tables.</p>
 <p>Say we have the two following cohort tables</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
@@ -275,7 +275,7 @@
 <p>If we want to add a variable to cohorts in the cohort table 1 identifying whether an individual was in the cohort table cohort2 and cohort definition id 1 any time prior to the cohort start date. we could add this like so:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">addCohortIntersect</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,  </span>
+<span>  <span class="fu"><a href="reference/addIntersect.html">addIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,  </span>
 <span>                     name <span class="op">=</span> <span class="st">"history_of_cohort_2_id_1"</span>,</span>
 <span>                     cohortTableName <span class="op">=</span> <span class="st">"cohort2"</span>, </span>
 <span>                     cohortId <span class="op">=</span> <span class="fl">1</span>,</span>
