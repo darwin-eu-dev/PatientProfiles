@@ -14,7 +14,7 @@ countOccurrences(
   targetStartDate = "cohort_start_date",
   targetEndDate = "cohort_end_date",
   window = list(c(0, Inf)),
-  nameStyle = "{cohortName}_{window}",
+  nameStyle = "{cohortName}_{window_name}",
   tablePrefix = NULL
 )
 }
