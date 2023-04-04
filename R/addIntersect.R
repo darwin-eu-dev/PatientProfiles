@@ -172,17 +172,32 @@ addIntersect <- function(x,
   # Start loop for different windows
   for (i in c(1:nrow(windowTbl))) {
     result_w <- result
+    # if (!is.infinite(windowTbl$upper[i])) {
+    #   result_w <- result_w %>%
+    #     dplyr::filter(.data$index_date >= as.Date(!!CDMConnector::dateadd(
+    #       date = "overlap_start_date", number = -windowTbl$upper[i]
+    #     )))
+    # }
+    # if (!is.infinite(windowTbl$lower[i])) {
+    #   result_w <- result_w %>%
+    #     dplyr::filter(.data$index_date <= as.Date(!!CDMConnector::dateadd(
+    #       date = "overlap_end_date", number = -windowTbl$lower[i]
+    #     )))
+    # }
     if (!is.infinite(windowTbl$upper[i])) {
       result_w <- result_w %>%
-        dplyr::filter(.data$index_date >= as.Date(!!CDMConnector::dateadd(
+        dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
           date = "overlap_start_date", number = -windowTbl$upper[i]
-        )))
+        )), 1, 0))
+    } else {
+      result_w <- result_w %>% dplyr::mutate(indicator = 1)
     }
+
     if (!is.infinite(windowTbl$lower[i])) {
       result_w <- result_w %>%
-        dplyr::filter(.data$index_date <= as.Date(!!CDMConnector::dateadd(
+        dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
           date = "overlap_end_date", number = -windowTbl$lower[i]
-        )))
+        )), 0, .data$indicator))
     }
     if (is.null(tablePrefix)) {
       result_w <- CDMConnector::computeQuery(result_w)
@@ -195,12 +210,12 @@ addIntersect <- function(x,
     if ("count" %in% value | "flag" %in% value) {
       resultCF <- result_w %>%
         dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
-        dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
+        dplyr::summarise(count = sum(.data$indicator, na.rm = TRUE), .groups = "drop") %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!windowTbl$window_name[i])
       if ("flag" %in% value) {
-        resultCF <- dplyr::mutate(resultCF, flag = 1)
+        resultCF <- resultCF %>% dplyr::mutate(flag = dplyr::if_else(.data$count > 0, 1, 0))
       }
       if (!("count" %in% value)) {
         resultCF <- dplyr::select(resultCF, -"count")
@@ -222,13 +237,15 @@ addIntersect <- function(x,
     # add date, time or other
     if (length(value[!(value %in% c("count", "flag"))]) > 0) {
       resultDTO <- result_w %>%
+        dplyr::filter(.data$indicator == 1) %>%
         dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id)
       if (order == "first") {
         resultDTO <- resultDTO %>%
           dplyr::summarise(
             date = min(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
-          )
+          ) %>%
+          dplyr::right_join(result_w)
       } else {
         resultDTO <- resultDTO %>%
           dplyr::summarise(

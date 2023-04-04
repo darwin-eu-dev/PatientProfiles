@@ -116,6 +116,7 @@ cohort2 <- dplyr::tibble(
   ),
 )
 
+
 cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
 result <- cdm$cohort1 \%>\%

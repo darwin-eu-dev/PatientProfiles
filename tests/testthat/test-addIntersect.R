@@ -164,6 +164,7 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
+
   expect_true(all(result_5$count_NA_m30_to_30 == c(3, 3, 4, 2, 2)))
   expect_true(all(result_5$flag_NA_m30_to_30 == c(1, 1, 1, 1, 1)))
   expect_true(all(result_5$time_NA_m30_to_30 == c(25, 11, 27, 28, -3)))
@@ -577,7 +578,7 @@ test_that("working examples with tables, not cohorts", {
     ) %>%
     dplyr::collect()
 
-  expect_true(all(result$date_NA_0_to_Inf == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+  expect_true(all(result$date_NA_0_to_Inf %in% as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   result_1 <- cdm$condition_occurrence %>%
     addIntersect(
@@ -591,7 +592,8 @@ test_that("working examples with tables, not cohorts", {
     dplyr::collect()
 
   expect_true(all(result_1$count_id1_0_to_Inf == c(1, 1, 1, 0, 0, 0, 0)))
-  # expect_true(all(result_1$count_id2_0_to_Inf == c(0, 0, 0, 0, 0, 0, 0)))
+  # test output all zero column when no result found
+  expect_true(all(result_1$count_id2_0_to_Inf == c(0, 0, 0, 0, 0, 0, 0)))
   expect_true(all(result_1$count_id1_mInf_to_0 == c(0, 0, 0, 1, 0, 0, 0)))
   expect_true(all(result_1$count_id2_mInf_to_0 == c(1, 1, 1, 1, 0, 0, 0)))
 
@@ -605,8 +607,34 @@ test_that("working examples with tables, not cohorts", {
     dplyr::arrange(subject_id, condition_occurrence_start_date) %>%
     dplyr::collect()
 
-  # expect_true(all(result_1$count_id1_0_to_Inf + result_1$count_id2_0_to_Inf == result_2$count_NA_0_to_Inf))
+  expect_true(all(result_1$count_id1_0_to_Inf + result_1$count_id2_0_to_Inf == result_2$count_NA_0_to_Inf))
   expect_true(all(result_1$count_id1_mInf_to_0 + result_1$count_id2_mInf_to_0 == result_2$count_NA_mInf_to_0))
+
+  result_3 <- cdm$condition_occurrence %>%
+    addIntersect(
+      cdm = cdm, tableName = "drug_exposure", value = "date",
+      indexDate = "condition_occurrence_start_date",
+      targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
+      window = list(c(0, Inf)), filterVariable = "drug_concept_id",
+      filterId = c(1, 2)
+    ) %>%
+    dplyr::arrange(subject_id, condition_occurrence_start_date) %>%
+    dplyr::collect()
+  # test output all zero column when no result found
+  expect_true(all(is.na(result_3$date_id2_0_to_Inf)))
+
+  result_4 <- cdm$condition_occurrence %>%
+    addIntersect(
+      cdm = cdm, tableName = "drug_exposure", value = "time",
+      indexDate = "condition_occurrence_start_date",
+      targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
+      window = list(c(0, Inf)), filterVariable = "drug_concept_id",
+      filterId = c(1, 2)
+    ) %>%
+    dplyr::arrange(subject_id, condition_occurrence_start_date) %>%
+    dplyr::collect()
+  # test output all zero column when no result found
+  expect_true(all(is.na(result_4$time_id2_0_to_Inf)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

@@ -119,7 +119,7 @@ male20to39_subset <- cdm$cohort_example %>%
 
 ## Example: addInObservation, addPriorHistory and addFutureObservation functions
 
-`addInObservation()`: adds a new binary column to the input table, indicating whether the subjects are being observed at a specific time. By default, the time is set to "cohort_start_date," but it can be changed with the `index_date` argument, which should refer to a column in the table. The added column is named "in_observation" by default, but this can be customized using the `name` argument.
+`addInObservation()`: adds a new binary column to the input table, indicating whether the subjects are being observed at a specific time. By default, the time is set to "cohort_start_date," but it can be changed with the `index_date` argument, which should refer to a column in the table. The added column is named "falg" by default, but this can be customized using the `name` argument.
 
 `addPriorHistory()`: appends a column to the input table containing the number of days each patient has been in observation up to a specified date. By default, the function uses the "cohort_start_date" column as the date of interest, but the user can specify any other date column using the `indexDate` argument. The newly created column has the name "prior_history" unless the user specifies a different name with the argument `name`.
 
@@ -136,7 +136,7 @@ cdm$cohort_example <- cdm$cohort_example %>%
     cdm = cdm 
   ) %>%
   filter(
-    in_observation == 1
+    flag == 1
   ) %>%
   addPriorHistory(
     cdm = cdm
