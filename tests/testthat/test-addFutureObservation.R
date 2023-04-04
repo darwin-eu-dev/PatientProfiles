@@ -8,11 +8,11 @@ test_that("check input length and type for each of the arguments", {
       min_days_to_observation_end = 1
     )
 
-  expect_error(addPriorHistory("cdm$cohort1", cdm))
+  expect_error(addFutureObservation("cdm$cohort1", cdm))
 
-  expect_error(addPriorHistory(cdm$cohort1, "cdm"))
+  expect_error(addFutureObservation(cdm$cohort1, "cdm"))
 
-  expect_error(addPriorHistory(cdm$cohort1, cdm, indexDate = "end_date"))
+  expect_error(addFutureObservation(cdm$cohort1, cdm, indexDate = "end_date"))
 
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -32,11 +32,11 @@ test_that("check condition_occurrence and cohort1 work", {
       min_days_to_observation_end = 1
     )
 #check it works with cohort1 table in mockdb
-  expect_true(typeof(cdm$cohort1 %>% addPriorHistory(cdm) %>% dplyr::collect()) == "list")
-  expect_true("prior_history" %in% colnames(cdm$cohort1 %>% addPriorHistory(cdm)))
+  expect_true(typeof(cdm$cohort1 %>% addFutureObservation(cdm) %>% dplyr::collect()) == "list")
+  expect_true("future_observation" %in% colnames(cdm$cohort1 %>% addFutureObservation(cdm)))
 #check it works with condition_occurrence table in mockdb
-  expect_true(typeof(cdm$condition_occurrence %>% addPriorHistory(cdm,indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
-  expect_true("prior_history" %in% colnames(cdm$condition_occurrence %>% addPriorHistory(cdm,indexDate = "condition_start_date")))
+  expect_true(typeof(cdm$condition_occurrence %>% addFutureObservation(cdm,indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
+  expect_true("future_observation" %in% colnames(cdm$condition_occurrence %>% addFutureObservation(cdm,indexDate = "condition_start_date")))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
@@ -82,11 +82,22 @@ test_that("check working example with cohort1",{
 
     )
 
-  result <- cdm$cohort1 %>% addPriorHistory(cdm) %>% dplyr::collect()
+  result <- cdm$cohort1 %>% addFutureObservation(cdm) %>% dplyr::collect()
 
   expect_true(all(colnames(cohort1) %in% colnames(result)))
 
-  expect_true(all(result %>% dplyr::select("prior_history") == tibble::tibble(prior_history = c(28,28,31))))
+  expect_true(all(result %>%
+                    dplyr::select("future_observation") ==
+                    tibble::tibble(future_observation =
+                                     c(as.numeric(difftime(as.Date("2014-01-01"),
+                                                         as.Date("2010-03-03"),
+                                                         units = "days")),
+                                       as.numeric(difftime(as.Date("2012-01-01"),
+                                                           as.Date("2010-03-01"),
+                                                           units = "days")),
+                                       as.numeric(difftime(as.Date("2012-01-01"),
+                                                           as.Date("2010-02-01"),
+                                                           units = "days"))))))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -131,12 +142,23 @@ test_that("check working example with condition_occurrence", {
 
     )
 
-  result <-
-    cdm$condition_occurrence %>% addPriorHistory(cdm, indexDate = "condition_start_date") %>% dplyr::collect()
+  result <- cdm$condition_occurrence %>%
+    addFutureObservation(cdm,
+                         indexDate = "condition_start_date") %>%
+    dplyr::collect()
 
   expect_true(all(
-    result %>% dplyr::select("prior_history") == tibble::tibble(prior_history = c(28, 28, 31))
-  ))
+    result %>% dplyr::select("future_observation") ==
+      tibble::tibble(future_observation =
+                       c(as.numeric(difftime(as.Date("2014-01-01"),
+                                             as.Date("2010-03-03"),
+                                             units = "days")),
+                         as.numeric(difftime(as.Date("2012-01-01"),
+                                             as.Date("2010-03-01"),
+                                             units = "days")),
+                         as.numeric(difftime(as.Date("2012-01-01"),
+                                             as.Date("2010-02-01"),
+                                             units = "days"))))))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -183,16 +205,16 @@ test_that("different name", {
 
   cdm$condition_occurrence <-
     cdm$condition_occurrence %>%
-    addPriorHistory(cdm, indexDate = "condition_start_date",
-                    priorHistoryName = "ph")
-  expect_true("ph" %in% names(cdm$condition_occurrence))
+    addFutureObservation(cdm, indexDate = "condition_start_date",
+                         futureObservationName = "fh")
+  expect_true("fh" %in% names(cdm$condition_occurrence))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
 
-  # priorHistory should be NA if index date is outside of an observation period
+  # futureHistory should be NA if index date is outside of an observation period
 
   person <- tibble::tibble(
     person_id = c(1,2),
@@ -222,11 +244,11 @@ test_that("priorHistory and future_observation - outside of observation period",
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addPriorHistory(cdm,
+    addFutureObservation(cdm,
                     indexDate = "cohort_start_date"
     )
   # both should be NA
-  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
+  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
@@ -236,7 +258,7 @@ test_that("priorHistory and future_observation - outside of observation period",
 test_that("multiple observation periods", {
 
   # with multiple observation periods,
-  # prior history should relate to the most recent observation start date
+  # future history should relate to the current observation period
 
   person <- tibble::tibble(
     person_id = c(1,2),
@@ -268,13 +290,23 @@ test_that("multiple observation periods", {
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addPriorHistory(cdm,
+    addFutureObservation(cdm,
                      indexDate = "cohort_start_date")
 
   expect_true(nrow(cdm$cohort1a %>% dplyr::collect()) == 2)
-  expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_history) ==
-                    as.numeric(difftime(as.Date("2012-02-01"),
-                                        as.Date("2010-01-01"),
+  expect_true(all(cdm$cohort1a %>% dplyr::pull(future_observation) ==
+                    as.numeric(difftime(as.Date("2015-01-01"),
+                                        as.Date("2012-02-01"),
+                                        units = "days"))))
+
+  # from cohort end date
+  cdm$cohort1a <- cdm$cohort1 %>%
+    addFutureObservation(cdm,
+                         indexDate = "cohort_end_date",
+                         futureObservationName = "fh_from_c_end")
+  expect_true(all(cdm$cohort1a %>% dplyr::pull("fh_from_c_end") ==
+                    as.numeric(difftime(as.Date("2015-01-01"),
+                                        as.Date("2013-02-01"),
                                         units = "days"))))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)

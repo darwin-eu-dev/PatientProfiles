@@ -8,7 +8,7 @@ in observation at the desired time}
 addInObservation(
   x,
   cdm,
-  observationAt = "cohort_start_date",
+  indexDate = "cohort_start_date",
   name = "in_observation",
   tablePrefix = NULL
 )
@@ -18,7 +18,7 @@ addInObservation(
 
 \item{cdm}{where the observation_period table is stored}
 
-\item{observationAt}{name of the column with the dates to test the
+\item{indexDate}{name of the column with the dates to test the
 inObservation command}
 
 \item{name}{name of the column to hold the result of the enquiry:
