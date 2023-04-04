@@ -62,7 +62,8 @@ addCategories <- function(x,
   checkmate::assertTRUE(variable %in% colnames(x))
   checkmate::assertNumeric(dplyr::pull(utils::head(x, 1), variable))
   checkmate::assertList(
-    categories, types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
+    categories,
+    types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
@@ -79,7 +80,7 @@ addCategories <- function(x,
 
   for (k in seq_along(categories)) {
     categoryTibbleK <- categoryTibble[[k]]
-    name  <- names(categoryTibble)[k]
+    name <- names(categoryTibble)[k]
     x <- dplyr::mutate(x, !!name := as.character(NA))
     for (i in 1:nrow(categoryTibbleK)) {
       lower <- categoryTibbleK$lower_bound[i]
@@ -97,8 +98,10 @@ addCategories <- function(x,
     if (!is.null(tablePrefix)) {
       x <- CDMConnector::computeQuery(
         x,
-        name = paste0(tablePrefix,
-                      "_categories_added"),
+        name = paste0(
+          tablePrefix,
+          "_categories_added"
+        ),
         temporary = FALSE,
         schema = attr(cdm, "write_schema"),
         overwrite = TRUE

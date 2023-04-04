@@ -14,13 +14,10 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' db <- DBI::dbConnect(" Your database connection here")
-#' cdm <- CDMConnector::cdm_from_con(
-#'   con = db,
-#'   cdm_schema = "cdm schema name"
-#' )
-#' cdm$cohort %>% inObservation(cdm)
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>% addInObservation(cdm)
 #' }
 #'
 addInObservation <- function(x,

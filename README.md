@@ -198,7 +198,7 @@ cdm$cohort1  %>%
 
 #### Intersections with patient-level data
 
-We can use `addCohortIntersect` to add the intersection between a cohort
+We can use `addIntersect` to add the intersection between a cohort
 table and OMOP CDM tables.
 
 For example, if we want to identify anyone with a drug exposure prior to
@@ -236,7 +236,7 @@ cdm$cohort1 %>%
 
 #### Intersections with another cohort
 
-We can use `addCohortIntersect` to compare two cohort tables.
+We can use `addIntersect` to compare two cohort tables.
 
 Say we have the two following cohort tables
 
@@ -268,7 +268,7 @@ add this like so:
 
 ``` r
 cdm$cohort1 <- cdm$cohort1 %>% 
-  addCohortIntersect(cdm = cdm,  
+  addIntersect(cdm = cdm,  
                      name = "history_of_cohort_2_id_1",
                      cohortTableName = "cohort2", 
                      cohortId = 1,

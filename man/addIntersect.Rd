@@ -65,7 +65,7 @@ table with added columns with overlap information
 It creates columns to indicate overlaps information
 }
 \examples{
-\dontrun{
+\donttest{
 cohort1 <- dplyr::tibble(
   cohort_definition_id = c(1, 1, 1, 1, 1),
   subject_id = c(1, 1, 1, 2, 2),
@@ -116,10 +116,11 @@ cohort2 <- dplyr::tibble(
   ),
 )
 
-cdm <- mockCohortProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
 result <- cdm$cohort1 \%>\%
-  addCohortIntersect(
+  addIntersect(
     cdm = cdm,
     tableName = "cohort2", value = "date"
   ) \%>\%

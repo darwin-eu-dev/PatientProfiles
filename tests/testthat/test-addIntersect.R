@@ -1,4 +1,5 @@
 test_that("working examples", {
+
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -163,6 +164,7 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
+
   expect_true(all(result_5$count_NA_m30_to_30 == c(3, 3, 4, 2, 2)))
   expect_true(all(result_5$flag_NA_m30_to_30 == c(1, 1, 1, 1, 1)))
   expect_true(all(result_5$time_NA_m30_to_30 == c(25, 11, 27, 28, -3)))
@@ -180,6 +182,7 @@ test_that("working examples", {
 })
 
 test_that("working examples with cohort_end_date", {
+
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -247,6 +250,7 @@ test_that("working examples with cohort_end_date", {
 })
 
 test_that("working examples with multiple cohort Ids", {
+
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -365,6 +369,7 @@ test_that("working examples with multiple cohort Ids", {
 })
 
 test_that("working examples calculating as incidence target cohort", {
+
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1),
@@ -421,6 +426,7 @@ test_that("working examples calculating as incidence target cohort", {
 })
 
 test_that("working examples with more than one window", {
+
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -498,6 +504,7 @@ test_that("working examples with more than one window", {
 })
 
 test_that("working examples with tables, not cohorts", {
+
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),

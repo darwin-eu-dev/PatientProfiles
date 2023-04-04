@@ -54,7 +54,7 @@ Add a column to the current tibble with the age of the subject_id at a
 certain date
 }
 \examples{
-\dontrun{
+\donttest{
 library(DBI)
 library(duckdb)
 library(tibble)
@@ -77,7 +77,7 @@ person <- tibble::tibble(
   month_of_birth = c(NA, 07, 08),
   day_of_birth = c(01, 25, 03)
 )
-cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
+cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 addAge(x = cdm[["cohort1"]], cdm = cdm)
 }
 }

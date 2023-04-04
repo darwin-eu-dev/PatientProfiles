@@ -1,6 +1,6 @@
 test_that("working examples", {
 
-  #functionality
+  # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
@@ -51,22 +51,21 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1=cohort1, cohort2=cohort2)
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>%
-    flagPresence(cdm = cdm,tableName = "cohort2") %>%
+    flagPresence(cdm = cdm, tableName = "cohort2") %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$NA_0_to_Inf == c(1,1,1,1,1)))
+  expect_true(all(result$NA_0_to_Inf == c(1, 1, 1, 1, 1)))
 
   result_1 <- cdm$cohort1 %>%
     flagPresence(cdm = cdm, tableName = "cohort2", cohortId = 2) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_1$cohort2_0_to_Inf == c(1,1,1,1,0)))
+  expect_true(all(result_1$cohort2_0_to_Inf == c(1, 1, 1, 1, 0)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
 })

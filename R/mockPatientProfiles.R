@@ -78,7 +78,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
                                 max_days_to_visit_end = NULL,
                                 seed = 1,
                                 ...) {
-  #Put ... into a list
+  # Put ... into a list
   listTables <- list(...)
 
   # checks
@@ -111,31 +111,31 @@ mockPatientProfiles <- function(drug_exposure = NULL,
   checkmate::assert_int(min_days_to_visit_end, lower = 1, null.ok = TRUE)
   checkmate::assert_int(max_days_to_visit_end, lower = 1, null.ok = TRUE)
   if (!is.null(latest_date_of_birth) &
-      !is.null(earliest_date_of_birth)) {
+    !is.null(earliest_date_of_birth)) {
     checkmate::assertTRUE(latest_date_of_birth >= earliest_date_of_birth)
   }
   if (!is.null(earliest_observation_start_date) &
-      !is.null(latest_observation_start_date)) {
+    !is.null(latest_observation_start_date)) {
     checkmate::assertTRUE(latest_observation_start_date >= earliest_observation_start_date)
   }
   if (!is.null(min_days_to_observation_end) &
-      !is.null(max_days_to_observation_end)) {
+    !is.null(max_days_to_observation_end)) {
     checkmate::assertTRUE(max_days_to_observation_end >= min_days_to_observation_end)
   }
   if (!is.null(earliest_condition_start_date) &
-      !is.null(latest_condition_start_date)) {
+    !is.null(latest_condition_start_date)) {
     checkmate::assertTRUE(latest_condition_start_date >= earliest_condition_start_date)
   }
   if (!is.null(min_days_to_condition_end) &
-      !is.null(max_days_to_condition_end)) {
+    !is.null(max_days_to_condition_end)) {
     checkmate::assertTRUE(max_days_to_condition_end >= min_days_to_condition_end)
   }
   if (!is.null(earliest_visit_start_date) &
-      !is.null(latest_visit_start_date)) {
+    !is.null(latest_visit_start_date)) {
     checkmate::assertTRUE(latest_visit_start_date >= earliest_visit_start_date)
   }
   if (!is.null(min_days_to_visit_end) &
-      !is.null(max_days_to_visit_end)) {
+    !is.null(max_days_to_visit_end)) {
     checkmate::assertTRUE(max_days_to_visit_end >= min_days_to_visit_end)
   }
   if (length(listTables) > 1) {
@@ -163,14 +163,14 @@ mockPatientProfiles <- function(drug_exposure = NULL,
         rep(NA, each = ingredient_concept_id_size),
         # ingredient have missing amount value
         sample(c("10", "20", "30"),
-               drug_concept_id_size - 1,
-               replace = TRUE
+          drug_concept_id_size - 1,
+          replace = TRUE
         )
       ) # compute amount value
     amount_unit_concept_id <-
       sample(c("8576"),
-             drug_concept_id_size,
-             replace = TRUE
+        drug_concept_id_size,
+        replace = TRUE
       ) #  compute unit id
 
 
@@ -203,8 +203,8 @@ mockPatientProfiles <- function(drug_exposure = NULL,
       as.integer(seq(1:drug_exposure_size)) # generate number of unique drug_exposure_id
     person_id <-
       as.integer(sample(seq(1:patient_size),
-                        drug_exposure_size,
-                        replace = TRUE
+        drug_exposure_size,
+        replace = TRUE
       )) # generate number of unique patient id
     drug_concept_id <-
       as.integer(sample(
@@ -226,8 +226,8 @@ mockPatientProfiles <- function(drug_exposure = NULL,
     # generate drug exposure end date to happens after drug exposure start date
     drug_exposure_end_date <-
       drug_exposure_start_date + lubridate::days(sample(c(0, 7, 14, 21, 28, 30, 60, 90),
-                                                        drug_exposure_size,
-                                                        replace = TRUE
+        drug_exposure_size,
+        replace = TRUE
       ))
 
     days_supply <-
@@ -253,8 +253,9 @@ mockPatientProfiles <- function(drug_exposure = NULL,
   id <- sample(seq(1:patient_size))
   # person gender
   gender_id <- sample(c("8507", "8532"),
-                      patient_size,
-                      replace = TRUE)
+    patient_size,
+    replace = TRUE
+  )
 
   if (is.null(person) | is.null(observation_period)) {
 
@@ -362,8 +363,8 @@ mockPatientProfiles <- function(drug_exposure = NULL,
     c_concept_id <-
       seq(1:condition_concept_id_size)
     condition_concept_id <- sample(c_concept_id,
-                                   patient_size,
-                                   replace = TRUE
+      patient_size,
+      replace = TRUE
     )
   }
 
@@ -408,15 +409,16 @@ mockPatientProfiles <- function(drug_exposure = NULL,
     v_concept_id <- seq(1:visit_concept_id_size)
 
     visit_concept_id <- sample(v_concept_id,
-                               patient_size,
-                               replace = TRUE)
+      patient_size,
+      replace = TRUE
+    )
 
     v_occurrence_id <- seq(1:visit_occurrence_id_size)
 
     visit_occurrence_id <- sample(v_occurrence_id,
-                                  patient_size,
-                                  replace = TRUE)
-
+      patient_size,
+      replace = TRUE
+    )
   }
 
   if (is.null(person)) {
@@ -502,73 +504,74 @@ mockPatientProfiles <- function(drug_exposure = NULL,
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "drug_strength",
-                      drug_strength,
-                      overwrite = TRUE
+      drug_strength,
+      overwrite = TRUE
     )
   })
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "drug_exposure",
-                      drug_exposure,
-                      overwrite = TRUE
+      drug_exposure,
+      overwrite = TRUE
     )
   })
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "person",
-                      person,
-                      overwrite = TRUE
+      person,
+      overwrite = TRUE
     )
   })
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "observation_period",
-                      observation_period,
-                      overwrite = TRUE
+      observation_period,
+      overwrite = TRUE
     )
   })
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "condition_occurrence",
-                      condition_occurrence,
-                      overwrite = TRUE
+      condition_occurrence,
+      overwrite = TRUE
     )
   })
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "visit_occurrence",
-                      visit_occurrence,
-                      overwrite = TRUE
+      visit_occurrence,
+      overwrite = TRUE
     )
   })
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "concept_ancestor",
-                      concept_ancestor,
-                      overwrite = TRUE
+      concept_ancestor,
+      overwrite = TRUE
     )
   })
 
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "cohort1",
-                      cohort1,
-                      overwrite = TRUE
+      cohort1,
+      overwrite = TRUE
     )
   })
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "cohort2",
-                      cohort2,
-                      overwrite = TRUE
+      cohort2,
+      overwrite = TRUE
     )
   })
   if (length(listTables) > 0) {
     for (i in 1:length(listTables)) {
       DBI::dbWithTransaction(db, {
         DBI::dbWriteTable(db, names(listTables)[i],
-                          listTables[[i]],
-                          overwrite = TRUE)
+          listTables[[i]],
+          overwrite = TRUE
+        )
       })
     }
   }
