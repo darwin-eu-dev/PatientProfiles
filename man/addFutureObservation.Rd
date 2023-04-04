@@ -69,10 +69,9 @@ obs_1 <- tibble::tibble(
 
 cdm <-
   mockCohortProfiles(
-   seed = 1,
-   cohort1 = cohort1,
+    seed = 1,
+    cohort1 = cohort1,
     observation_period = obs_1
-
   )
 
 result <- cdm$cohort1 \%>\% addFutureObservation(cdm)
