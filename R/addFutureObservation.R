@@ -75,7 +75,7 @@ addFutureObservation <- function(x,
                     ageImposeMonth = FALSE,
                     sex = FALSE,
                     priorHistory = FALSE,
-                    furureObservation = TRUE,
+                    futureObservation = TRUE,
                     futureObservationName = futureObservationName,
                     tablePrefix = tablePrefix
     )

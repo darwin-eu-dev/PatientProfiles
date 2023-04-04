@@ -39,7 +39,7 @@ addSex <- function(x,
                     sex = TRUE,
                     sexName = sexName,
                     priorHistory = FALSE,
-                    furureObservation = FALSE,
+                    futureObservation = FALSE,
                     tablePrefix = tablePrefix
     )
 

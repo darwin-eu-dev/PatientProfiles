@@ -20,7 +20,7 @@ addDemographics(
   sexName = "sex",
   priorHistory = TRUE,
   priorHistoryName = "prior_history",
-  furureObservation = TRUE,
+  futureObservation = TRUE,
   futureObservationName = "future_observation",
   tablePrefix = NULL
 )
@@ -62,7 +62,7 @@ of the current observation period and the indexDate will be calculated}
 
 \item{priorHistoryName}{Prior history variable name}
 
-\item{furureObservation}{TRUE or FALSE. If TRUE, days between the
+\item{futureObservation}{TRUE or FALSE. If TRUE, days between the
 indexDate and the end of the current observation period will be
 calculated}
 

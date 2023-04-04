@@ -138,7 +138,7 @@ test_that("partial demographics - cohorts", {
                     ageGroup = NULL,
                     sex = FALSE,
                     priorHistory = FALSE,
-                    furureObservation = FALSE
+                    futureObservation = FALSE
     )
   # age and age group
   expect_equal(
@@ -156,7 +156,7 @@ test_that("partial demographics - cohorts", {
                     ageGroup = NULL,
                     sex = TRUE,
                     priorHistory = FALSE,
-                    furureObservation = FALSE
+                    futureObservation = FALSE
     )
   expect_equal(
     names(cdm$cohort1b),
@@ -173,7 +173,7 @@ test_that("partial demographics - cohorts", {
                     ageGroup = NULL,
                     sex = FALSE,
                     priorHistory = TRUE,
-                    furureObservation = FALSE
+                    futureObservation = FALSE
     )
   expect_equal(
     names(cdm$cohort1c),
@@ -190,7 +190,7 @@ test_that("partial demographics - cohorts", {
                     ageGroup = NULL,
                     sex = FALSE,
                     priorHistory = FALSE,
-                    furureObservation = TRUE
+                    futureObservation = TRUE
     )
   expect_equal(
     names(cdm$cohort1d),
@@ -208,7 +208,7 @@ test_that("partial demographics - cohorts", {
                     ageGroup = list(c(0, 100)),
                     sex = TRUE,
                     priorHistory = TRUE,
-                    furureObservation = TRUE
+                    futureObservation = TRUE
     )
   # age and age group
   expect_equal(
@@ -319,7 +319,7 @@ test_that("priorHistory and future_observation - outside of observation period",
                     ageGroup = NULL,
                     sex = FALSE,
                     priorHistory = TRUE,
-                    furureObservation = TRUE
+                    futureObservation = TRUE
     )
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
@@ -371,7 +371,7 @@ test_that("priorHistory - multiple observation periods", {
                     ageGroup = NULL,
                     sex = FALSE,
                     priorHistory = TRUE,
-                    furureObservation = TRUE
+                    futureObservation = TRUE
     )
   expect_true(nrow(cdm$cohort1a %>% dplyr::collect()) == 2)
   expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_history) ==
@@ -413,7 +413,7 @@ test_that("check that no extra rows are added", {
                     ageGroup = list(c(10,100)),
                     sex = FALSE,
                     priorHistory = FALSE,
-                    furureObservation = FALSE
+                    futureObservation = FALSE
     )
 
   # temp tables created by dbplyr
@@ -429,7 +429,7 @@ test_that("check that no extra rows are added", {
                     age = FALSE,
                     sex = TRUE,
                     priorHistory = FALSE,
-                    furureObservation = FALSE
+                    futureObservation = FALSE
     )
 
   # temp tables created by dbplyr
@@ -445,7 +445,7 @@ test_that("check that no extra rows are added", {
                     age = FALSE,
                     sex = FALSE,
                     priorHistory = TRUE,
-                    furureObservation = FALSE
+                    futureObservation = FALSE
     )
 
   # temp tables created by dbplyr
@@ -461,7 +461,7 @@ test_that("check that no extra rows are added", {
                     age = FALSE,
                     sex = FALSE,
                     priorHistory = FALSE,
-                    furureObservation = TRUE
+                    futureObservation = TRUE
     )
 
   # temp tables created by dbplyr

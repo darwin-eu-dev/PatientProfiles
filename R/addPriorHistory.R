@@ -77,7 +77,7 @@ addPriorHistory <- function(x,
                     sex = FALSE,
                     priorHistory = TRUE,
                     priorHistoryName = priorHistoryName,
-                    furureObservation = FALSE,
+                    futureObservation = FALSE,
                     tablePrefix = tablePrefix
     )
 
