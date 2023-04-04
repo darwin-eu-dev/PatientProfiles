@@ -24,14 +24,25 @@ test_that("output format - one outcome cohort", {
   cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
   cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
-  cdm$cohort1 <- cdm$cohort1 %>%
+  cdm$cohort1a <- cdm$cohort1 %>%
     timeToCohort(
       cdm = cdm,
       targetCohortId = 1,
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1) == 5)
+  expect_true(ncol(cdm$cohort1a) == 5)
+
+  cdm$cohort1b <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      targetCohortId = 1,
+      targetDate = "cohort_start_date",
+      targetCohortTable = "cohort2"
+    )
+  expect_true(ncol(cdm$cohort1b) == 5)
+
+
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
@@ -53,9 +64,18 @@ test_that("output format - multiple outcome cohorts", {
       targetCohortTable = "cohort2"
     )
   expect_true(ncol(cdm$cohort1a) == 6)
+  cdm$cohort1b <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      window = c(0, Inf),
+      targetCohortId = NULL,
+      indexDate = "cohort_start_date",
+      targetCohortTable = "cohort2"
+    )
+  expect_true(ncol(cdm$cohort1b) == 6)
 
   # In -Inf to Inf - 2 target cohorts have someone
-  cdm$cohort1b <- cdm$cohort1 %>%
+  cdm$cohort1c <- cdm$cohort1 %>%
     timeToCohort(
       cdm = cdm,
       window = c(-Inf, Inf),
@@ -63,7 +83,16 @@ test_that("output format - multiple outcome cohorts", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1b) == 7)
+  expect_true(ncol(cdm$cohort1c) == 7)
+  cdm$cohort1d <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      window = c(-Inf, Inf),
+      targetCohortId = NULL,
+      indexDate = "cohort_start_date",
+      targetCohortTable = "cohort2"
+    )
+  expect_true(ncol(cdm$cohort1d) == 7)
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -118,7 +147,6 @@ test_that("first vs last event - cohort table", {
       targetCohortTable = "cohort2",
       order = "first"
     )
-
   expect_true(cdm$cohort1a %>%
     dplyr::filter(subject_id == 1) %>%
     dplyr::pull(5) ==
@@ -133,8 +161,25 @@ test_that("first vs last event - cohort table", {
       as.Date("2011-02-01"),
       units = "days"
     )))
-  # last
+
   cdm$cohort1b <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      targetCohortId = 1,
+      indexDate = "cohort_start_date",
+      targetCohortTable = "cohort2",
+      order = "first"
+    )
+  expect_true(cdm$cohort1b %>%
+                dplyr::filter(subject_id == 1) %>%
+                dplyr::pull(5) == as.Date("2010-03-03"))
+  expect_true(cdm$cohort1b %>%
+                dplyr::filter(subject_id == 2) %>%
+                dplyr::pull(5) == as.Date("2013-01-03"))
+
+
+  # last
+  cdm$cohort1c <- cdm$cohort1 %>%
     timeToCohort(
       cdm = cdm,
       targetCohortId = 1,
@@ -142,20 +187,36 @@ test_that("first vs last event - cohort table", {
       targetCohortTable = "cohort2",
       order = "last"
     )
-  expect_true(cdm$cohort1b %>%
+  expect_true(cdm$cohort1c %>%
     dplyr::filter(subject_id == 1) %>%
     dplyr::pull(5) ==
     as.numeric(difftime(as.Date("2010-03-25"),
       as.Date("2010-03-01"),
       units = "days"
     )))
-  expect_true(cdm$cohort1b %>%
+  expect_true(cdm$cohort1c %>%
     dplyr::filter(subject_id == 2) %>%
     dplyr::pull(5) ==
     as.numeric(difftime(as.Date("2013-01-03"),
       as.Date("2011-02-01"),
       units = "days"
     )))
+
+  cdm$cohort1d <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      targetCohortId = 1,
+      indexDate = "cohort_start_date",
+      targetCohortTable = "cohort2",
+      order = "last"
+    )
+  expect_true(cdm$cohort1d %>%
+                dplyr::filter(subject_id == 1) %>%
+                dplyr::pull(5) ==
+                as.Date("2010-03-25"))
+  expect_true(cdm$cohort1d %>%
+                dplyr::filter(subject_id == 2) %>%
+                dplyr::pull(5) == as.Date("2013-01-03"))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -232,6 +293,27 @@ test_that("multiple cohort entries per person", {
     cdm$cohort1a %>% dplyr::tally() %>% dplyr::pull("n")
   )
 
+  cdm$cohort1b <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      window = c(0, 100),
+      indexDate = "cohort_start_date",
+      targetCohortTable = "cohort2",
+      order = "first"
+    )
+
+  expect_true(all(cdm$cohort1b %>%
+                    dplyr::filter(subject_id == 1) %>%
+                    dplyr::pull(5) ==
+                    c(as.Date("2010-03-03"),
+                      as.Date("2012-03-25")
+                    )))
+
+  expect_equal(
+    cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull("n"),
+    cdm$cohort1b %>% dplyr::tally() %>% dplyr::pull("n")
+  )
+
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
@@ -243,7 +325,7 @@ test_that("output names", {
   cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
   cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
-  cdm$cohort1 <- cdm$cohort1 %>%
+  cdm$cohort1a <- cdm$cohort1 %>%
     timeToCohort(
       cdm = cdm,
       targetCohortId = NULL,
@@ -252,7 +334,19 @@ test_that("output names", {
       nameStyle = "{id_name}"
     ) # id_name won't be clear to the user
   expect_true(all(c("cohort_1", "cohort_2") %in%
-    colnames(cdm$cohort1)))
+    colnames(cdm$cohort1a)))
+
+  cdm$cohort1b <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      targetCohortId = NULL,
+      targetDate = "cohort_start_date",
+      targetCohortTable = "cohort2",
+      nameStyle = "{id_name}"
+    ) # id_name won't be clear to the user
+  expect_true(all(c("cohort_1", "cohort_2") %in%
+                    colnames(cdm$cohort1b)))
+
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
@@ -267,6 +361,13 @@ test_that("expected errors ", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     ))
+  expect_error(cdm$cohort1 %>%
+                 dateOfCohort(
+                   cdm = "a",
+                   targetCohortId = 1,
+                   indexDate = "cohort_start_date",
+                   targetCohortTable = "cohort2"
+                 ))
 
   # missing outcome table
   expect_error(cdm$cohort1 %>%
@@ -276,6 +377,13 @@ test_that("expected errors ", {
       indexDate = "cohort_start_date",
       targetCohortTable = "table_x"
     ))
+  expect_error(cdm$cohort1 %>%
+                 dateOfCohort(
+                   cdm = cdm,
+                   targetCohortId = 1,
+                   indexDate = "cohort_start_date",
+                   targetCohortTable = "table_x"
+                 ))
 
   # unreasonable window
   # expect_error(cdm$cohort1 %>%
