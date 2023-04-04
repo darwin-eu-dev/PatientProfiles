@@ -21,7 +21,7 @@
 #'
 #' @examples
 #'
-#'\dontrun{
+#'\donttest{
 #'   cohort1 <- dplyr::tibble(
 #'cohort_definition_id = c(1, 1, 1, 1, 1),
 #'subject_id = c(1, 1, 1, 2, 2),

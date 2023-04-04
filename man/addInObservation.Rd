@@ -35,7 +35,7 @@ It adds a column to a cohort table indicating whether its individuals are
 in observation at the desired time
 }
 \examples{
-\dontrun{
+\donttest{
 db <- DBI::dbConnect(" Your database connection here")
 cdm <- CDMConnector::cdm_from_con(
   con = db,

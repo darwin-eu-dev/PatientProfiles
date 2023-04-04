@@ -24,7 +24,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(DBI)
 #' library(duckdb)
 #' library(tibble)
@@ -60,106 +60,24 @@ addAge <- function(x,
                    ageImposeMonth = TRUE,
                    ageImposeDay = TRUE,
                    tablePrefix = NULL) {
-  # errorMessage <- checkmate::makeAssertCollection()
-  #
-  # xCheck <- inherits(x, "tbl_dbi")
-  # if (!isTRUE(xCheck)) {
-  #   errorMessage$push(
-  #     "- x is not a table"
-  #   )
-  # }
-  # # check cdm exist
-  # checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
-  #
-  # # check if indexDate length = 1 and is in table x
-  # checkmate::assertCharacter(indexDate, len = 1, add = errorMessage)
-  #
-  # indexDateExists <-
-  #   checkmate::assertTRUE(indexDate %in% colnames(x), add = errorMessage)
-  #
-  # if (!isTRUE(indexDateExists)) {
-  #   errorMessage$push(glue::glue('- indexDate "{indexDate}" not found in table'))
-  # }
-  #
-  # columnCheck <- ("subject_id" %in% colnames(x) || "person_id" %in% colnames(x))
-  # if (!isTRUE(columnCheck)) {
-  #   errorMessage$push(
-  #     "- neither `subject_id` nor `person_id` are columns of x"
-  #   )
-  # }
-  #
-  # PersonExists <- "person" %in% names(cdm)
-  # if (!isTRUE(PersonExists)) {
-  #   errorMessage$push(
-  #     "- `person` is not found in cdm"
-  #   )
-  # }
-  # PersonCheck <- inherits(cdm$person, "tbl_dbi")
-  # if (!isTRUE(PersonCheck)) {
-  #   errorMessage$push(
-  #     "- table `person` is not of the right type"
-  #   )
-  # }
+  x <- x %>%
+    addDemographics(
+      cdm = cdm,
+      indexDate = indexDate,
+      age = TRUE,
+      ageName = ageName,
+      ageGroup = ageGroup,
+      ageDefaultDay = ageDefaultDay,
+      ageDefaultMonth = ageDefaultMonth,
+      ageImposeDay = ageImposeDay,
+      ageImposeMonth = ageImposeMonth,
+      sex = FALSE,
+      priorHistory = FALSE,
+      futureObservation = FALSE,
+      tablePrefix = tablePrefix
+    )
 
-  # check if default imputation value for month and day are within range allowed
-  # checkmate::assertInt(ageDefaultMonth, lower = 1, upper = 12)
-  # checkmate::assertInt(ageDefaultDay, lower = 1, upper = 31)
-
-  # check if ageImposeMonth and compute and tablePrefix are logical
-  # checkmate::assertLogical(ageImposeMonth, add = errorMessage)
-  # checkmate::assertLogical(ageImposeDay, add = errorMessage)
-  # checkmate::assertCharacter(
-  #   tablePrefix,
-  #   len = 1, null.ok = TRUE, add = errorMessage
-  # )
-
-
-
-  #ageDefaultMonth <- as.integer(ageDefaultMonth)
-  ##ageDefaultDay <- as.integer(ageDefaultDay)
-
-  # checkmate::reportAssertions(collection = errorMessage)
-
-  # checkmate::assertCharacter(ageName, len = 1, any.missing = FALSE)
-  if (ageName %in% colnames(x)) {
-    warning(glue::glue("Column {ageName} found in x and will be overwrite."))
-    x <- x %>% dplyr::select(-dplyr::all_of(ageName))
-  }
-
-  # checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
-  if (!is.null(ageGroup)) {
-    if (is.numeric(ageGroup[[1]])) {
-      ageGroup <- list("age_group" = ageGroup)
-    }
-    for (k in seq_along(ageGroup)) {
-      invisible(checkCategory(ageGroup[[k]]))
-    }
-    if (is.null(names(ageGroup))) {
-      names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
-    }
-    if ("" %in% names(ageGroup)) {
-      id <- which(names(ageGroup) == "")
-      names(ageGroup)[id] <- paste0("age_group_", id)
-    }
-  }
-
- x <- x %>%
-    addDemographics(cdm = cdm,
-                    indexDate = indexDate,
-                    age = TRUE,
-                    ageName = ageName,
-                    ageGroup = ageGroup,
-                    ageDefaultDay = ageDefaultDay,
-                    ageDefaultMonth = ageDefaultMonth,
-                    ageImposeDay =  ageImposeDay,
-                    ageImposeMonth = ageImposeMonth,
-                    sex = FALSE,
-                    priorHistory = FALSE,
-                    futureObservation = FALSE,
-                    tablePrefix = tablePrefix
-                    )
-
- return(x)
+  return(x)
 }
 
 

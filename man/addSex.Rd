@@ -24,7 +24,7 @@ table x with the added column with sex information
 Adds a column with sex information to the individuals of a table
 }
 \examples{
-\dontrun{
+\donttest{
 db <- DBI::dbConnect(" Your database connection here")
 cdm <- CDMConnector::cdm_from_con(
   con = db,

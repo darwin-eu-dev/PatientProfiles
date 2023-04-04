@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(DBI)
 #' library(duckdb)
 #' library(tibble)
@@ -50,34 +50,33 @@
 #'
 #' cdm <-
 #'   mockCohortProfiles(
-#'    seed = 1,
-#'    cohort1 = cohort1,
+#'     seed = 1,
+#'     cohort1 = cohort1,
 #'     observation_period = obs_1
-#'
 #'   )
 #'
 #' result <- cdm$cohort1 %>% addFutureObservation(cdm)
 #' }
 addFutureObservation <- function(x,
-                            cdm,
-                            indexDate = "cohort_start_date",
-                            futureObservationName = "future_observation",
-                            tablePrefix = NULL) {
-
+                                 cdm,
+                                 indexDate = "cohort_start_date",
+                                 futureObservationName = "future_observation",
+                                 tablePrefix = NULL) {
   x <- x %>%
-    addDemographics(cdm = cdm,
-                    indexDate = indexDate,
-                    age = FALSE,
-                    ageGroup = NULL,
-                    ageDefaultDay = NULL,
-                    ageDefaultMonth = NULL,
-                    ageImposeDay =  FALSE,
-                    ageImposeMonth = FALSE,
-                    sex = FALSE,
-                    priorHistory = FALSE,
-                    futureObservation = TRUE,
-                    futureObservationName = futureObservationName,
-                    tablePrefix = tablePrefix
+    addDemographics(
+      cdm = cdm,
+      indexDate = indexDate,
+      age = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = FALSE,
+      priorHistory = FALSE,
+      futureObservation = TRUE,
+      futureObservationName = futureObservationName,
+      tablePrefix = tablePrefix
     )
 
   return(x)

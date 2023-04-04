@@ -54,7 +54,7 @@ Add a column to the current tibble with the age of the subject_id at a
 certain date
 }
 \examples{
-\dontrun{
+\donttest{
 library(DBI)
 library(duckdb)
 library(tibble)

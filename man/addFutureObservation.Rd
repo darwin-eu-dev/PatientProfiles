@@ -32,7 +32,7 @@ individuals
 Add a column with the days of future observation for an individual
 }
 \examples{
-\dontrun{
+\donttest{
 library(DBI)
 library(duckdb)
 library(tibble)

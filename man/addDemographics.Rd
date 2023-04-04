@@ -79,7 +79,7 @@ It adds all demographics columns to the given cohort table: Age, Sex,
 PriorHistory, and ageGroup if desired
 }
 \examples{
-\dontrun{
+\donttest{
 db <- DBI::dbConnect(" Your database connection here")
 cdm <- CDMConnector::cdm_from_con(
   con = db,

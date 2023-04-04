@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(DBI)
 #' library(duckdb)
 #' library(tibble)
