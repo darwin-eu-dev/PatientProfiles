@@ -24,7 +24,7 @@
 #' @param priorHistory TRUE or FALSE. If TRUE, days of between the start
 #' of the current observation period and the indexDate will be calculated
 #' @param priorHistoryName Prior history variable name
-#' @param furureObservation TRUE or FALSE. If TRUE, days between the
+#' @param futureObservation TRUE or FALSE. If TRUE, days between the
 #' indexDate and the end of the current observation period will be
 #' calculated
 #' @param futureObservationName Future observation variable name
@@ -58,7 +58,7 @@ addDemographics <- function(x,
                             sexName = "sex",
                             priorHistory = TRUE,
                             priorHistoryName = "prior_history",
-                            furureObservation = TRUE,
+                            futureObservation = TRUE,
                             futureObservationName = "future_observation",
                             tablePrefix = NULL) {
 
@@ -79,11 +79,11 @@ addDemographics <- function(x,
   ageGroup <- checkAgeGroup(ageGroup)
   checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
   checkmate::assertLogical(priorHistory, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(furureObservation, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
-  checkVariableInX(indexDate, x, !(age | priorHistory | furureObservation))
-  if (!(age | sex | priorHistory | furureObservation)) {
-    cli::cli_abort("age, sex, priorHistory, furureObservation can not be FALSE")
+  checkIndexDate(indexDate, x, !(age | priorHistory | futureObservation))
+  if (!(age | sex | priorHistory | futureObservation)) {
+    cli::cli_abort("age, sex, priorHistory, futureObservation can not be FALSE")
   }
 
   # Start code
@@ -97,7 +97,7 @@ addDemographics <- function(x,
                   "day_of_birth") %>%
     dplyr::rename(!!person_variable := "person_id")
 
-  if (priorHistory == TRUE || furureObservation == TRUE) {
+  if (priorHistory == TRUE || futureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
     obsPeriodDetails <- x %>%
       dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
@@ -169,7 +169,7 @@ addDemographics <- function(x,
                                                      "observation_period_end_date"))),
                      by = person_variable)
 
-  if(priorHistory == TRUE || furureObservation == TRUE) {
+  if(priorHistory == TRUE || futureObservation == TRUE) {
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
                        by= c(person_variable, indexDate))
@@ -193,7 +193,7 @@ addDemographics <- function(x,
     pHQ <- NULL
   }
 
-  if(furureObservation == TRUE) {
+  if(futureObservation == TRUE) {
     fOQ <- futureObservationQuery(indexDate, name = futureObservationName)
   } else {
     fOQ <- NULL

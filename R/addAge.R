@@ -153,7 +153,7 @@ addAge <- function(x,
                     ageImposeMonth = ageImposeMonth,
                     sex = FALSE,
                     priorHistory = FALSE,
-                    furureObservation = FALSE,
+                    futureObservation = FALSE,
                     tablePrefix = tablePrefix
                     )
 
