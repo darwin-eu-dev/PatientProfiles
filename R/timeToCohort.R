@@ -25,46 +25,47 @@
 #'
 #' @examples
 timeToCohort <- function(x,
-                        cdm,
-                        indexDate = "cohort_start_date",
-                        targetCohortTable,
-                        targetCohortId = NULL,
-                        targetDate = "cohort_start_date",
-                        order = "first",
-                        window = c(0, Inf),
-                        nameStyle = "{value}_{id_name}_{window_name}",
-                        tablePrefix = NULL) {
-
+                         cdm,
+                         indexDate = "cohort_start_date",
+                         targetCohortTable,
+                         targetCohortId = NULL,
+                         targetDate = "cohort_start_date",
+                         order = "first",
+                         window = c(0, Inf),
+                         nameStyle = "{value}_{id_name}_{window_name}",
+                         tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkWindow(window)
 
-  if(is.null(targetCohortId)){
+  if (is.null(targetCohortId)) {
     targetCohortId <- CDMConnector::cohort_count(
-      cdm[[targetCohortTable]]) %>%
+      cdm[[targetCohortTable]]
+    ) %>%
       dplyr::pull("cohort_definition_id")
   }
 
-  cohortNames <-  CDMConnector::cohort_set(
-    cdm[[targetCohortTable]]) %>%
+  cohortNames <- CDMConnector::cohort_set(
+    cdm[[targetCohortTable]]
+  ) %>%
     dplyr::filter(.data$cohort_definition_id %in%
-                  .env$targetCohortId) %>%
+      .env$targetCohortId) %>%
     dplyr::pull("cohort_name")
 
   x <- x %>%
     addIntersect(cdm,
-                 tableName = targetCohortTable,
-                 indexDate = indexDate,
-                 value = "time",
-                 filterVariable = "cohort_definition_id",
-                 filterId = targetCohortId,
-                 idName = cohortNames,
-                 window = window,
-                 targetStartDate = targetDate,
-                 targetEndDate = NULL,
-                 order = order,
-                 nameStyle = nameStyle,
-                 tablePrefix = tablePrefix)
+      tableName = targetCohortTable,
+      indexDate = indexDate,
+      value = "time",
+      filterVariable = "cohort_definition_id",
+      filterId = targetCohortId,
+      idName = cohortNames,
+      window = window,
+      targetStartDate = targetDate,
+      targetEndDate = NULL,
+      order = order,
+      nameStyle = nameStyle,
+      tablePrefix = tablePrefix
+    )
 
- return(x)
-
+  return(x)
 }
