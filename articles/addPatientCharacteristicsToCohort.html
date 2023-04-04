@@ -204,9 +204,9 @@ functions<a class="anchor" aria-label="anchor" href="#example-addinobservation-a
 input table, indicating whether the subjects are being observed at a
 specific time. By default, the time is set to “cohort_start_date,” but
 it can be changed with the <code>index_date</code> argument, which
-should refer to a column in the table. The added column is named
-“in_observation” by default, but this can be customized using the
-<code>name</code> argument.</p>
+should refer to a column in the table. The added column is named “falg”
+by default, but this can be customized using the <code>name</code>
+argument.</p>
 <p><code><a href="../reference/addPriorHistory.html">addPriorHistory()</a></code>: appends a column to the input table
 containing the number of days each patient has been in observation up to
 a specified date. By default, the function uses the “cohort_start_date”
@@ -234,7 +234,7 @@ observation and then get their prior and future observation days at
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span> </span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>    <span class="va">in_observation</span> <span class="op">==</span> <span class="fl">1</span></span>
+<span>    <span class="va">flag</span> <span class="op">==</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addPriorHistory.html">addPriorHistory</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span></span>
