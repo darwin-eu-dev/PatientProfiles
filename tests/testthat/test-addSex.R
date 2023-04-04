@@ -25,9 +25,16 @@ test_that("addSex, desired result for all parameters",{
   cdm$cohort2 <- cdm$cohort2 %>% addSex(cdm)
   expect_true("sex" %in% colnames(cdm$cohort2))
   expect_true(all(cdm$cohort2$sex == c("Male","Male","Male","Male")))
-  cdm$condition_occurrence <- cdm$condition_occurrence %>% addSex(cdm, name = "gender")
+  cdm$condition_occurrence <- cdm$condition_occurrence %>% addSex(cdm, sexName = "gender")
   expect_true("gender" %in% colnames(cdm$condition_occurrence))
   expect_false("sex" %in% colnames(cdm$condition_occurrence))
   expect_true(all(cdm$condition_occurrence$gender == c("Male","Male","Female","Female","Male","Male","Male","Male","Female","Female")))
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+test_that("different names",{
+  cdm <- mockPatientProfiles(seed = 27, patient_size = 10, earliest_observation_start_date = as.Date("2010-01-01"), latest_observation_start_date = as.Date("2022-01-01"))
+  cdm$cohort2 <- cdm$cohort2 %>% addSex(cdm, sexName = "gender")
+  expect_true("gender" %in% colnames(cdm$cohort2))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

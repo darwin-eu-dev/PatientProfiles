@@ -137,7 +137,8 @@ test_that("partial demographics - cohorts", {
                     age = TRUE,
                     ageGroup = NULL,
                     sex = FALSE,
-                    priorHistory = FALSE
+                    priorHistory = FALSE,
+                    futureObservation = FALSE
     )
   # age and age group
   expect_equal(
@@ -154,7 +155,8 @@ test_that("partial demographics - cohorts", {
                     age = FALSE,
                     ageGroup = NULL,
                     sex = TRUE,
-                    priorHistory = FALSE
+                    priorHistory = FALSE,
+                    futureObservation = FALSE
     )
   expect_equal(
     names(cdm$cohort1b),
@@ -170,7 +172,8 @@ test_that("partial demographics - cohorts", {
                     age = FALSE,
                     ageGroup = NULL,
                     sex = FALSE,
-                    priorHistory = TRUE
+                    priorHistory = TRUE,
+                    futureObservation = FALSE
     )
   expect_equal(
     names(cdm$cohort1c),
@@ -179,21 +182,41 @@ test_that("partial demographics - cohorts", {
       "prior_history")
   )
 
-  # all
+  # only future observation
   cdm$cohort1d <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_end_date",
+                    age = FALSE,
+                    ageGroup = NULL,
+                    sex = FALSE,
+                    priorHistory = FALSE,
+                    futureObservation = TRUE
+    )
+  expect_equal(
+    names(cdm$cohort1d),
+    c("cohort_definition_id", "subject_id",
+      "cohort_start_date", "cohort_end_date",
+      "future_observation")
+  )
+
+
+  # all
+  cdm$cohort1e <- cdm$cohort1 %>%
     addDemographics(cdm,
                     indexDate = "cohort_end_date",
                     age = TRUE,
                     ageGroup = list(c(0, 100)),
                     sex = TRUE,
-                    priorHistory = TRUE
+                    priorHistory = TRUE,
+                    futureObservation = TRUE
     )
   # age and age group
   expect_equal(
-    names(cdm$cohort1d),
+    names(cdm$cohort1e),
     c("cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
-       "age", "sex", "prior_history", "age_group")
+       "age", "sex", "prior_history",
+       "future_observation", "age_group")
   )
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -258,7 +281,7 @@ test_that("partial demographics - omop tables", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
-test_that("priorHistory - outside of observation period", {
+test_that("priorHistory and future_observation - outside of observation period", {
 
   # priorHistory should be NA if index date is outside of an observation period
 
@@ -295,16 +318,17 @@ test_that("priorHistory - outside of observation period", {
                     age = FALSE,
                     ageGroup = NULL,
                     sex = FALSE,
-                    priorHistory = TRUE
+                    priorHistory = TRUE,
+                    futureObservation = TRUE
     )
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
+  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 
 })
-
 
 test_that("priorHistory - multiple observation periods", {
 
@@ -346,13 +370,108 @@ test_that("priorHistory - multiple observation periods", {
                     age = FALSE,
                     ageGroup = NULL,
                     sex = FALSE,
-                    priorHistory = TRUE
+                    priorHistory = TRUE,
+                    futureObservation = TRUE
     )
   expect_true(nrow(cdm$cohort1a %>% dplyr::collect()) == 2)
-  expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_history) == 761))
+  expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_history) ==
+                    as.numeric(difftime(as.Date("2012-02-01"),
+                                        as.Date("2010-01-01"),
+                                        units = "days"))))
+  expect_true(all(cdm$cohort1a %>% dplyr::pull(future_observation) ==
+                    as.numeric(difftime(as.Date("2015-01-01"),
+                                        as.Date("2012-02-01"),
+                                        units = "days"))))
+
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
+
+})
+
+test_that("check that no extra rows are added", {
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 2, 1, 2, 1),
+    subject_id = c(1, 1, 1, 1, 1),
+    cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2021-01-01", "2021-01-01", "2022-01-01")),
+    cohort_end_date = as.Date(c("2020-01-01", "2020-01-01", "2021-01-01", "2021-01-01", "2022-01-01"))
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 1, 1),
+    observation_period_start_date = as.Date(c("2015-06-30", "2019-06-30", "2021-06-30")),
+    observation_period_end_date = as.Date(c("2018-06-30", "2020-06-30", "2022-06-30"))
+  )
+  cdm <- mockPatientProfiles(
+    cohort1 = cohort1, observation_period = observation_period
+  )
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = TRUE,
+                    ageGroup = list(c(10,100)),
+                    sex = FALSE,
+                    priorHistory = FALSE,
+                    futureObservation = FALSE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = FALSE,
+                    sex = TRUE,
+                    priorHistory = FALSE,
+                    futureObservation = FALSE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = FALSE,
+                    sex = FALSE,
+                    priorHistory = TRUE,
+                    futureObservation = FALSE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+  # using temp
+  cdm$cohort1_new <- cdm$cohort1 %>%
+    addDemographics(cdm,
+                    indexDate = "cohort_start_date",
+                    age = FALSE,
+                    sex = FALSE,
+                    priorHistory = FALSE,
+                    futureObservation = TRUE
+    )
+
+  # temp tables created by dbplyr
+  expect_true(
+    cdm$cohort1_new %>% dplyr::tally() %>% dplyr::pull() ==
+      cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull()
+  )
+
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
 
@@ -391,3 +510,4 @@ test_that("temp and permanent tables", {
                                        "dbplyr_")))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
