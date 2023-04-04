@@ -11,9 +11,9 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addAge(cdm$cohort1, cdm, indexDate = "subject_id"))
 
-  expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageDefaultMonth = "1"))
+  expect_error(expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageDefaultMonth = "1")))
 
-  expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageDefaultDay = "1"))
+  expect_error(expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageDefaultDay = "1")))
 
   expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date", ageImposeMonth = "TRUE"))
 
@@ -214,6 +214,8 @@ test_that("NULL age group name, but given age groups, age not in table", {
   expect_true(identical(result1, result2))
   expect_true(identical(result1, result3))
   expect_true(identical(result3, result2))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("throw errors", {
@@ -261,6 +263,8 @@ test_that("throw errors", {
     list("age_group" = list(c(1, 2)))
   ))
 
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("different name", {
@@ -274,3 +278,4 @@ test_that("different name", {
   expect_true("working_age" %in% colnames(cdm$cohort1))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
