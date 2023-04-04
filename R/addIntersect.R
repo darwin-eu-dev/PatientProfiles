@@ -115,6 +115,7 @@ addIntersect <- function(x,
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
+  originalColnames <- colnames(x)
   ## missing function to correct names
 
   # Start code
@@ -304,20 +305,12 @@ addIntersect <- function(x,
           dplyr::rename(!!indexDate := "index_date"),
         by = dplyr::all_of(c(person_variable, indexDate))
       )
-    if ("flag" %in% value) {
-      x <- x %>%
-        dplyr::mutate(dplyr::across(
-          dplyr::starts_with("flag"),
-          ~ dplyr::if_else(is.na(.x), 0, .x)
-        ))
-    }
-    if ("count" %in% value) {
-      x <- x %>%
-        dplyr::mutate(dplyr::across(
-          dplyr::starts_with("count"),
-          ~ dplyr::if_else(is.na(.x), 0, .x)
-        ))
-    }
+    currentColnames <- colnames(x)
+    x <- x %>%
+      dplyr::mutate(dplyr::across(
+        dplyr::all_of(currentColnames[!(currentColnames %in% originalColnames)]),
+        ~ dplyr::if_else(is.na(.x), 0, .x)
+      ))
     if (is.null(tablePrefix)) {
       x <- CDMConnector::computeQuery(x)
     } else {

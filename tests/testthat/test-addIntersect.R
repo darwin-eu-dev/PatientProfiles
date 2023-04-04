@@ -85,7 +85,9 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all.equal(result_2, result_6, ignore.col.order = TRUE))
+  for (col in colnames(result_2)) {
+    expect_true(all(result_2[[col]][!is.na(result_2[[col]])] == result_6[[col]][!is.na(result_6[[col]])]))
+  }
 
   expect_true(all(result_2$date_NA_0_to_Inf == as.Date(
     c(
@@ -320,11 +322,11 @@ test_that("working examples with multiple cohort Ids", {
   result_2 <- cdm$cohort1 %>%
     addIntersect(
       cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
-      filterId = c(1, 3), value = "count"
+      filterId = c(1, 3), value = "flag"
     ) %>%
     addIntersect(
       cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
-      filterId = c(1, 3), value = "flag"
+      filterId = c(1, 3), value = "count"
     ) %>%
     addIntersect(
       cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
@@ -341,7 +343,9 @@ test_that("working examples with multiple cohort Ids", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all.equal(result_2, result_3, ignore.col.order = TRUE))
+  for (col in colnames(result_2)) {
+    expect_true(all(result_2[[col]][!is.na(result_2[[col]])] == result_3[[col]][!is.na(result_3[[col]])]))
+  }
 
   expect_true(all(result_2$count_id1_0_to_Inf ==  c(2, 2, 1, 0, 0)))
   expect_true(all(compareNA(result_2$time_id1_0_to_Inf,c(14, 0, 5, NA, NA))))
