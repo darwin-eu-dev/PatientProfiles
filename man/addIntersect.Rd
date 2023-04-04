@@ -57,8 +57,6 @@ required parameters}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
-
-\item{cohortId}{vector of cohort definition ids to include}
 }
 \value{
 table with added columns with overlap information

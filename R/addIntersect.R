@@ -10,7 +10,6 @@
 #' be a vector
 #' @param idName the name of each filterId, must have same length than
 #' filterId
-#' @param cohortId vector of cohort definition ids to include
 #' @param value value of interest to add: it can be count, flag, date or time
 #' @param window window to consider events of
 #' @param indexDate date of reference in table x

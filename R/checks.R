@@ -21,7 +21,7 @@ checkName <- function(name, parameters) {
     ))
   }
   elements <- elements[!(elements %in% names(parameters))]
-  if (length(elemenets) > 0) {
+  if (length(elements) > 0) {
     cli::cli_abort(paste0(
       "variables: ",
       paste0(elements, collapse = ", "),
@@ -272,7 +272,7 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
   } else {
     checkVariableInX(filterVariable, x, FALSE, "filterVariable")
     checkmate::assertNumeric(filterId, any.missing = FALSE)
-    checkmate::assertNumeric(head(x, 1) %>% dplyr::pull(dplyr::all_of(filterVariable)))
+    checkmate::assertNumeric(utils::head(x, 1) %>% dplyr::pull(dplyr::all_of(filterVariable)))
     if (is.null(idName)) {
       idName = paste0("id", filterId)
     } else {
@@ -308,7 +308,7 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
     c("{value}")[containValue]
   )
   if (!all(changed %in% contained)) {
-    variablesNotContained <- changed[!(chnaged %in% contained)]
+    variablesNotContained <- changed[!(changed %in% contained)]
     cli::cli_abort(paste0(
       "Variables: ",
       paste0(variablesNotContained, collapse = ", "),
