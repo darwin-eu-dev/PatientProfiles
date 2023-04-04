@@ -81,7 +81,7 @@ addDemographics <- function(x,
   checkmate::assertLogical(priorHistory, any.missing = FALSE, len = 1)
   checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
-  checkIndexDate(indexDate, x, !(age | priorHistory | futureObservation))
+  checkVariableInX(indexDate, x, !(age | priorHistory | futureObservation))
   if (!(age | sex | priorHistory | futureObservation)) {
     cli::cli_abort("age, sex, priorHistory, futureObservation can not be FALSE")
   }
