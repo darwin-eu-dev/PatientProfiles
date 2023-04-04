@@ -116,10 +116,10 @@ cohort2 <- dplyr::tibble(
   ),
 )
 
-cdm <- mockCohortProfiles(cohort1 = cohort1, cohort2 = cohort2)
+cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
 result <- cdm$cohort1 \%>\%
-  addCohortIntersect(
+  addIntersect(
     cdm = cdm,
     tableName = "cohort2", value = "date"
   ) \%>\%

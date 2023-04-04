@@ -25,12 +25,9 @@ Adds a column with sex information to the individuals of a table
 }
 \examples{
 \donttest{
-db <- DBI::dbConnect(" Your database connection here")
-cdm <- CDMConnector::cdm_from_con(
-  con = db,
-  cdm_schema = "cdm schema name"
-)
-cdm$cohort \%>\% addSex(cdm)
+library(PatientProfiles)
+cdm <- mockPatientProfiles()
+cdm$cohort1 \%>\% addSex(cdm)
 }
 
 }

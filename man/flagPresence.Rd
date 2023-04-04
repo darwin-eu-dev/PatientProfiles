@@ -101,12 +101,12 @@ cohort2 <- dplyr::tibble(
   ),
 )
 
-cdm <- mockCohortProfiles(cohort1 = cohort1, cohort2 = cohort2)
+cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
 result <- cdm$cohort1 \%>\%
   flagPresence(
     cdm = cdm,
-    cohortTableName = "cohort2"
+    tableName = "cohort2"
   ) \%>\%
   dplyr::collect()
 }

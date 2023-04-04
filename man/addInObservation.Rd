@@ -36,12 +36,9 @@ in observation at the desired time
 }
 \examples{
 \donttest{
-db <- DBI::dbConnect(" Your database connection here")
-cdm <- CDMConnector::cdm_from_con(
-  con = db,
-  cdm_schema = "cdm schema name"
-)
-cdm$cohort \%>\% inObservation(cdm)
+library(PatientProfiles)
+cdm <- mockPatientProfiles()
+cdm$cohort1 \%>\% addInObservation(cdm)
 }
 
 }

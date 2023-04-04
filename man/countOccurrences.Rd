@@ -53,6 +53,9 @@ cohorts
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+library(dplyr)
+
 cohort1 <- dplyr::tibble(
   cohort_definition_id = c(1, 1, 1, 1, 1),
   subject_id = c(1, 1, 1, 2, 2),
@@ -103,12 +106,12 @@ cohort2 <- dplyr::tibble(
   ),
 )
 
-cdm <- mockCohortProfiles(cohort1 = cohort1, cohort2 = cohort2)
+cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
 result <- cdm$cohort1 \%>\%
   countOccurrences(
     cdm = cdm,
-    cohortTableName = "cohort2"
+    tableName = "cohort2"
   ) \%>\%
   dplyr::collect()
 }

@@ -47,7 +47,7 @@
 #'   month_of_birth = c(NA, 07, 08),
 #'   day_of_birth = c(01, 25, 03)
 #' )
-#' cdm <- mockDrugUtilisation(person = person, cohort1 = cohort1)
+#' cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
 #' addAge(x = cdm[["cohort1"]], cdm = cdm)
 #' }
 addAge <- function(x,

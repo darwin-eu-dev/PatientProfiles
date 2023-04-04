@@ -115,7 +115,7 @@ cdm$cohort1  %>%
 ### Cohort intersections
 
 #### Intersections with patient-level data 
-We can use `addCohortIntersect` to add the intersection between a cohort table and OMOP CDM tables.
+We can use `addIntersect` to add the intersection between a cohort table and OMOP CDM tables.
 
 ```{r, echo=FALSE}
 cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
@@ -141,7 +141,7 @@ cdm$cohort1 %>%
 
 #### Intersections with another cohort
 
-We can use `addCohortIntersect` to compare two cohort tables.
+We can use `addIntersect` to compare two cohort tables.
 
 ```{r, echo=FALSE}
 cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
@@ -160,7 +160,7 @@ If we want to add a variable to cohorts in the cohort table 1 identifying whethe
 
 ```{r}
 cdm$cohort1 <- cdm$cohort1 %>% 
-  addCohortIntersect(cdm = cdm,  
+  addIntersect(cdm = cdm,  
                      name = "history_of_cohort_2_id_1",
                      cohortTableName = "cohort2", 
                      cohortId = 1,

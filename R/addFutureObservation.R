@@ -17,7 +17,7 @@
 #' library(DBI)
 #' library(duckdb)
 #' library(tibble)
-#' library(CohortProfiles)
+#' library(PatientProfiles)
 #' cohort1 <- tibble::tibble(
 #'   cohort_definition_id = c("1", "1", "1"),
 #'   subject_id = c("1", "2", "3"),
@@ -49,7 +49,7 @@
 #' )
 #'
 #' cdm <-
-#'   mockCohortProfiles(
+#'   mockPatientProfiles(
 #'     seed = 1,
 #'     cohort1 = cohort1,
 #'     observation_period = obs_1

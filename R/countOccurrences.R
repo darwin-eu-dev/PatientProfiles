@@ -22,6 +22,9 @@
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' library(dplyr)
+#'
 #' cohort1 <- dplyr::tibble(
 #'   cohort_definition_id = c(1, 1, 1, 1, 1),
 #'   subject_id = c(1, 1, 1, 2, 2),
@@ -72,12 +75,12 @@
 #'   ),
 #' )
 #'
-#' cdm <- mockCohortProfiles(cohort1 = cohort1, cohort2 = cohort2)
+#' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 #'
 #' result <- cdm$cohort1 %>%
 #'   countOccurrences(
 #'     cdm = cdm,
-#'     cohortTableName = "cohort2"
+#'     tableName = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
@@ -93,7 +96,7 @@ countOccurrences <- function(x,
                              nameStyle = "{cohortName}_{window_name}",
                              tablePrefix = NULL) {
 
-  # Checks done in the internal addCohortIntersect function
+  # Checks done in the internal addIntersect function
   checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)
   if ("GeneratedCohortSet" %in% class(cdm[[tableName]]) & !is.null(cohortId)) {
     cohortId <- sort(cohortId)
