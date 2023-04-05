@@ -264,6 +264,7 @@ addIntersect <- function(x,
       }
       if (length(extraValue) > 0) {
         resultDTO <- resultDTO %>%
+          dplyr::select(-dplyr::all_of(extraValue)) %>%
           dplyr::left_join(
             result_w %>%
               dplyr::select(
@@ -279,9 +280,10 @@ addIntersect <- function(x,
                   dplyr::all_of(person_variable), "index_date", "id", "date"
                 )
               ) %>%
+              dplyr::distinct() %>%
               dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
               dplyr::summarise(dplyr::across(
-                dplyr::all_of(extraValue), ~ paste0(.x, collapse = "; ")
+                dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
               )),
             by = c(dplyr::all_of(person_variable), "index_date", "id")
           )
