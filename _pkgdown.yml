@@ -4,20 +4,20 @@ template:
 
 reference:
 - subtitle: Add individual patient characteristics
-  desc: Add patient characteristics to a table in the OMOP CDM
+  desc: Add patient characteristics to a table in the OMOP Common Data Model
 - contents:
-  - matches("addAge|addSex|addPriorHistory|addFutureObservation|addIntersect|addInObservation")
+  - matches("addAge|addSex|addPriorHistory|addFutureObservation|addInObservation")
 - subtitle: Add multiple patient characteristics simultaneously
-  desc: Add a set of patient characteristics to a table in the OMOP CDM
+  desc: Add a set of patient characteristics to a table in the OMOP Common Data Model
 - contents:
   - matches("addDemographics")
-- subtitle: Add cohort intersections
-  desc: Add variables to cohorts in a cohort of interest indication their intersection with another set of cohorts in another cohort table
+- subtitle: Identify cohort intersections
+  desc: Add variables indicating the intersection between one set of cohorts and another.
 - contents:
   - matches("flagPresence|countOccurrences|timeToCohort|dateOfCohort")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCategories|mockPatientProfiles")
+  - matches("addCategories|mockPatientProfiles|addIntersect")
 
 
