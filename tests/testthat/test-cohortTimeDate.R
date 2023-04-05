@@ -327,27 +327,62 @@ test_that("output names", {
   cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
   cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
+  # default naming
   cdm$cohort1a <- cdm$cohort1 %>%
     timeToCohort(
       cdm = cdm,
+      window = c(10,50),
       targetCohortId = NULL,
       targetDate = "cohort_start_date",
-      targetCohortTable = "cohort2",
-      nameStyle = "{id_name}"
-    ) # id_name won't be clear to the user
-  expect_true(all(c("cohort_1", "cohort_2") %in%
+      targetCohortTable = "cohort2"
+    )
+  expect_true(all(c("cohort_1_10_to_50",
+                    "cohort_2_10_to_50",
+                    "cohort_3_10_to_50") %in%
     colnames(cdm$cohort1a)))
 
   cdm$cohort1b <- cdm$cohort1 %>%
     dateOfCohort(
       cdm = cdm,
+      window = c(10,50),
+      targetCohortId = NULL,
+      targetDate = "cohort_start_date",
+      targetCohortTable = "cohort2"
+    ) # id_name won't be clear to the user
+  expect_true(all(c("cohort_1_10_to_50",
+                    "cohort_2_10_to_50",
+                    "cohort_3_10_to_50") %in%
+                    colnames(cdm$cohort1b)))
+
+  # new names
+  cdm$cohort1c <- cdm$cohort1 %>%
+    timeToCohort(
+      cdm = cdm,
+      window = c(10,50),
       targetCohortId = NULL,
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2",
-      nameStyle = "{id_name}"
-    ) # id_name won't be clear to the user
-  expect_true(all(c("cohort_1", "cohort_2") %in%
-                    colnames(cdm$cohort1b)))
+      nameStyle = "study_{cohort_name}"
+    )
+  expect_true(all(c("study_cohort_1",
+                    "study_cohort_2",
+                    "study_cohort_3") %in%
+                    colnames(cdm$cohort1c)))
+
+  # new names
+  cdm$cohort1d <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm,
+      window = c(10,50),
+      targetCohortId = NULL,
+      targetDate = "cohort_start_date",
+      targetCohortTable = "cohort2",
+      nameStyle = "study_{cohort_name}"
+    )
+  expect_true(all(c("study_cohort_1",
+                    "study_cohort_2",
+                    "study_cohort_3") %in%
+                    colnames(cdm$cohort1c)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
