@@ -712,3 +712,21 @@ test_that("check input length and type for each of the arguments", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
+
+
+test_that("test checkWindow function", {
+  cdm <- mockPatientProfiles()
+
+  expect_error(cdm$cohort1 %>%
+                 addIntersect(
+                   cdm = cdm,
+                   value = "time",
+                   filterId = 1,
+                   filterVariable = "cohort_definition_id",
+                   tableName = "cohort2",
+                   window = c(150, -90)
+                 ))
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
