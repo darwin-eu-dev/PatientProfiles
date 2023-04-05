@@ -226,7 +226,7 @@ checkWindow <- function(window) {
     window_name = getWindowNames(window) %>% unlist()
   )
 
-  if (any(windowTbl$lower > window$upper)) {
+  if (any(windowTbl$lower > windowTbl$upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
   }
   if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == 1)) {
