@@ -9,7 +9,7 @@ addInObservation(
   x,
   cdm,
   indexDate = "cohort_start_date",
-  name = "flag",
+  name = "in_observation",
   tablePrefix = NULL
 )
 }
