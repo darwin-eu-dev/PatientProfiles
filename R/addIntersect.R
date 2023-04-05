@@ -248,7 +248,8 @@ addIntersect <- function(x,
           dplyr::right_join(
             result_w,
             by = dplyr::all_of(c(person_variable, "index_date", "id"))
-          )
+          ) %>%
+          dplyr::filter(.data$date == .data$overlap_start_date)
       } else {
         resultDTO <- resultDTO %>%
           dplyr::summarise(
@@ -264,7 +265,7 @@ addIntersect <- function(x,
       }
       if (length(extraValue) > 0) {
         resultDTO <- resultDTO %>%
-          dplyr::select(-dplyr::all_of(extraValue)) %>%
+         dplyr::select(-dplyr::all_of(extraValue)) %>%
           dplyr::left_join(
             result_w %>%
               dplyr::select(
@@ -281,7 +282,6 @@ addIntersect <- function(x,
                 )
               ) %>%
               dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
-              dplyr::distinct() %>%
               dplyr::summarise(dplyr::across(
                 dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
               )),

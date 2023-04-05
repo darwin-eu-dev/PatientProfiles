@@ -362,7 +362,6 @@ test_that("working examples with extra column", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
-
 test_that("working examples with multiple cohort Ids", {
 
   # functionality
