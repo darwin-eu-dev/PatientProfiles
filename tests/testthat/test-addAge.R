@@ -155,7 +155,7 @@ test_that("check condition_occurrence and cohort1 work", {
 
   cdm$cohort1 <- cdm$cohort1 %>% addAge(cdm)
   cdm$condition_occurrence <- cdm$condition_occurrence %>% addAge(cdm, indexDate = "condition_start_date")
-  categories <- list("age_group" = list(c(0,20)))
+  categories <- list("age_group" = list(c(0, 20)))
 
   expect_true(typeof(cdm$cohort1 %>% addCategories(cdm, "age", categories) %>% dplyr::collect()) == "list")
   expect_true("age_group" %in% colnames(cdm$cohort1 %>% addCategories(cdm, "age", categories)))
@@ -259,12 +259,11 @@ test_that("throw errors", {
   # if x does not have "age" column, it has to be in cdm
   expect_error(addCategories(
     cdm$cohort2,
-    cdm,  "age",
+    cdm, "age",
     list("age_group" = list(c(1, 2)))
   ))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
 })
 
 test_that("different name", {
@@ -278,4 +277,3 @@ test_that("different name", {
   expect_true("working_age" %in% colnames(cdm$cohort1))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-

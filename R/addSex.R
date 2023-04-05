@@ -12,35 +12,32 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' db <- DBI::dbConnect(" Your database connection here")
-#' cdm <- CDMConnector::cdm_from_con(
-#'   con = db,
-#'   cdm_schema = "cdm schema name"
-#' )
-#' cdm$cohort %>% addSex(cdm)
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>% addSex(cdm)
 #' }
 #'
 addSex <- function(x,
                    cdm,
                    sexName = "sex",
                    tablePrefix = NULL) {
-
   x <- x %>%
-    addDemographics(cdm = cdm,
-                    indexDate = NULL,
-                    age = FALSE,
-                    ageName = FALSE,
-                    ageGroup = NULL,
-                    ageDefaultDay = NULL,
-                    ageDefaultMonth = NULL,
-                    ageImposeDay =  FALSE,
-                    ageImposeMonth = FALSE,
-                    sex = TRUE,
-                    sexName = sexName,
-                    priorHistory = FALSE,
-                    futureObservation = FALSE,
-                    tablePrefix = tablePrefix
+    addDemographics(
+      cdm = cdm,
+      indexDate = NULL,
+      age = FALSE,
+      ageName = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = TRUE,
+      sexName = sexName,
+      priorHistory = FALSE,
+      futureObservation = FALSE,
+      tablePrefix = tablePrefix
     )
 
   return(x)

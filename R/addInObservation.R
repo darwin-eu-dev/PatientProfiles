@@ -14,19 +14,16 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' db <- DBI::dbConnect(" Your database connection here")
-#' cdm <- CDMConnector::cdm_from_con(
-#'   con = db,
-#'   cdm_schema = "cdm schema name"
-#' )
-#' cdm$cohort %>% inObservation(cdm)
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>% addInObservation(cdm)
 #' }
 #'
 addInObservation <- function(x,
                              cdm,
                              indexDate = "cohort_start_date",
-                             name = "in_observation",
+                             name = "flag",
                              tablePrefix = NULL) {
 
   ## check for standard types of user error
@@ -41,25 +38,19 @@ addInObservation <- function(x,
   name <- rlang::enquo(name)
 
   x <- x %>%
-    dplyr::left_join(
-      cdm$observation_period %>%
-        dplyr::select(
-          !!person_variable := "person_id",
-          "observation_period_start_date",
-          "observation_period_end_date"
-        ),
-      by = person_variable
+    addDemographics(cdm,
+                    indexDate = indexDate,
+                    age = FALSE,
+                    sex = FALSE,
+                    priorHistory = TRUE,
+                    futureObservation = TRUE,
+                    tablePrefix = NULL
     ) %>%
     dplyr::mutate(
       !!name := as.numeric(dplyr::if_else(
-        .data[[indexDate]] >= .data$observation_period_start_date &
-          .data[[indexDate]] <= .data$observation_period_end_date,
-        1,
-        0
-      ))
-    ) %>%
+        is.na(.data$prior_history)| is.na(.data$future_observation)|.data$prior_history < 0|.data$future_observation<0,0,1))) %>%
     dplyr::select(
-      -"observation_period_start_date", -"observation_period_end_date"
+      -"prior_history", -"future_observation"
     )
 
   if (is.null(tablePrefix)) {
