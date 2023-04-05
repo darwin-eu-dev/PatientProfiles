@@ -63,7 +63,7 @@ test_that("output format - multiple outcome cohorts", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1a) == 6)
+  expect_true(ncol(cdm$cohort1a) == 7)
   cdm$cohort1b <- cdm$cohort1 %>%
     dateOfCohort(
       cdm = cdm,
@@ -72,7 +72,7 @@ test_that("output format - multiple outcome cohorts", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1b) == 6)
+  expect_true(ncol(cdm$cohort1b) == 7)
 
   # In -Inf to Inf - 2 target cohorts have someone
   cdm$cohort1c <- cdm$cohort1 %>%
@@ -276,6 +276,7 @@ test_that("multiple cohort entries per person", {
 
   expect_true(all(cdm$cohort1a %>%
     dplyr::filter(subject_id == 1) %>%
+    dplyr::arrange(cohort_start_date) %>%
     dplyr::pull(5) ==
     c(
       as.numeric(difftime(as.Date("2010-03-03"),
@@ -304,6 +305,7 @@ test_that("multiple cohort entries per person", {
 
   expect_true(all(cdm$cohort1b %>%
                     dplyr::filter(subject_id == 1) %>%
+                    dplyr::arrange(cohort_start_date) %>%
                     dplyr::pull(5) ==
                     c(as.Date("2010-03-03"),
                       as.Date("2012-03-25")
