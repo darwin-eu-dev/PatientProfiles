@@ -13,7 +13,7 @@ timeToCohort(
   targetDate = "cohort_start_date",
   order = "first",
   window = c(0, Inf),
-  nameStyle = "{value}_{id_name}_{window_name}",
+  nameStyle = "{cohort_name}_{window_name}",
   tablePrefix = NULL
 )
 }

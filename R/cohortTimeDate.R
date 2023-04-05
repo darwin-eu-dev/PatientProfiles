@@ -32,7 +32,7 @@ timeToCohort <- function(x,
                          targetDate = "cohort_start_date",
                          order = "first",
                          window = c(0, Inf),
-                         nameStyle = "{value}_{id_name}_{window_name}",
+                         nameStyle = "{cohort_name}_{window_name}",
                          tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkWindow(window)
@@ -50,6 +50,8 @@ timeToCohort <- function(x,
     dplyr::filter(.data$cohort_definition_id %in%
       .env$targetCohortId) %>%
     dplyr::pull("cohort_name")
+
+  nameStyle <- gsub("cohort_name", "id_name", nameStyle)
 
   x <- x %>%
     addIntersect(cdm,
@@ -104,7 +106,7 @@ dateOfCohort <- function(x,
                          targetDate = "cohort_start_date",
                          order = "first",
                          window = c(0, Inf),
-                         nameStyle = "{value}_{id_name}_{window_name}",
+                         nameStyle = "{cohort_name}_{window_name}",
                          tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkWindow(window)
@@ -122,6 +124,8 @@ dateOfCohort <- function(x,
     dplyr::filter(.data$cohort_definition_id %in%
                     .env$targetCohortId) %>%
     dplyr::pull("cohort_name")
+
+  nameStyle <- gsub("cohort_name", "id_name", nameStyle)
 
   x <- x %>%
     addIntersect(cdm,
