@@ -44,7 +44,7 @@
     <div class="section level2">
       
       <h3 id="add-individual-patient-characteristics">Add individual patient characteristics<a class="anchor" aria-label="anchor" href="#add-individual-patient-characteristics"></a></h3>
-      <p class="section-desc"></p><p>Add patient characteristics to a table in the OMOP CDM</p>
+      <p class="section-desc"></p><p>Add patient characteristics to a table in the OMOP Common Data Model</p>
 
       
     </div><div id="" class="section level2">
@@ -71,11 +71,6 @@ certain date</dd>
 in observation at the desired time</dd>
       </dl><dl><dt>
           
-          <code><a href="addIntersect.html">addIntersect()</a></code> 
-        </dt>
-        <dd>It creates columns to indicate overlaps information</dd>
-      </dl><dl><dt>
-          
           <code><a href="addPriorHistory.html">addPriorHistory()</a></code> 
         </dt>
         <dd>Add a column to the current tibble with the prior history of the subject_id at a
@@ -88,7 +83,7 @@ certain date</dd>
       </dl></div><div class="section level2">
       
       <h3 id="add-multiple-patient-characteristics-simultaneously">Add multiple patient characteristics simultaneously<a class="anchor" aria-label="anchor" href="#add-multiple-patient-characteristics-simultaneously"></a></h3>
-      <p class="section-desc"></p><p>Add a set of patient characteristics to a table in the OMOP CDM</p>
+      <p class="section-desc"></p><p>Add a set of patient characteristics to a table in the OMOP Common Data Model</p>
 
       
     </div><div id="" class="section level2">
@@ -104,8 +99,8 @@ certain date</dd>
 PriorHistory, and ageGroup if desired</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="add-cohort-intersections">Add cohort intersections<a class="anchor" aria-label="anchor" href="#add-cohort-intersections"></a></h3>
-      <p class="section-desc"></p><p>Add variables to cohorts in a cohort of interest indication their intersection with another set of cohorts in another cohort table</p>
+      <h3 id="identify-cohort-intersections">Identify cohort intersections<a class="anchor" aria-label="anchor" href="#identify-cohort-intersections"></a></h3>
+      <p class="section-desc"></p><p>Add variables indicating the intersection between one set of cohorts and another.</p>
 
       
     </div><div id="" class="section level2">
@@ -150,6 +145,11 @@ cohorts</dd>
           <code><a href="addCategories.html">addCategories()</a></code> 
         </dt>
         <dd>It creates categories from a numeric variable.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addIntersect.html">addIntersect()</a></code> 
+        </dt>
+        <dd>It creates columns to indicate overlaps information</dd>
       </dl><dl><dt>
           
           <code><a href="mockPatientProfiles.html">mockPatientProfiles()</a></code> 
