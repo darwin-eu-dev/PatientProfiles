@@ -249,6 +249,120 @@ test_that("working examples with cohort_end_date", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
+test_that("working examples with extra column", {
+
+  # functionality
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-20",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    )
+  )
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+  )
+
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  cdm$cohort2 <- cdm$cohort2 %>% dplyr::mutate(measurment_result = row_number())
+
+  result <- cdm$cohort1 %>%
+    addIntersect(cdm, "cohort2", c("flag", "measurment_result"), "cohort_definition_id", 1, "covid", list(c(0, Inf))) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  result_1 <- cdm$cohort1 %>%
+    addIntersect(cdm, "cohort2","measurment_result", "cohort_definition_id", 2, "covid", list(c(0, Inf))) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-15",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-15",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+  )
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  cdm$cohort2 <- cdm$cohort2 %>% dplyr::mutate(measurment_result = row_number())
+
+  result_2 <- cdm$cohort1 %>%
+    addIntersect(cdm, "cohort2", "measurment_result",
+                 nameStyle = "{value}_{window_name}") %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(result$measurment_result_covid_0_to_Inf == c(1,1,2,6,5) ))
+  # expect_true(all(result_1$measurment_result_covid_0_to_Inf == c(NA,NA,NA,NA,NA) ))
+  expect_true(all(result_2$measurment_result_0_to_Inf == c("1; 2","1; 2",3,6,5) ))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+
 test_that("working examples with multiple cohort Ids", {
 
   # functionality
