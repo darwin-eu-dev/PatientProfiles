@@ -245,7 +245,10 @@ addIntersect <- function(x,
             date = min(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
           ) %>%
-          dplyr::right_join(result_w)
+          dplyr::right_join(
+            result_w,
+            by = dplyr::all_of(c(person_variable, "index_date", "id"))
+          )
       } else {
         resultDTO <- resultDTO %>%
           dplyr::summarise(
