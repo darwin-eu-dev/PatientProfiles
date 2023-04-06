@@ -172,18 +172,6 @@ addIntersect <- function(x,
   # Start loop for different windows
   for (i in c(1:nrow(windowTbl))) {
     result_w <- result
-    # if (!is.infinite(windowTbl$upper[i])) {
-    #   result_w <- result_w %>%
-    #     dplyr::filter(.data$index_date >= as.Date(!!CDMConnector::dateadd(
-    #       date = "overlap_start_date", number = -windowTbl$upper[i]
-    #     )))
-    # }
-    # if (!is.infinite(windowTbl$lower[i])) {
-    #   result_w <- result_w %>%
-    #     dplyr::filter(.data$index_date <= as.Date(!!CDMConnector::dateadd(
-    #       date = "overlap_end_date", number = -windowTbl$lower[i]
-    #     )))
-    # }
     if (!is.infinite(windowTbl$upper[i])) {
       result_w <- result_w %>%
         dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
@@ -244,10 +232,6 @@ addIntersect <- function(x,
           dplyr::summarise(
             date = min(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
-          ) %>%
-          dplyr::right_join(
-            result_w,
-            by = dplyr::all_of(c(person_variable, "index_date", "id"))
           )
       } else {
         resultDTO <- resultDTO %>%
@@ -256,6 +240,13 @@ addIntersect <- function(x,
             .groups = "drop"
           )
       }
+      resultDTO <- resultDTO %>%
+        dplyr::right_join(
+          result_w %>%
+            dplyr::select(dplyr::all_of(c(person_variable, "index_date", "id"))) %>%
+            dplyr::distinct(),
+          by = c(person_variable, "index_date", "id")
+        )
       if ("time" %in% value) {
         resultDTO <- resultDTO %>%
           dplyr::mutate(
@@ -281,7 +272,7 @@ addIntersect <- function(x,
               ) %>%
               dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
               dplyr::summarise(dplyr::across(
-                dplyr::all_of(extraValue), ~ paste0(.x, collapse = "; ")
+                dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
               )),
             by = c(dplyr::all_of(person_variable), "index_date", "id")
           )
