@@ -884,3 +884,100 @@ test_that("expected errors", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
+
+
+
+test_that("test if column exist, overwrite", {
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    ),
+    "age" = c(1,1,1,1,1),
+    sex = c(1,1,1,1,1),
+    prior_history = c(1,1,1,1,1),
+    future_observation = c(1,1,1,1,1)
+  )
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+  )
+
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  result <- cdm$cohort1 %>% addDemographics(cdm) %>% dplyr::collect()
+
+  expect_true(sum(colnames(result) == "age") == 1)
+  expect_true(sum(colnames(result) == "sex") == 1)
+  expect_true(sum(colnames(result) == "prior_history") == 1)
+  expect_true(sum(colnames(result) == "future_observation") == 1)
+
+  expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(age) !=
+                    cohort1 %>%
+                    dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(age), na.rm = TRUE))
+
+  expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(sex) !=
+                    cohort1 %>%
+                    dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(sex), na.rm = TRUE))
+
+  expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(prior_history) !=
+                    cohort1 %>%
+                    dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(prior_history), na.rm = TRUE))
+
+  expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(future_observation) !=
+                    cohort1 %>%
+                    dplyr::arrange(cohort_start_date, subject_id) %>%
+                    dplyr::select(future_observation), na.rm = TRUE))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+
+
