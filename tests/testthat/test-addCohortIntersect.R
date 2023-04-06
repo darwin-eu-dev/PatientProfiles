@@ -434,3 +434,241 @@ test_that("expected errors ", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
+test_that("working examples", {
+
+  # functionality
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    )
+  )
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+  )
+
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  result <- cdm$cohort1 %>%
+    countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort2") %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(result$All_0_to_Inf == c(4, 4, 3, 3, 1)))
+
+  result_1 <- cdm$cohort1 %>%
+    countCohortOccurrences(
+      cdm = cdm, targetCohortTable = "cohort2", targetCohortId = c(2, 3),
+      window = list(c(-Inf, 0))
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(result_1$cohort_2_mInf_to_0 == c(0, 0, 0, 0, 1)))
+  expect_true(all(result_1$cohort_3_mInf_to_0 == c(0, 0, 0, 0, 1)))
+
+  attr(cdm$cohort2, "cohort_set") <- dplyr::tibble(
+    cohort_definition_id = c(1, 2, 3),
+    cohort_name = c("asthma", "covid", "tb")
+  )
+  result_2 <- cdm$cohort1 %>%
+    countCohortOccurrences(
+      cdm = cdm, targetCohortTable = "cohort2", targetCohortId = c(2, 3),
+      window = list(c(-Inf, 0))
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(result_2$covid_mInf_to_0 == c(0, 0, 0, 0, 1)))
+  expect_true(all(result_2$tb_mInf_to_0 == c(0, 0, 0, 0, 1)))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+test_that("working examples", {
+
+  # functionality
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    )
+  )
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+  )
+
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  result <- cdm$cohort1 %>%
+    flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2") %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(result$All_0_to_Inf == c(1, 1, 1, 1, 1)))
+
+  result_1 <- cdm$cohort1 %>%
+    flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 2) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(result_1$cohort_2_0_to_Inf == c(1, 1, 1, 1, 0)))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+test_that("working examples", {
+
+  # functionality
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1, 1),
+    subject_id = c(1, 1, 1, 2, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15",
+        "2020-01-20",
+        "2020-01-01",
+        "2020-02-01"
+      )
+    )
+  )
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26",
+        "2020-01-29",
+        "2020-03-15",
+        "2020-01-24",
+        "2020-02-16"
+      )
+    ),
+  )
+
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  result1 <- cdm$cohort1 %>%
+    addCohortIntersect(cdm = cdm, targetCohortTable = "cohort2") %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  result2 <- cdm$cohort1 %>%
+    countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
+    flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
+    dateOfCohort(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
+    timeToCohort(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  for (k in colnames(result1)) {
+    expect_true(all(result1[[k]] == result2[[k]]))
+  }
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})

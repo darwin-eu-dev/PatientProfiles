@@ -43,6 +43,11 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' }
+#'
 mockPatientProfiles <- function(drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
