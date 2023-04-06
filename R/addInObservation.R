@@ -23,7 +23,7 @@
 addInObservation <- function(x,
                              cdm,
                              indexDate = "cohort_start_date",
-                             name = "flag",
+                             name = "in_observation",
                              tablePrefix = NULL) {
 
   ## check for standard types of user error
