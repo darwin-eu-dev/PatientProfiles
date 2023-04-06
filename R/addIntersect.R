@@ -1,7 +1,6 @@
 #' It creates columns to indicate overlaps information
 #'
-#' @param x table containing the individual for which the overlap indicator to
-#' be attached as extra columns
+#' @param x table with the individuals in cdm
 #' @param cdm cdm containing the tables
 #' @param tableName name of the cohort that we want to check for overlap
 #' @param filterVariable the variable that we are going to use to filter (e.g.

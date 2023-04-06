@@ -1,9 +1,6 @@
-
-#' Add a column to the current tibble with the age of the subject_id at a
-#' certain date
+#' Compute the age of the individuals at a certain date
 #'
-#' @param x Tibble with the individuals that we want to add the age. Need to be
-#' in cdm.
+#' @param x table with the individuals, it must be from cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param indexDate Variable that points the date to compute the age.

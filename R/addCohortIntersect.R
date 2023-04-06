@@ -1,7 +1,7 @@
-#' It creates columns to indicate the presence of cohorts
+#' This function adds a column to the current table with the number of days till
+#' the end of the observation period
 #'
-#' @param x table containing the individual for which the overlap indicator to
-#' be attached as extra columns
+#' @param x table with the individuals in cdm
 #' @param cdm cdm containing the tables
 #' @param targetCohortTable name of the cohort that we want to check for overlap
 #' @param targetCohortId vector of cohort definition ids to include

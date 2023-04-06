@@ -1,8 +1,7 @@
-
-#' It adds all demographics columns to the given cohort table: Age, Sex,
-#' PriorHistory, and ageGroup if desired
+#' This function adds multiple columns to the current table with the
+#' demographic characteristics at a certain date of the individuals in the table
 #'
-#' @param x cohort table in which to add follow up of individuals
+#' @param x table with the individuals in cdm
 #' @param cdm cdm with the person and observation_period tables to get the info
 #' for the individuals in the cohort
 #' @param indexDate name of the column with the date at which consider

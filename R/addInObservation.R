@@ -1,7 +1,6 @@
-#' It adds a column to a cohort table indicating whether its individuals are
-#' in observation at the desired time
+#' Indicate if a certain record is within the observation period
 #'
-#' @param x cohort table in which the inObservation command wants to be tested
+#' @param x table with events, table must be from cdm
 #' @param cdm where the observation_period table is stored
 #' @param indexDate name of the column with the dates to test the
 #' inObservation command

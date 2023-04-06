@@ -1,8 +1,7 @@
-
-#' Add a column to the current tibble with the prior history of the subject_id at a
-#' certain date
+#' This function adds a column to the current table with the number of days
+#' of prior history in the current observation period
 #'
-#' @param x cohort table to which add prior history to
+#' @param x table with the individuals, it must be from cdm
 #' @param cdm object containing the person table
 #' @param indexDate name of the date field to use as date in table x
 #' @param priorHistoryName name of the new column to be added

@@ -1,7 +1,7 @@
-
-#' Adds a column with sex information to the individuals of a table
+#' This function adds a column to the current table with the sex of the
+#' individuals
 #'
-#' @param x cohort table to which add Sex
+#' @param x table with the individuals in cdm
 #' @param cdm object containing the person table with the sex information
 #' in gender_concept_id column
 #' @param sexName name of the new column to be added

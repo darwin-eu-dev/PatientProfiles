@@ -1,6 +1,6 @@
-#' It creates categories from a numeric variable.
+#' Categorize a numeric variable
 #'
-#' @param x Table in the database.
+#' @param x table with in the cdm
 #' @param cdm cdm reference
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper

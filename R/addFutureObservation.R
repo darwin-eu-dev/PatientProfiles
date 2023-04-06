@@ -1,7 +1,6 @@
-
-#' Add a column with the days of future observation for an individual
+#' Compute the number of days till the end of the observation period
 #'
-#' @param x cohort table to which add prior history to
+#' @param x table with the individuals, it must be from cdm
 #' @param cdm object containing the person table
 #' @param indexDate name of the date field to use as date in table x
 #' @param futureObservationName name of the new column to be added
