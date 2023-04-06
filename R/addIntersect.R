@@ -327,14 +327,15 @@ addIntersect <- function(x,
       dplyr::rename(!!indexDate := "index_date") %>%
       dplyr::rename_all(tolower)
 
+    namesToEliminate <- intersect(names(x), names(resultCountFlag))
+    namesToEliminate <- namesToEliminate[
+      !(namesToEliminate %in% c(person_variable, indexDate))
+    ]
     x <- x %>%
-      dplyr::select(
-        names(x)[!(names(x) %in% names(resultCountFlag))],
-        dplyr::all_of(c(person_variable, indexDate))
-      ) %>%
+      dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
       dplyr::left_join(
         resultCountFlag,
-        by = dplyr::all_of(c(person_variable, indexDate))
+        by = c(person_variable, indexDate)
       )
     currentColnames <- colnames(x)
     x <- x %>%
@@ -373,11 +374,13 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
+      namesToEliminate <- intersect(names(x), names(resultDateTimeOtherX))
+      namesToEliminate <- namesToEliminate[
+        !(namesToEliminate %in% c(person_variable, indexDate))
+      ]
+
       x <- x %>%
-        dplyr::select(
-          names(x)[!(names(x) %in% names(resultDateTimeOtherX))],
-          dplyr::all_of(c(person_variable, indexDate))
-        ) %>%
+        dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
         dplyr::left_join(resultDateTimeOtherX,
           by = dplyr::all_of(c(person_variable, indexDate))
         )
@@ -393,26 +396,6 @@ addIntersect <- function(x,
     }
   }
 
-  # # Rename new columns in results if previously existing in x
-  # colnames_repeated <- colnames(result_all)[colnames(result_all) %in% colnames(x)]
-  # colnames_repeated <- colnames_repeated[!(colnames_repeated %in% c(conceptIdname, "cohort_start_date", "cohort_end_date", "subject_id"))]
-  #
-  # for(col in colnames_repeated) {
-  #   col_x <- col
-  #   num <- 1
-  #   col_new <- paste0(col,"_", num)
-  #   while(col_new %in% colnames(x)) {
-  #     num <- num + 1
-  #     col_x <- col_new
-  #     col_new <- paste0(col,"_",num)
-  #   }
-  #   warning("New column has been named `",col_new,"` because `", col_x,"` already exists in x")
-  #
-  #   col_new <- rlang::enquo(col_new)
-  #     result_all <- result_all %>%
-  #     dplyr::rename(!!col_new := col) %>%
-  #       CDMConnector::computeQuery()
-  # }
 
   return(x)
 }

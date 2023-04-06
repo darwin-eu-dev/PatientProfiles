@@ -601,7 +601,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
 
         substr(name, 8, nchar(name))
       ),
-      attr(cohort1, which = names(attributes(cohort2))[[i]]),
+      attr(cohort2, which = names(attributes(cohort2))[[i]]),
       overwrite = TRUE
       )
     })
@@ -707,10 +707,6 @@ addCohortCountAttr <- function(cohort) {
     ) %>%
     dplyr::collect()
 
-  cohort %>%
-    dplyr::group_by(subject_id) %>%
-    dplyr::tally()
-
   attr(cohort, "cohort_count") <- cohort_count
   attr(cohort, "cohort_set") <- cohort_count %>%
     dplyr::select("cohort_definition_id") %>%
@@ -720,10 +716,12 @@ addCohortCountAttr <- function(cohort) {
     ))
 
   attr(cohort, "cohort_attrition") <- cohort_count %>%
-    dplyr::mutate("reason" = "Qualifying initial records",
-                  "reason_id" = 1,
-                  "excluded_records" = 0,
-                  "excluded_subjects" = 0)
+    dplyr::mutate(
+      "reason" = "Qualifying initial records",
+      "reason_id" = 1,
+      "excluded_records" = 0,
+      "excluded_subjects" = 0
+    )
 
   return(cohort)
 }

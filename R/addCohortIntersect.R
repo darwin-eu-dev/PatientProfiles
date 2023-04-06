@@ -11,6 +11,7 @@
 #' @param targetEndDate date of reference in cohort table, either for end
 #' (overlap) or NULL (if incidence)
 #' @param window window to consider events of
+#' @param order which record is considered in case of multiple records
 #' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
 #' intersection
 #' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
@@ -97,6 +98,7 @@ addCohortIntersect <- function(x,
                                targetStartDate = "cohort_start_date",
                                targetEndDate = "cohort_end_date",
                                window = list(c(0, Inf)),
+                               order = "first",
                                flag = TRUE,
                                count = TRUE,
                                date = TRUE,
@@ -105,7 +107,7 @@ addCohortIntersect <- function(x,
                                tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
-  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId)
+  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
   checkmate::assertLogical(flag, any.missing = FALSE, len = 1)
   checkmate::assertLogical(count, any.missing = FALSE, len = 1)
@@ -126,6 +128,7 @@ addCohortIntersect <- function(x,
       targetStartDate = targetStartDate,
       targetEndDate = targetEndDate,
       window = window,
+      order = order,
       nameStyle = nameStyle,
       tablePrefix = tablePrefix
     )
@@ -228,7 +231,7 @@ flagCohortPresence <- function(x,
                                tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
-  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId)
+  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%
@@ -349,7 +352,7 @@ countCohortOccurrences <- function(x,
                                    tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
-  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId)
+  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%
@@ -472,7 +475,7 @@ timeToCohort <- function(x,
                          tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
-  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId)
+  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%
@@ -597,7 +600,7 @@ dateOfCohort <- function(x,
                          tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
-  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId)
+  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%

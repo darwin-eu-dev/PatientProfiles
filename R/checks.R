@@ -346,7 +346,7 @@ checkValue <- function(value, x, name) {
 }
 
 #' @noRd
-checkCohortNames <- function(x, targetCohortId) {
+checkCohortNames <- function(x, targetCohortId, name) {
   if (!("GeneratedCohortSet" %in% class(x))) {
     cli::cli_abort("cdm[[targetCohortTable]]) is not a valid cohort object")
   }
@@ -364,7 +364,7 @@ checkCohortNames <- function(x, targetCohortId) {
     }
   } else {
     if (is.null(cohort)) {
-      idName <- paste0("cohort_", targetCohortId)
+      idName <- paste0(name, "_", targetCohortId)
     } else {
       idName <- cohort %>%
         dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
