@@ -700,7 +700,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
 #'
 addCohortCountAttr <- function(cohort) {
   cohort_count <- cohort %>%
-    dplyr::group_by(cohort_definition_id) %>%
+    dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
       number_records = dplyr::n(),
       number_subjects = dplyr::n_distinct(.data$subject_id)
@@ -712,7 +712,7 @@ addCohortCountAttr <- function(cohort) {
     dplyr::select("cohort_definition_id") %>%
     dplyr::mutate("cohort_name" = paste0(
       "cohort_",
-      cohort_definition_id
+      .data$cohort_definition_id
     ))
 
   attr(cohort, "cohort_attrition") <- cohort_count %>%
