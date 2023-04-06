@@ -67,9 +67,9 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_1$count_NA_0_to_Inf == c(4, 4, 3, 3, 1)))
-  expect_true(all(result_1$time_NA_0_to_Inf == c(14, 0, 5, 23, 43)))
-  expect_true(all(result_1$flag_NA_0_to_Inf == c(1, 1, 1, 1, 1)))
+  expect_true(all(result_1$count_All_0_to_Inf == c(4, 4, 3, 3, 1)))
+  expect_true(all(result_1$time_All_0_to_Inf == c(14, 0, 5, 23, 43)))
+  expect_true(all(result_1$flag_All_0_to_Inf == c(1, 1, 1, 1, 1)))
 
   result_2 <-
     cdm$cohort1 %>%
@@ -90,7 +90,7 @@ test_that("working examples", {
     expect_true(all(result_2[[col]][!is.na(result_2[[col]])] == result_6[[col]][!is.na(result_6[[col]])]))
   }
 
-  expect_true(all(result_2$date_NA_0_to_Inf == as.Date(
+  expect_true(all(result_2$date_All_0_to_Inf == as.Date(
     c(
       "2020-02-16",
       "2020-02-16",
@@ -99,9 +99,9 @@ test_that("working examples", {
       "2020-03-15"
     )
   )))
-  expect_true(all(result_2$time_NA_0_to_Inf == c(46, 32, 27, 74, 43)))
-  expect_true(all(result_2$count_NA_0_to_Inf == c(4, 4, 3, 3, 1)))
-  expect_true(all(result_2$flag_NA_0_to_Inf == c(1, 1, 1, 1, 1)))
+  expect_true(all(result_2$time_All_0_to_Inf == c(46, 32, 27, 74, 43)))
+  expect_true(all(result_2$count_All_0_to_Inf == c(4, 4, 3, 3, 1)))
+  expect_true(all(result_2$flag_All_0_to_Inf == c(1, 1, 1, 1, 1)))
 
   result_3 <-
     cdm$cohort1 %>%
@@ -128,12 +128,12 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_3$date_NA_mInf_to_0 %in% as.Date(
+  expect_true(all(result_3$date_All_mInf_to_0 %in% as.Date(
     c(NA, "2020-01-15", "2020-01-15", NA, "2020-01-24")
   )))
-  expect_true(all(result_3$time_NA_mInf_to_0 %in% c(NA, 0, -5, NA, -8)))
-  expect_true(all(result_3$count_NA_mInf_to_0 == c(0, 1, 1, 0, 2)))
-  expect_true(all(result_3$flag_NA_mInf_to_0 == c(0, 1, 1, 0, 1)))
+  expect_true(all(result_3$time_All_mInf_to_0 %in% c(NA, 0, -5, NA, -8)))
+  expect_true(all(result_3$count_All_mInf_to_0 == c(0, 1, 1, 0, 2)))
+  expect_true(all(result_3$flag_All_mInf_to_0 == c(0, 1, 1, 0, 1)))
 
   result_4 <- cdm$cohort1 %>%
     addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "date") %>%
@@ -143,7 +143,7 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_4$date_NA_m30_to_30 == as.Date(
+  expect_true(all(result_4$date_All_m30_to_30 == as.Date(
     c(
       "2020-01-15",
       "2020-01-15",
@@ -152,9 +152,9 @@ test_that("working examples", {
       "2020-01-24"
     )
   )))
-  expect_true(all(result_4$time_NA_m30_to_30 == c(14, 0, -5, 23, -8)))
-  expect_true(all(result_4$count_NA_m30_to_30 == c(3, 3, 4, 2, 2)))
-  expect_true(all(result_4$flag_NA_m30_to_30 == c(1, 1, 1, 1, 1)))
+  expect_true(all(result_4$time_All_m30_to_30 == c(14, 0, -5, 23, -8)))
+  expect_true(all(result_4$count_All_m30_to_30 == c(3, 3, 4, 2, 2)))
+  expect_true(all(result_4$flag_All_m30_to_30 == c(1, 1, 1, 1, 1)))
 
   result_5 <- cdm$cohort1 %>%
     addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "date", order = "last") %>%
@@ -165,10 +165,10 @@ test_that("working examples", {
     dplyr::collect()
 
 
-  expect_true(all(result_5$count_NA_m30_to_30 == c(3, 3, 4, 2, 2)))
-  expect_true(all(result_5$flag_NA_m30_to_30 == c(1, 1, 1, 1, 1)))
-  expect_true(all(result_5$time_NA_m30_to_30 == c(25, 11, 27, 28, -3)))
-  expect_true(all(result_5$date_NA_m30_to_30 == as.Date(
+  expect_true(all(result_5$count_All_m30_to_30 == c(3, 3, 4, 2, 2)))
+  expect_true(all(result_5$flag_All_m30_to_30 == c(1, 1, 1, 1, 1)))
+  expect_true(all(result_5$time_All_m30_to_30 == c(25, 11, 27, 28, -3)))
+  expect_true(all(result_5$date_All_m30_to_30 == as.Date(
     c(
       "2020-01-26",
       "2020-01-26",
@@ -244,7 +244,7 @@ test_that("working examples with cohort_end_date", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$date_NA_0_to_Inf == as.Date(c("2020-01-25", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+  expect_true(all(result$date_All_0_to_Inf == as.Date(c("2020-01-25", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -540,7 +540,7 @@ test_that("working examples calculating as incidence target cohort", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$test_NA_0_to_Inf == as.Date("2020-01-01")))
+  expect_true(all(result$test_All_0_to_Inf == as.Date("2020-01-01")))
   # expect_true(("all_0_to_Inf" %in% colnames(result_1)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -618,8 +618,8 @@ test_that("working examples with more than one window", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$date_NA_0_to_Inf == result_1$date_NA_0_to_Inf))
-  expect_true(all(compareNA(result$date_NA_mInf_to_0, result_1$date_NA_mInf_to_0)))
+  expect_true(all(result$date_All_0_to_Inf == result_1$date_All_0_to_Inf))
+  expect_true(all(compareNA(result$date_All_mInf_to_0, result_1$date_All_mInf_to_0)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -699,7 +699,7 @@ test_that("working examples with tables, not cohorts", {
     ) %>%
     dplyr::collect()
 
-  expect_true(all(result$date_NA_0_to_Inf %in% as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+  expect_true(all(result$date_All_0_to_Inf %in% as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   result_1 <- cdm$condition_occurrence %>%
     addIntersect(
@@ -728,8 +728,8 @@ test_that("working examples with tables, not cohorts", {
     dplyr::arrange(subject_id, condition_occurrence_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_1$count_id1_0_to_Inf + result_1$count_id2_0_to_Inf == result_2$count_NA_0_to_Inf))
-  expect_true(all(result_1$count_id1_mInf_to_0 + result_1$count_id2_mInf_to_0 == result_2$count_NA_mInf_to_0))
+  expect_true(all(result_1$count_id1_0_to_Inf + result_1$count_id2_0_to_Inf == result_2$count_All_0_to_Inf))
+  expect_true(all(result_1$count_id1_mInf_to_0 + result_1$count_id2_mInf_to_0 == result_2$count_All_mInf_to_0))
 
   result_3 <- cdm$condition_occurrence %>%
     addIntersect(
@@ -833,3 +833,21 @@ test_that("check input length and type for each of the arguments", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
+
+
+test_that("test checkWindow function", {
+  cdm <- mockPatientProfiles()
+
+  expect_error(cdm$cohort1 %>%
+                 addIntersect(
+                   cdm = cdm,
+                   value = "time",
+                   filterId = 1,
+                   filterVariable = "cohort_definition_id",
+                   tableName = "cohort2",
+                   window = c(150, -90)
+                 ))
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
