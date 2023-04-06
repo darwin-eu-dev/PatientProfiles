@@ -128,7 +128,7 @@ addIntersect <- function(x,
       dplyr::filter(.data[[filterVariable]] %in% .env$filterId)
   } else {
     filterVariable <- "id"
-    filterTbl <- dplyr::tibble(id = 1, id_name = "All")
+    filterTbl <- dplyr::tibble(id = 1, id_name = "all")
     overlapTable <- dplyr::mutate(overlapTable, id = 1)
   }
   if (is.null(targetEndDate)) {
@@ -159,6 +159,8 @@ addIntersect <- function(x,
     dplyr::distinct() %>%
     dplyr::inner_join(overlapTable, by = person_variable)
 
+
+
   if (is.null(tablePrefix)) {
     result <- CDMConnector::computeQuery(result)
   } else {
@@ -170,35 +172,34 @@ addIntersect <- function(x,
   resultCountFlag <- NULL
   resultDateTimeOther <- NULL
   # Start loop for different windows
+
   for (i in c(1:nrow(windowTbl))) {
     result_w <- result
-    # if (!is.infinite(windowTbl$upper[i])) {
-    #   result_w <- result_w %>%
-    #     dplyr::filter(.data$index_date >= as.Date(!!CDMConnector::dateadd(
-    #       date = "overlap_start_date", number = -windowTbl$upper[i]
-    #     )))
-    # }
-    # if (!is.infinite(windowTbl$lower[i])) {
-    #   result_w <- result_w %>%
-    #     dplyr::filter(.data$index_date <= as.Date(!!CDMConnector::dateadd(
-    #       date = "overlap_end_date", number = -windowTbl$lower[i]
-    #     )))
-    # }
-    if (!is.infinite(windowTbl$upper[i])) {
-      result_w <- result_w %>%
-        dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
-          date = "overlap_start_date", number = -windowTbl$upper[i]
-        )), 1, 0))
-    } else {
-      result_w <- result_w %>% dplyr::mutate(indicator = 1)
-    }
+    if(overlapTable %>% dplyr::tally() %>% dplyr::pull() == 0)
+    {
+      result_w <- x %>%
+        dplyr::select(
+          dplyr::all_of(person_variable),
+          "index_date" = dplyr::all_of(indexDate)
+        ) %>%
+        dplyr::distinct() %>%
+        dplyr::full_join(overlapTable, by = person_variable) %>%
+        dplyr::mutate(indicator = 0)} else {
+      if (!is.infinite(windowTbl$upper[i])) {
+        result_w <- result_w %>%
+          dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
+            date = "overlap_start_date", number = -windowTbl$upper[i]
+          )), 1, 0))
+      } else {
+        result_w <- result_w %>% dplyr::mutate(indicator = 1)
+      }
 
-    if (!is.infinite(windowTbl$lower[i])) {
-      result_w <- result_w %>%
-        dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
-          date = "overlap_end_date", number = -windowTbl$lower[i]
-        )), 0, .data$indicator))
-    }
+      if (!is.infinite(windowTbl$lower[i])) {
+        result_w <- result_w %>%
+          dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
+            date = "overlap_end_date", number = -windowTbl$lower[i]
+          )), 0, .data$indicator))
+      }}
     if (is.null(tablePrefix)) {
       result_w <- CDMConnector::computeQuery(result_w)
     } else {
@@ -213,7 +214,7 @@ addIntersect <- function(x,
         dplyr::summarise(count = sum(.data$indicator, na.rm = TRUE), .groups = "drop") %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
-        dplyr::mutate("window_name" = !!windowTbl$window_name[i])
+        dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
       if ("flag" %in% value) {
         resultCF <- resultCF %>% dplyr::mutate(flag = dplyr::if_else(.data$count > 0, 1, 0))
       }
@@ -244,10 +245,6 @@ addIntersect <- function(x,
           dplyr::summarise(
             date = min(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
-          ) %>%
-          dplyr::right_join(
-            result_w,
-            by = dplyr::all_of(c(person_variable, "index_date", "id"))
           )
       } else {
         resultDTO <- resultDTO %>%
@@ -256,6 +253,13 @@ addIntersect <- function(x,
             .groups = "drop"
           )
       }
+      resultDTO <- resultDTO %>%
+        dplyr::right_join(
+          result_w %>%
+            dplyr::select(dplyr::all_of(c(person_variable, "index_date", "id"))) %>%
+            dplyr::distinct(),
+          by = c(person_variable, "index_date", "id")
+        )
       if ("time" %in% value) {
         resultDTO <- resultDTO %>%
           dplyr::mutate(
@@ -281,7 +285,7 @@ addIntersect <- function(x,
               ) %>%
               dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
               dplyr::summarise(dplyr::across(
-                dplyr::all_of(extraValue), ~ paste0(.x, collapse = "; ")
+                dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
               )),
             by = c(dplyr::all_of(person_variable), "index_date", "id")
           )
@@ -289,7 +293,7 @@ addIntersect <- function(x,
       resultDTO <- resultDTO %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
-        dplyr::mutate("window_name" = !!windowTbl$window_name[i])
+        dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
       if (!("date" %in% value)) {
         resultDTO <- dplyr::select(resultDTO, -"date")
       }
@@ -310,21 +314,28 @@ addIntersect <- function(x,
   }
 
   if (any(c("flag", "count") %in% value)) {
+    resultCountFlag <- resultCountFlag %>%
+      tidyr::pivot_longer(
+        dplyr::any_of(c("count", "flag")),
+        names_to = "value",
+        values_to = "values"
+      ) %>%
+      tidyr::pivot_wider(
+        names_from = c("value", "id_name", "window_name"),
+        values_from = "values",
+        names_glue = nameStyle,
+        values_fill = 0
+      ) %>%
+      dplyr::rename(!!indexDate := "index_date") %>%
+      dplyr::rename_all(tolower)
+
     x <- x %>%
+      dplyr::select(
+        names(x)[!(names(x) %in% names(resultCountFlag))],
+        dplyr::all_of(c(person_variable, indexDate))
+      ) %>%
       dplyr::left_join(
-        resultCountFlag %>%
-          tidyr::pivot_longer(
-            dplyr::any_of(c("count", "flag")),
-            names_to = "value",
-            values_to = "values"
-          ) %>%
-          tidyr::pivot_wider(
-            names_from = c("value", "id_name", "window_name"),
-            values_from = "values",
-            names_glue = nameStyle,
-            values_fill = 0
-          ) %>%
-          dplyr::rename(!!indexDate := "index_date"),
+        resultCountFlag,
         by = dplyr::all_of(c(person_variable, indexDate))
       )
     currentColnames <- colnames(x)
@@ -346,24 +357,30 @@ addIntersect <- function(x,
   if (length(value[!(value %in% c("count", "flag"))]) > 0) {
     values <- value[!(value %in% c("count", "flag"))]
     for (val in values) {
+      resultDateTimeOtherX <- resultDateTimeOther %>%
+        dplyr::select(
+          "subject_id", "index_date", dplyr::all_of(val), "id_name",
+          "window_name"
+        ) %>%
+        tidyr::pivot_longer(
+          dplyr::all_of(val),
+          names_to = "value",
+          values_to = "values"
+        ) %>%
+        tidyr::pivot_wider(
+          names_from = c("value", "id_name", "window_name"),
+          values_from = "values",
+          names_glue = nameStyle
+        ) %>%
+        dplyr::rename(!!indexDate := "index_date") %>%
+        dplyr::rename_all(tolower)
+
       x <- x %>%
-        dplyr::left_join(
-          resultDateTimeOther %>%
-            dplyr::select(
-              "subject_id", "index_date", dplyr::all_of(val), "id_name",
-              "window_name"
-            ) %>%
-            tidyr::pivot_longer(
-              dplyr::all_of(val),
-              names_to = "value",
-              values_to = "values"
-            ) %>%
-            tidyr::pivot_wider(
-              names_from = c("value", "id_name", "window_name"),
-              values_from = "values",
-              names_glue = nameStyle
-            ) %>%
-            dplyr::rename(!!indexDate := "index_date"),
+        dplyr::select(
+          names(x)[!(names(x) %in% names(resultDateTimeOtherX))],
+          dplyr::all_of(c(person_variable, indexDate))
+        ) %>%
+        dplyr::left_join(resultDateTimeOtherX,
           by = dplyr::all_of(c(person_variable, indexDate))
         )
     }
