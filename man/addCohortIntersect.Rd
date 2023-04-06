@@ -2,7 +2,8 @@
 % Please edit documentation in R/addCohortIntersect.R
 \name{addCohortIntersect}
 \alias{addCohortIntersect}
-\title{It creates columns to indicate the presence of cohorts}
+\title{Compute the intersect with a target cohort, you can compute the number of
+occurrences, a flag of presence, a certain date and/or the time difference}
 \usage{
 addCohortIntersect(
   x,
@@ -23,16 +24,17 @@ addCohortIntersect(
 )
 }
 \arguments{
-\item{x}{table containing the individual for which the overlap indicator to
-be attached as extra columns}
+\item{x}{table with individuals in the cdm}
 
-\item{cdm}{cdm containing the tables}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
 \item{targetCohortTable}{name of the cohort that we want to check for overlap}
 
 \item{targetCohortId}{vector of cohort definition ids to include}
 
-\item{indexDate}{date of reference in table x}
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
 
 \item{targetStartDate}{date of reference in cohort table, either for start
 (in overlap) or on its own (for incidence)}
@@ -66,7 +68,8 @@ be created. If NULL, temporary tables will be used throughout.}
 table with added columns with overlap information
 }
 \description{
-It creates columns to indicate the presence of cohorts
+Compute the intersect with a target cohort, you can compute the number of
+occurrences, a flag of presence, a certain date and/or the time difference
 }
 \examples{
 \donttest{

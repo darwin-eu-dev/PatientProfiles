@@ -1,11 +1,10 @@
-#' This function adds multiple columns to the current table with the
-#' demographic characteristics at a certain date of the individuals in the table
+#' Compute demographic characteristics at a certain date
 #'
-#' @param x table with the individuals in cdm
-#' @param cdm cdm with the person and observation_period tables to get the info
-#' for the individuals in the cohort
-#' @param indexDate name of the column with the date at which consider
-#' demographic information
+#' @param x table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the
+#' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
 #' indexDate
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing

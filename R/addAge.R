@@ -1,9 +1,9 @@
 #' Compute the age of the individuals at a certain date
 #'
-#' @param x table with the individuals, it must be from cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param indexDate Variable that points the date to compute the age.
+#' @param indexDate Variable in x that contains the date to compute the age.
 #' @param ageName Name of the new column that contains age.
 #' @param ageGroup List of age groups to be added.
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing

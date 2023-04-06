@@ -2,14 +2,15 @@
 % Please edit documentation in R/addCategories.R
 \name{addCategories}
 \alias{addCategories}
-\title{It creates categories from a numeric variable.}
+\title{Categorize a numeric variable}
 \usage{
 addCategories(x, cdm, variable, categories, tablePrefix = NULL)
 }
 \arguments{
-\item{x}{Table in the database.}
+\item{x}{table with individuals in the cdm}
 
-\item{cdm}{cdm reference}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
 \item{variable}{Target variable that we want to categorize.}
 
@@ -23,7 +24,7 @@ NULL, temporary tables will be used throughout.}
 tibble with the categorical variable added.
 }
 \description{
-It creates categories from a numeric variable.
+Categorize a numeric variable
 }
 \examples{
 #'

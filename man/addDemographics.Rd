@@ -2,8 +2,7 @@
 % Please edit documentation in R/addDemographics.R
 \name{addDemographics}
 \alias{addDemographics}
-\title{It adds all demographics columns to the given cohort table: Age, Sex,
-PriorHistory, and ageGroup if desired}
+\title{Compute demographic characteristics at a certain date}
 \usage{
 addDemographics(
   x,
@@ -26,13 +25,13 @@ addDemographics(
 )
 }
 \arguments{
-\item{x}{cohort table in which to add follow up of individuals}
+\item{x}{table with individuals in the cdm}
 
-\item{cdm}{cdm with the person and observation_period tables to get the info
-for the individuals in the cohort}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
-\item{indexDate}{name of the column with the date at which consider
-demographic information}
+\item{indexDate}{Variable in x that contains the date to compute the
+demographics characteristics.}
 
 \item{age}{TRUE or FALSE. If TRUE, age will be calculated relative to
 indexDate}
@@ -75,8 +74,7 @@ be created. If NULL, temporary tables will be used throughout.}
 cohort table with the added demographic information columns
 }
 \description{
-It adds all demographics columns to the given cohort table: Age, Sex,
-PriorHistory, and ageGroup if desired
+Compute demographic characteristics at a certain date
 }
 \examples{
 \donttest{

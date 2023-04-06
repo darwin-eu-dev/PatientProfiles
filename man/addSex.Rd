@@ -2,15 +2,15 @@
 % Please edit documentation in R/addSex.R
 \name{addSex}
 \alias{addSex}
-\title{Adds a column with sex information to the individuals of a table}
+\title{Compute the sex of the individuals}
 \usage{
 addSex(x, cdm, sexName = "sex", tablePrefix = NULL)
 }
 \arguments{
-\item{x}{cohort table to which add Sex}
+\item{x}{table with individuals in the cdm}
 
-\item{cdm}{object containing the person table with the sex information
-in gender_concept_id column}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
 \item{sexName}{name of the new column to be added}
 
@@ -21,7 +21,7 @@ be created. If NULL, temporary tables will be used throughout.}
 table x with the added column with sex information
 }
 \description{
-Adds a column with sex information to the individuals of a table
+Compute the sex of the individuals
 }
 \examples{
 \donttest{

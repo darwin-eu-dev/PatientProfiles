@@ -1,9 +1,11 @@
-#' This function adds a column to the current table with the number of days
-#' of prior history in the current observation period
+#' Compute the number of days of prior history in the current observation period
+#' at a certain date
 #'
-#' @param x table with the individuals, it must be from cdm
-#' @param cdm object containing the person table
-#' @param indexDate name of the date field to use as date in table x
+#' @param x table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the prior
+#' history.
 #' @param priorHistoryName name of the new column to be added
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.

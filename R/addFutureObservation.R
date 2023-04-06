@@ -1,8 +1,11 @@
-#' Compute the number of days till the end of the observation period
+#' Compute the number of days till the end of the observation period at a
+#' certain date
 #'
-#' @param x table with the individuals, it must be from cdm
-#' @param cdm object containing the person table
-#' @param indexDate name of the date field to use as date in table x
+#' @param x Table with individuals in the cdm.
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the future
+#' observation.
 #' @param futureObservationName name of the new column to be added
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.

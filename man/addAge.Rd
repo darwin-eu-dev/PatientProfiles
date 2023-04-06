@@ -2,8 +2,7 @@
 % Please edit documentation in R/addAge.R
 \name{addAge}
 \alias{addAge}
-\title{Add a column to the current tibble with the age of the subject_id at a
-certain date}
+\title{Compute the age of the individuals at a certain date}
 \usage{
 addAge(
   x,
@@ -19,13 +18,12 @@ addAge(
 )
 }
 \arguments{
-\item{x}{Tibble with the individuals that we want to add the age. Need to be
-in cdm.}
+\item{x}{Table with individuals in the cdm.}
 
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
 
-\item{indexDate}{Variable that points the date to compute the age.}
+\item{indexDate}{Variable in x that contains the date to compute the age.}
 
 \item{ageName}{Name of the new column that contains age.}
 
@@ -50,8 +48,7 @@ be created. If NULL, temporary tables will be used throughout.}
 tibble with the age column added
 }
 \description{
-Add a column to the current tibble with the age of the subject_id at a
-certain date
+Compute the age of the individuals at a certain date
 }
 \examples{
 \donttest{

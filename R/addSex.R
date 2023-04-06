@@ -1,9 +1,8 @@
-#' This function adds a column to the current table with the sex of the
-#' individuals
+#' Compute the sex of the individuals
 #'
-#' @param x table with the individuals in cdm
-#' @param cdm object containing the person table with the sex information
-#' in gender_concept_id column
+#' @param x table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
 #' @param sexName name of the new column to be added
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.

@@ -2,8 +2,7 @@
 % Please edit documentation in R/addInObservation.R
 \name{addInObservation}
 \alias{addInObservation}
-\title{It adds a column to a cohort table indicating whether its individuals are
-in observation at the desired time}
+\title{Indicate if a certain record is within the observation period}
 \usage{
 addInObservation(
   x,
@@ -14,12 +13,13 @@ addInObservation(
 )
 }
 \arguments{
-\item{x}{cohort table in which the inObservation command wants to be tested}
+\item{x}{Table with individuals in the cdm.}
 
-\item{cdm}{where the observation_period table is stored}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
-\item{indexDate}{name of the column with the dates to test the
-inObservation command}
+\item{indexDate}{Variable in x that contains the date to compute the
+observation flag.}
 
 \item{name}{name of the column to hold the result of the enquiry:
 1 if the individual is in observation, 0 if not}
@@ -31,8 +31,7 @@ be created. If NULL, temporary tables will be used throughout.}
 cohort table with the added binary column assessing inObservation
 }
 \description{
-It adds a column to a cohort table indicating whether its individuals are
-in observation at the desired time
+Indicate if a certain record is within the observation period
 }
 \examples{
 \donttest{
