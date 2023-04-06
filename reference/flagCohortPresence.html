@@ -66,12 +66,12 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>table containing the individual for which the overlap indicator to
-be attached as extra columns</p></dd>
+<dd><p>Table with individuals in the cdm</p></dd>
 
 
 <dt>cdm</dt>
-<dd><p>cdm containing the tables</p></dd>
+<dd><p>Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.</p></dd>
 
 
 <dt>targetCohortTable</dt>
@@ -83,7 +83,8 @@ be attached as extra columns</p></dd>
 
 
 <dt>indexDate</dt>
-<dd><p>date of reference in table x</p></dd>
+<dd><p>Variable in x that contains the date to compute the
+intersection.</p></dd>
 
 
 <dt>targetStartDate</dt>

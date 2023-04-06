@@ -56,30 +56,29 @@
           
           <code><a href="addAge.html">addAge()</a></code> 
         </dt>
-        <dd>Add a column to the current tibble with the age of the subject_id at a
-certain date</dd>
+        <dd>Compute the age of the individuals at a certain date</dd>
       </dl><dl><dt>
           
           <code><a href="addFutureObservation.html">addFutureObservation()</a></code> 
         </dt>
-        <dd>Add a column with the days of future observation for an individual</dd>
+        <dd>Compute the number of days till the end of the observation period at a
+certain date</dd>
       </dl><dl><dt>
           
           <code><a href="addInObservation.html">addInObservation()</a></code> 
         </dt>
-        <dd>It adds a column to a cohort table indicating whether its individuals are
-in observation at the desired time</dd>
+        <dd>Indicate if a certain record is within the observation period</dd>
       </dl><dl><dt>
           
           <code><a href="addPriorHistory.html">addPriorHistory()</a></code> 
         </dt>
-        <dd>Add a column to the current tibble with the prior history of the subject_id at a
-certain date</dd>
+        <dd>Compute the number of days of prior history in the current observation period
+at a certain date</dd>
       </dl><dl><dt>
           
           <code><a href="addSex.html">addSex()</a></code> 
         </dt>
-        <dd>Adds a column with sex information to the individuals of a table</dd>
+        <dd>Compute the sex of the individuals</dd>
       </dl></div><div class="section level2">
       
       <h3 id="add-multiple-patient-characteristics-simultaneously">Add multiple patient characteristics simultaneously<a class="anchor" aria-label="anchor" href="#add-multiple-patient-characteristics-simultaneously"></a></h3>
@@ -95,8 +94,7 @@ certain date</dd>
           
           <code><a href="addDemographics.html">addDemographics()</a></code> 
         </dt>
-        <dd>It adds all demographics columns to the given cohort table: Age, Sex,
-PriorHistory, and ageGroup if desired</dd>
+        <dd>Compute demographic characteristics at a certain date</dd>
       </dl></div><div class="section level2">
       
       <h3 id="identify-cohort-intersections">Identify cohort intersections<a class="anchor" aria-label="anchor" href="#identify-cohort-intersections"></a></h3>
@@ -112,13 +110,14 @@ PriorHistory, and ageGroup if desired</dd>
           
           <code><a href="addCohortIntersect.html">addCohortIntersect()</a></code> 
         </dt>
-        <dd>It creates columns to indicate the presence of cohorts</dd>
+        <dd>Compute the intersect with a target cohort, you can compute the number of
+occurrences, a flag of presence, a certain date and/or the time difference</dd>
       </dl><dl><dt>
           
           <code><a href="countCohortOccurrences.html">countCohortOccurrences()</a></code> 
         </dt>
-        <dd>It creates columns to indicate number of occurrences of intersection of two
-cohorts</dd>
+        <dd>It creates columns to indicate number of occurrences of intersection with a
+cohort</dd>
       </dl><dl><dt>
           
           <code><a href="dateOfCohort.html">dateOfCohort()</a></code> 
@@ -133,7 +132,8 @@ cohorts</dd>
           
           <code><a href="timeToCohort.html">timeToCohort()</a></code> 
         </dt>
-        <dd>Time between cohorts</dd>
+        <dd>It creates columns to indicate the time between the current table and a
+target cohort</dd>
       </dl></div><div class="section level2">
       
       <h3 id="other-functions">Other functions<a class="anchor" aria-label="anchor" href="#other-functions"></a></h3>
@@ -149,12 +149,12 @@ cohorts</dd>
           
           <code><a href="addCategories.html">addCategories()</a></code> 
         </dt>
-        <dd>It creates categories from a numeric variable.</dd>
+        <dd>Categorize a numeric variable</dd>
       </dl><dl><dt>
           
           <code><a href="addIntersect.html">addIntersect()</a></code> 
         </dt>
-        <dd>It creates columns to indicate overlaps information</dd>
+        <dd>It creates columns to indicate overlap information between two tables</dd>
       </dl><dl><dt>
           
           <code><a href="mockPatientProfiles.html">mockPatientProfiles()</a></code> 
