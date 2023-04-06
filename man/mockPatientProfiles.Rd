@@ -119,3 +119,10 @@ cdm of the mock database following user's specifications
 \description{
 It creates a mock database for testing PatientProfiles package
 }
+\examples{
+\donttest{
+library(PatientProfiles)
+cdm <- mockPatientProfiles()
+}
+
+}

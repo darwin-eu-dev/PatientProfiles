@@ -118,9 +118,7 @@ addIntersect <- function(x,
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
   originalColnames <- colnames(x)
-  ## missing function to correct names
 
-  # Start code
   # define overlapTable that contains the events of interest
   overlapTable <- cdm[[tableName]]
   if (!is.null(filterTbl)) {
