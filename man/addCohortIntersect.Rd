@@ -13,6 +13,7 @@ addCohortIntersect(
   targetStartDate = "cohort_start_date",
   targetEndDate = "cohort_end_date",
   window = list(c(0, Inf)),
+  order = "first",
   flag = TRUE,
   count = TRUE,
   date = TRUE,
@@ -40,6 +41,8 @@ be attached as extra columns}
 (overlap) or NULL (if incidence)}
 
 \item{window}{window to consider events of}
+
+\item{order}{which record is considered in case of multiple records}
 
 \item{flag}{TRUE or FALSE. If TRUE, flag will calculated for this
 intersection}
