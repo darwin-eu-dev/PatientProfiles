@@ -79,13 +79,10 @@ It adds all demographics columns to the given cohort table: Age, Sex,
 PriorHistory, and ageGroup if desired
 }
 \examples{
-\dontrun{
-db <- DBI::dbConnect(" Your database connection here")
-cdm <- CDMConnector::cdm_from_con(
-  con = db,
-  cdm_schema = "cdm schema name"
-)
-cdm$cohort \%>\% addDemographics(cdm)
+\donttest{
+library(PatientProfiles)
+cdm <- mockPatientProfiles()
+cdm$cohort1 \%>\% addDemographics(cdm)
 }
 
 }
