@@ -58,7 +58,6 @@ addDemographics <- function(x,
                             futureObservation = TRUE,
                             futureObservationName = "future_observation",
                             tablePrefix = NULL) {
-
   ## change ageDefaultMonth, ageDefaultDay to integer
 
   if (typeof(ageDefaultMonth) == "character") {
@@ -113,14 +112,15 @@ addDemographics <- function(x,
     obsPeriodDetails <- x %>%
       dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
       dplyr::distinct() %>%
-      dplyr::inner_join(cdm[["observation_period"]] %>%
-        dplyr::rename(!!person_variable := "person_id") %>%
-        dplyr::select(
-          dplyr::all_of(person_variable),
-          "observation_period_start_date",
-          "observation_period_end_date"
-        ),
-      by = person_variable
+      dplyr::inner_join(
+        cdm[["observation_period"]] %>%
+          dplyr::rename(!!person_variable := "person_id") %>%
+          dplyr::select(
+            dplyr::all_of(person_variable),
+            "observation_period_start_date",
+            "observation_period_end_date"
+          ),
+        by = person_variable
       ) %>%
       dplyr::filter(.data$observation_period_start_date <=
         .data[[indexDate]] &
@@ -174,15 +174,16 @@ addDemographics <- function(x,
     ))
 
   x <- x %>%
-    dplyr::left_join(personDetails %>%
-      dplyr::select(dplyr::any_of(c(
-        person_variable,
-        "birth_date",
-        "gender_concept_id",
-        "observation_period_start_date",
-        "observation_period_end_date"
-      ))),
-    by = person_variable
+    dplyr::left_join(
+      personDetails %>%
+        dplyr::select(dplyr::any_of(c(
+          person_variable,
+          "birth_date",
+          "gender_concept_id",
+          "observation_period_start_date",
+          "observation_period_end_date"
+        ))),
+      by = person_variable
     )
 
   if (priorHistory == TRUE || futureObservation == TRUE) {
