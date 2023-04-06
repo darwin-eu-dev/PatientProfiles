@@ -1,12 +1,10 @@
-
-#' It adds all demographics columns to the given cohort table: Age, Sex,
-#' PriorHistory, and ageGroup if desired
+#' Compute demographic characteristics at a certain date
 #'
-#' @param x cohort table in which to add follow up of individuals
-#' @param cdm cdm with the person and observation_period tables to get the info
-#' for the individuals in the cohort
-#' @param indexDate name of the column with the date at which consider
-#' demographic information
+#' @param x Table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the
+#' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
 #' indexDate
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing

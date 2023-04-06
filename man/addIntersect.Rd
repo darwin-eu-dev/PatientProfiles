@@ -2,7 +2,7 @@
 % Please edit documentation in R/addIntersect.R
 \name{addIntersect}
 \alias{addIntersect}
-\title{It creates columns to indicate overlaps information}
+\title{It creates columns to indicate overlap information between two tables}
 \usage{
 addIntersect(
   x,
@@ -22,10 +22,10 @@ addIntersect(
 )
 }
 \arguments{
-\item{x}{table containing the individual for which the overlap indicator to
-be attached as extra columns}
+\item{x}{Table with individuals in the cdm}
 
-\item{cdm}{cdm containing the tables}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
 \item{tableName}{name of the cohort that we want to check for overlap}
 
@@ -42,7 +42,8 @@ filterId}
 
 \item{window}{window to consider events of}
 
-\item{indexDate}{date of reference in table x}
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
 
 \item{targetStartDate}{date of reference in cohort table, either for start
 (in overlap) or on its own (for incidence)}
@@ -62,7 +63,7 @@ be created. If NULL, temporary tables will be used throughout.}
 table with added columns with overlap information
 }
 \description{
-It creates columns to indicate overlaps information
+It creates columns to indicate overlap information between two tables
 }
 \examples{
 \donttest{

@@ -1,8 +1,8 @@
-#' It creates columns to indicate overlaps information
+#' It creates columns to indicate overlap information between two tables
 #'
-#' @param x table containing the individual for which the overlap indicator to
-#' be attached as extra columns
-#' @param cdm cdm containing the tables
+#' @param x Table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
 #' @param tableName name of the cohort that we want to check for overlap
 #' @param filterVariable the variable that we are going to use to filter (e.g.
 #' cohort_definition_id)
@@ -12,7 +12,8 @@
 #' filterId
 #' @param value value of interest to add: it can be count, flag, date or time
 #' @param window window to consider events of
-#' @param indexDate date of reference in table x
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end

@@ -18,16 +18,17 @@ flagCohortPresence(
 )
 }
 \arguments{
-\item{x}{table containing the individual for which the overlap indicator to
-be attached as extra columns}
+\item{x}{Table with individuals in the cdm}
 
-\item{cdm}{cdm containing the tables}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
 \item{targetCohortTable}{name of the cohort that we want to check for overlap}
 
 \item{targetCohortId}{vector of cohort definition ids to include}
 
-\item{indexDate}{date of reference in table x}
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
 
 \item{targetStartDate}{date of reference in cohort table, either for start
 (in overlap) or on its own (for incidence)}

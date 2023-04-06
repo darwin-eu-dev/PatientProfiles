@@ -2,7 +2,8 @@
 % Please edit documentation in R/addFutureObservation.R
 \name{addFutureObservation}
 \alias{addFutureObservation}
-\title{Add a column with the days of future observation for an individual}
+\title{Compute the number of days till the end of the observation period at a
+certain date}
 \usage{
 addFutureObservation(
   x,
@@ -13,11 +14,13 @@ addFutureObservation(
 )
 }
 \arguments{
-\item{x}{cohort table to which add prior history to}
+\item{x}{Table with individuals in the cdm.}
 
-\item{cdm}{object containing the person table}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
-\item{indexDate}{name of the date field to use as date in table x}
+\item{indexDate}{Variable in x that contains the date to compute the future
+observation.}
 
 \item{futureObservationName}{name of the new column to be added}
 
@@ -29,7 +32,8 @@ cohort table with added column containing future observation of the
 individuals
 }
 \description{
-Add a column with the days of future observation for an individual
+Compute the number of days till the end of the observation period at a
+certain date
 }
 \examples{
 \donttest{

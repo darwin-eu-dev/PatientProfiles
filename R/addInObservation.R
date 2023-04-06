@@ -1,10 +1,10 @@
-#' It adds a column to a cohort table indicating whether its individuals are
-#' in observation at the desired time
+#' Indicate if a certain record is within the observation period
 #'
-#' @param x cohort table in which the inObservation command wants to be tested
-#' @param cdm where the observation_period table is stored
-#' @param indexDate name of the column with the dates to test the
-#' inObservation command
+#' @param x Table with individuals in the cdm.
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the
+#' observation flag.
 #' @param name name of the column to hold the result of the enquiry:
 #' 1 if the individual is in observation, 0 if not
 #' @param tablePrefix The stem for the permanent tables that will

@@ -18,12 +18,13 @@ dateOfCohort(
 )
 }
 \arguments{
-\item{x}{table containing the individuals for which the time to another
-cohort will be added}
+\item{x}{Table with individuals in the cdm}
 
-\item{cdm}{cdm containing the tables}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
-\item{indexDate}{Date of interest}
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
 
 \item{targetCohortTable}{Cohort table to}
 
