@@ -67,8 +67,24 @@ addCategories <- function(x,
   )
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
+
+  for (i in c(1:length(categories))) {
+    if (!is.null(names(categories)) && variable == names(categories)[i]){
+      cli::cli_warn(paste0(
+        "Categories name '",
+        names(categories)[i],
+        "' already existed in table, the original variable has been overwritten."
+      ))
+    }
+  }
+
+  if (length(unique(names(categories))) < length((names(categories)))){
+    cli::cli_abort(
+      "Categories have repeated names, please rename the groups.")
+  }
+
   if (is.null(names(categories))) {
-    nam <- rep("", length(categories))
+    nam <- paste0("category_", 1:length(categories))
   } else {
     nam <- names(categories)
   }
@@ -81,6 +97,8 @@ addCategories <- function(x,
   for (k in seq_along(categories)) {
     categoryTibbleK <- categoryTibble[[k]]
     name <- names(categoryTibble)[k]
+
+    x <- dplyr::mutate(x, variable := .data[[variable]])
     x <- dplyr::mutate(x, !!name := as.character(NA))
     for (i in 1:nrow(categoryTibbleK)) {
       lower <- categoryTibbleK$lower_bound[i]
@@ -89,12 +107,14 @@ addCategories <- function(x,
       x <- x %>%
         dplyr::mutate(!!name := dplyr::if_else(
           is.na(.data[[name]]) &
-            .data[[variable]] >= .env$lower &
-            .data[[variable]] <= .env$upper,
+            .data$variable >= .env$lower &
+            .data$variable <= .env$upper,
           .env$category,
           .data[[name]]
         ))
     }
+    x <- dplyr::select(x, -"variable")
+
     if (!is.null(tablePrefix)) {
       x <- CDMConnector::computeQuery(
         x,

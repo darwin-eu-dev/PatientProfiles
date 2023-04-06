@@ -885,8 +885,51 @@ test_that("expected errors", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
+test_that("addCategories input",{
 
+  cdm <-mockPatientProfiles( seed = 1, patient_size = 5)
 
+  # overwrite when categories named same as variable, throw warning
+  expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
+                   addCategories(cdm, variable="age",
+                                 categories= list("age" = list(c(1, 30), c(31, 99)))))
+
+  expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
+                   addDemographics(cdm,
+                                   sex = FALSE,
+                                   priorHistory = FALSE,
+                                   futureObservation = FALSE,
+                                   ageGroup=list("age" = list(c(1, 30),  c(31, 40)))))
+
+  # default group name when no input
+  expect_true("category_1" %in% colnames(cdm$cohort1 %>% addAge(cdm) %>%
+                                           addCategories(cdm, variable="age",
+                                                         categories= list( list(c(1, 30),  c(31, 40))))))
+
+  result <- cdm$cohort1 %>% addAge(cdm) %>%
+    addCategories(cdm, variable="age",
+                  categories=list( list(c(1, 30),  c(31, 40)),
+                                   list(c(0,50),  c(51, 100)))) %>%
+    dplyr::collect()
+  expect_true(all(c("category_1", "category_2") %in% colnames(result)))
+
+  # ERROR when repeat group name
+  expect_error(cdm$cohort1 %>% addAge(cdm) %>%
+                 addCategories(cdm ,
+                               variable = "age",
+                               categories = list("age_A" = list(c(0, 30), c(31, 120)),
+                                                 "age_A" = list(c(1, 18), c(19, 40)))))
+
+  expect_error(cdm$cohort1 %>% addAge(cdm) %>%
+                 addDemographics(cdm,
+                                 sex = FALSE,
+                                 priorHistory = FALSE,
+                                 futureObservation = FALSE,
+                                 ageGroup = list("age_A" = list(c(0, 30), c(31, 120)),
+                                                 "age_A" = list(c(1, 18),  c(19, 40)))))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
 
 test_that("test if column exist, overwrite", {
   cohort1 <- dplyr::tibble(
@@ -978,6 +1021,3 @@ test_that("test if column exist, overwrite", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-
-

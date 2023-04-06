@@ -254,7 +254,7 @@ addDemographics <- function(x,
   if (!is.null(ageGroup)) {
     x <- addCategories(x,
       cdm = cdm,
-      variable = "age",
+      variable = ageName,
       categories = ageGroup,
       tablePrefix = tablePrefix
     )
