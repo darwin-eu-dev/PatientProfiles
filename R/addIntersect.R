@@ -1,6 +1,6 @@
 #' It creates columns to indicate overlap information between two tables
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param tableName name of the cohort that we want to check for overlap

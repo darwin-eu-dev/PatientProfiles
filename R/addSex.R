@@ -1,6 +1,6 @@
 #' Compute the sex of the individuals
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param sexName name of the new column to be added

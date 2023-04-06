@@ -1,7 +1,7 @@
 #' Compute the number of days of prior history in the current observation period
 #' at a certain date
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the prior

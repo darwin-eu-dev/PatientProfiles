@@ -1,6 +1,6 @@
 #' Categorize a numeric variable
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param variable Target variable that we want to categorize.

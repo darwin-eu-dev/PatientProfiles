@@ -1,7 +1,7 @@
 #' Compute the intersect with a target cohort, you can compute the number of
 #' occurrences, a flag of presence, a certain date and/or the time difference
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param targetCohortTable name of the cohort that we want to check for overlap
@@ -140,7 +140,7 @@ addCohortIntersect <- function(x,
 
 #' It creates columns to indicate the presence of cohorts
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param targetCohortTable name of the cohort that we want to check for overlap
@@ -259,7 +259,7 @@ flagCohortPresence <- function(x,
 #' It creates columns to indicate number of occurrences of intersection with a
 #' cohort
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param targetCohortTable name of the cohort that we want to check for overlap
@@ -381,7 +381,7 @@ countCohortOccurrences <- function(x,
 #' It creates columns to indicate the time between the current table and a
 #' target cohort
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the
@@ -507,7 +507,7 @@ timeToCohort <- function(x,
 
 #' Date of cohorts that are present in a certain window
 #'
-#' @param x table with individuals in the cdm
+#' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the

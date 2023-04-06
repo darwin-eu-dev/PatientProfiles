@@ -25,7 +25,7 @@ addDemographics(
 )
 }
 \arguments{
-\item{x}{table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm}
 
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
