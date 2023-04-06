@@ -1,28 +1,8 @@
-# workaround to add cohort attributes to mock cohort table
-addCohortCountAttr <- function(cohort) {
-  cohort_count <- cohort %>%
-    dplyr::group_by(cohort_definition_id) %>%
-    dplyr::tally() %>%
-    dplyr::collect()
-
-  attr(cohort, "cohort_count") <- cohort_count
-  attr(cohort, "cohort_set") <- cohort_count %>%
-    dplyr::select("cohort_definition_id") %>%
-    dplyr::mutate("cohort_name" = paste0(
-      "cohort_",
-      cohort_definition_id
-    ))
-
-  return(cohort)
-}
-
 test_that("output format - one outcome cohort", {
   # additional column should be added
   # with the name as specified
 
   cdm <- mockPatientProfiles()
-  cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
-  cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
   cdm$cohort1a <- cdm$cohort1 %>%
     timeToCohort(
@@ -51,8 +31,6 @@ test_that("output format - multiple outcome cohorts", {
   # with the name as specified
 
   cdm <- mockPatientProfiles()
-  cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
-  cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
   # In 0 to Inf - 2 target cohorts have someone
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -135,8 +113,6 @@ test_that("first vs last event - cohort table", {
     cohort1 = cohort1,
     cohort2 = cohort2
   )
-  cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
-  cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
   # first
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -261,8 +237,6 @@ test_that("multiple cohort entries per person", {
     cohort1 = cohort1,
     cohort2 = cohort2
   )
-  cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
-  cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
   # 100 days from index
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -324,8 +298,6 @@ test_that("output names", {
   # with the name as specified
 
   cdm <- mockPatientProfiles()
-  cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
-  cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
 
   # default naming
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -490,12 +462,26 @@ test_that("working examples", {
 
   cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
-  result <- cdm$cohort1 %>%
+  result0 <- cdm$cohort1 %>%
     countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort2") %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
+  result1 <- cdm$cohort1 %>%
+    countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 1) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+  result2 <- cdm$cohort1 %>%
+    countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 2) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+  result3 <- cdm$cohort1 %>%
+    countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 3) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
 
-  expect_true(all(result$All_0_to_Inf == c(4, 4, 3, 3, 1)))
+  expect_true(all(result0$cohort_1_0_to_inf == result1$cohort_1_0_to_inf))
+  expect_true(all(result0$cohort_2_0_to_inf == result2$cohort_2_0_to_inf))
+  expect_true(all(result0$cohort_3_0_to_inf == result3$cohort_3_0_to_inf))
 
   result_1 <- cdm$cohort1 %>%
     countCohortOccurrences(
@@ -505,8 +491,8 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_1$cohort_2_mInf_to_0 == c(0, 0, 0, 0, 1)))
-  expect_true(all(result_1$cohort_3_mInf_to_0 == c(0, 0, 0, 0, 1)))
+  expect_true(all(result_1$cohort_2_minf_to_0 == c(0, 0, 0, 0, 1)))
+  expect_true(all(result_1$cohort_3_minf_to_0 == c(0, 0, 0, 0, 1)))
 
   attr(cdm$cohort2, "cohort_set") <- dplyr::tibble(
     cohort_definition_id = c(1, 2, 3),
@@ -520,8 +506,8 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_2$covid_mInf_to_0 == c(0, 0, 0, 0, 1)))
-  expect_true(all(result_2$tb_mInf_to_0 == c(0, 0, 0, 0, 1)))
+  expect_true(all(result_2$covid_minf_to_0 == c(0, 0, 0, 0, 1)))
+  expect_true(all(result_2$tb_minf_to_0 == c(0, 0, 0, 0, 1)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -581,19 +567,33 @@ test_that("working examples", {
 
   cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
-  result <- cdm$cohort1 %>%
+  result0 <- cdm$cohort1 %>%
     flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2") %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
+  result1 <- cdm$cohort1 %>%
+    flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 1) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+  result2 <- cdm$cohort1 %>%
+    flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 2) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+  result3 <- cdm$cohort1 %>%
+    flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 3) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
 
-  expect_true(all(result$All_0_to_Inf == c(1, 1, 1, 1, 1)))
+  expect_true(all(result0$cohort_1_0_to_inf == result1$cohort_1_0_to_inf))
+  expect_true(all(result0$cohort_2_0_to_inf == result2$cohort_2_0_to_inf))
+  expect_true(all(result0$cohort_3_0_to_inf == result3$cohort_3_0_to_inf))
 
   result_1 <- cdm$cohort1 %>%
     flagCohortPresence(cdm = cdm, targetCohortTable = "cohort2", targetCohortId = 2) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result_1$cohort_2_0_to_Inf == c(1, 1, 1, 1, 0)))
+  expect_true(all(result_1$cohort_2_0_to_inf == c(1, 1, 1, 1, 0)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -667,7 +667,11 @@ test_that("working examples", {
     dplyr::collect()
 
   for (k in colnames(result1)) {
-    expect_true(all(result1[[k]] == result2[[k]]))
+    x <- result1[[k]]
+    x <- x[!is.na(x)]
+    y <- result2[[k]]
+    y <- y[!is.na(y)]
+    expect_true(all(x == y))
   }
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)

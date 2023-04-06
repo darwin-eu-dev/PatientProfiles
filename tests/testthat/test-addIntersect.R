@@ -57,6 +57,11 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
+  expect_true(colnames(result)[1] == "cohort_definition_id")
+  expect_true(colnames(result)[2] == "subject_id")
+  expect_true(colnames(result)[3] == "cohort_start_date")
+  expect_true(colnames(result)[4] == "cohort_end_date")
+
   expect_true(all(result$xx == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   result_1 <- cdm$cohort1 %>%

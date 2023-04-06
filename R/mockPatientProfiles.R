@@ -83,8 +83,10 @@ mockPatientProfiles <- function(drug_exposure = NULL,
                                 max_days_to_visit_end = NULL,
                                 seed = 1,
                                 ...) {
+
   # Put ... into a list
   listTables <- list(...)
+
 
   # checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -489,7 +491,11 @@ mockPatientProfiles <- function(drug_exposure = NULL,
       cohort_start_date = as.Date(c("2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01")),
       cohort_end_date = as.Date(c("2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"))
     )
+
   }
+
+
+
   # cohort table 2
   if (is.null(cohort2)) {
     cohort2 <- tibble::tibble(
@@ -500,7 +506,10 @@ mockPatientProfiles <- function(drug_exposure = NULL,
     )
   }
 
+ # add attributes to cohort table
 
+  cohort1 <- addCohortCountAttr(cohort1)
+  cohort2 <- addCohortCountAttr(cohort2)
 
 
   # into in-memory database
@@ -556,7 +565,6 @@ mockPatientProfiles <- function(drug_exposure = NULL,
     )
   })
 
-
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "cohort1",
       cohort1,
@@ -570,15 +578,80 @@ mockPatientProfiles <- function(drug_exposure = NULL,
       overwrite = TRUE
     )
   })
+
+  # write attributes for cohort1 and cohort2 into DBI
+  for (i in 4:length(names(attributes(cohort1)))) {
+    name <- names(attributes(cohort1))[[i]]
+    DBI::dbWithTransaction(db, {
+      DBI::dbWriteTable(db, paste0(
+        "cohort1_",
+        substr(name, 8, nchar(name))
+      ),
+      attr(cohort1, which = names(attributes(cohort1))[[i]]),
+      overwrite = TRUE
+      )
+    })
+  }
+
+  for (i in 4:length(names(attributes(cohort2)))) {
+    name <- names(attributes(cohort2))[[i]]
+    DBI::dbWithTransaction(db, {
+      DBI::dbWriteTable(db, paste0(
+        "cohort2_",
+
+        substr(name, 8, nchar(name))
+      ),
+      attr(cohort2, which = names(attributes(cohort2))[[i]]),
+      overwrite = TRUE
+      )
+    })
+  }
+
   if (length(listTables) > 0) {
     for (i in 1:length(listTables)) {
+
+
+
+      if (any(names(attributes(listTables[[i]])) %in%
+              c("cohort_attrition", "cohort_count", "cohort_set"))) {
+
+        cohort_attr <- intersect(names(attributes(listTables[[i]])),
+                           c("cohort_set", "cohort_attrition", "cohort_count"))
+
+        for (k in cohort_attr) {
+
+
+          DBI::dbWithTransaction(db, {
+            DBI::dbWriteTable(db,  paste0(
+              names(listTables)[i],"_",
+              substr(k, 8, nchar(k))
+            ),
+            attr(listTables[[i]], which = k),
+                              overwrite = TRUE)
+          })
+
+        }
+
+        #store in database
+        DBI::dbWithTransaction(db, {
+          DBI::dbWriteTable(db, names(listTables)[i],
+                            listTables[[i]],
+                            overwrite = TRUE)
+        })
+
+      } else
+
+      {
+      #store in database
       DBI::dbWithTransaction(db, {
         DBI::dbWriteTable(db, names(listTables)[i],
           listTables[[i]],
           overwrite = TRUE
         )
       })
-    }
+
+
+    }}
   }
   if (length(listTables) > 0) {
     cdm <- CDMConnector::cdm_from_con(
@@ -614,5 +687,41 @@ mockPatientProfiles <- function(drug_exposure = NULL,
     )
   }
 
+
+
   return(cdm)
+}
+
+
+#' Function to add attributes to cohort table
+#' it adds cohort_count, cohort_set, cohort_count, cohort_attrition
+#'
+#' @noRd
+#'
+addCohortCountAttr <- function(cohort) {
+  cohort_count <- cohort %>%
+    dplyr::group_by(.data$cohort_definition_id) %>%
+    dplyr::summarise(
+      number_records = dplyr::n(),
+      number_subjects = dplyr::n_distinct(.data$subject_id)
+    ) %>%
+    dplyr::collect()
+
+  attr(cohort, "cohort_count") <- cohort_count
+  attr(cohort, "cohort_set") <- cohort_count %>%
+    dplyr::select("cohort_definition_id") %>%
+    dplyr::mutate("cohort_name" = paste0(
+      "cohort_",
+      .data$cohort_definition_id
+    ))
+
+  attr(cohort, "cohort_attrition") <- cohort_count %>%
+    dplyr::mutate(
+      "reason" = "Qualifying initial records",
+      "reason_id" = 1,
+      "excluded_records" = 0,
+      "excluded_subjects" = 0
+    )
+
+  return(cohort)
 }

@@ -113,3 +113,35 @@ test_that("add cdm with person, cohort1 and observation_period", {
     )
   )
 })
+
+test_that("attributes for cohort table", {
+
+  test_table_1 <- tibble::tibble(
+    cohort_definition_id = c(1, 1, 1, 1),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = c(
+      as.Date("2010-01-01"), as.Date("2013-01-01"),
+      as.Date("2010-01-02"), as.Date("2010-01-01")),
+    cohort_end_date = c(
+      as.Date("2012-01-01"), as.Date("2015-01-01"),
+      as.Date("2015-01-01"), as.Date("2015-01-01"))
+  )
+
+ test_table_1 <- addCohortCountAttr(test_table_1)
+
+
+  cdm <- mockPatientProfiles(test_table_1 = test_table_1)
+
+  expect_true(all(names(attributes(cdm$cohort1)) %in%
+             c("names","class","cohort_set","cohort_attrition","cohort_count")))
+
+  expect_true(all(names(attributes(cdm$cohort2)) %in%
+             c("names","class","cohort_set","cohort_attrition","cohort_count")))
+
+  expect_true(all(names(attributes(cdm$test_table_1)) %in%
+             c("names","class","cohort_set","cohort_attrition","cohort_count")))
+
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
