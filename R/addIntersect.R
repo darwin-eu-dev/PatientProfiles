@@ -159,6 +159,8 @@ addIntersect <- function(x,
     dplyr::distinct() %>%
     dplyr::inner_join(overlapTable, by = person_variable)
 
+
+
   if (is.null(tablePrefix)) {
     result <- CDMConnector::computeQuery(result)
   } else {
@@ -170,23 +172,34 @@ addIntersect <- function(x,
   resultCountFlag <- NULL
   resultDateTimeOther <- NULL
   # Start loop for different windows
+
   for (i in c(1:nrow(windowTbl))) {
     result_w <- result
-    if (!is.infinite(windowTbl$upper[i])) {
-      result_w <- result_w %>%
-        dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
-          date = "overlap_start_date", number = -windowTbl$upper[i]
-        )), 1, 0))
-    } else {
-      result_w <- result_w %>% dplyr::mutate(indicator = 1)
-    }
+    if(overlapTable %>% dplyr::tally() %>% dplyr::pull() == 0)
+    {
+      result_w <- x %>%
+        dplyr::select(
+          dplyr::all_of(person_variable),
+          "index_date" = dplyr::all_of(indexDate)
+        ) %>%
+        dplyr::distinct() %>%
+        dplyr::full_join(overlapTable, by = person_variable) %>%
+        dplyr::mutate(indicator = 0)} else {
+      if (!is.infinite(windowTbl$upper[i])) {
+        result_w <- result_w %>%
+          dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
+            date = "overlap_start_date", number = -windowTbl$upper[i]
+          )), 1, 0))
+      } else {
+        result_w <- result_w %>% dplyr::mutate(indicator = 1)
+      }
 
-    if (!is.infinite(windowTbl$lower[i])) {
-      result_w <- result_w %>%
-        dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
-          date = "overlap_end_date", number = -windowTbl$lower[i]
-        )), 0, .data$indicator))
-    }
+      if (!is.infinite(windowTbl$lower[i])) {
+        result_w <- result_w %>%
+          dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
+            date = "overlap_end_date", number = -windowTbl$lower[i]
+          )), 0, .data$indicator))
+      }}
     if (is.null(tablePrefix)) {
       result_w <- CDMConnector::computeQuery(result_w)
     } else {
@@ -310,7 +323,8 @@ addIntersect <- function(x,
         names_glue = nameStyle,
         values_fill = 0
       ) %>%
-      dplyr::rename(!!indexDate := "index_date")
+      dplyr::rename(!!indexDate := "index_date") %>%
+      dplyr::rename_all(tolower)
 
     x <- x %>%
       dplyr::select(
@@ -355,7 +369,8 @@ addIntersect <- function(x,
           values_from = "values",
           names_glue = nameStyle
         ) %>%
-        dplyr::rename(!!indexDate := "index_date")
+        dplyr::rename(!!indexDate := "index_date") %>%
+        dplyr::rename_all(tolower)
 
       x <- x %>%
         dplyr::select(
