@@ -14,7 +14,7 @@ reference:
 - subtitle: Identify cohort intersections
   desc: Add variables indicating the intersection between one set of cohorts and another.
 - contents:
-  - matches("flagPresence|countOccurrences|timeToCohort|dateOfCohort")
+  - matches("addCohortIntersect|flagCohortPresence|countCohortOccurrences|timeToCohort|dateOfCohort")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
