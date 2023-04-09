@@ -10,7 +10,7 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Get cohort patients characteristics}
+  %\VignetteIndexEntry{Get cohort intersections}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -64,40 +64,77 @@ cdm$cohort1 %>%
 cdm$cohort2 %>%
   glimpse()                       
 ```
-## Example: flag.. and count.. functions
-`flag...()`
+## Example: flagCohortPresence and countCohortOccurrences functions
+`flagCohortPresence()`: adds a binary column indicate intersection with a cohort in a time frame.
 
-Suppose cohort2 contains stroke occurrences., and we want to exclude patients from cohort1 who had a stroke outcome in the last 180 days before their index date. To accomplish this, we can use the `flag..()`:
+Suppose cohort2 with definition_id = 1 contains stroke occurrences. If we want to exclude patients from cohort1 who had a stroke event in the last 180 days before entering the cohort, we can use the `flagCohortPresence()` like this:
 
 ```{r, message= FALSE, warning=FALSE}
-# cdm$cohort1 <- cdm$cohort1 %>%
-#   flag...() %>%
-#   filter() ...
-# 
-# cdm$cohort1 %>%
-#   glimpse()
+cdm$cohort1WashOut <- cdm$cohort1 %>%
+  flagCohortPresence(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    window = list(c(-180,-1)),
+    targetCohortId = 1,
+  ) %>%
+  filter(cohort_1_m180_to_m1 == 0)
+
+cdm$cohort1WashOut %>%
+  glimpse()
+```
+
+`countCohortOccurrences()`: adds a column where it indicates the number of intersections in a certain time window.
+
+We can use the function to count the number of occurrences of an event of interest in different time windows before entering the study population. For example, we can look at the number of strokes in the 0-90 day, 90-365 day, and all prior history windows:
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1StrokeCounts <- cdm$cohort1 %>%
+  countCohortOccurrences(cdm = cdm,
+    targetCohortTable = "cohort2",
+    window = list(c(-Inf,-366), c(-365,-181), c(-180,-1)),
+    targetCohortId = 1
+  )
+
+cdm$cohort1StrokeCounts %>%
+  glimpse()
 ```
 
 
-`count...()`
+## Example: timeToCohort function
 
-This function can be useful for counting stroke occurrences in patients within specific time frames before the index date. For example, we could count the number of occurrences in the 0-30 day, 30-180 day, and all prior history time windows.
-We would use the function like this
+`timeToCohort()`: adds a new column that indicates the number of days in which the subject intersects with another cohort during a specific time frame. If there are multiple intersections, only one will be computed, either the first or the latest one in the time window ("order" argument).
+
+The function can be utilized to calculate the time to the event of interest, such as time until the first stroke after index date. If the patient did not experience the event, the function will return NA.
 
 ```{r, message= FALSE, warning=FALSE}
-# cdm$cohort1 <- cdm$cohort1 %>%
-#   flag...() %>%
-#   filter() ...
-# 
-# cdm$cohort1 %>%
-#   glimpse()
+cdm$cohort1TimeTo <- cdm$cohort1 %>%
+  timeToCohort(cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "first",
+  )
+
+cdm$cohort1TimeTo %>%
+  glimpse()
+```
+## Example: dateOfCohort function
+
+`dateOfCohort()`: appends a column containing the start date of cohorts that are present in a certain window.
+
+This function can be handy in obtaining the date of the next occurrence of a specific event. For instance, suppose cohort1 comprises patients who enrolled when they received their first vaccine dose. We could use this function to obtain the date of their second dose if we have a cohort with vaccine records (e.g. cohort2): 
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1NextEvent <- cdm$cohort1 %>%
+  dateOfCohort(cdm = cdm,
+    targetCohortTable = "cohort2",
+    order = "first",
+    targetCohortId = 1,
+    window = c(1,Inf)
+  )
+
+cdm$cohort1NextEvent %>%
+  glimpse()
 ```
 
 
-## Example: date... function
-
-
-## Example: time... function
-
-
-
+Please note that the new columns added to the table (for all function presented) will have the format cohort_"cohort_definition_id"_ "time window". If the window number is negative, a "m" will be added in front to indicate it and no sign will be added to positive numbers.
