@@ -17,6 +17,7 @@ LazyData: true
 RoxygenNote: 7.2.3
 Suggests: 
     covr,
+    duckdb,
     testthat (>= 3.1.5),
     knitr,
     rmarkdown,
@@ -32,7 +33,6 @@ Imports:
     tibble,
     DBI,
     SqlRender,
-    duckdb,
     rlang,
     cli
 VignetteBuilder: knitr
