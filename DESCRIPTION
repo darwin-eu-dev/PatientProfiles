@@ -20,7 +20,8 @@ Suggests:
     testthat (>= 3.1.5),
     knitr,
     rmarkdown,
-    glue
+    glue,
+    odbc
 Imports: 
     magrittr,
     CDMConnector,
