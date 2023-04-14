@@ -1,6 +1,6 @@
 
 test_that("test methods against sql test server", {
-  skip_if(Sys.getenv("USER") == "")
+  testthat::skip_if(Sys.getenv("USER") == "")
 
   server   <- Sys.getenv("SERVER")
   database <- Sys.getenv("DATABASE")
