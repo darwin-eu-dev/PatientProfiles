@@ -35,13 +35,10 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' db <- DBI::dbConnect(" Your database connection here")
-#' cdm <- CDMConnector::cdm_from_con(
-#'   con = db,
-#'   cdm_schema = "cdm schema name"
-#' )
-#' cdm$cohort %>% addDemographics(cdm)
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>% addDemographics(cdm)
 #' }
 #'
 addDemographics <- function(x,
@@ -61,14 +58,13 @@ addDemographics <- function(x,
                             futureObservation = TRUE,
                             futureObservationName = "future_observation",
                             tablePrefix = NULL) {
-
   ## change ageDefaultMonth, ageDefaultDay to integer
 
-  if (typeof(ageDefaultMonth)=="character") {
+  if (typeof(ageDefaultMonth) == "character") {
     ageDefaultMonth <- as.integer(ageDefaultMonth)
   }
 
-  if (typeof(ageDefaultDay)=="character") {
+  if (typeof(ageDefaultDay) == "character") {
     ageDefaultDay <- as.integer(ageDefaultDay)
   }
 
@@ -77,11 +73,13 @@ addDemographics <- function(x,
   checkCdm(cdm, c("person", "observation_period"))
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
   checkmate::assertIntegerish(
-    ageDefaultMonth, lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    ageDefaultMonth,
+    lower = 1, upper = 31, any.missing = FALSE, len = 1,
     null.ok = !age
   )
   checkmate::assertIntegerish(
-    ageDefaultDay, lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    ageDefaultDay,
+    lower = 1, upper = 31, any.missing = FALSE, len = 1,
     null.ok = !age
   )
   checkmate::assertLogical(ageImposeMonth, any.missing = FALSE, len = 1)
@@ -100,11 +98,13 @@ addDemographics <- function(x,
   startNames <- names(x)
 
   personDetails <- cdm[["person"]] %>%
-    dplyr::select("person_id",
-                  "gender_concept_id",
-                  "year_of_birth",
-                  "month_of_birth",
-                  "day_of_birth") %>%
+    dplyr::select(
+      "person_id",
+      "gender_concept_id",
+      "year_of_birth",
+      "month_of_birth",
+      "day_of_birth"
+    ) %>%
     dplyr::rename(!!person_variable := "person_id")
 
   if (priorHistory == TRUE || futureObservation == TRUE) {
@@ -112,19 +112,20 @@ addDemographics <- function(x,
     obsPeriodDetails <- x %>%
       dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
       dplyr::distinct() %>%
-      dplyr::inner_join(cdm[["observation_period"]] %>%
-        dplyr::rename(!!person_variable := "person_id") %>%
-        dplyr::select(
-          dplyr::all_of(person_variable),
-          "observation_period_start_date",
-          "observation_period_end_date"
-        ),
-      by = person_variable
+      dplyr::inner_join(
+        cdm[["observation_period"]] %>%
+          dplyr::rename(!!person_variable := "person_id") %>%
+          dplyr::select(
+            dplyr::all_of(person_variable),
+            "observation_period_start_date",
+            "observation_period_end_date"
+          ),
+        by = person_variable
       ) %>%
       dplyr::filter(.data$observation_period_start_date <=
-                      .data[[indexDate]] &
+        .data[[indexDate]] &
         .data$observation_period_end_date >=
-      .data[[indexDate]])
+          .data[[indexDate]])
   }
 
   # update dates
@@ -157,9 +158,11 @@ addDemographics <- function(x,
 
   personDetails <- personDetails %>%
     dplyr::filter(!is.na(.data$year_of_birth)) %>%
-    dplyr::mutate(year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
-                  month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
-                  day_of_birth1 = as.character(as.integer(.data$day_of_birth))) %>%
+    dplyr::mutate(
+      year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
+      month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
+      day_of_birth1 = as.character(as.integer(.data$day_of_birth))
+    ) %>%
     dplyr::mutate(birth_date = as.Date(
       paste0(
         .data$year_of_birth1,
@@ -170,75 +173,91 @@ addDemographics <- function(x,
       )
     ))
 
-  x <- x  %>%
-    dplyr::left_join(personDetails %>%
-                       dplyr::select(dplyr::any_of(c(person_variable,
-                                                     "birth_date",
-                                                     "gender_concept_id",
-                                                     "observation_period_start_date",
-                                                     "observation_period_end_date"))),
-                     by = person_variable)
+  x <- x %>%
+    dplyr::left_join(
+      personDetails %>%
+        dplyr::select(dplyr::any_of(c(
+          person_variable,
+          "birth_date",
+          "gender_concept_id",
+          "observation_period_start_date",
+          "observation_period_end_date"
+        ))),
+      by = person_variable
+    )
 
-  if(priorHistory == TRUE || futureObservation == TRUE) {
+  if (priorHistory == TRUE || futureObservation == TRUE) {
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
-                       by= c(person_variable, indexDate))
+        by = c(person_variable, indexDate)
+      )
   }
 
-  if(age == TRUE) {
+  if (age == TRUE) {
     aQ <- ageQuery(indexDate, name = ageName)
   } else {
     aQ <- NULL
   }
 
-  if(sex == TRUE) {
+  if (sex == TRUE) {
     sQ <- sexQuery(name = sexName)
   } else {
     sQ <- NULL
   }
 
-  if(priorHistory == TRUE) {
+  if (priorHistory == TRUE) {
     pHQ <- priorHistoryQuery(indexDate, name = priorHistoryName)
   } else {
     pHQ <- NULL
   }
 
-  if(futureObservation == TRUE) {
+  if (futureObservation == TRUE) {
     fOQ <- futureObservationQuery(indexDate, name = futureObservationName)
   } else {
     fOQ <- NULL
   }
 
   x <- x %>%
-    dplyr::mutate(!!!aQ,
-                  !!!sQ,
-                  !!!pHQ,
-                  !!!fOQ)
+    dplyr::mutate(
+      !!!aQ,
+      !!!sQ,
+      !!!pHQ,
+      !!!fOQ
+    )
 
   x <- x %>%
-    dplyr::select(dplyr::all_of(startNames),
-                  dplyr::any_of(c(ageName, sexName,
-                                  priorHistoryName,
-                                  futureObservationName)))
+    dplyr::select(
+      dplyr::all_of(startNames),
+      dplyr::any_of(c(
+        ageName, sexName,
+        priorHistoryName,
+        futureObservationName
+      ))
+    )
 
-  if(is.null(tablePrefix)){
+  if (is.null(tablePrefix)) {
     x <- x %>%
       CDMConnector::computeQuery()
   } else {
     x <- x %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_demographics_added"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
+      CDMConnector::computeQuery(
+        name = paste0(
+          tablePrefix,
+          "_demographics_added"
+        ),
+        temporary = FALSE,
+        schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
 
   if (!is.null(ageGroup)) {
     x <- addCategories(x,
-                       cdm = cdm,
-                       variable = "age",
-                       categories = ageGroup,
-                       tablePrefix = tablePrefix)
+      cdm = cdm,
+      variable = "age",
+      categories = ageGroup,
+      tablePrefix = tablePrefix
+    )
   }
 
   return(x)
@@ -246,7 +265,7 @@ addDemographics <- function(x,
 
 
 
-ageQuery <- function(indexDate, name){
+ageQuery <- function(indexDate, name) {
   return(glue::glue('floor(dbplyr::sql(
     sqlGetAge(
       dialect = CDMConnector::dbms(cdm),
@@ -254,29 +273,29 @@ ageQuery <- function(indexDate, name){
       dateOfInterest = "{indexDate}"
     )
   ))') %>%
-  rlang::parse_exprs() %>%
-  rlang::set_names(glue::glue(name)))
+    rlang::parse_exprs() %>%
+    rlang::set_names(glue::glue(name)))
 }
 
-sexQuery <- function(name){
+sexQuery <- function(name) {
   return(glue::glue('dplyr::case_when(
       .data$gender_concept_id == 8507 ~ "Male",
       .data$gender_concept_id == 8532 ~ "Female",
       TRUE ~ as.character(NA))') %>%
-  rlang::parse_exprs() %>%
-  rlang::set_names(glue::glue(name)))
+    rlang::parse_exprs() %>%
+    rlang::set_names(glue::glue(name)))
 }
 
-priorHistoryQuery <- function(indexDate, name){
-return(glue::glue('CDMConnector::datediff("observation_period_start_date",
+priorHistoryQuery <- function(indexDate, name) {
+  return(glue::glue('CDMConnector::datediff("observation_period_start_date",
                       "{indexDate}")') %>%
-          rlang::parse_exprs() %>%
-          rlang::set_names(glue::glue(name)))
+    rlang::parse_exprs() %>%
+    rlang::set_names(glue::glue(name)))
 }
 
-futureObservationQuery <- function(indexDate, name){
-return(glue::glue('CDMConnector::datediff("{indexDate}",
+futureObservationQuery <- function(indexDate, name) {
+  return(glue::glue('CDMConnector::datediff("{indexDate}",
                           "observation_period_end_date")') %>%
-  rlang::parse_exprs() %>%
-  rlang::set_names(glue::glue(name)))
+    rlang::parse_exprs() %>%
+    rlang::set_names(glue::glue(name)))
 }

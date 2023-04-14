@@ -25,7 +25,6 @@ Imports:
     magrittr,
     CDMConnector,
     dplyr,
-    dbplyr,
     tidyr,
     checkmate,
     stringr,

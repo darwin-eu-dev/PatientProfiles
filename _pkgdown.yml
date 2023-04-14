@@ -2,3 +2,22 @@ url: https://oxford-pharmacoepi.github.io/PatientProfiles/
 template:
   bootstrap: 5
 
+reference:
+- subtitle: Add individual patient characteristics
+  desc: Add patient characteristics to a table in the OMOP Common Data Model
+- contents:
+  - matches("addAge|addSex|addPriorHistory|addFutureObservation|addInObservation")
+- subtitle: Add multiple patient characteristics simultaneously
+  desc: Add a set of patient characteristics to a table in the OMOP Common Data Model
+- contents:
+  - matches("addDemographics")
+- subtitle: Identify cohort intersections
+  desc: Add variables indicating the intersection between one set of cohorts and another.
+- contents:
+  - matches("addCohortIntersect|flagCohortPresence|countCohortOccurrences|timeToCohort|dateOfCohort")
+- subtitle: Other functions
+  desc: Helper functions
+- contents:
+  - matches("addCategories|mockPatientProfiles|addIntersect")
+
+

@@ -13,11 +13,11 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(DBI)
 #' library(duckdb)
 #' library(tibble)
-#' library(CohortProfiles)
+#' library(PatientProfiles)
 #' cohort1 <- tibble::tibble(
 #'   cohort_definition_id = c("1", "1", "1"),
 #'   subject_id = c("1", "2", "3"),
@@ -49,35 +49,34 @@
 #' )
 #'
 #' cdm <-
-#'   mockCohortProfiles(
-#'    seed = 1,
-#'    cohort1 = cohort1,
+#'   mockPatientProfiles(
+#'     seed = 1,
+#'     cohort1 = cohort1,
 #'     observation_period = obs_1
-#'
 #'   )
 #'
 #' result <- cdm$cohort1 %>% addFutureObservation(cdm)
 #' }
 addFutureObservation <- function(x,
-                            cdm,
-                            indexDate = "cohort_start_date",
-                            futureObservationName = "future_observation",
-                            tablePrefix = NULL) {
-
+                                 cdm,
+                                 indexDate = "cohort_start_date",
+                                 futureObservationName = "future_observation",
+                                 tablePrefix = NULL) {
   x <- x %>%
-    addDemographics(cdm = cdm,
-                    indexDate = indexDate,
-                    age = FALSE,
-                    ageGroup = NULL,
-                    ageDefaultDay = NULL,
-                    ageDefaultMonth = NULL,
-                    ageImposeDay =  FALSE,
-                    ageImposeMonth = FALSE,
-                    sex = FALSE,
-                    priorHistory = FALSE,
-                    futureObservation = TRUE,
-                    futureObservationName = futureObservationName,
-                    tablePrefix = tablePrefix
+    addDemographics(
+      cdm = cdm,
+      indexDate = indexDate,
+      age = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = FALSE,
+      priorHistory = FALSE,
+      futureObservation = TRUE,
+      futureObservationName = futureObservationName,
+      tablePrefix = tablePrefix
     )
 
   return(x)

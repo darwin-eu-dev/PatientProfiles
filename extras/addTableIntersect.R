@@ -17,7 +17,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' db <- DBI::dbConnect(" Your database connection here")
 #' cdm <- CDMConnector::cdm_from_con(
 #'   con = db,

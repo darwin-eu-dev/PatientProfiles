@@ -20,9 +20,9 @@ library(PatientProfiles)
 
 ## Introduction
 
-This document demonstrate how to use the `addCohortIntersect()` function in PatientProfiles to obtain cohort intersect information for each individual in your CDM cohort table.
+This document demonstrate how to use the `addIntersect()` function in PatientProfiles to obtain cohort intersect information for each individual in your CDM cohort table.
 
-When using `addCohortIntersect()` you would need two input table.
+When using `addIntersect()` you would need two input table.
 
 1. Table containing cohort the individual for which the intersect information to be attached as extra columns. In the function this table is label as `x`. This table need to be saved as a table within CDM environment and contain.
 
@@ -38,7 +38,7 @@ Both table need to contain the column "cohort_definition_id", "subject_id", "coh
 
 4. `time` the time in number days between the cohort_start_date of the individual and its earliest or the latest intersect date.
 
-Below is an example of `addCohortIntersect()` generated using mock data.
+Below is an example of `addIntersect()` generated using mock data.
 ```{r, message= FALSE, warning=FALSE, eval=FALSE}
 library(DBI)
 library(duckdb)
@@ -99,13 +99,13 @@ cdm <- mockPatientProfiles(cohort1=cohort1, cohort2=cohort2)
 First we use `mockCohorProfiles()` to generate two cohort table in the cdm environment and name in `cohort1` and `cohort2` and saved it as cdm. Then to add the intersect information as column in `cohort1` from `cohort2`, we run below code.
 
 ```{r, message= FALSE, warning=FALSE, eval=FALSE}
-cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date") %>% 
+cdm$cohort1 %>% addIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date") %>% 
   dplyr::rename(date_intersect = all_0_to_Inf) %>%
-  addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "time") %>% 
+  addIntersect(cdm = cdm,cohortTableName = "cohort2", value = "time") %>% 
     dplyr::rename(time_intersect = all_0_to_Inf) %>%
-  addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "count") %>% 
+  addIntersect(cdm = cdm,cohortTableName = "cohort2", value = "count") %>% 
     dplyr::rename(count_intersect = all_0_to_Inf) %>%
-  addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "flag") %>%
+  addIntersect(cdm = cdm,cohortTableName = "cohort2", value = "flag") %>%
   dplyr::rename(flag_intersect = all_0_to_Inf) 
 ```
 
@@ -114,16 +114,16 @@ As you see from the result above, it added 4 extra columns named "all_0_to_Inf" 
 To change it to return to last cohort start date we can use the `order` option in the function
 
 ```{r, message= FALSE, warning=FALSE, eval=FALSE}
-cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date", order = "last")
+cdm$cohort1 %>% addIntersect(cdm = cdm,cohortTableName = "cohort2", value = "date", order = "last")
 ```
 The `value` option can be use to specified which value you want to return.
 
 ```{r, message= FALSE, warning=FALSE, eval=FALSE}
-cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = c("flag"))
+cdm$cohort1 %>% addIntersect(cdm = cdm,cohortTableName = "cohort2", value = c("flag"))
 ```
 
 You can use the `window` option to change the look back period from date of reference in table x to date of event at event table.
 
 ```{r, message= FALSE, warning=FALSE, eval=FALSE}
-cdm$cohort1 %>% addCohortIntersect(cdm = cdm,cohortTableName = "cohort2", value = "count", window = list(c(0,0)))
+cdm$cohort1 %>% addIntersect(cdm = cdm,cohortTableName = "cohort2", value = "count", window = list(c(0,0)))
 ```

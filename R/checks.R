@@ -94,7 +94,8 @@ checkCdm <- function(cdm, tables = NULL) {
 #' @noRd
 checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
   checkmate::assertCharacter(
-    indexDate, any.missing = FALSE, len = 1, null.ok = nullOk
+    indexDate,
+    any.missing = FALSE, len = 1, null.ok = nullOk
   )
   if (!is.null(indexDate) && !(indexDate %in% colnames(x))) {
     cli::cli_abort(glue::glue("{name} ({indexDate}) should be a column in x"))
@@ -103,9 +104,10 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 }
 
 #' @noRd
-checkCategory <- function (category) {
+checkCategory <- function(category) {
   checkmate::assertList(
-    category, types = "integerish", any.missing = FALSE, unique = TRUE,
+    category,
+    types = "integerish", any.missing = FALSE, unique = TRUE,
     min.len = 1
   )
 
@@ -153,7 +155,7 @@ checkCategory <- function (category) {
   # check overlap
   if (nrow(result) > 1) {
     lower <- result$lower_bound[2:nrow(result)]
-    upper <- result$upper_bound[1:(nrow(result)-1)]
+    upper <- result$upper_bound[1:(nrow(result) - 1)]
     if (!all(lower > upper)) {
       cli::cli_abort("There can not be overlap between categories")
     }
@@ -185,7 +187,7 @@ checkAgeGroup <- function(ageGroup) {
 #' @noRd
 checkWindow <- function(window) {
   if (!is.list(window)) {
-    window = list(window)
+    window <- list(window)
   }
 
   # Find if any NA, throw warning that it will be changed to Inf, change it later
@@ -215,12 +217,16 @@ checkWindow <- function(window) {
   }
 
   windowTbl <- dplyr::tibble(
-    lower = lapply(window, function(x){x[1]}) %>% unlist(),
-    upper = lapply(window, function(x){x[2]}) %>% unlist(),
+    lower = lapply(window, function(x) {
+      x[1]
+    }) %>% unlist(),
+    upper = lapply(window, function(x) {
+      x[2]
+    }) %>% unlist(),
     window_name = getWindowNames(window) %>% unlist()
   )
 
-  if (any(windowTbl$lower > window$upper)) {
+  if (any(windowTbl$lower > windowTbl$upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
   }
   if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == 1)) {
@@ -257,7 +263,7 @@ getWindowNames <- function(window) {
   getname <- function(element) {
     element <- as.character(element)
     element <- gsub("-", "m", element)
-    return(paste0(element[1],"_to_",element[2]))
+    return(paste0(element[1], "_to_", element[2]))
   }
   windowNames <- lapply(window, getname)
   return(windowNames)
@@ -274,10 +280,11 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
     checkmate::assertNumeric(filterId, any.missing = FALSE)
     checkmate::assertNumeric(utils::head(x, 1) %>% dplyr::pull(dplyr::all_of(filterVariable)))
     if (is.null(idName)) {
-      idName = paste0("id", filterId)
+      idName <- paste0("id", filterId)
     } else {
       checkmate::assertCharacter(
-        idName, any.missing = FALSE, len = length(filterId)
+        idName,
+        any.missing = FALSE, len = length(filterId)
       )
     }
     filterTbl <- dplyr::tibble(
@@ -336,4 +343,39 @@ checkValue <- function(value, x, name) {
     ))
   }
   return(value[!(value %in% c("flag", "count", "date", "time"))])
+}
+
+#' @noRd
+checkCohortNames <- function(x, targetCohortId, name) {
+  if (!("GeneratedCohortSet" %in% class(x))) {
+    cli::cli_abort("cdm[[targetCohortTable]]) is not a valid cohort object")
+  }
+  cohort <- CDMConnector::cohortSet(x)
+  filterVariable <- "cohort_definition_id"
+  if (is.null(targetCohortId)) {
+    if (is.null(cohort)) {
+      idName <- NULL
+      filterVariable <- NULL
+      targetCohortId <- NULL
+    } else {
+      cohort <- dplyr::collect(cohort)
+      idName <- cohort$cohort_name
+      targetCohortId <- cohort$cohort_definition_id
+    }
+  } else {
+    if (is.null(cohort)) {
+      idName <- paste0(name, "_", targetCohortId)
+    } else {
+      idName <- cohort %>%
+        dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
+        dplyr::arrange(.data$cohort_definition_id) %>%
+        dplyr::pull("cohort_name")
+    }
+  }
+  parameters <- list(
+    "filter_variable" = filterVariable,
+    "filter_id" = targetCohortId,
+    "id_name" = idName
+  )
+  return(parameters)
 }
