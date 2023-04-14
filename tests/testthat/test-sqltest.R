@@ -2,15 +2,6 @@
 test_that("test methods against sql test server", {
   skip_if(Sys.getenv("USER") == "")
 
-  Sys.setenv(DATABASECONNECTOR_JAR_FOLDER = jdbcDriversFolder)
-  Sys.setenv(SERVER = darwinDbDatabaseServer)
-  Sys.setenv(DATABASE = darwinDbDatabase)
-  Sys.setenv(USER = darwinDbUser)
-  Sys.setenv(PW = darwinDbPassword)
-  Sys.setenv(PORT = darwinDbDatabasePort)
-  Sys.setenv(DRIVER = darwinDbDriver)
-  Sys.setenv(DBNAME = darwinDbName)
-
   server   <- Sys.getenv("SERVER")
   database <- Sys.getenv("DATABASE")
   user     <- Sys.getenv("USER")
