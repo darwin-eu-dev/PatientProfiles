@@ -44,17 +44,21 @@ library(dplyr)
 
 Creating a connection to a Postgres database would for example look like:
 ```{r, eval=FALSE}
-con <- DBI::dbConnect(RPostgres::Postgres(),
-                      dbname = Sys.getenv("CDM5_POSTGRESQL_DBNAME"),
-                      host = Sys.getenv("CDM5_POSTGRESQL_HOST"),
-                      user = Sys.getenv("CDM5_POSTGRESQL_USER"),
-                      password = Sys.getenv("CDM5_POSTGRESQL_PASSWORD"))
+con <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  dbname = Sys.getenv("CDM5_POSTGRESQL_DBNAME"),
+  host = Sys.getenv("CDM5_POSTGRESQL_HOST"),
+  user = Sys.getenv("CDM5_POSTGRESQL_USER"),
+  password = Sys.getenv("CDM5_POSTGRESQL_PASSWORD")
+)
 
-cdm <- CDMConnector::cdm_from_con(con, 
-                    cdm_schema = Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA"), 
-                    write_schema = Sys.getenv("CDM5_POSTGRESQL_RESULT_SCHEMA"))
+cdm <- cdm_from_con(
+  con, 
+  cdm_schema = Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA"), 
+  write_schema = Sys.getenv("CDM5_POSTGRESQL_RESULT_SCHEMA")
+)
 ```
-To see how you would create a reference to your database please consult the CDMConnector package documentation. For this example though we´ll work with simulated data, and we'll generate an example cdm reference like so:
+To see how you would create a reference to your database please consult the CDMConnector package [documentation](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html). For this example though we'll work with simulated data, and we'll generate an example cdm reference like so:
 
 ```{r}
 cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
@@ -94,11 +98,11 @@ cdm$cohort1 %>%
 We can add age, age groups, sex, and days of prior history to a cohort like so
 ```{r}
 cdm$cohort1 <- cdm$cohort1 %>% 
-  addAge(cdm = cdm, indexDate = "cohort_start_date",
-         ageGroup =  list(c(0, 18),  
-                          c(19, 65), 
-                          c(66, 100))
-          ) %>% 
+  addAge(
+    cdm = cdm, 
+    indexDate = "cohort_start_date",
+    ageGroup =  list(c(0, 18), c(19, 65), c(66, 100))
+  ) %>% 
   addSex(cdm = cdm) %>% 
   addPriorHistory(cdm = cdm)
 
@@ -114,61 +118,169 @@ cdm$cohort1  %>%
 
 ### Cohort intersections
 
-#### Intersections with patient-level data 
-We can use `addIntersect` to add the intersection between a cohort table and OMOP CDM tables.
+#### Detect the presence of another cohort in a certain window
+We can use `flagCohortPresence` to add a flag for the presence (or not) of a cohort in a certain window.
 
-```{r, echo=FALSE}
-cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
 ```
-
-For example, if we want to identify anyone with a drug exposure prior to their cohort start date we could do this like so:
-
 ```{r}
 cdm$cohort1 %>% 
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  addTableIntersect(cdm = cdm,
-                    name = "history_of_drug_exposure",
-                    tableName = "drug_exposure", 
-                    window = c(NA, -1),  
-                    value = "binary")
+  flagCohortPresence(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    window = c(-Inf, -1)
+  )
 
 cdm$cohort1 %>% 
   glimpse()
 
 ```
 
-#### Intersections with another cohort
+#### Count appearences of a certain cohort in a certain window
 
-We can use `addIntersect` to compare two cohort tables.
-
-```{r, echo=FALSE}
-cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
 ```
-
-Say we have the two following cohort tables
 ```{r}
 cdm$cohort1 %>% 
   glimpse()
-cdm$cohort2 %>% 
+
+cdm$cohort1  <- cdm$cohort1 %>% 
+  countCohortOccurrences(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1, 
+    window = list("short_term" = c(1, 30), "mid_term" = c(31, 180))
+  )
+
+cdm$cohort1 %>% 
   glimpse()
 
 ```
 
-If we want to add a variable to cohorts in the cohort table 1 identifying whether an individual was in the cohort table cohort2 and cohort definition id 1 any time prior to the cohort start date. we could add this like so:
+#### Add a column with the first/last event in a certain window
 
+First occurrence:
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
 ```{r}
-cdm$cohort1 <- cdm$cohort1 %>% 
-  addIntersect(cdm = cdm,  
-                     name = "history_of_cohort_2_id_1",
-                     cohortTableName = "cohort2", 
-                     cohortId = 1,
-                     window = c(NA, -1),  
-                     value = "binary")
+cdm$cohort1 %>% 
+  glimpse()
 
-cdm$cohort2 %>% 
+cdm$cohort1  <- cdm$cohort1 %>% 
+  dateOfCohort(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "first",
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>% 
   glimpse()
 
 ```
 
+Last occurrence:
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>% 
+  glimpse()
+
+cdm$cohort1  <- cdm$cohort1 %>% 
+  dateOfCohort(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "last",
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>% 
+  glimpse()
+
+```
+
+#### Add the time instead of the date
+
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>% 
+  glimpse()
+
+cdm$cohort1  <- cdm$cohort1 %>% 
+  timeToCohort(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "last",
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>% 
+  glimpse()
+
+```
+
+#### Combine multiple cohort intersects
+If we want to combine multiple cohort intersects we can concatenate the operations using the `pipe` operator:
+
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>% 
+  glimpse()
+
+cdm$cohort1  <- cdm$cohort1 %>% 
+  dateOfCohort(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "last",
+    window = c(-Inf, Inf)
+  ) %>%
+  countCohortOccurrences(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>% 
+  glimpse()
+
+```
+For efficiency we can do all the intersects in the same function:
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>% 
+  glimpse()
+
+cdm$cohort1  <- cdm$cohort1 %>% 
+  addCohortIntersect(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    count = TRUE,
+    flag = TRUE,
+    time = TRUE,
+    date = TRUE,
+    window = list("any_time" = c(-Inf, Inf))
+  ) 
+
+cdm$cohort1 %>% 
+  glimpse()
+
+```
