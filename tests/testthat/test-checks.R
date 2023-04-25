@@ -139,7 +139,6 @@ test_that(" test checkWindow in addIntersect" ,{
 
 })
 
-
 test_that("test checkSnakeCase", {
   expect_error(checkSnakeCase("Age", "age"))
   expect_error(checkSnakeCase("age groups", "agegroups"))
@@ -150,4 +149,14 @@ test_that("test checkSnakeCase", {
   expect_error(checkSnakeCase("this-is-not-snake", "snakevar"))
   expect_error(checkSnakeCase("this_is_alm@st_snake", "snakevar"))
 
+})
+
+test_that("check window", {
+  window <- list("short" = c(0,9), c(10, 20), c(20, 35), "long" = c(-50, 10))
+  windowName <- checkWindow(window)
+  expect_true("tbl" %in% class(windowName))
+  expect_true(all(names(windowName) == c("lower", "upper", "window_name")))
+  expect_true(all(windowName$lower == c(0, 10, 20, -50)))
+  expect_true(all(windowName$upper == c(9, 20, 35, 10)))
+  expect_true(all(windowName$window_name == c("short", "10_to_20", "20_to_35", "long")))
 })

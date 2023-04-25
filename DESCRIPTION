@@ -22,6 +22,7 @@ Suggests:
     knitr,
     rmarkdown,
     glue,
+    stringr,
     odbc
 Imports: 
     magrittr,
@@ -29,7 +30,6 @@ Imports:
     dplyr,
     tidyr,
     checkmate,
-    stringr,
     lubridate,
     tibble,
     DBI,

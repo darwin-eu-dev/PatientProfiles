@@ -213,7 +213,12 @@ getWindowNames <- function(window) {
     element <- gsub("-", "m", element)
     return(paste0(element[1], "_to_", element[2]))
   }
-  windowNames <- lapply(window, getname)
+  windowNames <- names(window)
+  if (is.null(windowNames)) {
+    windowNames <- lapply(window, getname)
+  } else {
+    windowNames[windowNames == ""] <- lapply(window[windowNames == ""], getname)
+  }
   return(windowNames)
 }
 
