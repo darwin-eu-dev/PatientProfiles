@@ -215,23 +215,23 @@ addCohortIntersect <- function(x,
 #' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 #'
 #' result <- cdm$cohort1 %>%
-#'   flagCohortPresence(
+#'   addCohortIntersectFlag(
 #'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
-flagCohortPresence <- function(x,
-                               cdm,
-                               targetCohortTable,
-                               targetCohortId = NULL,
-                               indexDate = "cohort_start_date",
-                               targetStartDate = "cohort_start_date",
-                               targetEndDate = "cohort_end_date",
-                               window = list(c(0, Inf)),
-                               nameStyle = "{cohort_name}_{window_name}",
-                               tablePrefix = NULL) {
+addCohortIntersectFlag <- function(x,
+                                   cdm,
+                                   targetCohortTable,
+                                   targetCohortId = NULL,
+                                   indexDate = "cohort_start_date",
+                                   targetStartDate = "cohort_start_date",
+                                   targetEndDate = "cohort_end_date",
+                                   window = list(c(0, Inf)),
+                                   nameStyle = "{cohort_name}_{window_name}",
+                                   tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -337,23 +337,23 @@ flagCohortPresence <- function(x,
 #' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 #'
 #' result <- cdm$cohort1 %>%
-#'   countCohortOccurrences(
+#'   addCohortIntersectCount(
 #'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
-countCohortOccurrences <- function(x,
-                                   cdm,
-                                   targetCohortTable,
-                                   targetCohortId = NULL,
-                                   indexDate = "cohort_start_date",
-                                   targetStartDate = "cohort_start_date",
-                                   targetEndDate = "cohort_end_date",
-                                   window = list(c(0, Inf)),
-                                   nameStyle = "{cohort_name}_{window_name}",
-                                   tablePrefix = NULL) {
+addCohortIntersectCount <- function(x,
+                                    cdm,
+                                    targetCohortTable,
+                                    targetCohortId = NULL,
+                                    indexDate = "cohort_start_date",
+                                    targetStartDate = "cohort_start_date",
+                                    targetEndDate = "cohort_end_date",
+                                    window = list(c(0, Inf)),
+                                    nameStyle = "{cohort_name}_{window_name}",
+                                    tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -462,23 +462,23 @@ countCohortOccurrences <- function(x,
 #' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 #'
 #' result <- cdm$cohort1 %>%
-#'   timeToCohort(
+#'   addCohortIntersectTime(
 #'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
-timeToCohort <- function(x,
-                         cdm,
-                         indexDate = "cohort_start_date",
-                         targetCohortTable,
-                         targetCohortId = NULL,
-                         targetDate = "cohort_start_date",
-                         order = "first",
-                         window = c(0, Inf),
-                         nameStyle = "{cohort_name}_{window_name}",
-                         tablePrefix = NULL) {
+addCohortIntersectTime <- function(x,
+                                   cdm,
+                                   indexDate = "cohort_start_date",
+                                   targetCohortTable,
+                                   targetCohortId = NULL,
+                                   targetDate = "cohort_start_date",
+                                   order = "first",
+                                   window = c(0, Inf),
+                                   nameStyle = "{cohort_name}_{window_name}",
+                                   tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -588,23 +588,23 @@ timeToCohort <- function(x,
 #' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 #'
 #' result <- cdm$cohort1 %>%
-#'   dateOfCohort(
+#'   addCohortIntersectDate(
 #'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
-dateOfCohort <- function(x,
-                         cdm,
-                         indexDate = "cohort_start_date",
-                         targetCohortTable,
-                         targetCohortId = NULL,
-                         targetDate = "cohort_start_date",
-                         order = "first",
-                         window = c(0, Inf),
-                         nameStyle = "{cohort_name}_{window_name}",
-                         tablePrefix = NULL) {
+addCohortIntersectDate <- function(x,
+                                   cdm,
+                                   indexDate = "cohort_start_date",
+                                   targetCohortTable,
+                                   targetCohortId = NULL,
+                                   targetDate = "cohort_start_date",
+                                   order = "first",
+                                   window = c(0, Inf),
+                                   nameStyle = "{cohort_name}_{window_name}",
+                                   tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)

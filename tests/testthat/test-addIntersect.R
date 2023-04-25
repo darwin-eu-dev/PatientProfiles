@@ -365,9 +365,9 @@ test_that("working examples with extra column", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$measurment_result_covid_0_to_Inf == c(1,1,2,6,5) ))
+  expect_true(all(result$measurment_result_covid_0_to_inf == c(1,1,2,6,5) ))
   # expect_true(all(result_1$measurment_result_covid_0_to_Inf == c("NA","NA","NA","NA","NA") )) # to be updated when implemented
-  expect_true(all(result_2$measurment_result_0_to_Inf == c("1; 2","1; 2",3,6,5) ))
+  expect_true(all(result_2$measurment_result_0_to_inf == c("1; 2","1; 2",3,6,5) ))
   expect_true(all(is.na(result_3$measurment_result_m400_to_m200 )))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -1074,7 +1074,7 @@ test_that("overlapTable is empty, check return columns", {
   cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>%
-    countCohortOccurrences(
+    addCohortIntersectCount(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
@@ -1085,7 +1085,7 @@ test_that("overlapTable is empty, check return columns", {
   expect_true(all(result$cohort_1_0_to_inf == 0))
 
   result <- cdm$cohort1 %>%
-    flagCohortPresence(
+    addCohortIntersectFlag(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
@@ -1096,7 +1096,7 @@ test_that("overlapTable is empty, check return columns", {
   expect_true(all(result$cohort_1_0_to_inf == 0))
 
   result <- cdm$cohort1 %>%
-    dateOfCohort(
+    addCohortIntersectDate(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
@@ -1107,7 +1107,7 @@ test_that("overlapTable is empty, check return columns", {
   expect_true(all(is.na(result$cohort_1_0_to_inf)))
 
   result <- cdm$cohort1 %>%
-    timeToCohort(
+    addCohortIntersectTime(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
