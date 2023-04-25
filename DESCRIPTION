@@ -24,7 +24,8 @@ Suggests:
     rmarkdown,
     glue,
     stringr,
-    odbc
+    odbc,
+    ggplot2
 Imports: 
     magrittr,
     CDMConnector,
