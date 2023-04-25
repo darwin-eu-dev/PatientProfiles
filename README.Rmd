@@ -14,8 +14,8 @@ out.width = "100%"
 # PatientProfiles <img src='man/figures/Hex.png' align="right" height="139"/>
 
 [![CRAN status](https://www.r-pkg.org/badges/version/PatientProfiles)](https://CRAN.R-project.org/package=PatientProfiles)
-[![codecov.io](https://codecov.io/github/darwin-eu/PatientProfiles/coverage.svg?branch=main)](https://codecov.io/github/darwin-eu/PatientProfiles?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/PatientProfiles/actions)
+[![codecov.io](https://codecov.io/github/oxford-pharmacoepi/PatientProfiles/coverage.svg?branch=main)](https://codecov.io/github/oxford-pharmacoepi/PatientProfiles?branch=main)
+[![R-CMD-check](https://github.com/oxford-pharmacoepi/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/oxford-pharmacoepi/PatientProfiles/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://www.tidyverse.org/lifecycle/#experimental)
 
 
