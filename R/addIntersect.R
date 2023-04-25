@@ -127,8 +127,8 @@ addIntersect <- function(x,
       dplyr::filter(.data[[filterVariable]] %in% .env$filterId)
   } else {
     filterVariable <- "id"
-    filterTbl <- dplyr::tibble(id = 1, id_name = "all")
-    overlapTable <- dplyr::mutate(overlapTable, id = 1)
+    filterTbl <- dplyr::tibble("id" = 1, "id_name" = "all")
+    overlapTable <- dplyr::mutate(overlapTable, "id" = 1)
   }
   if (is.null(targetEndDate)) {
     overlapTable <- overlapTable %>%
