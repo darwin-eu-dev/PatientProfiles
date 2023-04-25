@@ -25,7 +25,7 @@
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
-#' @export
+#' @noRd
 #'
 #' @examples
 #' \donttest{
