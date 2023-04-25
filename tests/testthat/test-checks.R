@@ -123,6 +123,7 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
 
 })
 
+
 test_that(" test checkWindow in addIntersect" ,{
   cdm <- mockPatientProfiles(seed = 11, patient_size = 2)
 
@@ -135,5 +136,18 @@ test_that(" test checkWindow in addIntersect" ,{
    expect_error(cdm$cohort1 %>% addIntersect( cdm,tableName = "cohort2",window = list(c(-Inf,-Inf)), value = "date"))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
+
+
+test_that("test checkSnakeCase", {
+  expect_error(checkSnakeCase("Age", "age"))
+  expect_error(checkSnakeCase("age groups", "agegroups"))
+  expect_error(checkSnakeCase("new-var", "newv"))
+  checkSnakeCase("this_is_snake", "snakevar")
+  expect_error(checkSnakeCase("this_Is_Not_Snake", "snakevar"))
+  expect_error(checkSnakeCase("thsiIsNotSnake", "snakevar"))
+  expect_error(checkSnakeCase("this-is-not-snake", "snakevar"))
+  expect_error(checkSnakeCase("this_is_alm@st_snake", "snakevar"))
 
 })

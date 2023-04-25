@@ -1,6 +1,6 @@
 ---
 title: "Get cohort intersections"
-author: "Martí Català, Mike Du, Yuchen Guo, Kim Lopez-Guell, Xintong Li, Núria Mercadé-Besora, and Edward Burn"
+author: "Martí Català, Mike Du, Yuchen Guo, Kim López-Güell, Xintong Li, Núria Mercadé-Besora, and Edward Burn"
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -17,7 +17,7 @@ vignette: >
 
 ## Introduction
 
-In this vignette we present how function from this package can be used to get intersecctions between cohorts. This can be useful, for instance, if we want to identify patients with previous conditions. 
+In this vignette we present how functions from this package can be used to get intersections between cohorts. This can be useful, for instance, if we want to identify patients with previous conditions. 
 
 The PatientProfiles package is designed to work with data in the OMOP CDM format, so our first step is to create a reference to the data using the DBI and CDMConnector packages. The connection to a Postgres database would look like:
 

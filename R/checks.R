@@ -209,7 +209,7 @@ checkNewName <- function(name, x) {
 #' @noRd
 getWindowNames <- function(window) {
   getname <- function(element) {
-    element <- as.character(element)
+    element <- tolower(as.character(element))
     element <- gsub("-", "m", element)
     return(paste0(element[1], "_to_", element[2]))
   }
@@ -326,4 +326,16 @@ checkCohortNames <- function(x, targetCohortId, name) {
     "id_name" = idName
   )
   return(parameters)
+}
+
+#' @noRd
+checkSnakeCase <- function(name, varname) {
+ for(n in name) {
+   n <- gsub("[a-z]","",n)
+   n <- gsub("[0-9]","",n)
+   n <- gsub("_","",n)
+   if(nchar(n) > 0) {
+     cli::cli_abort(paste0(varname, " is not written in snake case, please check"))
+   }
+ }
 }

@@ -117,6 +117,9 @@ addIntersect <- function(x,
   checkmate::assertChoice(order, c("first", "last"))
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  if(!is.null(idName)) {
+    checkSnakeCase(idName, "id_name")
+  }
 
   originalColnames <- colnames(x)
 

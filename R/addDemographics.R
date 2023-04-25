@@ -92,6 +92,12 @@ addDemographics <- function(x,
     cli::cli_abort("age, sex, priorHistory, futureObservation can not be FALSE")
   }
 
+  # check variable names
+  if(age) {checkSnakeCase(ageName, "age")}
+  if(sex) {checkSnakeCase(sexName, "sex")}
+  if(priorHistory) {checkSnakeCase(priorHistoryName, "priorHistory")}
+  if(futureObservation) {checkSnakeCase(futureObservationName, "futureObservation")}
+
   # Start code
   startNames <- names(x)
 

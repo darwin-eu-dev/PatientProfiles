@@ -33,6 +33,7 @@ addInObservation <- function(x,
   checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
   name <- checkNewName(name, x)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  checkSnakeCase(name, "inObservation")
 
   # Start code
   name <- rlang::enquo(name)
