@@ -20,7 +20,6 @@ library(duckdb)
 library(CDMConnector)
 library(CodelistGenerator)
 library(dplyr)
-library(Capr)
 library(PatientProfiles)
 library(ggplot2)
 
