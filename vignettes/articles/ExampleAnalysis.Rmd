@@ -79,8 +79,7 @@ cdm$diclofenac <- cdm$drug_era %>%
 cdm$exposure_cohort <- union_all(cdm$celecoxib, 
                         cdm$diclofenac) %>% 
   compute()
-class(cdm$exposure_cohort) <- c("GeneratedCohortSet" ,
-                          class(cdm$exposure_cohort))
+cdm$exposure_cohort <- newGeneratedCohortSet(cdm$exposure_cohort)
 ```
 
 As well as our two drug cohorts, we'll define a cohort of people with a condition occurrence of gastrointestinal (GI) bleeding. 
@@ -101,8 +100,7 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
   select("cohort_definition_id", "subject_id", 
          "cohort_start_date", "cohort_end_date") %>% 
   compute()
-class(cdm$gi_bleed) <- c("GeneratedCohortSet" ,
-                          class(cdm$gi_bleed))
+cdm$gi_bleed <- newGeneratedCohortSet(cdm$gi_bleed)
 
 ```
 
