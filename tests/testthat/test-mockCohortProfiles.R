@@ -28,11 +28,11 @@ test_that("test user define table", {
   cdm_1 <- mockPatientProfiles(test_table_1 = test_table_1)
   cdm_2 <- mockPatientProfiles(test_table_1 = test_table_1, test_table_2 = test_table_2)
 
-  expect_true(dplyr::all_equal(cdm_1$test_table_1 %>% dplyr::collect(), test_table_1))
+  expect_true(all.equal(cdm_1$test_table_1 %>% dplyr::collect(), test_table_1))
   expect_true(length(cdm_1) == 10)
   expect_true(length(cdm_2) == 11)
-  expect_true(dplyr::all_equal(cdm_2$test_table_1 %>% dplyr::collect(), test_table_1))
-  expect_true(dplyr::all_equal(cdm_2$test_table_2 %>% dplyr::collect(), test_table_2))
+  expect_true(all.equal(cdm_2$test_table_1 %>% dplyr::collect(), test_table_1))
+  expect_true(all.equal(cdm_2$test_table_2 %>% dplyr::collect(), test_table_2))
 
   DBI::dbDisconnect(attr(cdm_1, "dbcon"), shutdown = TRUE)
   DBI::dbDisconnect(attr(cdm_2, "dbcon"), shutdown = TRUE)
@@ -55,10 +55,10 @@ test_that("check working example with cohort table", {
   cdm_1 <- mockPatientProfiles(cohort1 = test_table_1)
   cdm_2 <- mockPatientProfiles(cohort2 = test_table_1)
 
-  expect_true(dplyr::all_equal(cdm_1$cohort1 %>% dplyr::collect(), test_table_1))
-  expect_error(expect_true(dplyr::all_equal(cdm_1$cohort2 %>% dplyr::collect(), test_table_1)))
-  expect_true(dplyr::all_equal(cdm_2$cohort2 %>% dplyr::collect(), test_table_1))
-  expect_error(expect_true(dplyr::all_equal(cdm_2$cohort1 %>% dplyr::collect(), test_table_1)))
+  expect_true(all.equal(cdm_1$cohort1 %>% dplyr::collect(), test_table_1))
+  expect_error(expect_true(all.equal(cdm_1$cohort2 %>% dplyr::collect(), test_table_1)))
+  expect_true(all.equal(cdm_2$cohort2 %>% dplyr::collect(), test_table_1))
+  expect_error(expect_true(all.equal(cdm_2$cohort1 %>% dplyr::collect(), test_table_1)))
 
   DBI::dbDisconnect(attr(cdm_1, "dbcon"), shutdown = TRUE)
   DBI::dbDisconnect(attr(cdm_2, "dbcon"), shutdown = TRUE)

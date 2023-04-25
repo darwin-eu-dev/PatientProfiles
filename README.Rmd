@@ -119,7 +119,7 @@ cdm$cohort1  %>%
 ### Cohort intersections
 
 #### Detect the presence of another cohort in a certain window
-We can use `flagCohortPresence` to add a flag for the presence (or not) of a cohort in a certain window.
+We can use `addCohortIntersectFlag` to add a flag for the presence (or not) of a cohort in a certain window.
 
 ```{r, echo = FALSE}
 cdm <- mockPatientProfiles()
@@ -129,7 +129,7 @@ cdm$cohort1 %>%
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  flagCohortPresence(
+  addCohortIntersectFlag(
     cdm = cdm,
     targetCohortTable = "cohort2",
     window = c(-Inf, -1)
@@ -150,7 +150,7 @@ cdm$cohort1 %>%
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  countCohortOccurrences(
+  addCohortIntersectCount(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1, 
@@ -173,7 +173,7 @@ cdm$cohort1 %>%
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  dateOfCohort(
+  addCohortIntersectDate(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -195,7 +195,7 @@ cdm$cohort1 %>%
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  dateOfCohort(
+  addCohortIntersectDate(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -218,7 +218,7 @@ cdm$cohort1 %>%
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  timeToCohort(
+  addCohortIntersectTime(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -242,14 +242,14 @@ cdm$cohort1 %>%
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  dateOfCohort(
+  addCohortIntersectDate(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
     window = c(-Inf, Inf)
   ) %>%
-  countCohortOccurrences(
+  addCohortIntersectCount(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,

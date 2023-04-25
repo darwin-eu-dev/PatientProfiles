@@ -25,7 +25,7 @@
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
-#' @export
+#' @noRd
 #'
 #' @examples
 #' \donttest{
@@ -130,8 +130,8 @@ addIntersect <- function(x,
       dplyr::filter(.data[[filterVariable]] %in% .env$filterId)
   } else {
     filterVariable <- "id"
-    filterTbl <- dplyr::tibble(id = 1, id_name = "all")
-    overlapTable <- dplyr::mutate(overlapTable, id = 1)
+    filterTbl <- dplyr::tibble("id" = 1, "id_name" = "all")
+    overlapTable <- dplyr::mutate(overlapTable, "id" = 1)
   }
   if (is.null(targetEndDate)) {
     overlapTable <- overlapTable %>%
@@ -288,10 +288,13 @@ addIntersect <- function(x,
                 )
               ) %>%
               dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
-              dplyr::summarise(dplyr::across(
-                dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
-              )),
-            by = c(dplyr::all_of(person_variable), "index_date", "id")
+              dplyr::summarise(
+                dplyr::across(
+                  dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
+                ),
+                .groups = "drop"
+              ),
+            by = c(person_variable, "index_date", "id")
           )
       }
       resultDTO <- resultDTO %>%
@@ -388,7 +391,7 @@ addIntersect <- function(x,
       x <- x %>%
         dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
         dplyr::left_join(resultDateTimeOtherX,
-          by = dplyr::all_of(c(person_variable, indexDate))
+          by = c(person_variable, indexDate)
         )
     }
 

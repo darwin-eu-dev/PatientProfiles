@@ -11,7 +11,7 @@
 #'
 #' @return tibble with the categorical variable added.
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' #'
