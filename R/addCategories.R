@@ -126,7 +126,7 @@ addCategories <- function(x,
       )
   }
   lastTempTable <- getOption("dbplyr_table_name", 0) - 1
-  if (firstTempTable <= lastTempTable) {
+  if (isFALSE(temporary) & firstTempTable <= lastTempTable) {
     CDMConnector::dropTable(
       cdm, sprintf("dbplyr_%03i", firstTempTable:lastTempTable)
     )
