@@ -11,3 +11,4 @@
 ^\.github$
 ^extras
 ^cran-comments\.md$
+^vignettes/articles$
