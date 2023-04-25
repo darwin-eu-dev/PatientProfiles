@@ -40,10 +40,19 @@
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addAge.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCategories.html</loc>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersect.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersect.html</loc>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectCount.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectDate.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectFlag.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectTime.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addDemographics.html</loc>
@@ -55,22 +64,10 @@
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addInObservation.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addIntersect.html</loc>
-  </url>
-  <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addPriorHistory.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addSex.html</loc>
-  </url>
-  <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/countCohortOccurrences.html</loc>
-  </url>
-  <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/dateOfCohort.html</loc>
-  </url>
-  <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/flagCohortPresence.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/index.html</loc>
@@ -80,8 +77,5 @@
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/timeToCohort.html</loc>
   </url>
 </urlset>

@@ -88,7 +88,7 @@ to the Eunomia dataset.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/eunomia_dir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; attempting to extract and load /tmp/RtmpRY6xQ2/GiBleed_5.3.zip</span></span>
+<span><span class="co">#&gt; attempting to extract and load /tmp/RtmpGNUQGx/GiBleed_5.3.zip</span></span>
 <span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span></span>
 <span>  con <span class="op">=</span> <span class="va">con</span>,</span>
@@ -214,16 +214,16 @@ period relative to their cohort start date using the
 time periods, before their cohort start date and after.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">exposure_cohort</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">exposure_cohort</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="../reference/flagCohortPresence.html">flagCohortPresence</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
-<span>                     targetCohortTable <span class="op">=</span> <span class="st">"gi_bleed"</span>, </span>
-<span>                     indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
-<span>                     window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, </span>
-<span>                     nameStyle <span class="op">=</span> <span class="st">"gi_bleed_history"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="../reference/flagCohortPresence.html">flagCohortPresence</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
-<span>                     targetCohortTable <span class="op">=</span> <span class="st">"gi_bleed"</span>, </span>
-<span>                     indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
-<span>                     window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>                     nameStyle <span class="op">=</span> <span class="st">"gi_bleed_outcome"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>                         targetCohortTable <span class="op">=</span> <span class="st">"gi_bleed"</span>, </span>
+<span>                         indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
+<span>                         window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, </span>
+<span>                         nameStyle <span class="op">=</span> <span class="st">"gi_bleed_history"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>                         targetCohortTable <span class="op">=</span> <span class="st">"gi_bleed"</span>, </span>
+<span>                         indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
+<span>                         window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
+<span>                         nameStyle <span class="op">=</span> <span class="st">"gi_bleed_outcome"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">exposure_cohort</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">gi_bleed_history</span>, <span class="va">gi_bleed_outcome</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -239,10 +239,10 @@ time periods, before their cohort start date and after.</p>
 <code>timeToCohort</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">exposure_cohort</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="../reference/timeToCohort.html">timeToCohort</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
-<span>                     targetCohortTable <span class="op">=</span> <span class="st">"gi_bleed"</span>, </span>
-<span>                     window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>                     nameStyle <span class="op">=</span> <span class="st">"time_to_event"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="../reference/addCohortIntersectTime.html">addCohortIntersectTime</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>                         targetCohortTable <span class="op">=</span> <span class="st">"gi_bleed"</span>, </span>
+<span>                         window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
+<span>                         nameStyle <span class="op">=</span> <span class="st">"time_to_event"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>  <span class="va">cohort_definition_id</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"celecoxib"</span>,</span>
 <span>  <span class="va">cohort_definition_id</span> <span class="op">==</span> <span class="fl">2</span> <span class="op">~</span> <span class="st">"diclofenac"</span>,</span>

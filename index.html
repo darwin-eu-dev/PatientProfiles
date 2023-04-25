@@ -222,7 +222,7 @@
 <div class="section level4">
 <h4 id="detect-the-presence-of-another-cohort-in-a-certain-window">Detect the presence of another cohort in a certain window<a class="anchor" aria-label="anchor" href="#detect-the-presence-of-another-cohort-in-a-certain-window"></a>
 </h4>
-<p>We can use <code>flagCohortPresence</code> to add a flag for the presence (or not) of a cohort in a certain window.</p>
+<p>We can use <code>addCohortIntersectFlag</code> to add a flag for the presence (or not) of a cohort in a certain window.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -235,7 +235,7 @@
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>  <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/flagCohortPresence.html">flagCohortPresence</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
@@ -269,7 +269,7 @@
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>  <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/countCohortOccurrences.html">countCohortOccurrences</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>, </span>
@@ -304,7 +304,7 @@
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>  <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/dateOfCohort.html">dateOfCohort</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -335,7 +335,7 @@
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>  <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/dateOfCohort.html">dateOfCohort</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -369,7 +369,7 @@
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>  <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/timeToCohort.html">timeToCohort</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectTime.html">addCohortIntersectTime</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -404,14 +404,14 @@
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>  <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/dateOfCohort.html">dateOfCohort</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"last"</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/countCohortOccurrences.html">countCohortOccurrences</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -461,8 +461,8 @@
 <span><span class="co">#&gt; $ subject_id              &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date       &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date         &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ flag_cohort_1_any_time  &lt;dbl&gt; 1, 1, 1, 0</span></span>
 <span><span class="co">#&gt; $ count_cohort_1_any_time &lt;dbl&gt; 2, 2, 1, 0</span></span>
+<span><span class="co">#&gt; $ flag_cohort_1_any_time  &lt;dbl&gt; 1, 1, 1, 0</span></span>
 <span><span class="co">#&gt; $ date_cohort_1_any_time  &lt;date&gt; 2019-12-30, 2019-12-30, 2020-01-01, NA</span></span>
 <span><span class="co">#&gt; $ time_cohort_1_any_time  &lt;dbl&gt; -2, -154, 0, NA</span></span></code></pre></div>
 </div>

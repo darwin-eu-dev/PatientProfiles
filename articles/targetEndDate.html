@@ -81,14 +81,14 @@ and Edward Burn</h4>
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>In this vignette we introduce the <code>targetEndDate</code>
-functionality found in <code><a href="../reference/countCohortOccurrences.html">countCohortOccurrences()</a></code> and
-<code><a href="../reference/flagCohortPresence.html">flagCohortPresence()</a></code> functions. In both of them, there are
-three reference dates which can be specified: * <code>indexDate</code>:
-date from the primary cohort table, which contains the individuals for
-which we want to find the intersection events *
-<code>targetStartDate</code>: date from the events table used for the
-intersection * <code>targetEndDate</code>: date from the events table
-used for the intersection</p>
+functionality found in <code><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount()</a></code> and
+<code><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag()</a></code> functions. In both of them, there
+are three reference dates which can be specified: *
+<code>indexDate</code>: date from the primary cohort table, which
+contains the individuals for which we want to find the intersection
+events * <code>targetStartDate</code>: date from the events table used
+for the intersection * <code>targetEndDate</code>: date from the events
+table used for the intersection</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://oxford-pharmacoepi.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span></code></pre></div>
@@ -140,7 +140,7 @@ previous to the cohort start date of the main cohort. Namely:</p>
 <span>    cohort2 <span class="op">=</span> <span class="va">cohort2</span></span>
 <span>  <span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/countCohortOccurrences.html">countCohortOccurrences</a></span><span class="op">(</span><span class="va">cdm</span>, targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span><span class="va">cdm</span>, targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;dbplyr_005&gt; [2 x 5]</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.7.1 [unknown@Linux 5.15.0-1035-azure:R 4.3.0/:memory:]</span></span></span>
@@ -168,7 +168,7 @@ intersecting.</p>
 interest. To only screen for those, we can set
 <code>targetEndDate = cohort_start_date</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/countCohortOccurrences.html">countCohortOccurrences</a></span><span class="op">(</span><span class="va">cdm</span>, targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>, targetEndDate <span class="op">=</span> <span class="st">"cohort_start_date"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span><span class="va">cdm</span>, targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>, targetEndDate <span class="op">=</span> <span class="st">"cohort_start_date"</span><span class="op">)</span></span>
 <span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;dbplyr_010&gt; [2 x 5]</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.7.1 [unknown@Linux 5.15.0-1035-azure:R 4.3.0/:memory:]</span></span></span>
@@ -183,9 +183,9 @@ which is more than 30 days before the index date of the main cohort,
 <p>The input <code>targetEndDate</code> allows, therefore, to select
 whether to perform the intersection in an “overlapping” or “incident”
 way.</p>
-<p>As for the functions <code><a href="../reference/timeToCohort.html">timeToCohort()</a></code> and
-<code><a href="../reference/dateOfCohort.html">dateOfCohort()</a></code>, they need a specific date in the target
-cohort to calculate time outputs. Therefore, only
+<p>As for the functions <code><a href="../reference/addCohortIntersectTime.html">addCohortIntersectTime()</a></code> and
+<code><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate()</a></code>, they need a specific date in the
+target cohort to calculate time outputs. Therefore, only
 <code>targetDate</code> needs to be specified, which is set to
 “cohort_start_date” by default.</p>
 </div>
