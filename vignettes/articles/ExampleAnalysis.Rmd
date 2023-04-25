@@ -149,16 +149,16 @@ cdm$gi_bleed %>%
 We can also see whether individuals had GI bleeding in some time period relative to their cohort start date using the `flagCohortPresence` function. In this case we'll look at two time periods, before their cohort start date and after.
 ```{r}
 cdm$exposure_cohort <- cdm$exposure_cohort %>% 
-  flagCohortPresence(cdm = cdm,
-                     targetCohortTable = "gi_bleed", 
-                     indexDate = "cohort_start_date",
-                     window = c(-Inf, -1), 
-                     nameStyle = "gi_bleed_history") %>% 
-  flagCohortPresence(cdm = cdm,
-                     targetCohortTable = "gi_bleed", 
-                     indexDate = "cohort_start_date",
-                     window = c(0, Inf), 
-                     nameStyle = "gi_bleed_outcome")
+  addCohortIntersectFlag(cdm = cdm,
+                         targetCohortTable = "gi_bleed", 
+                         indexDate = "cohort_start_date",
+                         window = c(-Inf, -1), 
+                         nameStyle = "gi_bleed_history") %>% 
+  addCohortIntersectFlag(cdm = cdm,
+                         targetCohortTable = "gi_bleed", 
+                         indexDate = "cohort_start_date",
+                         window = c(0, Inf), 
+                         nameStyle = "gi_bleed_outcome")
 ```
 
 ```{r}
@@ -171,10 +171,10 @@ cdm$exposure_cohort %>%
 We can also see time to GI bleeding using the `timeToCohort`
 ```{r}
 cdm$exposure_cohort %>% 
-  timeToCohort(cdm = cdm,
-                     targetCohortTable = "gi_bleed", 
-                     window = c(0, Inf), 
-                     nameStyle = "time_to_event") %>% 
+  addCohortIntersectTime(cdm = cdm,
+                         targetCohortTable = "gi_bleed", 
+                         window = c(0, Inf), 
+                         nameStyle = "time_to_event") %>% 
   mutate(name = case_when(
   cohort_definition_id == 1 ~ "celecoxib",
   cohort_definition_id == 2 ~ "diclofenac",

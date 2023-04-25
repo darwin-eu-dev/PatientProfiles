@@ -64,14 +64,14 @@ cdm$cohort1 %>%
 cdm$cohort2 %>%
   glimpse()                       
 ```
-## Example: flagCohortPresence and countCohortOccurrences functions
-`flagCohortPresence()`: adds a binary column indicate intersection with a cohort in a time frame.
+## Example: addCohortIntersectFlag and addCohortIntersectCount functions
+`addCohortIntersectFlag()`: adds a binary column indicate intersection with a cohort in a time frame.
 
-Suppose cohort2 with definition_id = 1 contains stroke occurrences. If we want to exclude patients from cohort1 who had a stroke event in the last 180 days before entering the cohort, we can use the `flagCohortPresence()` like this:
+Suppose cohort2 with definition_id = 1 contains stroke occurrences. If we want to exclude patients from cohort1 who had a stroke event in the last 180 days before entering the cohort, we can use the `addCohortIntersectFlag()` like this:
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1WashOut <- cdm$cohort1 %>%
-  flagCohortPresence(
+  addCohortIntersectFlag(
     cdm = cdm,
     targetCohortTable = "cohort2",
     window = list(c(-180,-1)),
@@ -83,13 +83,13 @@ cdm$cohort1WashOut %>%
   glimpse()
 ```
 
-`countCohortOccurrences()`: adds a column where it indicates the number of intersections in a certain time window.
+`addCohortIntersectCount()`: adds a column where it indicates the number of intersections in a certain time window.
 
 We can use the function to count the number of occurrences of an event of interest in different time windows before entering the study population. For example, we can look at the number of strokes in the 0-90 day, 90-365 day, and all prior history windows:
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1StrokeCounts <- cdm$cohort1 %>%
-  countCohortOccurrences(cdm = cdm,
+  addCohortIntersectCount(cdm = cdm,
     targetCohortTable = "cohort2",
     window = list(c(-Inf,-366), c(-365,-181), c(-180,-1)),
     targetCohortId = 1
@@ -100,6 +100,7 @@ cdm$cohort1StrokeCounts %>%
 ```
 
 
+<<<<<<< HEAD
 Let us comment on the `targetEndDate` functionality found in `countCohortOccurrences()` and `flagCohortPresence()` functions. In both of them, there are three reference dates which can be specified:
 * `indexDate`: date from the primary cohort table, which contains the individuals for which we want to find the intersection events
 * `targetStartDate`: date from the events table used for the intersection
@@ -172,14 +173,17 @@ As for the functions `timeToCohort()` and `dateOfCohort()`, they need a specific
 
 
 ## Example: timeToCohort function
+=======
+## Example: addCohortIntersectTime function
+>>>>>>> 818553c96ba4e3c5d8b0c218547b8530ead32c25
 
-`timeToCohort()`: adds a new column that indicates the number of days in which the subject intersects with another cohort during a specific time frame. If there are multiple intersections, only one will be computed, either the first or the latest one in the time window ("order" argument).
+`addCohortIntersectTime()`: adds a new column that indicates the number of days in which the subject intersects with another cohort during a specific time frame. If there are multiple intersections, only one will be computed, either the first or the latest one in the time window ("order" argument).
 
 The function can be utilized to calculate the time to the event of interest, such as time until the first stroke after index date. If the patient did not experience the event, the function will return NA.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1TimeTo <- cdm$cohort1 %>%
-  timeToCohort(cdm = cdm,
+  addCohortIntersectTime(cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "first",
@@ -188,16 +192,20 @@ cdm$cohort1TimeTo <- cdm$cohort1 %>%
 cdm$cohort1TimeTo %>%
   glimpse()
 ```
+<<<<<<< HEAD
 
 ## Example: dateOfCohort function
+=======
+## Example: addCohortIntersectDate function
+>>>>>>> 818553c96ba4e3c5d8b0c218547b8530ead32c25
 
-`dateOfCohort()`: appends a column containing the start date of cohorts that are present in a certain window.
+`addCohortIntersectDate()`: appends a column containing the start date of cohorts that are present in a certain window.
 
 This function can be handy in obtaining the date of the next occurrence of a specific event. For instance, suppose cohort1 comprises patients who enrolled when they received their first vaccine dose. We could use this function to obtain the date of their second dose if we have a cohort with vaccine records (e.g. cohort2): 
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1NextEvent <- cdm$cohort1 %>%
-  dateOfCohort(cdm = cdm,
+  addCohortIntersectDate(cdm = cdm,
     targetCohortTable = "cohort2",
     order = "first",
     targetCohortId = 1,
