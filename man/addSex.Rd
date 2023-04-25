@@ -4,7 +4,7 @@
 \alias{addSex}
 \title{Compute the sex of the individuals}
 \usage{
-addSex(x, cdm, sexName = "sex", tablePrefix = NULL)
+addSex(x, cdm, sexName = "sex", temporary = TRUE)
 }
 \arguments{
 \item{x}{Table with individuals in the cdm}
@@ -14,8 +14,8 @@ cdm reference.}
 
 \item{sexName}{name of the new column to be added}
 
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
+\item{temporary}{Whether the resultant table should be temporary or
+permanent.}
 }
 \value{
 table x with the added column with sex information

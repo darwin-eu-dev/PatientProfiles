@@ -9,7 +9,7 @@ addInObservation(
   cdm,
   indexDate = "cohort_start_date",
   name = "in_observation",
-  tablePrefix = NULL
+  temporary = TRUE
 )
 }
 \arguments{
@@ -24,8 +24,8 @@ observation flag.}
 \item{name}{name of the column to hold the result of the enquiry:
 1 if the individual is in observation, 0 if not}
 
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
+\item{temporary}{Whether the resultant table should be temporary or
+permanent.}
 }
 \value{
 cohort table with the added binary column assessing inObservation

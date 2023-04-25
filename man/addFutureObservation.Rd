@@ -10,7 +10,7 @@ addFutureObservation(
   cdm,
   indexDate = "cohort_start_date",
   futureObservationName = "future_observation",
-  tablePrefix = NULL
+  temporary = TRUE
 )
 }
 \arguments{
@@ -24,8 +24,8 @@ observation.}
 
 \item{futureObservationName}{name of the new column to be added}
 
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
+\item{temporary}{Whether the resultant table should be temporary or
+permanent.}
 }
 \value{
 cohort table with added column containing future observation of the
