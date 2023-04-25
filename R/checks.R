@@ -334,13 +334,13 @@ checkCohortNames <- function(x, targetCohortId, name) {
 }
 
 #' @noRd
-checkSnakeCase <- function(name, varname) {
+checkSnakeCase <- function(name) {
  for(n in name) {
    n <- gsub("[a-z]","",n)
    n <- gsub("[0-9]","",n)
    n <- gsub("_","",n)
    if(nchar(n) > 0) {
-     cli::cli_abort(paste0(varname, " is not written in snake case, please check"))
+     cli::cli_abort(paste0(deparse(substitute(name)), " is not written in snake case, please check characters: ",gsub(""," ",n)))
    }
  }
 }

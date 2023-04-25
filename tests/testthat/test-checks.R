@@ -140,14 +140,14 @@ test_that(" test checkWindow in addIntersect" ,{
 })
 
 test_that("test checkSnakeCase", {
-  expect_error(checkSnakeCase("Age", "age"))
-  expect_error(checkSnakeCase("age groups", "agegroups"))
-  expect_error(checkSnakeCase("new-var", "newv"))
-  checkSnakeCase("this_is_snake", "snakevar")
-  expect_error(checkSnakeCase("this_Is_Not_Snake", "snakevar"))
-  expect_error(checkSnakeCase("thsiIsNotSnake", "snakevar"))
-  expect_error(checkSnakeCase("this-is-not-snake", "snakevar"))
-  expect_error(checkSnakeCase("this_is_alm@st_snake", "snakevar"))
+  expect_error(checkSnakeCase("Age"))
+  expect_error(checkSnakeCase("age groups"))
+  expect_error(checkSnakeCase("new-var"))
+  checkSnakeCase("this_is_snake")
+  expect_error(checkSnakeCase("this_Is_Not_Snake"))
+  expect_error(checkSnakeCase("thsiIsNotSnake"))
+  expect_error(checkSnakeCase("this-is-not-snake"))
+  expect_error(checkSnakeCase("this_is_alm@st_snake"))
 
 })
 

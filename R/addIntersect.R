@@ -118,7 +118,7 @@ addIntersect <- function(x,
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
   if(!is.null(idName)) {
-    checkSnakeCase(idName, "id_name")
+    checkSnakeCase(idName)
   }
 
   originalColnames <- colnames(x)
@@ -161,8 +161,6 @@ addIntersect <- function(x,
     dplyr::distinct() %>%
     dplyr::inner_join(overlapTable, by = person_variable)
 
-
-
   if (is.null(tablePrefix)) {
     result <- CDMConnector::computeQuery(result)
   } else {
@@ -177,8 +175,7 @@ addIntersect <- function(x,
 
   for (i in c(1:nrow(windowTbl))) {
     result_w <- result
-    if(overlapTable %>% dplyr::tally() %>% dplyr::pull() == 0)
-    {
+    if(result %>% dplyr::tally() %>% dplyr::pull() == 0) {
       result_w <- x %>%
         dplyr::select(
           dplyr::all_of(person_variable),
@@ -186,7 +183,12 @@ addIntersect <- function(x,
         ) %>%
         dplyr::distinct() %>%
         dplyr::full_join(overlapTable, by = person_variable) %>%
-        dplyr::mutate(indicator = 0)} else {
+        dplyr::mutate(indicator = 0)
+      if(overlapTable %>% dplyr::tally() %>% dplyr::pull() != 0) {
+        result_w <- result_w %>%
+          dplyr::filter(!is.na(id))
+      }
+      } else {
       if (!is.infinite(windowTbl$upper[i])) {
         result_w <- result_w %>%
           dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
@@ -211,26 +213,26 @@ addIntersect <- function(x,
     }
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
-      resultCF <- result_w %>%
-        dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
-        dplyr::summarise(count = sum(.data$indicator, na.rm = TRUE), .groups = "drop") %>%
-        dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
-        dplyr::select(-"id") %>%
-        dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
-      if ("flag" %in% value) {
-        resultCF <- resultCF %>% dplyr::mutate(flag = dplyr::if_else(.data$count > 0, 1, 0))
-      }
-      if (!("count" %in% value)) {
-        resultCF <- dplyr::select(resultCF, -"count")
-      }
-      if (is.null(tablePrefix)) {
-        resultCF <- CDMConnector::computeQuery(resultCF)
-      } else {
-        resultCF <- CDMConnector::computeQuery(
-          resultCF, paste0(tablePrefix, "_count_flag_", i), FALSE,
-          attr(cdm, "write_schema"), TRUE
-        )
-      }
+        resultCF <- result_w %>%
+          dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
+          dplyr::summarise(count = sum(.data$indicator, na.rm = TRUE), .groups = "drop") %>%
+          dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
+          dplyr::select(-"id") %>%
+          dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
+        if ("flag" %in% value) {
+          resultCF <- resultCF %>% dplyr::mutate(flag = dplyr::if_else(.data$count > 0, 1, 0))
+        }
+        if (!("count" %in% value)) {
+          resultCF <- dplyr::select(resultCF, -"count")
+        }
+        if (is.null(tablePrefix)) {
+          resultCF <- CDMConnector::computeQuery(resultCF)
+        } else {
+          resultCF <- CDMConnector::computeQuery(
+            resultCF, paste0(tablePrefix, "_count_flag_", i), FALSE,
+            attr(cdm, "write_schema"), TRUE
+          )
+        }
       if (i == 1) {
         resultCountFlag <- resultCF
       } else {

@@ -93,10 +93,10 @@ addDemographics <- function(x,
   }
 
   # check variable names
-  if(age) {checkSnakeCase(ageName, "age")}
-  if(sex) {checkSnakeCase(sexName, "sex")}
-  if(priorHistory) {checkSnakeCase(priorHistoryName, "priorHistory")}
-  if(futureObservation) {checkSnakeCase(futureObservationName, "futureObservation")}
+  if(age) {checkSnakeCase(ageName)}
+  if(sex) {checkSnakeCase(sexName)}
+  if(priorHistory) {checkSnakeCase(priorHistoryName)}
+  if(futureObservation) {checkSnakeCase(futureObservationName)}
 
   # Start code
   startNames <- names(x)

@@ -1046,7 +1046,7 @@ test_that("overlapTable is empty, check return columns", {
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
-    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    subject_id = c(3, 3, 3, 3, 3, 3, 3),
     cohort_start_date = as.Date(
       c(
         "2020-01-15",
@@ -1073,26 +1073,49 @@ test_that("overlapTable is empty, check return columns", {
 
   cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
-
   result <- cdm$cohort1 %>%
-    addIntersect(
-      cdm = cdm, tableName = "cohort2", value = c("date", "time", "count", "flag"),
-      filterVariable = "cohort_definition_id",
-      filterId = 2
+    countCohortOccurrences(
+      cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(c("count_na_0_to_inf", "flag_na_0_to_inf", "time_na_0_to_inf",
-                    "date_na_0_to_inf") %in% colnames(result)))
+  expect_true("cohort_1_0_to_inf" %in% colnames(result))
 
-  expect_true(all(result$count_na_0_to_inf == 0))
+  expect_true(all(result$cohort_1_0_to_inf == 0))
 
-  expect_true(all(result$flag_na_0_to_inf == 0))
+  result <- cdm$cohort1 %>%
+    flagCohortPresence(
+      cdm = cdm, targetCohortTable = "cohort2"
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
 
-  expect_true(all(is.na(result$time_na_0_to_inf)))
+  expect_true("cohort_1_0_to_inf" %in% colnames(result))
 
-  expect_true(all(is.na(result$date_na_0_to_inf)))
+  expect_true(all(result$cohort_1_0_to_inf == 0))
+
+  result <- cdm$cohort1 %>%
+    dateOfCohort(
+      cdm = cdm, targetCohortTable = "cohort2"
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true("cohort_1_0_to_inf" %in% colnames(result))
+
+  expect_true(all(is.na(result$cohort_1_0_to_inf)))
+
+  result <- cdm$cohort1 %>%
+    timeToCohort(
+      cdm = cdm, targetCohortTable = "cohort2"
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true("cohort_1_0_to_inf" %in% colnames(result))
+
+  expect_true(all(is.na(result$cohort_1_0_to_inf)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
