@@ -6,8 +6,8 @@
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
-#' @param tablePrefix The stem for the permanent tables that will be created. If
-#' NULL, temporary tables will be used throughout.
+#' @param temporary Whether the resultant table should be temporary or
+#' permanent.
 #'
 #' @return tibble with the categorical variable added.
 #'
@@ -54,7 +54,7 @@ addCategories <- function(x,
                           cdm,
                           variable,
                           categories,
-                          tablePrefix = NULL) {
+                          temporary = TRUE) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
     cli::cli_abort("x is not a table")
   }
@@ -66,7 +66,7 @@ addCategories <- function(x,
     categories,
     types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
-  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  checkmate::assertLogical(temporary, len = 1, any.missing = FALSE)
 
 
   for (i in c(1:length(categories))) {
@@ -95,6 +95,7 @@ addCategories <- function(x,
     categoryTibble[[nam[k]]] <- checkCategory(categories[[k]])
   }
 
+  firstTempTable <- getOption("dbplyr_table_name", 0) + 1
   for (k in seq_along(categories)) {
     categoryTibbleK <- categoryTibble[[k]]
     name <- names(categoryTibble)[k]
@@ -116,20 +117,19 @@ addCategories <- function(x,
     }
     x <- dplyr::select(x, -"variable")
 
-    if (!is.null(tablePrefix)) {
-      x <- CDMConnector::computeQuery(
-        x,
-        name = paste0(
-          tablePrefix,
-          "_categories_added"
-        ),
-        temporary = FALSE,
+    x <- x %>%
+      CDMConnector::computeQuery(
+        name = CDMConnector:::uniqueTableName(),
+        temporary = temporary,
         schema = attr(cdm, "write_schema"),
         overwrite = TRUE
       )
-    } else {
-      x <- CDMConnector::computeQuery(x)
-    }
+  }
+  lastTempTable <- getOption("dbplyr_table_name", 0) - 1
+  if (firstTempTable <= lastTempTable) {
+    CDMConnector::dropTable(
+      cdm, sprintf("dbplyr_%03i", firstTempTable:lastTempTable)
+    )
   }
 
   return(x)

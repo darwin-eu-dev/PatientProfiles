@@ -26,8 +26,8 @@
 #' indexDate and the end of the current observation period will be
 #' calculated
 #' @param futureObservationName Future observation variable name
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
+#' @param temporary Whether the resultant table should be temporary or
+#' permanent.
 #'
 #' @return cohort table with the added demographic information columns
 #' @export
@@ -55,7 +55,7 @@ addDemographics <- function(x,
                             priorHistoryName = "prior_history",
                             futureObservation = TRUE,
                             futureObservationName = "future_observation",
-                            tablePrefix = NULL) {
+                            temporary = TRUE) {
   ## change ageDefaultMonth, ageDefaultDay to integer
 
   if (typeof(ageDefaultMonth) == "character") {
@@ -86,7 +86,7 @@ addDemographics <- function(x,
   checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
   checkmate::assertLogical(priorHistory, any.missing = FALSE, len = 1)
   checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
-  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  checkmate::assertLogical(temporary, len = 1, any.missing = FALSE)
   checkVariableInX(indexDate, x, !(age | priorHistory | futureObservation))
   if (!(age | sex | priorHistory | futureObservation)) {
     cli::cli_abort("age, sex, priorHistory, futureObservation can not be FALSE")
@@ -239,35 +239,25 @@ addDemographics <- function(x,
       ))
     )
 
-  if (is.null(tablePrefix)) {
-    x <- x %>%
-      CDMConnector::computeQuery()
-  } else {
-    x <- x %>%
-      CDMConnector::computeQuery(
-        name = paste0(
-          tablePrefix,
-          "_demographics_added"
-        ),
-        temporary = FALSE,
-        schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
-      )
-  }
+  x <- x %>%
+    CDMConnector::computeQuery(
+      name = CDMConnector:::uniqueTableName(),
+      temporary = temporary,
+      schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 
   if (!is.null(ageGroup)) {
     x <- addCategories(x,
       cdm = cdm,
       variable = ageName,
       categories = ageGroup,
-      tablePrefix = tablePrefix
+      temporary = temporary
     )
   }
 
   return(x)
 }
-
-
 
 ageQuery <- function(indexDate, name) {
   return(glue::glue('floor(dbplyr::sql(

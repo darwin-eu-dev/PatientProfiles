@@ -21,7 +21,7 @@ addDemographics(
   priorHistoryName = "prior_history",
   futureObservation = TRUE,
   futureObservationName = "future_observation",
-  tablePrefix = NULL
+  temporary = TRUE
 )
 }
 \arguments{
@@ -67,8 +67,8 @@ calculated}
 
 \item{futureObservationName}{Future observation variable name}
 
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
+\item{temporary}{Whether the resultant table should be temporary or
+permanent.}
 }
 \value{
 cohort table with the added demographic information columns
