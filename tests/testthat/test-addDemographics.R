@@ -528,12 +528,12 @@ test_that("temp and permanent tables", {
       ageGroup = list(c(0, 100)),
       sex = TRUE,
       priorHistory = TRUE,
-      tablePrefix = "my_perm"
+      temporary = TRUE
     )
   # permanent table
   expect_true(any(stringr::str_starts(
     CDMConnector::listTables(attr(cdm, "dbcon")),
-    "my_perm_"
+    "dbplyr_"
   )))
   # no temp tables created by dbplyr
   expect_true(!any(stringr::str_starts(
