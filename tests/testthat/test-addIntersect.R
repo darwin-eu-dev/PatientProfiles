@@ -1085,7 +1085,7 @@ test_that("overlapTable is empty, check return columns", {
   expect_true(all(result$cohort_1_0_to_inf == 0))
 
   result <- cdm$cohort1 %>%
-    flagCohortPresence(
+    addCohortIntersectFlag(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
@@ -1096,7 +1096,7 @@ test_that("overlapTable is empty, check return columns", {
   expect_true(all(result$cohort_1_0_to_inf == 0))
 
   result <- cdm$cohort1 %>%
-    dateOfCohort(
+    addCohortIntersectDate(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
@@ -1107,7 +1107,7 @@ test_that("overlapTable is empty, check return columns", {
   expect_true(all(is.na(result$cohort_1_0_to_inf)))
 
   result <- cdm$cohort1 %>%
-    timeToCohort(
+    addCohortIntersectTime(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
