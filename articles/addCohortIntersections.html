@@ -260,6 +260,68 @@ presented) will have the format cohort_“cohort_definition_id”_ “time
 window”. If the window number is negative, a “m” will be added in front
 to indicate it and no sign will be added to positive numbers.</p>
 </div>
+<div class="section level2">
+<h2 id="example-addcohortintersect-function">Example: addCohortIntersect function<a class="anchor" aria-label="anchor" href="#example-addcohortintersect-function"></a>
+</h2>
+<p><code><a href="../reference/addCohortIntersect.html">addCohortIntersect()</a></code>: Compute the intersect with a
+target cohort, you can compute the number of occurrences, a flag of
+presence, a certain date and/or the time difference.</p>
+<p>We can use the function to compute all the intersect information with
+a target cohort. By default it will return output from
+<code><a href="../reference/countCohortOccurrences.html">countCohortOccurrences()</a></code>, <code><a href="../reference/dateOfCohort.html">dateOfCohort()</a></code>,
+<code><a href="../reference/flagCohortPresence.html">flagCohortPresence()</a></code> and <code><a href="../reference/timeToCohort.html">timeToCohort()</a></code> in a
+time frame. Use this function if you want to append all the intersection
+information with this function. For information on what these function
+does, you can read above example.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/addCohortIntersect.html">addCohortIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
+<span>    order <span class="op">=</span> <span class="st">"first"</span>,</span>
+<span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="cn">Inf</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Rows: ??</span></span>
+<span><span class="co">## Columns: 8</span></span>
+<span><span class="co">## Database: DuckDB 0.7.1 [unknown@Linux 5.15.0-1035-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 1</span></span>
+<span><span class="co">## $ subject_id              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 3, 2</span></span>
+<span><span class="co">## $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
+<span><span class="co">## $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
+<span><span class="co">## $ count_cohort_1_1_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0</span></span>
+<span><span class="co">## $ flag_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0</span></span>
+<span><span class="co">## $ date_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-05-25, NA, NA, NA</span></span>
+<span><span class="co">## $ time_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 145, NA, NA, NA</span></span></code></pre>
+<p>We can also control which columns to append to your data by using the
+flag, count, date and time options in the function, if we do not want
+everything. For example if we only want the cohort count and flag we can
+use below example.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/addCohortIntersect.html">addCohortIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
+<span>    order <span class="op">=</span> <span class="st">"first"</span>,</span>
+<span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="cn">Inf</span><span class="op">)</span>,</span>
+<span>    flag <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    date <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    time <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Rows: ??</span></span>
+<span><span class="co">## Columns: 6</span></span>
+<span><span class="co">## Database: DuckDB 0.7.1 [unknown@Linux 5.15.0-1035-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 1</span></span>
+<span><span class="co">## $ subject_id              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 3, 2</span></span>
+<span><span class="co">## $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
+<span><span class="co">## $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
+<span><span class="co">## $ count_cohort_1_1_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0</span></span>
+<span><span class="co">## $ flag_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0</span></span></code></pre>
+</div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>
