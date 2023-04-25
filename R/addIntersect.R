@@ -388,7 +388,7 @@ addIntersect <- function(x,
       x <- x %>%
         dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
         dplyr::left_join(resultDateTimeOtherX,
-          by = dplyr::all_of(c(person_variable, indexDate))
+          by = c(person_variable, indexDate)
         )
     }
 

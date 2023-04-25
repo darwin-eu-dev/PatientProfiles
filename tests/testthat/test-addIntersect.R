@@ -1074,7 +1074,7 @@ test_that("overlapTable is empty, check return columns", {
   cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>%
-    countCohortOccurrences(
+    addCohortIntersectCount(
       cdm = cdm, targetCohortTable = "cohort2"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
