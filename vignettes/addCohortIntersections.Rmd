@@ -138,3 +138,41 @@ cdm$cohort1NextEvent %>%
 
 
 Please note that the new columns added to the table (for all function presented) will have the format cohort_"cohort_definition_id"_ "time window". If the window number is negative, a "m" will be added in front to indicate it and no sign will be added to positive numbers.
+
+## Example: addCohortIntersect function
+
+`addCohortIntersect()`: Compute the intersect with a target cohort, you can compute the number of occurrences, a flag of presence, a certain date and/or the time difference.
+
+We can use the function to compute all the intersect information with a target cohort. By default it will return output from `countCohortOccurrences()`, `dateOfCohort()`, `flagCohortPresence()` and `timeToCohort()` in a time frame. Use this function if you want to append all the intersection information with this function. For information on what these function does, you can read above example.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
+  addCohortIntersect(cdm = cdm,
+    targetCohortTable = "cohort2",
+    order = "first",
+    targetCohortId = 1,
+    window = c(1,Inf)
+  )
+cdm$cohort1CohortIntersect %>%
+  glimpse()
+```
+
+We can also control which columns to append to your data by using the flag, count, date and time options in the function, if we do not want everything. For example if we only want the cohort count and flag we can use below example.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
+  addCohortIntersect(cdm = cdm,
+    targetCohortTable = "cohort2",
+    order = "first",
+    targetCohortId = 1,
+    window = c(1,Inf),
+    flag = TRUE,
+    count = TRUE,
+    date = FALSE,
+    time = FALSE
+  )
+cdm$cohort1CohortIntersect %>%
+  glimpse()
+```
+
+
