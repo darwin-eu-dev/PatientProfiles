@@ -99,9 +99,7 @@ cdm$cohort1StrokeCounts %>%
   glimpse()
 ```
 
-
-<<<<<<< HEAD
-Let us comment on the `targetEndDate` functionality found in `countCohortOccurrences()` and `flagCohortPresence()` functions. In both of them, there are three reference dates which can be specified:
+Let us comment on the `targetEndDate` functionality found in `addCohortIntersectCount()` and `addCohortIntersectFlag()` functions. In both of them, there are three reference dates which can be specified:
 * `indexDate`: date from the primary cohort table, which contains the individuals for which we want to find the intersection events
 * `targetStartDate`: date from the events table used for the intersection
 * `targetEndDate`: date from the events table used for the intersection
@@ -147,7 +145,7 @@ By default, `indexDate = cohort_start_date`, `targetStartDate = cohort_start_dat
     cohort2 = cohort2
   )
   
-  cdm$cohort1 <- cdm$cohort1 %>% countCohortOccurrences(cdm, targetCohortTable = "cohort2", window = list(c(-30,-1)))
+  cdm$cohort1 <- cdm$cohort1 %>% addCohortIntersectCount(cdm, targetCohortTable = "cohort2", window = list(c(-30,-1)))
   cdm$cohort1
 
 ```
@@ -160,7 +158,7 @@ However, we could be interested in events starting in the window of interest. To
 
 
 ```{r, message= FALSE, warning=FALSE}
-  cdm$cohort1 <- cdm$cohort1 %>% countCohortOccurrences(cdm, targetCohortTable = "cohort2", window = list(c(-30,-1)), targetEndDate = "cohort_start_date")
+  cdm$cohort1 <- cdm$cohort1 %>% addCohortIntersectCount(cdm, targetCohortTable = "cohort2", window = list(c(-30,-1)), targetEndDate = "cohort_start_date")
   cdm$cohort1
                           
 ```
@@ -169,13 +167,10 @@ Now we do not pick the event which starts on `2010-01-25`, which is more than 30
 
 The input `targetEndDate` allows, therefore, to select whether to perform the intersection in an "overlapping" or "incident" way.
 
-As for the functions `timeToCohort()` and `dateOfCohort()`, they need a specific date in the target cohort to calculate time outputs. Therefore, only `targetDate` needs to be specified, which is set to "cohort_start_date" by default.
+As for the functions `addCohortIntersectTime()` and `addCohortIntersectDate()`, they need a specific date in the target cohort to calculate time outputs. Therefore, only `targetDate` needs to be specified, which is set to "cohort_start_date" by default.
 
 
-## Example: timeToCohort function
-=======
 ## Example: addCohortIntersectTime function
->>>>>>> 818553c96ba4e3c5d8b0c218547b8530ead32c25
 
 `addCohortIntersectTime()`: adds a new column that indicates the number of days in which the subject intersects with another cohort during a specific time frame. If there are multiple intersections, only one will be computed, either the first or the latest one in the time window ("order" argument).
 
@@ -192,12 +187,9 @@ cdm$cohort1TimeTo <- cdm$cohort1 %>%
 cdm$cohort1TimeTo %>%
   glimpse()
 ```
-<<<<<<< HEAD
 
-## Example: dateOfCohort function
-=======
+
 ## Example: addCohortIntersectDate function
->>>>>>> 818553c96ba4e3c5d8b0c218547b8530ead32c25
 
 `addCohortIntersectDate()`: appends a column containing the start date of cohorts that are present in a certain window.
 
