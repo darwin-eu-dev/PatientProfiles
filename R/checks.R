@@ -303,7 +303,8 @@ checkCohortNames <- function(x, targetCohortId, name) {
   if (!("GeneratedCohortSet" %in% class(x))) {
     cli::cli_abort(
       "cdm[[targetCohortTable]]) must be a 'GeneratedCohortSet'. Please use a
-      generateCohortSet function or create it with newGeneratedCohortSet()."
+      generateCohortSet function or create it with
+      CDMConnector::newGeneratedCohortSet()."
     )
   }
   cohort <- CDMConnector::cohortSet(x)
