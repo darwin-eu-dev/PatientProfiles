@@ -301,7 +301,10 @@ checkValue <- function(value, x, name) {
 #' @noRd
 checkCohortNames <- function(x, targetCohortId, name) {
   if (!("GeneratedCohortSet" %in% class(x))) {
-    cli::cli_abort("cdm[[targetCohortTable]]) is not a valid cohort object")
+    cli::cli_abort(
+      "cdm[[targetCohortTable]]) must be a 'GeneratedCohortSet'. Please use a
+      generateCohortSet function or create it with newGeneratedCohortSet()."
+    )
   }
   cohort <- CDMConnector::cohortSet(x)
   filterVariable <- "cohort_definition_id"
