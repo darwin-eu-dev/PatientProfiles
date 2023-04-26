@@ -11,10 +11,10 @@ reference:
 - contents:
   - matches("addDemographics")
 - subtitle: Identify intersections
-  desc: Add variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
+  desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
   - matches("addCohortIntersectFlag|addCohortIntersectCount|addCohortIntersectTime|addCohortIntersectDate")
-  desc: Add variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
+  desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
   - matches("addCohortIntersect")
 - subtitle: Other functions
