@@ -45,6 +45,13 @@ test_that("test checkCategory with length 1 ", {
       dplyr::collect()
     expect_true(a[a$subject_id==2,]$age_group == "70 to 70")
 
+# check invalid groups
+
+    categories <- list("age_group" = list(c(69, 0), c(70)))
+
+    expect_error(cdm$cohort1 %>% addAge(cdm, indexDate = "cohort_start_date") %>%
+      addCategories(cdm, "age", categories))
+
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
@@ -116,8 +123,35 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   )
   cdm <- mockPatientProfiles(cohort1 = cohort1)
 
-  expect_warning(addInObservation(cdm$cohort1,cdm, name="flag"))
+  expect_warning(x <- addInObservation(cdm$cohort1,cdm, name="flag"))
+  expect_true(all(c("flag", "flag_1") %in% colnames(x)))
   expect_true(all(c("flag", "flag_new") %in% colnames(addInObservation(cdm$cohort1,cdm, name="flag_new"))))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1),
+    subject_id = c(1, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15"
+      )
+    ),
+    flag = c(0,0),
+    flag_1 = c(0,0)
+  )
+  cdm <- mockPatientProfiles(cohort1 = cohort1)
+
+  expect_warning(x <- addInObservation(cdm$cohort1,cdm, name="flag"))
+  expect_true(all(c("flag", "flag_1", "flag_2") %in% colnames(x)))
+  expect_true(all(c("flag", "flag_1", "flag_new") %in% colnames(addInObservation(cdm$cohort1,cdm, name="flag_new"))))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
@@ -147,3 +181,65 @@ test_that("check window", {
   expect_true(all(windowName$upper == c(9, 20, 35, 10)))
   expect_true(all(windowName$window_name == c("short", "10_to_20", "20_to_35", "long")))
 })
+
+test_that("checkAgeGroup", {
+
+  AgeGroup <- list(list(c(0, 69), c(70)))
+
+  expect_true(all(checkAgeGroup(AgeGroup)$age_group_1[[1]] == c(0,69)))
+
+  expect_true(all(checkAgeGroup(AgeGroup)$age_group_1[[2]] == c(70)))
+
+  AgeGroup <- list("age_group" = list(c(0, 40), c(41, 120)),list(c(0,20)))
+
+  expect_true(all(checkAgeGroup(AgeGroup)$age_group_2[[1]] == c(0,20)))
+
+})
+
+test_that("checkNameStyle",{
+
+
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1),
+    subject_id = c(1, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-15"
+      )
+    )
+  )
+
+  cohort2 <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1),
+    subject_id = c(1, 1, 2),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2020-01-15",
+        "2020-01-25",
+        "2020-01-26"
+      )
+    ),
+  )
+
+  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  expect_true(all(c("count_all","flag_all") %in% colnames(cdm$cohort1 %>% addIntersect(cdm = cdm, tableName = "cohort2",
+  value = c("flag", "count"),nameStyle = "{value}_{id_name}"))))
+
+
+})
+
