@@ -18,7 +18,7 @@ reference:
 - subtitle: Add multiple values from a cohort intersection
   desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
-  - matches("addCohortIntersect")
+  - "addCohortIntersect"
 - subtitle: Other functions
   desc: Helper functions
 - contents:
