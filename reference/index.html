@@ -80,13 +80,7 @@ at a certain date</dd>
           <code><a href="addSex.html">addSex()</a></code> 
         </dt>
         <dd>Compute the sex of the individuals</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="add-multiple-patient-characteristics-simultaneously">Add multiple patient characteristics simultaneously<a class="anchor" aria-label="anchor" href="#add-multiple-patient-characteristics-simultaneously"></a></h3>
-      <p class="section-desc"></p><p>Add a set of patient characteristics to a table in the OMOP Common Data Model</p>
-
-      
-    </div><div id="" class="section level2">
+      </dl></div><div id="" class="section level2">
       
       
       
@@ -98,11 +92,38 @@ at a certain date</dd>
         <dd>Compute demographic characteristics at a certain date</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="identify-cohort-intersections">Identify cohort intersections<a class="anchor" aria-label="anchor" href="#identify-cohort-intersections"></a></h3>
-      <p class="section-desc"></p><p>Add variables indicating the intersection between one set of cohorts and another.</p>
+      <h3 id="identify-intersections">Identify intersections<a class="anchor" aria-label="anchor" href="#identify-intersections"></a></h3>
+      <p class="section-desc"></p><p>Add a variable indicating the intersection between a table in the OMOP Common Data Model and a cohort table.</p>
 
       
     </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="addCohortIntersectCount.html">addCohortIntersectCount()</a></code> 
+        </dt>
+        <dd>It creates columns to indicate number of occurrences of intersection with a
+cohort</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addCohortIntersectDate.html">addCohortIntersectDate()</a></code> 
+        </dt>
+        <dd>Date of cohorts that are present in a certain window</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addCohortIntersectFlag.html">addCohortIntersectFlag()</a></code> 
+        </dt>
+        <dd>It creates columns to indicate the presence of cohorts</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addCohortIntersectTime.html">addCohortIntersectTime()</a></code> 
+        </dt>
+        <dd>It creates columns to indicate the time between the current table and a
+target cohort</dd>
+      </dl></div><div id="" class="section level2">
       
       
       
