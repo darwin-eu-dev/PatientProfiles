@@ -208,7 +208,7 @@ cdm$cohort1 %>%
 
 ```
 
-#### Add the time instead of the date
+#### Add the number of days instead of the date
 
 ```{r, echo = FALSE}
 cdm <- mockPatientProfiles()
@@ -218,7 +218,7 @@ cdm$cohort1 %>%
   glimpse()
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  addCohortIntersectTime(
+  addCohortIntersectDays(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -275,7 +275,7 @@ cdm$cohort1  <- cdm$cohort1 %>%
     targetCohortId = 1,
     count = TRUE,
     flag = TRUE,
-    time = TRUE,
+    days = TRUE,
     date = TRUE,
     window = list("any_time" = c(-Inf, Inf))
   ) 

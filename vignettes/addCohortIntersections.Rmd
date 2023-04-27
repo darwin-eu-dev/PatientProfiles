@@ -167,18 +167,18 @@ Now we do not pick the event which starts on `2010-01-25`, which is more than 30
 
 The input `targetEndDate` allows, therefore, to select whether to perform the intersection in an "overlapping" or "incident" way.
 
-As for the functions `addCohortIntersectTime()` and `addCohortIntersectDate()`, they need a specific date in the target cohort to calculate time outputs. Therefore, only `targetDate` needs to be specified, which is set to "cohort_start_date" by default.
+As for the functions `addCohortIntersectDays()` and `addCohortIntersectDate()`, they need a specific date in the target cohort to calculate time outputs. Therefore, only `targetDate` needs to be specified, which is set to "cohort_start_date" by default.
 
 
-## Example: addCohortIntersectTime function
+## Example: addCohortIntersectDays function
 
-`addCohortIntersectTime()`: adds a new column that indicates the number of days in which the subject intersects with another cohort during a specific time frame. If there are multiple intersections, only one will be computed, either the first or the latest one in the time window ("order" argument).
+`addCohortIntersectDays()`: adds a new column that indicates the number of days in which the subject intersects with another cohort during a specific time frame. If there are multiple intersections, only one will be computed, either the first or the latest one in the time window ("order" argument).
 
 The function can be utilized to calculate the time to the event of interest, such as time until the first stroke after index date. If the patient did not experience the event, the function will return NA.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1TimeTo <- cdm$cohort1 %>%
-  addCohortIntersectTime(cdm = cdm,
+  addCohortIntersectDays(cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "first",
@@ -213,9 +213,9 @@ Please note that the new columns added to the table (for all function presented)
 
 ## Example: addCohortIntersect function
 
-`addCohortIntersect()`: Compute the intersect with a target cohort, you can compute the number of occurrences, a flag of presence, a certain date and/or the time difference.
+`addCohortIntersect()`: Compute the intersect with a target cohort, you can compute the number of occurrences, a flag of presence, a certain date and/or the days difference.
 
-We can use the function to compute all the intersect information with a target cohort. By default it will return output from `countCohortOccurrences()`, `dateOfCohort()`, `flagCohortPresence()` and `timeToCohort()` in a time frame. Use this function if you want to append all the intersection information with this function. For information on what these function does, you can read above example.
+We can use the function to compute all the intersect information with a target cohort. By default it will return output from `addCohortIntersectCount()`, `addCohortIntersectFlag()`, `addCohortIntersectDate()` and `addCohortIntersectDays()` in a time frame. Use this function if you want to append all the intersection information with this function. For information on what these function does, you can read above example.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
@@ -241,7 +241,7 @@ cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
     flag = TRUE,
     count = TRUE,
     date = FALSE,
-    time = FALSE
+    days = FALSE
   )
 cdm$cohort1CohortIntersect %>%
   glimpse()

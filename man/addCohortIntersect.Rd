@@ -18,7 +18,7 @@ addCohortIntersect(
   flag = TRUE,
   count = TRUE,
   date = TRUE,
-  time = TRUE,
+  days = TRUE,
   nameStyle = "{value}_{cohort_name}_{window_name}",
   tablePrefix = NULL
 )
@@ -55,8 +55,8 @@ for this intersection}
 \item{date}{TRUE or FALSE. If TRUE, date will be calculated for this
 intersection}
 
-\item{time}{TRUE or FALSE. If TRUE, time differebce will be calculated for
-this intersection}
+\item{days}{TRUE or FALSE. If TRUE, time difference in days will be
+calculated for this intersection}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}

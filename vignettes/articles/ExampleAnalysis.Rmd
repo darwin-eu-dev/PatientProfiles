@@ -171,7 +171,7 @@ cdm$exposure_cohort %>%
 We can also see time to GI bleeding using the `timeToCohort`
 ```{r}
 cdm$exposure_cohort %>% 
-  addCohortIntersectTime(cdm = cdm,
+  addCohortIntersectDays(cdm = cdm,
                          targetCohortTable = "gi_bleed", 
                          window = c(0, Inf), 
                          nameStyle = "time_to_event") %>% 

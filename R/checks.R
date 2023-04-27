@@ -281,9 +281,9 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
 checkValue <- function(value, x, name) {
   checkmate::assertCharacter(value, any.missing = FALSE, min.len = 1)
   checkmate::assertTRUE(
-    all(value %in% c("flag", "count", "date", "time", colnames(x)))
+    all(value %in% c("flag", "count", "date", "days", colnames(x)))
   )
-  valueOptions <- c("flag", "count", "date", "time")
+  valueOptions <- c("flag", "count", "date", "days")
   valueOptions <- valueOptions[valueOptions %in% colnames(x)]
   if (length(valueOptions) > 0) {
     cli::cli_warn(paste0(
@@ -295,7 +295,7 @@ checkValue <- function(value, x, name) {
       obtain that column please rename and run again."
     ))
   }
-  return(value[!(value %in% c("flag", "count", "date", "time"))])
+  return(value[!(value %in% c("flag", "count", "date", "days"))])
 }
 
 #' @noRd
