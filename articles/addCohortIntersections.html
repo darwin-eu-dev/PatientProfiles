@@ -192,8 +192,8 @@ population. For example, we can look at the number of strokes in the
 <span><span class="co">## $ subject_id            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 3, 2</span></span>
 <span><span class="co">## $ cohort_start_date     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">## $ cohort_end_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">## $ cohort_1_minf_to_m366 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0</span></span>
 <span><span class="co">## $ cohort_1_m180_to_m1   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 2, 0, 0</span></span>
+<span><span class="co">## $ cohort_1_minf_to_m366 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0</span></span>
 <span><span class="co">## $ cohort_1_m365_to_m181 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0</span></span></code></pre>
 <p>Let us comment on the <code>targetEndDate</code> functionality found
 in <code><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount()</a></code> and
@@ -287,16 +287,16 @@ which is more than 30 days before the index date of the main cohort,
 <p>The input <code>targetEndDate</code> allows, therefore, to select
 whether to perform the intersection in an “overlapping” or “incident”
 way.</p>
-<p>As for the functions <code><a href="../reference/addCohortIntersectTime.html">addCohortIntersectTime()</a></code> and
+<p>As for the functions <code><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays()</a></code> and
 <code><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate()</a></code>, they need a specific date in the
 target cohort to calculate time outputs. Therefore, only
 <code>targetDate</code> needs to be specified, which is set to
 “cohort_start_date” by default.</p>
 </div>
 <div class="section level2">
-<h2 id="example-addcohortintersecttime-function">Example: addCohortIntersectTime function<a class="anchor" aria-label="anchor" href="#example-addcohortintersecttime-function"></a>
+<h2 id="example-addcohortintersectdays-function">Example: addCohortIntersectDays function<a class="anchor" aria-label="anchor" href="#example-addcohortintersectdays-function"></a>
 </h2>
-<p><code><a href="../reference/addCohortIntersectTime.html">addCohortIntersectTime()</a></code>: adds a new column that
+<p><code><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays()</a></code>: adds a new column that
 indicates the number of days in which the subject intersects with
 another cohort during a specific time frame. If there are multiple
 intersections, only one will be computed, either the first or the latest
@@ -306,7 +306,7 @@ interest, such as time until the first stroke after index date. If the
 patient did not experience the event, the function will return NA.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1TimeTo</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addCohortIntersectTime.html">addCohortIntersectTime</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>  <span class="fu"><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"first"</span>,</span>
@@ -364,14 +364,16 @@ to indicate it and no sign will be added to positive numbers.</p>
 </h2>
 <p><code><a href="../reference/addCohortIntersect.html">addCohortIntersect()</a></code>: Compute the intersect with a
 target cohort, you can compute the number of occurrences, a flag of
-presence, a certain date and/or the time difference.</p>
+presence, a certain date and/or the days difference.</p>
 <p>We can use the function to compute all the intersect information with
 a target cohort. By default it will return output from
-<code>countCohortOccurrences()</code>, <code>dateOfCohort()</code>,
-<code>flagCohortPresence()</code> and <code>timeToCohort()</code> in a
-time frame. Use this function if you want to append all the intersection
-information with this function. For information on what these function
-does, you can read above example.</p>
+<code><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount()</a></code>,
+<code><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag()</a></code>,
+<code><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate()</a></code> and
+<code><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays()</a></code> in a time frame. Use this function
+if you want to append all the intersection information with this
+function. For information on what these function does, you can read
+above example.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersect.html">addCohortIntersect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
@@ -393,7 +395,7 @@ does, you can read above example.</p>
 <span><span class="co">## $ count_cohort_1_1_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 1</span></span>
 <span><span class="co">## $ flag_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1</span></span>
 <span><span class="co">## $ date_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-01-25, 2013-01-03</span></span>
-<span><span class="co">## $ time_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> -35, 308</span></span></code></pre>
+<span><span class="co">## $ days_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> -35, 308</span></span></code></pre>
 <p>We can also control which columns to append to your data by using the
 flag, count, date and time options in the function, if we do not want
 everything. For example if we only want the cohort count and flag we can
@@ -408,7 +410,7 @@ use below example.</p>
 <span>    flag <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    date <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    time <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    days <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>

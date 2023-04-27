@@ -356,7 +356,7 @@
 <span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;date&gt; 2020-05-25, 2020-05-25, 2020-01-01, NA</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="add-the-time-instead-of-the-date">Add the time instead of the date<a class="anchor" aria-label="anchor" href="#add-the-time-instead-of-the-date"></a>
+<h4 id="add-the-number-of-days-instead-of-the-date">Add the number of days instead of the date<a class="anchor" aria-label="anchor" href="#add-the-number-of-days-instead-of-the-date"></a>
 </h4>
 <p>Instead of returning a date, we could return the days to the intersection by using <code>addCohortIntersectTime</code></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -371,7 +371,7 @@
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>  <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/addCohortIntersectTime.html">addCohortIntersectTime</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/addCohortIntersectDays.html">addCohortIntersectDays</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -449,7 +449,7 @@
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    flag <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    time <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    days <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    date <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"any_time"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> </span>
@@ -463,10 +463,10 @@
 <span><span class="co">#&gt; $ subject_id              &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date       &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date         &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ flag_cohort_1_any_time  &lt;dbl&gt; 1, 1, 1, 0</span></span>
 <span><span class="co">#&gt; $ count_cohort_1_any_time &lt;dbl&gt; 2, 2, 1, 0</span></span>
+<span><span class="co">#&gt; $ flag_cohort_1_any_time  &lt;dbl&gt; 1, 1, 1, 0</span></span>
 <span><span class="co">#&gt; $ date_cohort_1_any_time  &lt;date&gt; 2019-12-30, 2019-12-30, 2020-01-01, NA</span></span>
-<span><span class="co">#&gt; $ time_cohort_1_any_time  &lt;dbl&gt; -2, -154, 0, NA</span></span></code></pre></div>
+<span><span class="co">#&gt; $ days_cohort_1_any_time  &lt;dbl&gt; -2, -154, 0, NA</span></span></code></pre></div>
 </div>
 </div>
 </div>
