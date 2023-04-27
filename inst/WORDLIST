@@ -11,7 +11,7 @@ addCohortIntersect
 addCohortIntersectCount
 addCohortIntersectDate
 addCohortIntersectFlag
-addCohortIntersectTime
+addCohortIntersectDays
 ageGroup
 cdm
 celecoxib
@@ -25,3 +25,6 @@ io
 magrittr
 tibble
 yyyy
+Besora
+Mercade
+ORCID

@@ -16,14 +16,20 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Marti Catala \email{marti.catalasabate@ndorms.ox.ac.uk}
+\strong{Maintainer}: Marti Catala \email{marti.catalasabate@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0003-3308-9905}{ORCID})
 
 Authors:
 \itemize{
-  \item Yuchen Guo \email{yuchen.guo@ndorms.ox.ac.uk}
-  \item Mike Du \email{mike.du@ndorms.ox.ac.uk}
-  \item Kim Lopez-Guell \email{kim.lopez@spc.ox.ac.uk}
-  \item Edward Burn \email{edward.burn@ndorms.ox.ac.uk}
+  \item Yuchen Guo \email{yuchen.guo@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-0847-4855}{ORCID})
+  \item Mike Du \email{mike.du@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9517-8834}{ORCID})
+  \item Kim Lopez-Guell \email{kim.lopez@spc.ox.ac.uk} (\href{https://orcid.org/0000-0002-8462-8668}{ORCID})
+  \item Edward Burn \email{edward.burn@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9286-1128}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Nuria Mercade-Besora \email{nuria.mercadebesora@ndorms.ox.ac.uk} (\href{https://orcid.org/0009-0006-7948-3747}{ORCID}) [contributor]
+  \item Xintong Li \email{xintong.li@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-6872-5804}{ORCID}) [contributor]
 }
 
 }
