@@ -12,8 +12,8 @@ addAge(
   ageGroup = NULL,
   ageDefaultMonth = 1,
   ageDefaultDay = 1,
-  ageImposeMonth = TRUE,
-  ageImposeDay = TRUE,
+  ageImposeMonth = FALSE,
+  ageImposeDay = FALSE,
   tablePrefix = NULL
 )
 }

@@ -15,8 +15,8 @@ test_that("addDemographics, input length, type, tableprefix", {
 test_that("addDemographics, cohort and condition_occurrence", {
   cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
 
-  cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm)
-  cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(cdm, indexDate = "condition_start_date")
+  cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm, ageImposeMonth = TRUE, ageImposeDay = TRUE)
+  cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(cdm, indexDate = "condition_start_date", ageImposeMonth = TRUE, ageImposeDay = TRUE)
 
   expect_true(all(c("age", "sex", "prior_history") %in% colnames(cdm$cohort1)))
   s <- cdm$cohort1 %>%
@@ -89,7 +89,9 @@ test_that("addDemographics, parameters", {
   cdm$cohort1 <- cdm$cohort1 %>%
     addDemographics(cdm,
       indexDate = "cohort_end_date",
-      ageGroup = list("age_group" = list(c(0, 40), c(41, 120)))
+      ageGroup = list("age_group" = list(c(0, 40), c(41, 120))),
+      ageImposeMonth = TRUE,
+      ageImposeDay = TRUE
     )
 
   expect_true(all(c("age", "sex", "prior_history", "age_group") %in% colnames(cdm$cohort1)))
