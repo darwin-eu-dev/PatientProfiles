@@ -25,7 +25,8 @@ Suggests:
     glue,
     stringr,
     odbc,
-    ggplot2
+    ggplot2,
+    spelling
 Imports: 
     magrittr,
     CDMConnector,
@@ -40,3 +41,4 @@ Imports:
     cli
 VignetteBuilder: knitr
 URL: https://oxford-pharmacoepi.github.io/PatientProfiles/
+Language: en-US

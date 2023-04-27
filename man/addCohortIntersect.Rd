@@ -55,7 +55,7 @@ for this intersection}
 \item{date}{TRUE or FALSE. If TRUE, date will be calculated for this
 intersection}
 
-\item{time}{TRUE or FALSE. If TRUE, time differebce will be calculated for
+\item{time}{TRUE or FALSE. If TRUE, time difference will be calculated for
 this intersection}
 
 \item{nameStyle}{naming of the added column or columns, should include
