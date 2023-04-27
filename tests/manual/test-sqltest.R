@@ -79,28 +79,34 @@ test_that("test methods against sql test server", {
  # add cohort occurrences
 
  cohort <- cdm$cohort %>%
-   countOccurrences(cdm = cdm, tableName = "cohort1") %>%
+   countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort1") %>%
    dplyr::arrange(subject_id, cohort_start_date)
 
- expect_true(all(c("NA_0_to_Inf") %in% names(cohort)))
+ expect_true(all(c("all_0_to_inf") %in% names(cohort)))
 
-
- # count occurrences
-
-cohort <-  cdm$cohort %>%
-   countOccurrences(cdm = cdm, tableName = "cohort1") %>%
-   dplyr::arrange(subject_id, cohort_start_date)
-
-expect_true(all(c("NA_0_to_Inf") %in% names(cohort)))
 
 # countflag
 cohort <- cdm$cohort %>%
-  flagPresence(cdm = cdm,tableName = "cohort1") %>%
+  flagCohortPresence(cdm = cdm,targetCohortTable = "cohort1") %>%
   dplyr::arrange(subject_id, cohort_start_date)
 
-expect_true(all(c("NA_0_to_Inf") %in% names(cohort)))
+expect_true(all(c("all_0_to_inf") %in% names(cohort)))
 
 
+# time to cohort
+cohort <- cdm$cohort %>%
+  timeToCohort(cdm = cdm,targetCohortTable = "cohort1") %>%
+  dplyr::arrange(subject_id, cohort_start_date)
+
+expect_true(all(c("all_0_to_inf") %in% names(cohort)))
+
+# dateOfCohort
+
+cohort <- cdm$cohort %>%
+  dateOfCohort(cdm = cdm,targetCohortTable = "cohort1") %>%
+  dplyr::arrange(subject_id, cohort_start_date)
+
+expect_true(all(c("all_0_to_inf") %in% names(cohort)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
