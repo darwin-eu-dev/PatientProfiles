@@ -4,7 +4,7 @@
 \name{PatientProfiles-package}
 \alias{PatientProfiles}
 \alias{PatientProfiles-package}
-\title{PatientProfiles: Identify characteristics of patients in the OMOP Common Data Model}
+\title{PatientProfiles: Identify Characteristics of Patients in the OMOP Common Data Model}
 \description{
 Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
 }
