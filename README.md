@@ -10,15 +10,14 @@ status](https://www.r-pkg.org/badges/version/PatientProfiles)](https://CRAN.R-pr
 ## Package overview
 
 PatientProfiles contains functions for adding characteristics to OMOP
-CDM tables containing patient level data (e.g. condition_occurrence,
-drug_exposure, and so on) and OMOP CDM cohort tables. The
-characteristics that can be added include an individual´s sex, age
-(relative to a date in the table), and days of prior history. Time
-varying characteristics, such as age, can be estimated relative to any
-dates in the corresponding table. In additition, PatientProfiles also
-provides functionality for identifying intersections between a cohort
-table and OMOP CDM tables containing patient level data or other cohort
-tables.
+CDM tables containing patient level data (e.g. condition occurrence,
+drug exposure, and so on) and OMOP CDM cohort tables. The
+characteristics that can be added include an individual´s sex, age, and
+days of prior history. Time varying characteristics, such as age, can be
+estimated relative to any date in the corresponding table. In addition,
+PatientProfiles also provides functionality for identifying
+intersections between a cohort table and OMOP CDM tables containing
+patient level data or other cohort tables.
 
 ## Package installation
 
@@ -77,7 +76,7 @@ cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
 #### Adding chartacteristics to patient-level data
 
 Say we wanted to get individuals´sex and age at condition start date for
-records in the condition_occurrence table. We can use the `addAge` and
+records in the condition occurrence table. We can use the `addAge` and
 `addSex` functions to do this:
 
 ``` r
@@ -85,7 +84,7 @@ cdm$condition_occurrence %>%
   glimpse()
 #> Rows: ??
 #> Columns: 5
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ condition_occurrence_id <int> 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…
 #> $ person_id               <int> 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…
 #> $ condition_concept_id    <int> 4, 5, 1, 2, 3, 4, 3, 2, 1, 2, 1, 5, 3, 4, 4, 1…
@@ -100,7 +99,7 @@ cdm$condition_occurrence %>%
   glimpse()
 #> Rows: ??
 #> Columns: 7
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ condition_occurrence_id <int> 314, 234, 277, 26, 276, 656, 275, 249, 150, 9,…
 #> $ person_id               <int> 314, 234, 277, 26, 276, 656, 275, 249, 150, 9,…
 #> $ condition_concept_id    <int> 4, 2, 2, 1, 5, 3, 4, 2, 4, 5, 2, 2, 2, 3, 1, 1…
@@ -118,7 +117,7 @@ cdm$condition_occurrence  %>%
   filter(age >= 18 & age <= 65) %>%
   filter(sex == "Male")
 #> # Source:   SQL [?? x 7]
-#> # Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> # Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #>    condition_occurrence_id person_id condition_concept_id condition_start_date
 #>                      <int>     <int>                <int> <date>              
 #>  1                     314       314                    4 2005-08-25          
@@ -145,7 +144,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -169,7 +168,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 8
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 2, 1, 1, 1
 #> $ subject_id           <dbl> 3, 1, 2, 1
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -188,7 +187,7 @@ cohort start date like so
 cdm$cohort1  %>%
   filter(prior_history >= 365)
 #> # Source:   SQL [4 x 8]
-#> # Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> # Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #>   cohort_definition_id subject_id cohort_start_date cohort_end_date   age
 #>                  <dbl>      <dbl> <date>            <date>          <dbl>
 #> 1                    2          3 2020-01-01        2020-03-01         43
@@ -210,7 +209,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -227,7 +226,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 7
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -237,14 +236,17 @@ cdm$cohort1 %>%
 #> $ cohort_3_minf_to_m1  <dbl> 0, 0, 1, 0
 ```
 
-#### Count appearences of a certain cohort in a certain window
+#### Count appearances of a certain cohort in a certain window
+
+If we wanted the number of appearances, we could instead use the
+`addCohortIntersectCount` function
 
 ``` r
 cdm$cohort1 %>% 
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -262,16 +264,21 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 6
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 2, 1
 #> $ subject_id           <dbl> 1, 1, 3, 2
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02
-#> $ cohort_1_short_term  <dbl> 0, 0, 0, 0
 #> $ cohort_1_mid_term    <dbl> 1, 0, 0, 0
+#> $ cohort_1_short_term  <dbl> 0, 0, 0, 0
 ```
 
 #### Add a column with the first/last event in a certain window
+
+Say we wanted the date at which an individual was in another cohort then
+we can use the `addCohortIntersectDate` function. As there might be
+multiple records for the other cohort, we can also choose the first or
+the last appearance in that cohort.
 
 First occurrence:
 
@@ -280,7 +287,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -299,7 +306,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 5
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 2, 1
 #> $ subject_id           <dbl> 1, 1, 3, 2
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02
@@ -314,7 +321,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -333,7 +340,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 5
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 2, 1
 #> $ subject_id           <dbl> 1, 1, 3, 2
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02
@@ -343,12 +350,15 @@ cdm$cohort1 %>%
 
 #### Add the number of days instead of the date
 
+Instead of returning a date, we could return the days to the
+intersection by using `addCohortIntersectTime`
+
 ``` r
 cdm$cohort1 %>% 
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -367,7 +377,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 5
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 2, 1
 #> $ subject_id           <dbl> 1, 1, 3, 2
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02
@@ -385,7 +395,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -410,7 +420,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 5
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 2, 1
 #> $ subject_id           <dbl> 1, 1, 3, 2
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02
@@ -418,14 +428,15 @@ cdm$cohort1 %>%
 #> $ cohort_1_minf_to_inf <dbl> 2, 2, 1, NA
 ```
 
-For efficiency we can do all the intersects in the same function:
+A more efficient implementation for getting multiple types of
+intersection results is provided by `addCohortIntersectTime`
 
 ``` r
 cdm$cohort1 %>% 
   glimpse()
 #> Rows: ??
 #> Columns: 4
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id <dbl> 1, 1, 1, 2
 #> $ subject_id           <dbl> 1, 1, 2, 3
 #> $ cohort_start_date    <date> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01
@@ -447,7 +458,7 @@ cdm$cohort1 %>%
   glimpse()
 #> Rows: ??
 #> Columns: 8
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id    <dbl> 1, 1, 2, 1
 #> $ subject_id              <dbl> 1, 1, 3, 2
 #> $ cohort_start_date       <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02

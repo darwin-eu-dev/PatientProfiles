@@ -13,7 +13,7 @@
 #' @param drug_exposure_size number of unique drug exposure
 #' @param patient_size number of unique patient
 #' @param min_drug_exposure_start_date user define minimum drug exposure start date
-#' @param max_drug_exposure_start_date user define maximium drug exposure start date
+#' @param max_drug_exposure_start_date user define maximum drug exposure start date
 #' @param seed seed
 #' @param condition_concept_id_size number of unique row in the condition concept table
 #' @param visit_concept_id_size number of unique visit concept id
@@ -34,7 +34,7 @@
 #' @param max_days_to_visit_end the maximum number of days of the visit integer
 
 #' @param concept_ancestor the concept ancestor table
-#' @param ancestor_concept_id_size the size of ceoncept ancestor table
+#' @param ancestor_concept_id_size the size of concept ancestor table
 
 #' @param cohort1 cohort table for test to run in getindication
 #' @param cohort2 cohort table for test to run in getindication

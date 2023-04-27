@@ -21,7 +21,7 @@ cdm reference.}
 \item{indexDate}{Variable in x that contains the date to compute the
 observation flag.}
 
-\item{name}{name of the column to hold the result of the enquiry:
+\item{name}{name of the column to hold the result of the query:
 1 if the individual is in observation, 0 if not}
 
 \item{tablePrefix}{The stem for the permanent tables that will

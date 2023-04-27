@@ -3,7 +3,7 @@ output: github_document
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(warning = FALSE,
+knitr::opts_chunk$set(warning = FALSE, message = FALSE,
   collapse = TRUE,
   comment = "#>",
 fig.path = "man/figures/README-",
@@ -21,7 +21,7 @@ out.width = "100%"
 
 ## Package overview
 
-PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition_occurrence, drug_exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age (relative to a date in the table), and days of prior history. Time varying characteristics, such as age, can be estimated relative to any dates in the corresponding table. In additition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables. 
+PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition occurrence, drug exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age, and days of prior history. Time varying characteristics, such as age, can be estimated relative to any date in the corresponding table. In addition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables. 
 
 ## Package installation
 
@@ -64,9 +64,9 @@ To see how you would create a reference to your database please consult the CDMC
 cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
 ```
 
-### Adding individuals´ chartacteristics
-#### Adding chartacteristics to patient-level data
-Say we wanted to get individuals´sex and age at condition start date for records in the condition_occurrence table. We can use the `addAge` and `addSex` functions to do this:
+### Adding individuals´ characteristics
+#### Adding characteristics to patient-level data
+Say we wanted to get individuals´sex and age at condition start date for records in the condition occurrence table. We can use the `addAge` and `addSex` functions to do this:
 
 ```{r}
 cdm$condition_occurrence %>% 
@@ -87,7 +87,7 @@ cdm$condition_occurrence  %>%
   filter(sex == "Male")
 ```
 
-#### Adding chartacteristics of a cohort
+#### Adding characteristics of a cohort
 As with other tables in the OMOP CDM, we can work in a similar way with cohort tables. For example, say we have the below cohort table
 
 ```{r}
@@ -140,7 +140,8 @@ cdm$cohort1 %>%
 
 ```
 
-#### Count appearences of a certain cohort in a certain window
+#### Count appearances of a certain cohort in a certain window
+If we wanted the number of appearances, we could instead use the `addCohortIntersectCount` function
 
 ```{r, echo = FALSE}
 cdm <- mockPatientProfiles()
@@ -163,6 +164,7 @@ cdm$cohort1 %>%
 ```
 
 #### Add a column with the first/last event in a certain window
+Say we wanted the date at which an individual was in another cohort then we can use the `addCohortIntersectDate` function. As there might be multiple records for the other cohort, we can also choose the first or the last appearance in that cohort.
 
 First occurrence:
 ```{r, echo = FALSE}
@@ -209,6 +211,7 @@ cdm$cohort1 %>%
 ```
 
 #### Add the number of days instead of the date
+Instead of returning a date, we could return the days to the intersection by using `addCohortIntersectDays`
 
 ```{r, echo = FALSE}
 cdm <- mockPatientProfiles()
@@ -260,7 +263,8 @@ cdm$cohort1 %>%
   glimpse()
 
 ```
-For efficiency we can do all the intersects in the same function:
+
+A more efficient implementation for getting multiple types of intersection results is provided by `addCohortIntersectTime`
 ```{r, echo = FALSE}
 cdm <- mockPatientProfiles()
 ```

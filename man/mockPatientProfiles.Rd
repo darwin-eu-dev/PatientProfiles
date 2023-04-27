@@ -63,7 +63,7 @@ mockPatientProfiles(
 
 \item{drug_concept_id_size}{number of unique drug concept id}
 
-\item{ancestor_concept_id_size}{the size of ceoncept ancestor table}
+\item{ancestor_concept_id_size}{the size of concept ancestor table}
 
 \item{condition_concept_id_size}{number of unique row in the condition concept table}
 
@@ -79,7 +79,7 @@ mockPatientProfiles(
 
 \item{min_drug_exposure_start_date}{user define minimum drug exposure start date}
 
-\item{max_drug_exposure_start_date}{user define maximium drug exposure start date}
+\item{max_drug_exposure_start_date}{user define maximum drug exposure start date}
 
 \item{earliest_date_of_birth}{the earliest date of birth of patient in person table format "dd-mm-yyyy"}
 
