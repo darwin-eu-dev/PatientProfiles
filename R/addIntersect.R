@@ -10,7 +10,8 @@
 #' be a vector
 #' @param idName the name of each filterId, must have same length than
 #' filterId
-#' @param value value of interest to add: it can be count, flag, date or time
+#' @param value value of interest to add: it can be count, flag, date, days or
+#' a column of the targetTable
 #' @param window window to consider events of
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
@@ -18,7 +19,7 @@
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
 #' (overlap) or NULL (if incidence)
-#' @param order last or first date to use for date/time calculations
+#' @param order last or first date to use for date/days calculations
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
 #' @param tablePrefix The stem for the permanent tables that will
@@ -170,7 +171,7 @@ addIntersect <- function(x,
   }
 
   resultCountFlag <- NULL
-  resultDateTimeOther <- NULL
+  resultDateDaysOther <- NULL
   # Start loop for different windows
 
   for (i in c(1:nrow(windowTbl))) {
@@ -225,39 +226,39 @@ addIntersect <- function(x,
         resultCountFlag <- dplyr::union_all(resultCountFlag, resultCF)
       }
     }
-    # add date, time or other
+    # add date, days or other
     if (length(value[!(value %in% c("count", "flag"))]) > 0) {
-      resultDTO <- result_w %>%
+      resultDDO <- result_w %>%
         dplyr::filter(.data$indicator == 1) %>%
         dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id)
       if (order == "first") {
-        resultDTO <- resultDTO %>%
+        resultDDO <- resultDDO %>%
           dplyr::summarise(
             date = min(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
           )
       } else {
-        resultDTO <- resultDTO %>%
+        resultDDO <- resultDDO %>%
           dplyr::summarise(
             date = max(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
           )
       }
-      resultDTO <- resultDTO %>%
+      resultDDO <- resultDDO %>%
         dplyr::right_join(
           result_w %>%
             dplyr::select(dplyr::all_of(c(person_variable, "index_date", "id"))) %>%
             dplyr::distinct(),
           by = c(person_variable, "index_date", "id")
         )
-      if ("time" %in% value) {
-        resultDTO <- resultDTO %>%
+      if ("days" %in% value) {
+        resultDDO <- resultDDO %>%
           dplyr::mutate(
-            time = !!CDMConnector::datediff("index_date", "date", interval = "day")
+            days = !!CDMConnector::datediff("index_date", "date", interval = "day")
           )
       }
       if (length(extraValue) > 0) {
-        resultDTO <- resultDTO %>%
+        resultDDO <- resultDDO %>%
           dplyr::left_join(
             result_w %>%
               dplyr::select(
@@ -265,7 +266,7 @@ addIntersect <- function(x,
                 "date" = "overlap_start_date", dplyr::all_of(extraValue)
               ) %>%
               dplyr::inner_join(
-                resultDTO %>%
+                resultDDO %>%
                   dplyr::select(dplyr::all_of(
                     c(person_variable, "index_date", "id", "date")
                   )),
@@ -281,25 +282,25 @@ addIntersect <- function(x,
             by = c(person_variable, "index_date", "id")
           )
       }
-      resultDTO <- resultDTO %>%
+      resultDDO <- resultDDO %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
       if (!("date" %in% value)) {
-        resultDTO <- dplyr::select(resultDTO, -"date")
+        resultDDO <- dplyr::select(resultDDO, -"date")
       }
       if (is.null(tablePrefix)) {
-        resultDTO <- CDMConnector::computeQuery(resultDTO)
+        resultDDO <- CDMConnector::computeQuery(resultDDO)
       } else {
-        resultDTO <- CDMConnector::computeQuery(
-          resultDTO, paste0(tablePrefix, "_date_time_", i), FALSE,
+        resultDDO <- CDMConnector::computeQuery(
+          resultDDO, paste0(tablePrefix, "_date_days_", i), FALSE,
           attr(cdm, "write_schema"), TRUE
         )
       }
       if (i == 1) {
-        resultDateTimeOther <- resultDTO
+        resultDateDaysOther <- resultDDO
       } else {
-        resultDateTimeOther <- dplyr::union_all(resultDateTimeOther, resultDTO)
+        resultDateDaysOther <- dplyr::union_all(resultDateDaysOther, resultDDO)
       }
     }
   }
@@ -349,7 +350,7 @@ addIntersect <- function(x,
   if (length(value[!(value %in% c("count", "flag"))]) > 0) {
     values <- value[!(value %in% c("count", "flag"))]
     for (val in values) {
-      resultDateTimeOtherX <- resultDateTimeOther %>%
+      resultDateDaysOtherX <- resultDateDaysOther %>%
         dplyr::select(
           "subject_id", "index_date", dplyr::all_of(val), "id_name",
           "window_name"
@@ -367,14 +368,14 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
-      namesToEliminate <- intersect(names(x), names(resultDateTimeOtherX))
+      namesToEliminate <- intersect(names(x), names(resultDateDaysOtherX))
       namesToEliminate <- namesToEliminate[
         !(namesToEliminate %in% c(person_variable, indexDate))
       ]
 
       x <- x %>%
         dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
-        dplyr::left_join(resultDateTimeOtherX,
+        dplyr::left_join(resultDateDaysOtherX,
           by = c(person_variable, indexDate)
         )
     }
@@ -393,7 +394,7 @@ addIntersect <- function(x,
     dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
     dplyr::mutate(val = ifelse(value %in% c("flag","count"), 0,
                                ifelse(value %in% "date", as.Date(NA),
-                                      ifelse(value %in% "time", as.numeric(NA), as.character(NA))))) %>%
+                                      ifelse(value %in% "days", as.numeric(NA), as.character(NA))))) %>%
     dplyr::select(.data$column, .data$val) %>%
     dplyr::anti_join(dplyr::tibble(column = colnames(x)), by = "column")
 

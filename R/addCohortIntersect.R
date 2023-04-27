@@ -20,8 +20,8 @@
 #' for this intersection
 #' @param date TRUE or FALSE. If TRUE, date will be calculated for this
 #' intersection
-#' @param time TRUE or FALSE. If TRUE, time difference will be calculated for
-#' this intersection
+#' @param days TRUE or FALSE. If TRUE, time difference in days will be
+#' calculated for this intersection
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
 #' @param tablePrefix The stem for the permanent tables that will
@@ -104,7 +104,7 @@ addCohortIntersect <- function(x,
                                flag = TRUE,
                                count = TRUE,
                                date = TRUE,
-                               time = TRUE,
+                               days = TRUE,
                                nameStyle = "{value}_{cohort_name}_{window_name}",
                                tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
@@ -114,9 +114,9 @@ addCohortIntersect <- function(x,
   checkmate::assertLogical(flag, any.missing = FALSE, len = 1)
   checkmate::assertLogical(count, any.missing = FALSE, len = 1)
   checkmate::assertLogical(date, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(time, any.missing = FALSE, len = 1)
-  checkmate::assertTRUE(flag | count | date | time)
-  value <- c("flag", "count", "date", "time")[c(flag, count, date, time)]
+  checkmate::assertLogical(days, any.missing = FALSE, len = 1)
+  checkmate::assertTRUE(flag | count | date | days)
+  value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
 
   x <- x %>%
     addIntersect(
@@ -378,8 +378,8 @@ addCohortIntersectCount <- function(x,
   return(x)
 }
 
-#' It creates columns to indicate the time between the current table and a
-#' target cohort
+#' It creates columns to indicate the number of days between the current table
+#' and a target cohort
 #'
 #' @param x Table with individuals in the cdm
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
@@ -388,7 +388,7 @@ addCohortIntersectCount <- function(x,
 #' intersection.
 #' @param targetCohortTable Cohort table to
 #' @param targetCohortId Cohort IDs of interest from the other cohort table. If
-#' NULL, all cohorts will be used with a time variable added for each
+#' NULL, all cohorts will be used with a days variable added for each
 #' cohort of interest
 #' @param targetDate Date of interest in the other cohort table. Either
 #' cohort_start_date or cohort_end_date
@@ -462,14 +462,14 @@ addCohortIntersectCount <- function(x,
 #' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 #'
 #' result <- cdm$cohort1 %>%
-#'   addCohortIntersectTime(
+#'   addCohortIntersectDays(
 #'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
-addCohortIntersectTime <- function(x,
+addCohortIntersectDays <- function(x,
                                    cdm,
                                    indexDate = "cohort_start_date",
                                    targetCohortTable,
@@ -489,7 +489,7 @@ addCohortIntersectTime <- function(x,
       cdm = cdm,
       tableName = targetCohortTable,
       indexDate = indexDate,
-      value = "time",
+      value = "days",
       filterVariable = parameters$filter_variable,
       filterId = parameters$filter_id,
       idName = parameters$id_name,

@@ -5,7 +5,7 @@ test_that("output format - one outcome cohort", {
   cdm <- mockPatientProfiles()
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       targetCohortId = 1,
       targetDate = "cohort_start_date",
@@ -34,7 +34,7 @@ test_that("output format - multiple outcome cohorts", {
 
   # In 0 to Inf - 2 target cohorts have someone
   cdm$cohort1a <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       window = c(0, Inf),
       targetCohortId = NULL,
@@ -54,7 +54,7 @@ test_that("output format - multiple outcome cohorts", {
 
   # In -Inf to Inf - 2 target cohorts have someone
   cdm$cohort1c <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       window = c(-Inf, Inf),
       targetCohortId = NULL,
@@ -116,7 +116,7 @@ test_that("first vs last event - cohort table", {
 
   # first
   cdm$cohort1a <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       targetCohortId = 1,
       indexDate = "cohort_start_date",
@@ -156,7 +156,7 @@ test_that("first vs last event - cohort table", {
 
   # last
   cdm$cohort1c <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       targetCohortId = 1,
       indexDate = "cohort_start_date",
@@ -240,7 +240,7 @@ test_that("multiple cohort entries per person", {
 
   # 100 days from index
   cdm$cohort1a <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       window = c(0, 100),
       indexDate = "cohort_start_date",
@@ -301,7 +301,7 @@ test_that("output names", {
 
   # default naming
   cdm$cohort1a <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       window = c(10,50),
       targetCohortId = NULL,
@@ -328,7 +328,7 @@ test_that("output names", {
 
   # new names
   cdm$cohort1c <- cdm$cohort1 %>%
-    addCohortIntersectTime(
+    addCohortIntersectDays(
       cdm = cdm,
       window = c(10,50),
       targetCohortId = NULL,
@@ -364,7 +364,7 @@ test_that("expected errors ", {
 
   # not a cdm
   expect_error(cdm$cohort1 %>%
-                 addCohortIntersectTime(
+                 addCohortIntersectDays(
       cdm = "a",
       targetCohortId = 1,
       indexDate = "cohort_start_date",
@@ -380,7 +380,7 @@ test_that("expected errors ", {
 
   # missing outcome table
   expect_error(cdm$cohort1 %>%
-                 addCohortIntersectTime(
+                 addCohortIntersectDays(
       cdm = cdm,
       targetCohortId = 1,
       indexDate = "cohort_start_date",
@@ -396,7 +396,7 @@ test_that("expected errors ", {
 
   # unreasonable window
   # expect_error(cdm$cohort1 %>%
-  #                addCohortIntersectTime(cdm = cdm,
+  #                addCohortIntersectDays(cdm = cdm,
   #                            targetCohortId = 1,
   #                            indexDate = "cohort_start_date",
   #                            targetCohortTable = "cohort2",
@@ -662,7 +662,7 @@ test_that("working examples", {
     addCohortIntersectCount(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
     addCohortIntersectFlag(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
     addCohortIntersectDate(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
-    addCohortIntersectTime(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
+    addCohortIntersectDays(cdm = cdm, targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 

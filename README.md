@@ -348,7 +348,7 @@ cdm$cohort1 %>%
 #> $ cohort_1_minf_to_inf <date> 2020-05-25, 2020-05-25, 2020-01-01, NA
 ```
 
-#### Add the time instead of the date
+#### Add the number of days instead of the date
 
 Instead of returning a date, we could return the days to the
 intersection by using `addCohortIntersectTime`
@@ -365,7 +365,7 @@ cdm$cohort1 %>%
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  addCohortIntersectTime(
+  addCohortIntersectDays(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -449,7 +449,7 @@ cdm$cohort1  <- cdm$cohort1 %>%
     targetCohortId = 1,
     count = TRUE,
     flag = TRUE,
-    time = TRUE,
+    days = TRUE,
     date = TRUE,
     window = list("any_time" = c(-Inf, Inf))
   ) 
@@ -463,8 +463,8 @@ cdm$cohort1 %>%
 #> $ subject_id              <dbl> 1, 1, 3, 2
 #> $ cohort_start_date       <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02
 #> $ cohort_end_date         <date> 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02
-#> $ flag_cohort_1_any_time  <dbl> 1, 1, 1, 0
 #> $ count_cohort_1_any_time <dbl> 2, 2, 1, 0
+#> $ flag_cohort_1_any_time  <dbl> 1, 1, 1, 0
 #> $ date_cohort_1_any_time  <date> 2019-12-30, 2019-12-30, 2020-01-01, NA
-#> $ time_cohort_1_any_time  <dbl> -2, -154, 0, NA
+#> $ days_cohort_1_any_time  <dbl> -2, -154, 0, NA
 ```

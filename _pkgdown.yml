@@ -14,7 +14,7 @@ reference:
 - subtitle: Add a value from a cohort intersection
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
-  - matches("addCohortIntersectFlag|addCohortIntersectCount|addCohortIntersectTime|addCohortIntersectDate")
+  - matches("addCohortIntersectFlag|addCohortIntersectCount|addCohortIntersectDays|addCohortIntersectDate")
 - subtitle: Add multiple values from a cohort intersection
   desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
