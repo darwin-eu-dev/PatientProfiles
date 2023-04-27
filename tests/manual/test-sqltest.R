@@ -74,12 +74,12 @@ test_that("test methods against sql test server", {
                                tableName = "cohort1",
                                window = list(c(-Inf, 0)), value = "date")
 
- expect_true(all(c("date_NA_mInf_to_0") %in% names(cohort)))
+ expect_true(all(c("all_0_to_inf") %in% names(cohort)))
 
  # add cohort occurrences
 
  cohort <- cdm$cohort %>%
-   countCohortOccurrences(cdm = cdm, targetCohortTable = "cohort1") %>%
+   addCohortIntersectCount(cdm = cdm, targetCohortTable = "cohort1") %>%
    dplyr::arrange(subject_id, cohort_start_date)
 
  expect_true(all(c("all_0_to_inf") %in% names(cohort)))
@@ -87,7 +87,7 @@ test_that("test methods against sql test server", {
 
 # countflag
 cohort <- cdm$cohort %>%
-  flagCohortPresence(cdm = cdm,targetCohortTable = "cohort1") %>%
+  addCohortIntersectFlag(cdm = cdm,targetCohortTable = "cohort1") %>%
   dplyr::arrange(subject_id, cohort_start_date)
 
 expect_true(all(c("all_0_to_inf") %in% names(cohort)))
@@ -95,7 +95,7 @@ expect_true(all(c("all_0_to_inf") %in% names(cohort)))
 
 # time to cohort
 cohort <- cdm$cohort %>%
-  timeToCohort(cdm = cdm,targetCohortTable = "cohort1") %>%
+  addCohortIntersectTime(cdm = cdm,targetCohortTable = "cohort1") %>%
   dplyr::arrange(subject_id, cohort_start_date)
 
 expect_true(all(c("all_0_to_inf") %in% names(cohort)))
@@ -103,7 +103,7 @@ expect_true(all(c("all_0_to_inf") %in% names(cohort)))
 # dateOfCohort
 
 cohort <- cdm$cohort %>%
-  dateOfCohort(cdm = cdm,targetCohortTable = "cohort1") %>%
+  addCohortIntersectDate(cdm = cdm,targetCohortTable = "cohort1") %>%
   dplyr::arrange(subject_id, cohort_start_date)
 
 expect_true(all(c("all_0_to_inf") %in% names(cohort)))
