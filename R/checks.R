@@ -209,7 +209,7 @@ checkNewName <- function(name, x) {
 #' @noRd
 getWindowNames <- function(window) {
   getname <- function(element) {
-    element <- as.character(element)
+    element <- tolower(as.character(element))
     element <- gsub("-", "m", element)
     return(paste0(element[1], "_to_", element[2]))
   }
@@ -301,7 +301,11 @@ checkValue <- function(value, x, name) {
 #' @noRd
 checkCohortNames <- function(x, targetCohortId, name) {
   if (!("GeneratedCohortSet" %in% class(x))) {
-    cli::cli_abort("cdm[[targetCohortTable]]) is not a valid cohort object")
+    cli::cli_abort(
+      "cdm[[targetCohortTable]]) must be a 'GeneratedCohortSet'. Please use a
+      generateCohortSet function or create it with
+      CDMConnector::newGeneratedCohortSet()."
+    )
   }
   cohort <- CDMConnector::cohortSet(x)
   filterVariable <- "cohort_definition_id"
@@ -331,4 +335,16 @@ checkCohortNames <- function(x, targetCohortId, name) {
     "id_name" = idName
   )
   return(parameters)
+}
+
+#' @noRd
+checkSnakeCase <- function(name) {
+ for(n in name) {
+   n <- gsub("[a-z]","",n)
+   n <- gsub("[0-9]","",n)
+   n <- gsub("_","",n)
+   if(nchar(n) > 0) {
+     cli::cli_abort(paste0(deparse(substitute(name)), " is not written in snake case, please check characters: ",gsub(""," ",n)))
+   }
+ }
 }

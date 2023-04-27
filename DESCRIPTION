@@ -20,10 +20,12 @@ Suggests:
     duckdb,
     testthat (>= 3.1.5),
     knitr,
+    CodelistGenerator,
     rmarkdown,
     glue,
     stringr,
-    odbc
+    odbc,
+    ggplot2
 Imports: 
     magrittr,
     CDMConnector,

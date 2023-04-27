@@ -3,8 +3,8 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/PatientProfiles)](https://CRAN.R-project.org/package=PatientProfiles)
-[![codecov.io](https://codecov.io/github/darwin-eu/PatientProfiles/coverage.svg?branch=main)](https://codecov.io/github/darwin-eu/PatientProfiles?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/PatientProfiles/actions)
+[![codecov.io](https://codecov.io/github/oxford-pharmacoepi/PatientProfiles/coverage.svg?branch=main)](https://codecov.io/github/oxford-pharmacoepi/PatientProfiles?branch=main)
+[![R-CMD-check](https://github.com/oxford-pharmacoepi/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/oxford-pharmacoepi/PatientProfiles/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://www.tidyverse.org/lifecycle/#experimental)
 
 ## Package overview
@@ -202,8 +202,8 @@ cdm$cohort1  %>%
 
 #### Detect the presence of another cohort in a certain window
 
-We can use `flagCohortPresence` to add a flag for the presence (or not)
-of a cohort in a certain window.
+We can use `addCohortIntersectFlag` to add a flag for the presence (or
+not) of a cohort in a certain window.
 
 ``` r
 cdm$cohort1 %>% 
@@ -217,7 +217,7 @@ cdm$cohort1 %>%
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  flagCohortPresence(
+  addCohortIntersectFlag(
     cdm = cdm,
     targetCohortTable = "cohort2",
     window = c(-Inf, -1)
@@ -251,7 +251,7 @@ cdm$cohort1 %>%
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  countCohortOccurrences(
+  addCohortIntersectCount(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1, 
@@ -287,7 +287,7 @@ cdm$cohort1 %>%
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  dateOfCohort(
+  addCohortIntersectDate(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -321,7 +321,7 @@ cdm$cohort1 %>%
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  dateOfCohort(
+  addCohortIntersectDate(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -355,7 +355,7 @@ cdm$cohort1 %>%
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  timeToCohort(
+  addCohortIntersectTime(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
@@ -392,14 +392,14 @@ cdm$cohort1 %>%
 #> $ cohort_end_date      <date> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01
 
 cdm$cohort1  <- cdm$cohort1 %>% 
-  dateOfCohort(
+  addCohortIntersectDate(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
     window = c(-Inf, Inf)
   ) %>%
-  countCohortOccurrences(
+  addCohortIntersectCount(
     cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
