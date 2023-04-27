@@ -271,10 +271,10 @@ addDemographics <- function(x,
 
 ageQuery <- function(indexDate, name) {
   return(glue::glue('floor(dbplyr::sql(
-    sqlGetAge(
-      dialect = CDMConnector::dbms(cdm),
-      dob = "birth_date",
-      dateOfInterest = "{indexDate}"
+    CDMConnector::datediff(
+      start = "birth_date",
+      end = "{indexDate}",
+      interval = "year"
     )
   ))') %>%
     rlang::parse_exprs() %>%
@@ -381,20 +381,6 @@ addAge <- function(x,
     )
 
   return(x)
-}
-
-sqlGetAge <- function(dialect,
-                      dob,
-                      dateOfInterest) {
-  SqlRender::translate(
-    SqlRender::render(
-      "((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
-                      DAY(@date_of_interest)-(YEAR(@dob)* 10000 + MONTH(@dob) * 100 + DAY(@dob))) / 10000)",
-      dob = dob,
-      date_of_interest = dateOfInterest
-    ),
-    targetDialect = dialect
-  )
 }
 
 #' Compute the number of days till the end of the observation period at a
