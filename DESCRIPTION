@@ -3,11 +3,20 @@ Type: Package
 Title: Identify characteristics of patients in the OMOP Common Data Model
 Version: 0.1.0
 Authors@R: c(
-    person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", role = c("aut", "cre")),
-    person("Yuchen", "Guo", , "yuchen.guo@ndorms.ox.ac.uk", role = c("aut")),
-    person("Mike", "Du", , "mike.du@ndorms.ox.ac.uk", role = c("aut")),
-    person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut")),
-    person("Edward", "Burn", , "edward.burn@ndorms.ox.ac.uk", role = c("aut")) 
+    person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
+    role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
+    person("Yuchen", "Guo", , "yuchen.guo@ndorms.ox.ac.uk", role = c("aut"),
+    comment = c(ORCID = "0000-0002-0847-4855")),
+    person("Mike", "Du", , "mike.du@ndorms.ox.ac.uk", role = c("aut"), 
+    comment = c(ORCID = "0000-0002-9517-8834")),
+    person("Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut"),
+    comment = c(ORCID = "0000-0002-8462-8668")),
+    person("Edward", "Burn", , "edward.burn@ndorms.ox.ac.uk", role = c("aut"),
+    comment = c(ORCID = "0000-0002-9286-1128")),
+    person("Nuria", "Mercade-Besora", , "nuria.mercadebesora@ndorms.ox.ac.uk", 
+    role = c("ctb")),
+    person("Xintong", "Li", , "xintong.li@ndorms.ox.ac.uk", role = c("ctb"),
+    comment = c(ORCID = "0000-0002-6872-5804"))
     )
 Maintainer: The package maintainer <marti.catalasabate@ndorms.ox.ac.uk>
 Description: Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
@@ -29,7 +38,7 @@ Suggests:
     spelling
 Imports: 
     magrittr,
-    CDMConnector,
+    CDMConnector (>= 0.5.1),
     dplyr,
     tidyr,
     checkmate,
