@@ -1158,18 +1158,28 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
   expect_true(all(is.na(result$date_num2_m30_to_m1)))
   expect_true(all(is.na(result$date_num1_m30_to_m1)))
 
+  expect_error(cdm$cohort1 %>%
+                 addCohortIntersectDate(
+                   cdm = cdm,
+                   targetCohortTable =  "cohort2",
+                   targetCohortId = c(1,2,3),
+                   window = list(c(0,Inf), c(-30,-1))
+                 ) %>%
+                 dplyr::arrange(subject_id, cohort_start_date) %>%
+                 dplyr::collect())
+
   result <- cdm$cohort1 %>%
     addCohortIntersectDate(
       cdm = cdm,
       targetCohortTable =  "cohort2",
-      targetCohortId = c(1,2,3),
+      targetCohortId = c(1,3),
       window = list(c(0,Inf), c(-30,-1))
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(c("cohort_3_m30_to_m1", "cohort_1_m30_to_m1", "cohort2_2_m30_to_m1",
-                    "cohort_3_0_to_inf", "cohort_1_0_to_inf", "cohort2_2_0_to_inf")
+  expect_true(all(c("cohort_3_m30_to_m1", "cohort_1_m30_to_m1",
+                    "cohort_3_0_to_inf", "cohort_1_0_to_inf")
                   %in% colnames(result)))
 
   expect_true(all(compareNA(result$cohort_3_0_to_inf, c("2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", NA))))
@@ -1177,8 +1187,6 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   expect_true(all(is.na(result$cohort_1_m30_to_m1)))
   expect_true(all(is.na(result$cohort_1_0_to_inf)))
-  expect_true(all(is.na(result$cohort2_2_m30_to_m1)))
-  expect_true(all(is.na(result$cohort2_2_0_to_inf)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

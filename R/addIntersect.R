@@ -391,7 +391,9 @@ addIntersect <- function(x,
 
   colnames <- expand.grid(value = value,id_name = filterTbl$id_name,window_name = windowTbl$window_name) %>%
     dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
-    dplyr::mutate(val = ifelse(value %in% c("flag","count"), 0, NA)) %>%
+    dplyr::mutate(val = ifelse(value %in% c("flag","count"), 0,
+                               ifelse(value %in% "date", as.Date(NA),
+                                      ifelse(value %in% "time", as.numeric(NA), as.character(NA))))) %>%
     dplyr::select(.data$column, .data$val) %>%
     dplyr::anti_join(dplyr::tibble(column = colnames(x)), by = "column")
 
