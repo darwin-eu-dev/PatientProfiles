@@ -1,4 +1,4 @@
-test_that("addDemographics, input length and type", {
+test_that("addDemographics, input length, type, tableprefix", {
   cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
 
   expect_error(addDemographics(2, cdm))
@@ -7,6 +7,7 @@ test_that("addDemographics, input length and type", {
   expect_error(addDemographics(cdm$cohort1, cdm, indexDate = c("cohort_start_date", "cohort_end_date")))
   expect_error(addDemographics(cdm$cohort1, cdm, ageGroup = 10))
   expect_error(addDemographics(cdm$cohort1, cdm, tablePrefix = 1))
+  expect_error(addDemographics(cdm$cohort1, cdm, age = FALSE, sex = FALSE, priorHistory = FALSE, futureObservation = FALSE))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -905,6 +906,9 @@ test_that("addCategories input",{
   expect_true("category_1" %in% colnames(cdm$cohort1 %>% addAge(cdm) %>%
                                            addCategories(cdm, variable="age",
                                                          categories= list( list(c(1, 30),  c(31, 40))))))
+  # Error when x is not a tibble
+  expect_error(c(1,2,3,4) %>% addCategories(cdm, variable="age",
+                                                          categories= list( list(c(1, 30),  c(31, 40)))))
 
   result <- cdm$cohort1 %>% addAge(cdm) %>%
     addCategories(cdm, variable="age",
@@ -927,6 +931,8 @@ test_that("addCategories input",{
                                  futureObservation = FALSE,
                                  ageGroup = list("age_A" = list(c(0, 30), c(31, 120)),
                                                  "age_A" = list(c(1, 18),  c(19, 40)))))
+
+  # Error when x is not a cdm object
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
