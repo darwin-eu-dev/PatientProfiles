@@ -18,7 +18,7 @@ Authors@R: c(
     person("Xintong", "Li", , "xintong.li@ndorms.ox.ac.uk", role = c("ctb"),
     comment = c(ORCID = "0000-0002-6872-5804"))
     )
-Maintainer: The package maintainer <marti.catalasabate@ndorms.ox.ac.uk>
+Maintainer: Marti Catala <marti.catalasabate@ndorms.ox.ac.uk>
 Description: Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
 License: Apache License (>= 2)
 Encoding: UTF-8
