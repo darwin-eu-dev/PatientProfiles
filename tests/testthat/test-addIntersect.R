@@ -1005,8 +1005,8 @@ test_that("overlapTable is empty, check return columns", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(c("count_na_0_to_inf", "flag_na_0_to_inf", "days_na_0_to_inf",
-                    "date_na_0_to_inf") %in% colnames(result)))
+  expect_true(all(c("count_id2_0_to_inf", "flag_id2_0_to_inf", "days_id2_0_to_inf",
+                    "date_id2_0_to_inf") %in% colnames(result)))
 
   expect_true(all(result$count_id2_0_to_inf == 0))
 
