@@ -175,20 +175,6 @@ addIntersect <- function(x,
 
   for (i in c(1:nrow(windowTbl))) {
     result_w <- result
-    if(result %>% dplyr::tally() %>% dplyr::pull() == 0) {
-      result_w <- x %>%
-        dplyr::select(
-          dplyr::all_of(person_variable),
-          "index_date" = dplyr::all_of(indexDate)
-        ) %>%
-        dplyr::distinct() %>%
-        dplyr::full_join(overlapTable, by = person_variable) %>%
-        dplyr::mutate(indicator = 0)
-      if(overlapTable %>% dplyr::tally() %>% dplyr::pull() != 0) {
-        result_w <- result_w %>%
-          dplyr::filter(!is.na(.data$id))
-      }
-      } else {
       if (!is.infinite(windowTbl$upper[i])) {
         result_w <- result_w %>%
           dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
@@ -203,7 +189,7 @@ addIntersect <- function(x,
           dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
             date = "overlap_end_date", number = -windowTbl$lower[i]
           )), 0, .data$indicator))
-      }}
+      }
     if (is.null(tablePrefix)) {
       result_w <- CDMConnector::computeQuery(result_w)
     } else {
@@ -403,6 +389,33 @@ addIntersect <- function(x,
     }
   }
 
+  colnames <- expand.grid(value = value,id_name = filterTbl$id_name,window_name = windowTbl$window_name) %>%
+    dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
+    dplyr::mutate(val = ifelse(value %in% c("flag","count"), 0,
+                               ifelse(value %in% "date", as.Date(NA),
+                                      ifelse(value %in% "time", as.numeric(NA), as.character(NA))))) %>%
+    dplyr::select(.data$column, .data$val) %>%
+    dplyr::anti_join(dplyr::tibble(column = colnames(x)), by = "column")
+
+  if(colnames %>% dplyr::tally() %>% dplyr::pull() != 0) {
+    x <- x %>%
+      dplyr::cross_join(
+        colnames %>%
+          tidyr::pivot_wider(
+            names_from = .data$column,
+            values_from = .data$val
+          ), copy = TRUE
+      )
+  }
+
+  if (is.null(tablePrefix)) {
+    x <- CDMConnector::computeQuery(x)
+  } else {
+    x <- CDMConnector::computeQuery(
+      x, paste0(tablePrefix, "_intersect"), FALSE, attr(cdm, "write_schema"),
+      TRUE
+    )
+  }
 
   return(x)
 }
