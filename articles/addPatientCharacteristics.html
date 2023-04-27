@@ -174,7 +174,7 @@ patients in 20-year age band and if they are 60 years old or more.</p>
 <span><span class="co">## $ condition_concept_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4, 2, 2, 1, 5, 3, 4, 2, 4, 5, 2, 2, 2, 3, 1, 1…</span></span>
 <span><span class="co">## $ condition_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-08-25, 2008-05-03, 2007-04-26, 2009-01-0…</span></span>
 <span><span class="co">## $ condition_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2006-06-14, 2009-01-05, 2007-05-07, 2010-02-0…</span></span>
-<span><span class="co">## $ age                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 58, 58, 23, 9, 77, 90, 71, 49, 55, 17, 40, 26,…</span></span>
+<span><span class="co">## $ age                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 58, 57, 22, 9, 76, 89, 70, 49, 55, 17, 39, 26,…</span></span>
 <span><span class="co">## $ ageBand_20              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "40 to 59", "40 to 59", "20 to 39", "0 to 19",…</span></span>
 <span><span class="co">## $ ageThreshold_60         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "less60", "less60", "less60", "less60", "more6…</span></span></code></pre>
 <p><code><a href="../reference/addSex.html">addSex()</a></code>: appends a column to the input table indicating
@@ -200,7 +200,7 @@ bands.</p>
 <span><span class="co">## $ condition_concept_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4, 2, 2, 1, 5, 3, 4, 2, 4, 5, 2, 2, 2, 3, 1, 1…</span></span>
 <span><span class="co">## $ condition_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-08-25, 2008-05-03, 2007-04-26, 2009-01-0…</span></span>
 <span><span class="co">## $ condition_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2006-06-14, 2009-01-05, 2007-05-07, 2010-02-0…</span></span>
-<span><span class="co">## $ age                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 58, 58, 23, 9, 77, 90, 71, 49, 55, 17, 40, 26,…</span></span>
+<span><span class="co">## $ age                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 58, 57, 22, 9, 76, 89, 70, 49, 55, 17, 39, 26,…</span></span>
 <span><span class="co">## $ ageBand_20              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "40 to 59", "40 to 59", "20 to 39", "0 to 19",…</span></span>
 <span><span class="co">## $ ageThreshold_60         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "less60", "less60", "less60", "less60", "more6…</span></span>
 <span><span class="co">## $ sex                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Female", "Male", "Mal…</span></span></code></pre>
@@ -227,8 +227,8 @@ bands.</p>
 <span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.7.1 [unknown@Linux 5.15.0-1036-azure:R 4.3.0/:memory:]</span></span></span>
 <span><span class="co">##   ageBand_20     n</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 60 to 79      28</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 80 to 99      17</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 60 to 79      29</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 80 to 99      15</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="example-get-characteristics-in-cohort-tables">Example: get characteristics in cohort tables<a class="anchor" aria-label="anchor" href="#example-get-characteristics-in-cohort-tables"></a>
@@ -333,7 +333,7 @@ the day they enter a cohort, we can use the function
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 3, 1, 2, 1, 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-05-25, 2020-01-01, 2020-05-25, 2…</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-05-25, 2020-01-01, 2020-05-25, 2…</span></span>
-<span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 43, 41, 51, 41, 40</span></span>
+<span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 42, 41, 50, 41, 40</span></span>
 <span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Male", "Male", "Male"</span></span>
 <span><span class="co">## $ prior_history        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4635, 5343, 4167, 5343, 5196</span></span></code></pre>
 </div>

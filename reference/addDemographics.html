@@ -58,8 +58,8 @@
 <span>  ageName <span class="op">=</span> <span class="st">"age"</span>,</span>
 <span>  ageDefaultMonth <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ageDefaultDay <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  ageImposeMonth <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  ageImposeDay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ageImposeMonth <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  ageImposeDay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ageGroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sexName <span class="op">=</span> <span class="st">"sex"</span>,</span>
@@ -169,7 +169,7 @@ be created. If NULL, temporary tables will be used throughout.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.7.1 [unknown@Linux 5.15.0-1036-azure:R 4.3.0/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date   age sex  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 2020-01-01        2020-04-01         26 Male </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 2020-01-01        2020-04-01         25 Male </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    1          1 2020-06-01        2020-08-01         26 Male </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>                    1          2 2020-01-02        2020-02-02         <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>                    2          3 2020-01-01        2020-03-01         <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>   </span>

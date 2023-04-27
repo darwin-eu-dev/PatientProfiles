@@ -87,7 +87,7 @@ to the Eunomia dataset.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/eunomia_dir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; attempting to extract and load /tmp/RtmpHxNBzw/GiBleed_5.3.zip</span></span>
+<span><span class="co">#&gt; attempting to extract and load /tmp/Rtmp5hmmbS/GiBleed_5.3.zip</span></span>
 <span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span></span>
 <span>  con <span class="op">=</span> <span class="va">con</span>,</span>
@@ -232,8 +232,8 @@ time periods, before their cohort start date and after.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   gi_bleed_history, gi_bleed_outcome [2]</span></span></span>
 <span><span class="co">#&gt;   gi_bleed_history gi_bleed_outcome     n</span></span>
 <span><span class="co">#&gt;              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                0                0   884</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                0                1   196</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                0                0   777</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                0                1   176</span></span></code></pre></div>
 <p>We can also see time to GI bleeding using the
 <code>timeToCohort</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
