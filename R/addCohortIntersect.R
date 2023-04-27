@@ -20,7 +20,7 @@
 #' for this intersection
 #' @param date TRUE or FALSE. If TRUE, date will be calculated for this
 #' intersection
-#' @param time TRUE or FALSE. If TRUE, time differebce will be calculated for
+#' @param time TRUE or FALSE. If TRUE, time difference will be calculated for
 #' this intersection
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters

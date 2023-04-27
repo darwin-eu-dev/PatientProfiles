@@ -61,7 +61,7 @@ cdm <- mockPatientProfiles(
 `addAge()`: adds a new column to the input table containing each patient's age at a certain date, specified in indexDate. Function allows to set month and/or day of birth to patients with missings or it can be imposed to all subjects.
 Further, the function can classify patient's into different age groups based on the argument ageGroup.
 
-Suppose we want to calculate the age at condition start date for records in the condition_ocurrence table. Also, we wan to group patients in 20-year age band and if they are 60 years old or more.
+Suppose we want to calculate the age at condition start date for records in the condition_occurrence table. Also, we wan to group patients in 20-year age band and if they are 60 years old or more.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$condition_occurrence %>%

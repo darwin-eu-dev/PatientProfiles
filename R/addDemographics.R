@@ -576,7 +576,7 @@ addPriorHistory <- function(x,
 #' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
-#' @param name name of the column to hold the result of the enquiry:
+#' @param name name of the column to hold the result of the query:
 #' 1 if the individual is in observation, 0 if not
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
