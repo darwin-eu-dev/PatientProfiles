@@ -1,6 +1,6 @@
 Package: PatientProfiles
 Type: Package
-Title: Identify characteristics of patients in the OMOP Common Data Model
+Title: Identify Characteristics of Patients in the OMOP Common Data Model
 Version: 0.1.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
