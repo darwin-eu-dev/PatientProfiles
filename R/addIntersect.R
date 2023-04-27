@@ -269,9 +269,7 @@ addIntersect <- function(x,
                   dplyr::select(dplyr::all_of(
                     c(person_variable, "index_date", "id", "date")
                   )),
-                by = c(
-                  dplyr::all_of(person_variable), "index_date", "id", "date"
-                )
+                by = c(person_variable, "index_date", "id", "date")
               ) %>%
               dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
               dplyr::summarise(

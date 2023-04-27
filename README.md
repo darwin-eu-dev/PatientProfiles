@@ -3,8 +3,8 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/PatientProfiles)](https://CRAN.R-project.org/package=PatientProfiles)
-[![codecov.io](https://codecov.io/github/darwin-eu/PatientProfiles/coverage.svg?branch=main)](https://codecov.io/github/darwin-eu/PatientProfiles?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/PatientProfiles/actions)
+[![codecov.io](https://codecov.io/github/oxford-pharmacoepi/PatientProfiles/coverage.svg?branch=main)](https://codecov.io/github/oxford-pharmacoepi/PatientProfiles?branch=main)
+[![R-CMD-check](https://github.com/oxford-pharmacoepi/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/oxford-pharmacoepi/PatientProfiles/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://www.tidyverse.org/lifecycle/#experimental)
 
 ## Package overview
@@ -452,8 +452,8 @@ cdm$cohort1 %>%
 #> $ subject_id              <dbl> 1, 1, 3, 2
 #> $ cohort_start_date       <date> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02
 #> $ cohort_end_date         <date> 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02
-#> $ count_cohort_1_any_time <dbl> 2, 2, 1, 0
 #> $ flag_cohort_1_any_time  <dbl> 1, 1, 1, 0
+#> $ count_cohort_1_any_time <dbl> 2, 2, 1, 0
 #> $ date_cohort_1_any_time  <date> 2019-12-30, 2019-12-30, 2020-01-01, NA
 #> $ time_cohort_1_any_time  <dbl> -2, -154, 0, NA
 ```
