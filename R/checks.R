@@ -303,6 +303,7 @@ checkCohortNames <- function(x, targetCohortId, name) {
   if (!("GeneratedCohortSet" %in% class(x))) {
     cli::cli_abort("cdm[[targetCohortTable]]) is not a valid cohort object")
   }
+  targetCohortId_old <- targetCohortId
   cohort <- CDMConnector::cohortSet(x)
   filterVariable <- "cohort_definition_id"
   if (is.null(targetCohortId)) {
@@ -323,6 +324,13 @@ checkCohortNames <- function(x, targetCohortId, name) {
         dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
         dplyr::arrange(.data$cohort_definition_id) %>%
         dplyr::pull("cohort_name")
+      targetCohortId = cohort %>%
+        dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
+        dplyr::select(.data$cohort_definition_id) %>% dplyr::pull()
+      for(i in targetCohortId_old[!(targetCohortId_old %in% targetCohortId)]) {
+        idName <- c(idName, paste0(name, "_", i))
+        targetCohortId <- c(targetCohortId, i)
+      }
     }
   }
   parameters <- list(

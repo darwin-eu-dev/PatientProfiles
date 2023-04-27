@@ -1005,32 +1005,33 @@ test_that("overlapTable is empty, check return columns", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(c("count_na_0_to_inf", "flag_na_0_to_inf", "time_na_0_to_inf",
-                    "date_na_0_to_inf") %in% colnames(result)))
+  expect_true(all(c("count_id2_0_to_inf", "flag_id2_0_to_inf", "time_id2_0_to_inf",
+                    "date_id2_0_to_inf") %in% colnames(result)))
 
-  expect_true(all(result$count_na_0_to_inf == 0))
+  expect_true(all(result$count_id2_0_to_inf == 0))
 
-  expect_true(all(result$flag_na_0_to_inf == 0))
+  expect_true(all(result$flag_id2_0_to_inf == 0))
 
-  expect_true(all(is.na(result$time_na_0_to_inf)))
+  expect_true(all(is.na(result$time_id2_0_to_inf)))
 
-  expect_true(all(is.na(result$date_na_0_to_inf)))
+  expect_true(all(is.na(result$date_id2_0_to_inf)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
-test_that("overlapTable is empty, check return columns", {
+test_that("overlap is empty or not, multiple ids, check return columns", {
   # functionality
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1),
-    subject_id = c(1, 1, 1, 2, 2),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 3),
+    subject_id = c(1, 1, 1, 2, 2, 3),
     cohort_start_date = as.Date(
       c(
         "2020-01-01",
         "2020-01-15",
         "2020-01-20",
         "2020-01-01",
-        "2020-02-01"
+        "2020-02-01",
+        "2020-03-03"
       )
     ),
     cohort_end_date = as.Date(
@@ -1039,7 +1040,8 @@ test_that("overlapTable is empty, check return columns", {
         "2020-01-15",
         "2020-01-20",
         "2020-01-01",
-        "2020-02-01"
+        "2020-02-01",
+        "2020-03-03"
       )
     )
   )
@@ -1072,6 +1074,12 @@ test_that("overlapTable is empty, check return columns", {
   )
 
   cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+
+  compareNA <- function(v1, v2) {
+    same <- (v1 == v2) | (is.na(v1) & is.na(v2))
+    same[is.na(same)] <- FALSE
+    return(same)
+  }
 
   result <- cdm$cohort1 %>%
     addCohortIntersectCount(
@@ -1116,6 +1124,61 @@ test_that("overlapTable is empty, check return columns", {
   expect_true("cohort_1_0_to_inf" %in% colnames(result))
 
   expect_true(all(is.na(result$cohort_1_0_to_inf)))
+
+  result <- cdm$cohort1 %>%
+    addIntersect(
+      cdm = cdm, tableName = "cohort2",
+      value = c("flag", "date"),
+      filterVariable = "cohort_definition_id",
+      filterId = c(1,2,3),
+      window = list(c(0,Inf), c(-30,-1)),
+      idName = c("num1", "num2", "num3")
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(c("flag_num1_0_to_inf", "flag_num2_0_to_inf", "flag_num3_0_to_inf",
+                    "date_num1_0_to_inf", "date_num2_0_to_inf", "date_num3_0_to_inf",
+                    "flag_num1_m30_to_m1", "flag_num2_m30_to_m1", "flag_num3_m30_to_m1",
+                    "date_num1_m30_to_m1", "date_num2_m30_to_m1", "date_num3_m30_to_m1")
+                  %in% colnames(result)))
+
+  expect_true(all(compareNA(result$date_num3_0_to_inf, c("2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", NA))))
+  expect_true(all(compareNA(result$date_num3_m30_to_m1, c(NA, NA, NA, NA, NA, NA, "2020-03-03"))))
+  expect_true(all(result$flag_num3_0_to_inf == c(1, 1, 1, 1, 1, 1, 0)))
+  expect_true(all(result$flag_num3_m30_to_m1 == c(0,0,0,0,0,0,1)))
+
+  expect_true(all(result$flag_num2_0_to_inf == c(0,0,0,0,0,0,0)))
+  expect_true(all(result$flag_num1_0_to_inf == c(0,0,0,0,0,0,0)))
+  expect_true(all(result$flag_num2_m30_to_m1 == c(0,0,0,0,0,0,0)))
+  expect_true(all(result$flag_num1_m30_to_m1 == c(0,0,0,0,0,0,0)))
+
+  expect_true(all(is.na(result$date_num2_0_to_inf)))
+  expect_true(all(is.na(result$date_num1_0_to_inf)))
+  expect_true(all(is.na(result$date_num2_m30_to_m1)))
+  expect_true(all(is.na(result$date_num1_m30_to_m1)))
+
+  result <- cdm$cohort1 %>%
+    addCohortIntersectDate(
+      cdm = cdm,
+      targetCohortTable =  "cohort2",
+      targetCohortId = c(1,2,3),
+      window = list(c(0,Inf), c(-30,-1))
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect()
+
+  expect_true(all(c("cohort_3_m30_to_m1", "cohort_1_m30_to_m1", "cohort2_2_m30_to_m1",
+                    "cohort_3_0_to_inf", "cohort_1_0_to_inf", "cohort2_2_0_to_inf")
+                  %in% colnames(result)))
+
+  expect_true(all(compareNA(result$cohort_3_0_to_inf, c("2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", "2020-03-03", NA))))
+  expect_true(all(compareNA(result$cohort_3_m30_to_m1, c(NA, NA, NA, NA, NA, NA, "2020-03-03"))))
+
+  expect_true(all(is.na(result$cohort_1_m30_to_m1)))
+  expect_true(all(is.na(result$cohort_1_0_to_inf)))
+  expect_true(all(is.na(result$cohort2_2_m30_to_m1)))
+  expect_true(all(is.na(result$cohort2_2_0_to_inf)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
