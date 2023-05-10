@@ -36,7 +36,6 @@ Imports:
     tibble,
     DBI,
     rlang,
-    SqlRender,
     cli
 VignetteBuilder: knitr
 URL: https://oxford-pharmacoepi.github.io/PatientProfiles/
