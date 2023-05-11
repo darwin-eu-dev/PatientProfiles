@@ -270,13 +270,13 @@ addDemographics <- function(x,
 
 
 ageQuery <- function(indexDate, name) {
-  return(glue::glue('floor(dbplyr::sql(
+  return(glue::glue('dbplyr::sql(
     CDMConnector::datediff(
       start = "birth_date",
       end = "{indexDate}",
       interval = "year"
     )
-  ))') %>%
+  )') %>%
     rlang::parse_exprs() %>%
     rlang::set_names(glue::glue(name)))
 }
