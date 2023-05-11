@@ -45,7 +45,6 @@ Imports:
     lubridate,
     tibble,
     DBI,
-    SqlRender,
     rlang,
     cli
 VignetteBuilder: knitr

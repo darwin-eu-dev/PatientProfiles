@@ -84,6 +84,13 @@ cdm$exposure_cohort <- union_all(cdm$celecoxib,
   compute()
 cdm$exposure_cohort <- newGeneratedCohortSet(cdm$exposure_cohort)
 ```
+```{r, echo = FALSE}
+DBI::dbWriteTable(con, "cohort_set", dplyr::tibble(cohort_definition_id = 1, cohort_name = "na"))
+cdm$exposure_cohort <- newGeneratedCohortSet(
+  cohortRef = cdm$exposure_cohort, 
+  cohortSetRef = dplyr::tbl(con, CDMConnector::inSchema(attr(cdm, "write_schema"), "cohort_set"))
+)
+```
 
 As well as our two drug cohorts, we'll define a cohort of people with a condition occurrence of gastrointestinal (GI) bleeding. 
 
@@ -106,6 +113,13 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
 cdm$gi_bleed <- newGeneratedCohortSet(cdm$gi_bleed)
 
 ```
+```{r, echo = FALSE}
+cdm$gi_bleed <- newGeneratedCohortSet(
+  cohortRef = cdm$gi_bleed, 
+  cohortSetRef = dplyr::tbl(con, CDMConnector::inSchema(attr(cdm, "write_schema"), "cohort_set"))
+)
+```
+
 
 ## Summarising cohort characteristics
 
