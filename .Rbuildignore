@@ -13,4 +13,3 @@
 ^cran-comments\.md$
 ^vignettes/articles$
 ^codecov\.yml$
-^vignettes/Report.Rmd$
