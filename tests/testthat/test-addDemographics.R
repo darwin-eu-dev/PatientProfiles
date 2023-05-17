@@ -1029,3 +1029,77 @@ test_that("test if column exist, overwrite", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
+test_that("date of birth", {
+  cohort1 <- tibble::tibble(
+    cohort_definition_id = c("1", "1"),
+    subject_id = c("1", "2"),
+    cohort_start_date = c(
+      as.Date("2002-11-30"), as.Date("2002-12-02")
+    ),
+    cohort_end_date = c(
+      as.Date("2015-01-01"), as.Date("2013-01-01")
+    )
+  )
+
+  person <- tibble::tibble(
+    person_id = c("1", "2"),
+    gender_concept_id = c("8507", "8507"),
+    year_of_birth = c(2001, 2005),
+    month_of_birth = c(12, 06),
+    day_of_birth = c(01, 15)
+  )
+
+  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+
+ person_dob <- cdm$person %>%
+    addDateOfBirth(cdm) %>%
+    dplyr::collect()
+ expect_true(person_dob %>% dplyr::filter(person_id == 1) %>% dplyr::pull(date_of_birth) ==
+   "2001-12-01")
+ expect_true(person_dob %>% dplyr::filter(person_id == 2) %>% dplyr::pull(date_of_birth) ==
+               "2005-06-15")
+
+ drug_exposure_dob <- cdm$drug_exposure %>%
+   addDateOfBirth(cdm) %>%
+   dplyr::collect()
+ expect_true(all(drug_exposure_dob %>% dplyr::filter(person_id == 1) %>% dplyr::pull(date_of_birth) ==
+               "2001-12-01"))
+ expect_true(all(drug_exposure_dob %>% dplyr::filter(person_id == 2) %>% dplyr::pull(date_of_birth) ==
+               "2005-06-15"))
+
+ cohort_dob <- cdm$cohort1 %>%
+   addDateOfBirth(cdm) %>%
+   dplyr::collect()
+ expect_true(cohort_dob %>% dplyr::filter(subject_id == 1) %>% dplyr::pull(date_of_birth) ==
+               "2001-12-01")
+ expect_true(cohort_dob %>% dplyr::filter(subject_id == 2) %>% dplyr::pull(date_of_birth) ==
+               "2005-06-15")
+
+
+ person_dob2 <- cdm$person %>%
+   addDateOfBirth(cdm, imposeDay = TRUE, imposeMonth = TRUE) %>%
+   dplyr::collect()
+ expect_true(person_dob2 %>% dplyr::filter(person_id == 1) %>% dplyr::pull(date_of_birth) ==
+               "2001-01-01")
+ expect_true(person_dob2 %>% dplyr::filter(person_id == 2) %>% dplyr::pull(date_of_birth) ==
+               "2005-01-01")
+
+ drug_exposure_dob2 <- cdm$drug_exposure %>%
+   addDateOfBirth(cdm, imposeDay = TRUE, imposeMonth = TRUE) %>%
+   dplyr::collect()
+ expect_true(all(drug_exposure_dob2 %>% dplyr::filter(person_id == 1) %>% dplyr::pull(date_of_birth) ==
+                   "2001-01-01"))
+ expect_true(all(drug_exposure_dob2 %>% dplyr::filter(person_id == 2) %>% dplyr::pull(date_of_birth) ==
+                   "2005-01-01"))
+
+ cohort_dob2 <- cdm$cohort1 %>%
+   addDateOfBirth(cdm, imposeDay = TRUE, imposeMonth = TRUE) %>%
+   dplyr::collect()
+ expect_true(cohort_dob2 %>% dplyr::filter(subject_id == 1) %>% dplyr::pull(date_of_birth) ==
+               "2001-01-01")
+ expect_true(cohort_dob2 %>% dplyr::filter(subject_id == 2) %>% dplyr::pull(date_of_birth) ==
+               "2005-01-01")
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})

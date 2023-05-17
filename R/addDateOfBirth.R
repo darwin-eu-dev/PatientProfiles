@@ -6,8 +6,8 @@
 #' @param missingDay Day of the individuals with no or imposed day of birth
 #' @param missingMonth Month of the individuals with no or imposed month of
 #' birth
-#' @param imposeDay Wether to impose day of birth
-#' @param imposeMonth Wether to impose month of birth
+#' @param imposeDay Whether to impose day of birth
+#' @param imposeMonth Whether to impose month of birth
 #'
 #' @return The function returns the table x with an extra column that contains
 #' the date of birth
@@ -16,34 +16,39 @@
 #'
 #' @examples
 #' \donttest{
-#'   library(PatientProfiles)
-#'   db <- DBI::dbConnect(duckdb::duckdb(), CDConnector::eunomia_dir())
-#'   cdm <- mockCdm(db, ...)
-#'   cdm$person %>%
-#'     addDateOfBirth(cdm)
-#'   DBI::dbDisconnect(db)
+#'library(PatientProfiles)
+#'cdm <- mockPatientProfiles()
+#'cdm$cohort1 %>%
+#'  addDateOfBirth(cdm)
 #' }
 addDateOfBirth <- function(x,
                            cdm,
-                           name = "birth_date",
+                           name = "date_of_birth",
                            missingDay = 1,
-                           misisngMonth = 1,
+                           missingMonth = 1,
                            imposeDay = FALSE,
                            imposeMonth = FALSE) {
   # initial checks
-  parameters <- checkInputs(
-    x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
-  )
+  # parameters <- checkInputs(
+  #   x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
+  # )
   # get parameters
-  personIdentifier <- parameters$person_identifier
+  # personIdentifier <- parameters$person_identifier
   # impose day
+
+  person_variable <- checkX(x)
+
+  cdm$person <- cdm$person %>%
+    dplyr::filter(!is.na(.data$year_of_birth))
+
+  # First add to person table
   if (imposeDay) {
     person <- cdm$person %>%
       dplyr::mutate(day_of_birth = missingDay)
   } else {
     person <- cdm$person %>%
       dplyr::mutate(day_of_birth = dplyr::if_else(
-        is.na(.data$day_of_birth), .env$misisngDay, .data$day_of_birth)
+        is.na(.data$day_of_birth), .env$missingDay, .data$day_of_birth)
       )
   }
   # impose month
@@ -56,14 +61,39 @@ addDateOfBirth <- function(x,
         is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth)
       )
   }
-  x %>%
-    dplyr::left_join(
-      person %>%
-        dplyr::mutate(!!name := as.Date(paste0(
-          .data$year_of_birth, "-", .data$month_of_birth, "-",
-          .data$day_of_birth
-        ))) %>%
-        dplyr::select(personIdentifier = "person_id", dplyr::all_of(name)),
-      by = personIdentifier
-    )
+  person <- person %>%
+    dplyr::mutate(
+      year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
+      month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
+      day_of_birth1 = as.character(as.integer(.data$day_of_birth))
+    ) %>%
+    dplyr::mutate(!!name := as.Date(paste0(
+      .data$year_of_birth1, "-", .data$month_of_birth1, "-",
+      .data$day_of_birth1
+    )))  %>%
+    dplyr::select(!c("year_of_birth1", "month_of_birth1", "day_of_birth1"))
+
+
+  # Add to other table (if not person)
+  if(isPersonTable(x)){
+    return(person)
+  } else {
+    x <- x %>%
+      dplyr::left_join(
+        person %>%
+          dplyr::rename(!!person_variable := "person_id") %>%
+          dplyr::select(dplyr::all_of(c(person_variable, .env$name))),
+        by = person_variable
+      )
+    return(x)
+  }
+
+}
+
+isPersonTable <- function(x){
+
+ return(all(colnames(x) %in%
+    c("person_id", "gender_concept_id",
+      "year_of_birth", "month_of_birth", "day_of_birth")))
+
 }

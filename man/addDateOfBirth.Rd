@@ -7,9 +7,9 @@
 addDateOfBirth(
   x,
   cdm,
-  name = "birth_date",
+  name = "date_of_birth",
   missingDay = 1,
-  misisngMonth = 1,
+  missingMonth = 1,
   imposeDay = FALSE,
   imposeMonth = FALSE
 )
@@ -23,12 +23,12 @@ addDateOfBirth(
 
 \item{missingDay}{Day of the individuals with no or imposed day of birth}
 
-\item{imposeDay}{Wether to impose day of birth}
-
-\item{imposeMonth}{Wether to impose month of birth}
-
 \item{missingMonth}{Month of the individuals with no or imposed month of
 birth}
+
+\item{imposeDay}{Whether to impose day of birth}
+
+\item{imposeMonth}{Whether to impose month of birth}
 }
 \value{
 The function returns the table x with an extra column that contains
@@ -39,11 +39,9 @@ Add a column with the individual birth date
 }
 \examples{
 \donttest{
-  library(PatientProfiles)
-  db <- DBI::dbConnect(duckdb::duckdb(), CDConnector::eunomia_dir())
-  cdm <- mockCdm(db, ...)
-  cdm$person \%>\%
-    addDateOfBirth(cdm)
-  DBI::dbDisconnect(db)
+library(PatientProfiles)
+cdm <- mockPatientProfiles()
+cdm$cohort1 \%>\%
+ addDateOfBirth(cdm)
 }
 }
