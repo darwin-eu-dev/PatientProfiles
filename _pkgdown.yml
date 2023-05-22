@@ -22,4 +22,4 @@ reference:
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("mockPatientProfiles")
+  - matches("addAttributes|addCategories|mockPatientProfiles")
