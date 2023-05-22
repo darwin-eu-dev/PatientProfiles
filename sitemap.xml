@@ -70,12 +70,30 @@
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addSex.html</loc>
   </url>
   <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/binaryFormats.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/categoricalFormats.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/dateFormats.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/detectVariables.html</loc>
+  </url>
+  <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/index.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/mockPatientProfiles.html</loc>
   </url>
   <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/numericFormats.html</loc>
+  </url>
+  <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/variableTypes.html</loc>
   </url>
 </urlset>
