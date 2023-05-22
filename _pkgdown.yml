@@ -19,6 +19,10 @@ reference:
   desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
   - '`addCohortIntersect`'
+- subtitle: Summarise patient characteristics
+  desc: Set of functions that allow the user to summarise patient characteristics
+- contents:
+  - matches("variableTypes|detectVariables|numericFormat|dateFormat|binaryFormat|categoricalFormat")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
