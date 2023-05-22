@@ -10,8 +10,7 @@
 #' be a vector
 #' @param idName the name of each filterId, must have same length than
 #' filterId
-#' @param value value of interest to add: it can be count, flag, date, days or
-#' a column of the targetTable
+#' @param value value of interest to add: it can be count, flag, date or time
 #' @param window window to consider events of
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
@@ -19,7 +18,7 @@
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
 #' (overlap) or NULL (if incidence)
-#' @param order last or first date to use for date/days calculations
+#' @param order last or first date to use for date/time calculations
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
 #' @param tablePrefix The stem for the permanent tables that will
@@ -119,9 +118,10 @@ addIntersect <- function(x,
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
   if(!is.null(idName)) {
-    checkSnakeCase(idName)
+    idName <- checkSnakeCase(idName)
   }
 
+  startTibble <- x
   originalColnames <- colnames(x)
 
   # define overlapTable that contains the events of interest
@@ -171,7 +171,7 @@ addIntersect <- function(x,
   }
 
   resultCountFlag <- NULL
-  resultDateDaysOther <- NULL
+  resultDateTimeOther <- NULL
   # Start loop for different windows
 
   for (i in c(1:nrow(windowTbl))) {
@@ -226,25 +226,25 @@ addIntersect <- function(x,
         resultCountFlag <- dplyr::union_all(resultCountFlag, resultCF)
       }
     }
-    # add date, days or other
+    # add date, time or other
     if (length(value[!(value %in% c("count", "flag"))]) > 0) {
-      resultDDO <- result_w %>%
+      resultDTO <- result_w %>%
         dplyr::filter(.data$indicator == 1) %>%
         dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id)
       if (order == "first") {
-        resultDDO <- resultDDO %>%
+        resultDTO <- resultDTO %>%
           dplyr::summarise(
             date = min(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
           )
       } else {
-        resultDDO <- resultDDO %>%
+        resultDTO <- resultDTO %>%
           dplyr::summarise(
             date = max(.data$overlap_start_date, na.rm = TRUE),
             .groups = "drop"
           )
       }
-      resultDDO <- resultDDO %>%
+      resultDTO <- resultDTO %>%
         dplyr::right_join(
           result_w %>%
             dplyr::select(dplyr::all_of(c(person_variable, "index_date", "id"))) %>%
@@ -252,13 +252,13 @@ addIntersect <- function(x,
           by = c(person_variable, "index_date", "id")
         )
       if ("days" %in% value) {
-        resultDDO <- resultDDO %>%
+        resultDTO <- resultDTO %>%
           dplyr::mutate(
             days = !!CDMConnector::datediff("index_date", "date", interval = "day")
           )
       }
       if (length(extraValue) > 0) {
-        resultDDO <- resultDDO %>%
+        resultDTO <- resultDTO %>%
           dplyr::left_join(
             result_w %>%
               dplyr::select(
@@ -266,7 +266,7 @@ addIntersect <- function(x,
                 "date" = "overlap_start_date", dplyr::all_of(extraValue)
               ) %>%
               dplyr::inner_join(
-                resultDDO %>%
+                resultDTO %>%
                   dplyr::select(dplyr::all_of(
                     c(person_variable, "index_date", "id", "date")
                   )),
@@ -282,25 +282,25 @@ addIntersect <- function(x,
             by = c(person_variable, "index_date", "id")
           )
       }
-      resultDDO <- resultDDO %>%
+      resultDTO <- resultDTO %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
       if (!("date" %in% value)) {
-        resultDDO <- dplyr::select(resultDDO, -"date")
+        resultDTO <- dplyr::select(resultDTO, -"date")
       }
       if (is.null(tablePrefix)) {
-        resultDDO <- CDMConnector::computeQuery(resultDDO)
+        resultDTO <- CDMConnector::computeQuery(resultDTO)
       } else {
-        resultDDO <- CDMConnector::computeQuery(
-          resultDDO, paste0(tablePrefix, "_date_days_", i), FALSE,
+        resultDTO <- CDMConnector::computeQuery(
+          resultDTO, paste0(tablePrefix, "_date_time_", i), FALSE,
           attr(cdm, "write_schema"), TRUE
         )
       }
       if (i == 1) {
-        resultDateDaysOther <- resultDDO
+        resultDateTimeOther <- resultDTO
       } else {
-        resultDateDaysOther <- dplyr::union_all(resultDateDaysOther, resultDDO)
+        resultDateTimeOther <- dplyr::union_all(resultDateTimeOther, resultDTO)
       }
     }
   }
@@ -350,7 +350,7 @@ addIntersect <- function(x,
   if (length(value[!(value %in% c("count", "flag"))]) > 0) {
     values <- value[!(value %in% c("count", "flag"))]
     for (val in values) {
-      resultDateDaysOtherX <- resultDateDaysOther %>%
+      resultDateTimeOtherX <- resultDateTimeOther %>%
         dplyr::select(
           "subject_id", "index_date", dplyr::all_of(val), "id_name",
           "window_name"
@@ -368,14 +368,14 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
-      namesToEliminate <- intersect(names(x), names(resultDateDaysOtherX))
+      namesToEliminate <- intersect(names(x), names(resultDateTimeOtherX))
       namesToEliminate <- namesToEliminate[
         !(namesToEliminate %in% c(person_variable, indexDate))
       ]
 
       x <- x %>%
         dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
-        dplyr::left_join(resultDateDaysOtherX,
+        dplyr::left_join(resultDateTimeOtherX,
           by = c(person_variable, indexDate)
         )
     }
@@ -417,6 +417,9 @@ addIntersect <- function(x,
       TRUE
     )
   }
+
+  # put back the initial attributes to the output tibble
+  x <- x %>% addAttributes(startTibble)
 
   return(x)
 }

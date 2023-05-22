@@ -21,6 +21,7 @@ addDemographics(
   priorHistoryName = "prior_history",
   futureObservation = TRUE,
   futureObservationName = "future_observation",
+  overlapAgeGroups = FALSE,
   tablePrefix = NULL
 )
 }

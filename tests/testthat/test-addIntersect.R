@@ -54,8 +54,14 @@ test_that("working examples", {
 
   result <- cdm$cohort1 %>%
     addIntersect(cdm = cdm, tableName = "cohort2", value = "date", nameStyle = "xx") %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::arrange(subject_id, cohort_start_date)
+
+  expect_true(length(attributes(cdm$cohort1)) == length(attributes(result)))
+  for(i in names(attributes(cdm$cohort1))) {
+    if(i != "names" && i != "class") {
+      expect_true(identical(attr(cdm$cohort1, i), attr(result, i)))
+    }
+  }
 
   expect_true(colnames(result)[1] == "cohort_definition_id")
   expect_true(colnames(result)[2] == "subject_id")

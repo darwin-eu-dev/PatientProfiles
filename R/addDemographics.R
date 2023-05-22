@@ -26,6 +26,7 @@
 #' indexDate and the end of the current observation period will be
 #' calculated
 #' @param futureObservationName Future observation variable name
+#' @param overlapAgeGroups TRUE if the age group categories given overlap
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -55,6 +56,7 @@ addDemographics <- function(x,
                             priorHistoryName = "prior_history",
                             futureObservation = TRUE,
                             futureObservationName = "future_observation",
+                            overlapAgeGroups = FALSE,
                             tablePrefix = NULL) {
   ## change ageDefaultMonth, ageDefaultDay to integer
 
@@ -82,10 +84,11 @@ addDemographics <- function(x,
   )
   checkmate::assertLogical(ageImposeMonth, any.missing = FALSE, len = 1)
   checkmate::assertLogical(ageImposeDay, any.missing = FALSE, len = 1)
-  ageGroup <- checkAgeGroup(ageGroup)
+  ageGroup <- checkAgeGroup(ageGroup, overlap = overlapAgeGroups)
   checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
   checkmate::assertLogical(priorHistory, any.missing = FALSE, len = 1)
   checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(overlapAgeGroups, any.missing = FALSE, len = 1)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
   checkVariableInX(indexDate, x, !(age | priorHistory | futureObservation))
   if (!(age | sex | priorHistory | futureObservation)) {
@@ -93,12 +96,18 @@ addDemographics <- function(x,
   }
 
   # check variable names
-  if(age) {checkSnakeCase(ageName)}
-  if(sex) {checkSnakeCase(sexName)}
-  if(priorHistory) {checkSnakeCase(priorHistoryName)}
-  if(futureObservation) {checkSnakeCase(futureObservationName)}
+  if(age) {ageName <- checkSnakeCase(ageName)}
+  if(sex) {sexName <- checkSnakeCase(sexName)}
+  if(priorHistory) {priorHistoryName <- checkSnakeCase(priorHistoryName)}
+  if(futureObservation) {futureObservationName <- checkSnakeCase(futureObservationName)}
+
+  checkNewName(ageName, x)
+  checkNewName(sexName, x)
+  checkNewName(priorHistoryName, x)
+  checkNewName(futureObservationName, x)
 
   # Start code
+  startTibble <- x
   startNames <- names(x)
 
   personDetails <- cdm[["person"]] %>%
@@ -260,9 +269,13 @@ addDemographics <- function(x,
       cdm = cdm,
       variable = ageName,
       categories = ageGroup,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      overlap = overlapAgeGroups
     )
   }
+
+  # put back the initial attributes to the output tibble
+  x <- x %>% addAttributes(startTibble)
 
   return(x)
 }
