@@ -1,0 +1,31 @@
+﻿type,format_key,applied_function,info,are_NA_considered,warnings,result
+numeric,mean,mean of the variable of interest.,,no,,numeric
+numeric,sd,standard deviation of the variable of interest.,,no,,numeric
+numeric,median,median of the variable of interest.,,no,,numeric
+numeric,qXX,qualtile of XX% the variable of interest.,XX can be any integer between 0 and 100.,no,,numeric
+numeric,min,minimum of the variable of interest.,,no,,numeric
+numeric,max,maximum of the variable of interest.,,no,,numeric
+numeric,sum,sum of all the values for the variable of interest.,,no,,numeric
+numeric,iqr,distance between q75 and q25,,no,,numeric
+numeric,range,diatance between maximum and minimum,,no,,numeric
+date,mean,mean of the date of interest.,,no,Dates are rounded to nearest day.,date
+date,sd,standard deviation of the date of interest. ,,no,Dates are rounded to nearest day.,numeric
+date,median,median of the date of interest.,,no,Dates are rounded to nearest day.,date
+date,qXX,qualtile of XX% of the date of interest.,XX can be any integer between 0 and 100.,no,Dates are rounded to nearest day.,date
+date,min,minimum of the date of interest.,,no,Dates are rounded to nearest day.,date
+date,max,maximum of the date of interest.,,no,Dates are rounded to nearest day.,date
+date,iqr,days between q75 and q25,,no,Dates are rounded to nearest day.,numeric
+date,range,days between maximum and minimum,,no,Dates are rounded to nearest day.,numeric
+categorical,count,number of times that each category is observed.,,no,,numeric
+categorical,%,percentage of individuals with that category,,no,,numeric
+categorical,distinct,number of distinct categories,,no,,numeric
+categorical,mean,mean number of individuals per category,,no,,numeric
+categorical,sd,standard deviation of the number of individuals per category,,no,,numeric
+categorical,median,median number of individuals per category,,no,,numeric
+categorical,qXX,qualtile of XX% of the number of individuals per category,,no,,numeric
+categorical,min,minimum number of individuals per category,,no,,numeric
+categorical,max,maximum number of individuals per category,,no,,numeric
+categorical,iqr,difference between q75 and q25 of individuals per category,,no,,numeric
+categorical,range,distance between maximum and minimum of individuals per category,,no,,numeric
+binary,count,number of times that each category is observed.,,no,,numeric
+binary,%,percentage of individuals with that category,,no,,percentage
