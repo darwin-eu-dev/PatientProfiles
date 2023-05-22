@@ -68,6 +68,8 @@ calculated}
 
 \item{futureObservationName}{Future observation variable name}
 
+\item{overlapAgeGroups}{TRUE if the age group categories given overlap}
+
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
 }

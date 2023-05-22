@@ -24,6 +24,8 @@ cdm reference.}
 \item{categories}{List of lists of named categories with lower and upper
 limit.}
 
+\item{overlap}{TRUE if the categories given overlap}
+
 \item{tablePrefix}{The stem for the permanent tables that will be created. If
 NULL, temporary tables will be used throughout.}
 }
