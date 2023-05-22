@@ -5,14 +5,14 @@
 \title{Detect automatically variables with a certain classification}
 \usage{
 detectVariables(
-  x,
+  table,
   variableClassification,
   exclude = c("person_id", "subject_id", "cohort_definition_id", "cohort_name",
     "strata_name", "strata_level")
 )
 }
 \arguments{
-\item{x}{Table}
+\item{table}{Tibble}
 
 \item{variableClassification}{Classification of interest, choice between
 "numeric", "date", "binary" and "categorical"}

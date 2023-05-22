@@ -57,7 +57,7 @@ binaryFormats <- function() {
 #' Classify the variables between 5 types: "numeric", "categorical", "binary",
 #' "date", or NA.
 #'
-#' @param x Tibble with different columns.
+#' @param table Tibble
 #'
 #' @return Tibble with the variables type and classification
 #'
@@ -73,13 +73,13 @@ binaryFormats <- function() {
 #'
 #' @export
 #'
-variableTypes <- function(x) {
-  checkmate::assertTibble(x)
+variableTypes <- function(table) {
+  checkTable(table)
   x <- dplyr::tibble(
-    variable = colnames(x),
-    variable_type = lapply(x, pillar::type_sum) %>% unlist()
+    variable = colnames(table),
+    variable_type = lapply(table, pillar::type_sum) %>% unlist()
   ) %>%
-    dplyr::mutate(variable_classification = assertClassification(.data$variable_type, .env$x))
+    dplyr::mutate(variable_classification = assertClassification(.data$variable_type, .env$table))
   return(x)
 }
 
@@ -108,9 +108,26 @@ assertClassification <- function(x, tib) {
     unlist()
 }
 
+#' @noRd
+availableFormat <- function(x) {
+  x <- formats %>%
+    dplyr::filter(.data$type == .env$x) %>%
+    dplyr::select(-"type")
+  if (sum(is.na(x$info)) == nrow(x)) {
+    x <- x %>% dplyr::select(-"info")
+  }
+  if (sum(is.na(x$are_NA_considered)) == nrow(x)) {
+    x <- x %>% dplyr::select(-"are_NA_considered")
+  }
+  if (sum(is.na(x$warnings)) == nrow(x)) {
+    x <- x %>% dplyr::select(-"warnings")
+  }
+  return(x)
+}
+
 #' Detect automatically variables with a certain classification
 #'
-#' @param x Table
+#' @param table Tibble
 #' @param variableClassification Classification of interest, choice between
 #' "numeric", "date", "binary" and "categorical"
 #' @param exclude Variables to exclude
@@ -129,26 +146,26 @@ assertClassification <- function(x, tib) {
 #'
 #' @export
 #'
-detectVariables <- function(x,
+detectVariables <- function(table,
                             variableClassification,
                             exclude = c(
                               "person_id", "subject_id", "cohort_definition_id",
                               "cohort_name", "strata_name", "strata_level"
                             )) {
   # initial checks
-  checkX(x)
+  checkTable(table)
   checkVariableClassification(variableClassification)
   checkExclude(exclude)
 
   # get variable types
-  variables <- variableTypes(x) %>%
+  variables <- variableTypes(table) %>%
     dplyr::filter(
       .data$variable_classification == .env$variableClassification
     ) %>%
     dplyr::pull("variable")
 
   # eliminate excluded variables
-  variables <- variables[!(variables %in% excluded)]
+  variables <- variables[!(variables %in% exclude)]
 
   return(variables)
 }

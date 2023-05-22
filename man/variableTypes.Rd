@@ -5,10 +5,10 @@
 \title{Classify the variables between 5 types: "numeric", "categorical", "binary",
 "date", or NA.}
 \usage{
-variableTypes(x)
+variableTypes(table)
 }
 \arguments{
-\item{x}{Tibble with different columns.}
+\item{table}{Tibble}
 }
 \value{
 Tibble with the variables type and classification
