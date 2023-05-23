@@ -140,55 +140,22 @@ addDemographics <- function(x,
 
   # update dates
   if (age) {
-    # impose month
-    if (ageImposeMonth == TRUE) {
-      personDetails <- personDetails %>%
-        dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
-    } else {
-      personDetails <- personDetails %>%
-        dplyr::mutate(month_of_birth = dplyr::if_else(
-          is.na(.data$month_of_birth),
-          .env$ageDefaultMonth,
-          .data$month_of_birth
-        ))
-    }
-    # impose day
-    if (ageImposeDay == TRUE) {
-      personDetails <- personDetails %>%
-        dplyr::mutate(day_of_birth = .env$ageDefaultDay)
-    } else {
-      personDetails <- personDetails %>%
-        dplyr::mutate(day_of_birth = dplyr::if_else(
-          is.na(.data$day_of_birth),
-          .env$ageDefaultDay,
-          .data$day_of_birth
-        ))
-    }
-  }
-
-  personDetails <- personDetails %>%
+    personDetails <- personDetails %>%
     dplyr::filter(!is.na(.data$year_of_birth)) %>%
-    dplyr::mutate(
-      year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
-      month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
-      day_of_birth1 = as.character(as.integer(.data$day_of_birth))
-    ) %>%
-    dplyr::mutate(birth_date = as.Date(
-      paste0(
-        .data$year_of_birth1,
-        "-",
-        .data$month_of_birth1,
-        "-",
-        .data$day_of_birth1
-      )
-    ))
+    addDateOfBirth(cdm,
+                   name = "date_of_birth",
+                   missingDay = ageDefaultDay,
+                   missingMonth = ageDefaultMonth,
+                   imposeDay = ageImposeDay,
+                   imposeMonth = ageImposeMonth)
+  }
 
   x <- x %>%
     dplyr::left_join(
       personDetails %>%
         dplyr::select(dplyr::any_of(c(
           person_variable,
-          "birth_date",
+          "date_of_birth",
           "gender_concept_id",
           "observation_period_start_date",
           "observation_period_end_date"
@@ -281,7 +248,7 @@ addDemographics <- function(x,
 ageQuery <- function(indexDate, name) {
   return(glue::glue('dbplyr::sql(
     CDMConnector::datediff(
-      start = "birth_date",
+      start = "date_of_birth",
       end = "{indexDate}",
       interval = "year"
     )

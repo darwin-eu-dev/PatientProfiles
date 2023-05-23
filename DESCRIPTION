@@ -46,7 +46,10 @@ Imports:
     tibble,
     DBI,
     rlang,
-    cli
+    cli,
+    pillar
 VignetteBuilder: knitr
 URL: https://oxford-pharmacoepi.github.io/PatientProfiles/
 Language: en-US
+Depends: 
+    R (>= 2.10)

@@ -369,3 +369,29 @@ checkSnakeCase <- function(name) {
   }
   return(name)
 }
+
+#' @noRd
+checkVariableClassification <- function(variableClassification) {
+  errorMessage <- "variableClassification must be a choice between numeric, date, binary and categorical."
+  if (!is.character(variableClassification) |
+      length(variableClassification) != 1) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!(variableClassification %in% c("numeric", "date", "binary", "categorical"))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+#' @noRd
+checkExclude <- function(exclude) {
+  if (!is.null(exclude) & !is.character(exclude)) {
+    cli::cli_abort("eclude must a character vector or NULL")
+  }
+}
+
+#' @noRd
+checkTable <- function(table) {
+  if (!("tbl" %in% class(table))) {
+    cli::cli_abort("table should be a tibble")
+  }
+}
