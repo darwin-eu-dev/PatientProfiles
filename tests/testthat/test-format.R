@@ -1,31 +1,3 @@
-test_that("test formats", {
-  expect_true(identical(numericFormats(), availableFormat("numeric")))
-  expect_true(identical(dateFormats(), availableFormat("date")))
-  expect_true(identical(binaryFormats(), availableFormat("binary")))
-  expect_true(identical(categoricalFormats(), availableFormat("categorical")))
-  expect_true("tbl" %in% class(numericFormats()))
-  expect_true("tbl" %in% class(dateFormats()))
-  expect_true("tbl" %in% class(binaryFormats()))
-  expect_true("tbl" %in% class(categoricalFormats()))
-  expect_true(identical(
-    colnames(numericFormats()),
-    c("format_key", "applied_function", "info", "are_NA_considered", "result")
-  ))
-  expect_true(identical(
-    colnames(dateFormats()),
-    c("format_key", "applied_function", "info", "are_NA_considered", "warnings",
-      "result")
-  ))
-  expect_true(identical(
-    colnames(binaryFormats()),
-    c("format_key", "applied_function", "are_NA_considered", "result")
-  ))
-  expect_true(identical(
-    colnames(categoricalFormats()),
-    c("format_key", "applied_function", "are_NA_considered", "result")
-  ))
-})
-
 test_that("test variableTypes", {
   x <- dplyr::tibble(
     x1 = c(1, 2, 3), x2 = as.Date(c("2021-01-05", "2025-04-19", "2000-12-12")),
@@ -47,3 +19,28 @@ test_that("test variableTypes", {
   expect_true(identical(detectVariables(x, "binary"), c("x3", "x4", "x8")))
   expect_true(identical(detectVariables(x, "categorical"), c("x6", "x7")))
 })
+
+test_that("test functions", {
+  expect_true("tbl" %in% class(availableFunctions("numeric")))
+  expect_true("tbl" %in% class(availableFunctions("date")))
+  expect_true("tbl" %in% class(availableFunctions("binary")))
+  expect_true("tbl" %in% class(availableFunctions("categorical")))
+  expect_true(identical(
+    colnames(availableFunctions("numeric")),
+    c("format_key", "applied_function", "info", "are_NA_considered", "result")
+  ))
+  expect_true(identical(
+    colnames(availableFunctions("date")),
+    c("format_key", "applied_function", "info", "are_NA_considered", "warnings",
+      "result")
+  ))
+  expect_true(identical(
+    colnames(availableFunctions("binary")),
+    c("format_key", "applied_function", "are_NA_considered", "result")
+  ))
+  expect_true(identical(
+    colnames(availableFunctions("categorical")),
+    c("format_key", "applied_function", "are_NA_considered", "result")
+  ))
+})
+

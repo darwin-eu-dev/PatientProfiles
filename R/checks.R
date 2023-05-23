@@ -379,3 +379,59 @@ checkTable <- function(table) {
     cli::cli_abort("table should be a tibble")
   }
 }
+
+#' @noRd
+checkStrata <- function(strata, table) {
+  errorMessage <- "strata should be a unique named list that point to columns in table"
+  if (!is.list(strata)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(strata)) != length(strata)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(strata))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(strata) %in% colnames(table))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+#' @noRd
+checkVariables <- function(variables, table) {
+  errorMessage <- "variables should be a unique named list that point to columns in table"
+  if (!is.list(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(variables)) != length(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(variables))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(variables) %in% colnames(table))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+#' @noRd
+checkFunctions <- function(functions, table) {
+  errorMessage <- "functions should be a unique named list that point to functions. Check suported functions using availableFunctions()."
+  if (!is.list(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(variables)) != length(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(variables))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(variables) %in% colnames(table))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+checkSameNames(variables, functions)
+checkSuperssCellCount(spressCellCount)
+checkBigMark(bigMark)
+checkDecimalMark(decimalMark)
+checkSignificantDecimals(significantDecimals)
