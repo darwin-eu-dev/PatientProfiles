@@ -14,7 +14,7 @@ formats <- read_csv(
 
 allFunctions <- c(
   unique(formats$format_key),
-  paste0("q", str_pad(seq(0, 100, 5), 2, pad = "0"))
+  paste0("q", str_pad(0:100, 2, pad = "0"))
 )
 allFunctions <- allFunctions[allFunctions != "qXX"]
 
