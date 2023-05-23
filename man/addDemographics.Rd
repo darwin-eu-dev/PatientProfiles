@@ -21,7 +21,6 @@ addDemographics(
   priorHistoryName = "prior_history",
   futureObservation = TRUE,
   futureObservationName = "future_observation",
-  overlapAgeGroups = FALSE,
   tablePrefix = NULL
 )
 }
@@ -67,8 +66,6 @@ indexDate and the end of the current observation period will be
 calculated}
 
 \item{futureObservationName}{Future observation variable name}
-
-\item{overlapAgeGroups}{TRUE if the age group categories given overlap}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
