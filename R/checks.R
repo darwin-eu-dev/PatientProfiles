@@ -389,16 +389,18 @@ checkStrata <- function(strata, table) {
   if (length(names(strata)) != length(strata)) {
     cli::cli_abort(errorMessage)
   }
-  if (!is.character(unlist(strata))) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!all(unlist(strata) %in% colnames(table))) {
-    cli::cli_abort(errorMessage)
+  if (length(strata) > 0) {
+    if (!is.character(unlist(strata))) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!all(unlist(strata) %in% colnames(table))) {
+      cli::cli_abort(errorMessage)
+    }
   }
 }
 
 #' @noRd
-checkVariables <- function(variables, table) {
+checkVariablesFunctions <- function(variables, functions, table) {
   errorMessage <- "variables should be a unique named list that point to columns in table"
   if (!is.list(variables)) {
     cli::cli_abort(errorMessage)
@@ -412,26 +414,45 @@ checkVariables <- function(variables, table) {
   if (!all(unlist(variables) %in% colnames(table))) {
     cli::cli_abort(errorMessage)
   }
+  errorMessage <- "functions should be a unique named list that point to functions. Check suported functions using availableFunctions()."
+  if (!is.list(functions)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(functions)) != length(functions)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(functions))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(functions) %in% allFunctions)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!identical(sort(names(variables)), sort(names(functions)))) {
+    cli::cli_abort("Names from variables and functions must be the same")
+  }
+  vt <- variableTypes(table)
 }
 
 #' @noRd
-checkFunctions <- function(functions, table) {
-  errorMessage <- "functions should be a unique named list that point to functions. Check suported functions using availableFunctions()."
-  if (!is.list(variables)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (length(names(variables)) != length(variables)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!is.character(unlist(variables))) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!all(unlist(variables) %in% colnames(table))) {
-    cli::cli_abort(errorMessage)
-  }
+checkSuppressCellCount <- function(suppressCellCount) {
+  checkmate::assertIntegerish(
+    suppressCellCount, lower = 0, len = 1, any.missing = F
+  )
 }
-checkSameNames(variables, functions)
-checkSuperssCellCount(spressCellCount)
-checkBigMark(bigMark)
-checkDecimalMark(decimalMark)
-checkSignificantDecimals(significantDecimals)
+
+#' @noRd
+checkBigMark <- function(bigMark) {
+  checkmate::checkCharacter(bigMark, min.chars = 0, len = 1, any.missing = F)
+}
+
+#' @noRd
+checkDecimalMark <- function(decimalMark) {
+  checkmate::checkCharacter(decimalMark, min.chars = 1, len = 1, any.missing = F)
+}
+
+#' @noRd
+checkSignificantDecimals <- function(significantDecimals) {
+  checkmate::assertIntegerish(
+    significantDecimals, lower = 0, len = 1, any.missing = F
+  )
+}

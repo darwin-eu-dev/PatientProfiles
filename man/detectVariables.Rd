@@ -26,6 +26,7 @@ Variables in x with the desired classification
 Detect automatically variables with a certain classification
 }
 \examples{
+\donttest{
 library(PatientProfiles)
 library(tibble)
 x <- tibble(
@@ -34,5 +35,6 @@ x <- tibble(
   asthma = c(0, 1)
 )
 detectVariables(x, "numeric")
+}
 
 }

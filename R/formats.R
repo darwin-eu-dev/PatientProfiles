@@ -60,12 +60,14 @@ assertClassification <- function(x, tib) {
 #' @param variableClassification A choice between: "numeric", "date", "binary"
 #' or "categorical".
 #'
-#' @return
+#' @return A tibble with the available functions for a certain variable
+#' classification (or all if NULL)
 #'
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
 #'
+#' availableFunctions()
 #' availableFunctions("numeric")
 #' availableFunctions("date")
 #' availableFunctions("binary")

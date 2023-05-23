@@ -1,6 +1,7 @@
 library(readr)
 library(here)
 library(usethis)
+library(stringr)
 
 formats <- read_csv(
   here("extras", "formats.csv"),
@@ -11,4 +12,10 @@ formats <- read_csv(
   )
 )
 
-use_data(formats, internal = TRUE, overwrite = TRUE)
+allFunctions <- c(
+  unique(formats$format_key),
+  paste0("q", str_pad(seq(0, 100, 5), 2, pad = "0"))
+)
+allFunctions <- allFunctions[allFunctions != "qXX"]
+
+use_data(formats, allFunctions, internal = TRUE, overwrite = TRUE)

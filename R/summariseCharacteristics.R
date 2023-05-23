@@ -6,7 +6,7 @@
 #' are automatically classified.
 #' @param functions List of functions to be applied to each one of the group of
 #' variables.
-#' @param spressCellCount Minimum count of records to report results.
+#' @param suppressCellCount Minimum count of records to report results.
 #' @param bigMark Big mark delimiter.
 #' @param decimalMark Decimal separator.
 #' @param significantDecimals Number of significant decimals reported.
@@ -30,28 +30,26 @@
 summariseCharacteristics <- function (table,
                                       strata = list(),
                                       variables = list(
-                                        numericVariables = detectVariables(x, "numeric"),
-                                        dateVariables = detectVariables(x, "date"),
-                                        binaryVariables = detectVariables(x, "binary"),
-                                        categoricalVariables = detectVariables(x, "categorical")
+                                        numericVariables = detectVariables(table, "numeric"),
+                                        dateVariables = detectVariables(table, "date"),
+                                        binaryVariables = detectVariables(table, "binary"),
+                                        categoricalVariables = detectVariables(table, "categorical")
                                       ),
-                                      functions = lsit(
+                                      functions = list(
                                         numericVariables = c("median", "q25", "q75"),
                                         dateVariables = c("median", "q25", "q75"),
                                         binaryVariables = c("count", "%"),
                                         categoricalVariables = c("count", "%")
                                       ),
-                                      spressCellCount = 5,
+                                      suppressCellCount = 5,
                                       bigMark = ",",
                                       decimalMark = ".",
                                       significantDecimals = 2) {
   # initial checks
   checkTable(table)
   checkStrata(strata, table)
-  checkVariables(variables, table)
-  checkFunctions(functions, table)
-  checkSameNames(variables, functions)
-  checkSuperssCellCount(spressCellCount)
+  checkVariablesFunctions(variables, functions, table)
+  checkSuppressCellCount(suppressCellCount)
   checkBigMark(bigMark)
   checkDecimalMark(decimalMark)
   checkSignificantDecimals(significantDecimals)
