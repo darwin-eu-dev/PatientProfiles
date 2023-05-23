@@ -6,12 +6,13 @@
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
+#' @param overlap TRUE if the categories given overlap
 #' @param tablePrefix The stem for the permanent tables that will be created. If
 #' NULL, temporary tables will be used throughout.
 #'
 #' @return tibble with the categorical variable added.
 #'
-#' @noRd
+#' @export
 #'
 #' @examples
 #' #'
@@ -54,6 +55,7 @@ addCategories <- function(x,
                           cdm,
                           variable,
                           categories,
+                          overlap = FALSE,
                           tablePrefix = NULL) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
     cli::cli_abort("x is not a table")
@@ -92,7 +94,7 @@ addCategories <- function(x,
 
   categoryTibble <- list()
   for (k in seq_along(categories)) {
-    categoryTibble[[nam[k]]] <- checkCategory(categories[[k]])
+    categoryTibble[[nam[k]]] <- checkCategory(categories[[k]], overlap = overlap)
   }
 
   for (k in seq_along(categories)) {
@@ -101,19 +103,42 @@ addCategories <- function(x,
 
     x <- dplyr::mutate(x, variable := .data[[variable]])
     x <- dplyr::mutate(x, !!name := as.character(NA))
-    for (i in 1:nrow(categoryTibbleK)) {
-      lower <- categoryTibbleK$lower_bound[i]
-      upper <- categoryTibbleK$upper_bound[i]
-      category <- categoryTibbleK$category_label[i]
-      x <- x %>%
-        dplyr::mutate(!!name := dplyr::if_else(
-          is.na(.data[[name]]) &
-            .data$variable >= .env$lower &
-            .data$variable <= .env$upper,
-          .env$category,
-          .data[[name]]
-        ))
+    if(!overlap) {
+      for (i in 1:nrow(categoryTibbleK)) {
+        lower <- categoryTibbleK$lower_bound[i]
+        upper <- categoryTibbleK$upper_bound[i]
+        category <- categoryTibbleK$category_label[i]
+        x <- x %>%
+          dplyr::mutate(!!name := dplyr::if_else(
+            is.na(.data[[name]]) &
+              .data$variable >= .env$lower &
+              .data$variable <= .env$upper,
+            .env$category,
+            .data[[name]]
+          ))
+      }
+    } else {
+      for (i in 1:nrow(categoryTibbleK)) {
+        lower <- categoryTibbleK$lower_bound[i]
+        upper <- categoryTibbleK$upper_bound[i]
+        category <- categoryTibbleK$category_label[i]
+        x <- x %>%
+          dplyr::mutate(!!name := dplyr::if_else(
+            is.na(.data[[name]]) &
+              .data$variable >= .env$lower &
+              .data$variable <= .env$upper,
+            .env$category,
+            dplyr::if_else(
+              !is.na(.data[[name]]) &
+                .data$variable >= .env$lower &
+                .data$variable <= .env$upper,
+              paste0(.data[[name]],"&&",.env$category),
+              .data[[name]]
+            )
+          ))
+      }
     }
+
     x <- dplyr::select(x, -"variable")
 
     if (!is.null(tablePrefix)) {

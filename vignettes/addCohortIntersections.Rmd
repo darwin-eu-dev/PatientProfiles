@@ -181,7 +181,7 @@ cdm$cohort1TimeTo <- cdm$cohort1 %>%
   addCohortIntersectDays(cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
-    order = "first",
+    order = "first"
   )
 
 cdm$cohort1TimeTo %>%

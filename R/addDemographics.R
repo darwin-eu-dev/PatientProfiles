@@ -93,12 +93,18 @@ addDemographics <- function(x,
   }
 
   # check variable names
-  if(age) {checkSnakeCase(ageName)}
-  if(sex) {checkSnakeCase(sexName)}
-  if(priorHistory) {checkSnakeCase(priorHistoryName)}
-  if(futureObservation) {checkSnakeCase(futureObservationName)}
+  if(age) {ageName <- checkSnakeCase(ageName)}
+  if(sex) {sexName <- checkSnakeCase(sexName)}
+  if(priorHistory) {priorHistoryName <- checkSnakeCase(priorHistoryName)}
+  if(futureObservation) {futureObservationName <- checkSnakeCase(futureObservationName)}
+
+  checkNewName(ageName, x)
+  checkNewName(sexName, x)
+  checkNewName(priorHistoryName, x)
+  checkNewName(futureObservationName, x)
 
   # Start code
+  startTibble <- x
   startNames <- names(x)
 
   personDetails <- cdm[["person"]] %>%
@@ -230,6 +236,9 @@ addDemographics <- function(x,
       tablePrefix = tablePrefix
     )
   }
+
+  # put back the initial attributes to the output tibble
+  x <- x %>% addAttributes(startTibble)
 
   return(x)
 }

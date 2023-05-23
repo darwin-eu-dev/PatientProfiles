@@ -52,7 +52,7 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 }
 
 #' @noRd
-checkCategory <- function(category) {
+checkCategory <- function(category, overlap = FALSE) {
   checkmate::assertList(
     category,
     types = "integerish", any.missing = FALSE, unique = TRUE,
@@ -101,25 +101,28 @@ checkCategory <- function(category) {
     dplyr::arrange(.data$lower_bound)
 
   # check overlap
-  if (nrow(result) > 1) {
-    lower <- result$lower_bound[2:nrow(result)]
-    upper <- result$upper_bound[1:(nrow(result) - 1)]
-    if (!all(lower > upper)) {
-      cli::cli_abort("There can not be overlap between categories")
+  if(!overlap) {
+    if (nrow(result) > 1) {
+      lower <- result$lower_bound[2:nrow(result)]
+      upper <- result$upper_bound[1:(nrow(result) - 1)]
+      if (!all(lower > upper)) {
+        cli::cli_abort("There can not be overlap between categories")
+      }
     }
   }
+
   return(result)
 }
 
 #' @noRd
-checkAgeGroup <- function(ageGroup) {
+checkAgeGroup <- function(ageGroup, overlap = FALSE) {
   checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
   if (!is.null(ageGroup)) {
     if (is.numeric(ageGroup[[1]])) {
       ageGroup <- list("age_group" = ageGroup)
     }
     for (k in seq_along(ageGroup)) {
-      invisible(checkCategory(ageGroup[[k]]))
+      invisible(checkCategory(ageGroup[[k]], overlap))
     }
     if (is.null(names(ageGroup))) {
       names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
@@ -344,14 +347,27 @@ checkCohortNames <- function(x, targetCohortId, name) {
 
 #' @noRd
 checkSnakeCase <- function(name) {
- for(n in name) {
+  wrong <- FALSE
+ for(i in seq_along(name)) {
+   n <- name[i]
    n <- gsub("[a-z]","",n)
    n <- gsub("[0-9]","",n)
    n <- gsub("_","",n)
    if(nchar(n) > 0) {
-     cli::cli_abort(paste0(deparse(substitute(name)), " is not written in snake case, please check characters: ",gsub(""," ",n)))
+     oldname <- name[i]
+     name[i] <- gsub("([[:upper:]])", "\\L\\1", perl = TRUE, name[i])
+     name[i] <- gsub("[^a-z,0-9.-]", "_", name[i])
+     name[i] <- gsub("-", "_", name[i])
+     cli::cli_alert(paste0(oldname," has been changed to ",name[i]))
+     wrong <- TRUE
    }
  }
+  if(wrong) {
+    cli::cli_alert("some provided names were not in snake_case")
+    cli::cli_alert("names have been changed to lower case")
+    cli::cli_alert("special symbols in names have been changed to '_'")
+  }
+  return(name)
 }
 
 #' @noRd
