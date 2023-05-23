@@ -424,13 +424,50 @@ checkVariablesFunctions <- function(variables, functions, table) {
   if (!is.character(unlist(functions))) {
     cli::cli_abort(errorMessage)
   }
-  if (!all(unlist(functions) %in% allFunctions)) {
+  if (!all(unlist(functions) %in% unique(formats$format_key))) {
     cli::cli_abort(errorMessage)
   }
   if (!identical(sort(names(variables)), sort(names(functions)))) {
     cli::cli_abort("Names from variables and functions must be the same")
   }
   vt <- variableTypes(table)
+  requiredFunctions <- NULL
+  for (nam in names(variables)) {
+    requiredFunctions <- requiredFunctions %>%
+      dplyr::union_all(
+        tidyr::expand_grid(
+          variable = variables[[nam]],
+          format_key = functions[[nam]]
+        )
+      )
+  }
+  suportedFunctions <- vt %>%
+    dplyr::select("variable", "variable_classification") %>%
+    dplyr::left_join(
+      formats %>%
+        dplyr::select("variable_classification", "format_key"),
+      by = "variable_classification"
+    )
+  nonSuportedFunctions <- requiredFunctions %>%
+    dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))
+  if (nrow(nonSuportedFunctions) > 0) {
+    nonSuportedFunctions <- nonSuportedFunctions %>%
+      dplyr::left_join(vt, by = "variable")
+    errorMessage <- "Non supported functions found\n"
+    vars <- unique(nonSuportedFunctions$variable)
+    for (v in vars) {
+      errorMessage <- paste0(
+        errorMessage, v, " is `", vt$variable_classification[vt$variable == v],
+        "` and formats: ",
+        paste0(
+          nonSuportedFunctions$format_key[nonSuportedFunctions$variable == v],
+          collapse = ","
+        ),
+        " are not suported\n"
+      )
+    }
+    cli::cli_abort(errorMessage)
+  }
 }
 
 #' @noRd

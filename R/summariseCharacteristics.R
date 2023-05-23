@@ -53,6 +53,4 @@ summariseCharacteristics <- function (table,
   checkBigMark(bigMark)
   checkDecimalMark(decimalMark)
   checkSignificantDecimals(significantDecimals)
-
-
 }

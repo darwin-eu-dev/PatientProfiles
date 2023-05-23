@@ -27,20 +27,19 @@ test_that("test functions", {
   expect_true("tbl" %in% class(availableFunctions("categorical")))
   expect_true(identical(
     colnames(availableFunctions("numeric")),
-    c("format_key", "applied_function", "info", "are_NA_considered", "result")
+    c("format_key", "applied_function", "result")
   ))
   expect_true(identical(
     colnames(availableFunctions("date")),
-    c("format_key", "applied_function", "info", "are_NA_considered", "warnings",
-      "result")
+    c("format_key", "applied_function", "result")
   ))
   expect_true(identical(
     colnames(availableFunctions("binary")),
-    c("format_key", "applied_function", "are_NA_considered", "result")
+    c("format_key", "applied_function", "result")
   ))
   expect_true(identical(
     colnames(availableFunctions("categorical")),
-    c("format_key", "applied_function", "are_NA_considered", "result")
+    c("format_key", "applied_function", "result")
   ))
 })
 
