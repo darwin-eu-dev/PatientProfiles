@@ -1,4 +1,4 @@
-﻿type,format_key,applied_function,info,are_NA_considered,warnings,result
+type,format_key,applied_function,info,are_NA_considered,warnings,result
 numeric,mean,mean of the variable of interest.,,no,,numeric
 numeric,sd,standard deviation of the variable of interest.,,no,,numeric
 numeric,median,median of the variable of interest.,,no,,numeric
@@ -29,3 +29,12 @@ categorical,iqr,difference between q75 and q25 of individuals per category,,no,,
 categorical,range,distance between maximum and minimum of individuals per category,,no,,numeric
 binary,count,number of times that each category is observed.,,no,,numeric
 binary,%,percentage of individuals with that category,,no,,percentage
+binary,mean,mean of the variable of interest.,,no,,numeric
+binary,sd,standard deviation of the variable of interest.,,no,,numeric
+binary,median,median of the variable of interest.,,no,,numeric
+binary,qXX,qualtile of XX% the variable of interest.,XX can be any integer between 0 and 100.,no,,numeric
+binary,min,minimum of the variable of interest.,,no,,numeric
+binary,max,maximum of the variable of interest.,,no,,numeric
+binary,sum,sum of all the values for the variable of interest.,,no,,numeric
+binary,iqr,distance between q75 and q25,,no,,numeric
+binary,range,diatance between maximum and minimum,,no,,numeric
