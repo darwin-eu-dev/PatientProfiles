@@ -453,17 +453,17 @@ checkVariablesFunctions <- function(variables, functions, table) {
   if (nrow(nonSuportedFunctions) > 0) {
     nonSuportedFunctions <- nonSuportedFunctions %>%
       dplyr::left_join(vt, by = "variable")
-    errorMessage <- "Non supported functions found\n"
+    errorMessage <- "Non supported functions found."
     vars <- unique(nonSuportedFunctions$variable)
     for (v in vars) {
       errorMessage <- paste0(
-        errorMessage, v, " is `", vt$variable_classification[vt$variable == v],
-        "` and formats: ",
+        errorMessage, " '", v, "' is `",
+        vt$variable_classification[vt$variable == v], "` and formats: ",
         paste0(
           nonSuportedFunctions$format_key[nonSuportedFunctions$variable == v],
-          collapse = ","
+          collapse = ", "
         ),
-        " are not suported\n"
+        " are not suported."
       )
     }
     cli::cli_abort(errorMessage)
