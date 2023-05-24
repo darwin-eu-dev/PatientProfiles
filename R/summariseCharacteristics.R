@@ -62,7 +62,10 @@ summariseCharacteristics <- function (table,
     dplyr::select(
       "strata_name", "strata_level", "variable", "variable_classification",
       "estimate", "value"
-    )
+    ) %>%
+    dplyr::group_by(.data$strata_name) %>%
+    dplyr::arrange(.data$strata_level) %>%
+    dplyr::ungroup()
 
   # obscure counts
   result <- supressCounts(result, suppressCellCount)
