@@ -1,59 +1,3 @@
-#' Available functions and formats for numeric variables
-#'
-#' @return Tibble with the available numeric format keys
-#'
-#' @examples
-#' library(PatientProfiles)
-#' numericFormats()
-#'
-#' @export
-#'
-numericFormats <- function() {
-  return(availableFormat("numeric"))
-}
-
-#' Available functions and formats for date variables
-#'
-#' @return Tibble with the available date format keys
-#'
-#' @examples
-#' library(PatientProfiles)
-#' dateFormats()
-#'
-#' @export
-#'
-dateFormats <- function() {
-  return(availableFormat("date"))
-}
-
-#' Available functions and formats for categorical variables
-#'
-#' @return Tibble with the available categorical format keys
-#'
-#' @examples
-#' library(PatientProfiles)
-#' categoricalFormats()
-#'
-#' @export
-#'
-categoricalFormats <- function() {
-  return(availableFormat("categorical"))
-}
-
-#' Available functions and formats for binary variables
-#'
-#' @return Tibble with the available binary format keys
-#'
-#' @examples
-#' library(PatientProfiles)
-#' binaryFormats()
-#'
-#' @export
-#'
-binaryFormats <- function() {
-  return(availableFormat("binary"))
-}
-
 #' Classify the variables between 5 types: "numeric", "categorical", "binary",
 #' "date", or NA.
 #'
@@ -62,6 +6,7 @@ binaryFormats <- function() {
 #' @return Tibble with the variables type and classification
 #'
 #' @examples
+#' \donttest{
 #' library(PatientProfiles)
 #' library(tibble)
 #' x <- tibble(
@@ -70,6 +15,7 @@ binaryFormats <- function() {
 #'   asthma = c(0, 1)
 #' )
 #' variableTypes(x)
+#' }
 #'
 #' @export
 #'
@@ -79,7 +25,9 @@ variableTypes <- function(table) {
     variable = colnames(table),
     variable_type = lapply(table, pillar::type_sum) %>% unlist()
   ) %>%
-    dplyr::mutate(variable_classification = assertClassification(.data$variable_type, .env$table))
+    dplyr::mutate(variable_classification = assertClassification(
+      .data$variable_type, .env$table
+    ))
   return(x)
 }
 
@@ -108,21 +56,38 @@ assertClassification <- function(x, tib) {
     unlist()
 }
 
-#' @noRd
-availableFormat <- function(x) {
-  x <- formats %>%
-    dplyr::filter(.data$type == .env$x) %>%
-    dplyr::select(-"type")
-  if (sum(is.na(x$info)) == nrow(x)) {
-    x <- x %>% dplyr::select(-"info")
+#' Show the available functions for the 4 classifications of data that are
+#' supported (numeric, date, binary and categorical)
+#'
+#' @param variableClassification A choice between: "numeric", "date", "binary"
+#' or "categorical".
+#'
+#' @return A tibble with the available functions for a certain variable
+#' classification (or all if NULL)
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#'
+#' availableFunctions()
+#' availableFunctions("numeric")
+#' availableFunctions("date")
+#' availableFunctions("binary")
+#' availableFunctions("categorical")
+#' }
+#'
+#' @export
+#'
+availableFunctions <- function(variableClassification = NULL) {
+  if (is.null(variableClassification)) {
+    return(formats)
+  } else{
+    checkVariableClassification(variableClassification)
+    x <- formats %>%
+      dplyr::filter(.data$variable_classification == .env$variableClassification) %>%
+      dplyr::select(-"variable_classification")
+    return(x)
   }
-  if (sum(is.na(x$are_NA_considered)) == nrow(x)) {
-    x <- x %>% dplyr::select(-"are_NA_considered")
-  }
-  if (sum(is.na(x$warnings)) == nrow(x)) {
-    x <- x %>% dplyr::select(-"warnings")
-  }
-  return(x)
 }
 
 #' Detect automatically variables with a certain classification
@@ -135,6 +100,7 @@ availableFormat <- function(x) {
 #' @return Variables in x with the desired classification
 #'
 #' @examples
+#' \donttest{
 #' library(PatientProfiles)
 #' library(tibble)
 #' x <- tibble(
@@ -143,6 +109,7 @@ availableFormat <- function(x) {
 #'   asthma = c(0, 1)
 #' )
 #' detectVariables(x, "numeric")
+#' }
 #'
 #' @export
 #'
@@ -168,4 +135,89 @@ detectVariables <- function(table,
   variables <- variables[!(variables %in% exclude)]
 
   return(variables)
+}
+
+#' @noRd
+getFunctions <- function(f) {
+  estimates_func <- list(
+    "min" = function(x) {
+      base::min(x, na.rm = TRUE)
+    },
+    "max" = function(x) {
+      base::max(x, na.rm = TRUE)
+    },
+    "mean" = function(x) {
+      base::mean(x, na.rm = TRUE)
+    },
+    "median" = function(x) {
+      stats::median(x, na.rm = TRUE)
+    },
+    "sum" = function(x) {
+      base::sum(x, na.rm = TRUE)
+    },
+    "iqr" = function(x) {
+      stats::IQR(x, na.rm = TRUE)
+    },
+    "range" = function(x) {
+      base::diff(base::range(x, na.rm = TRUE))
+    },
+    "sd" = function(x) {
+      stats::sd(x, na.rm = TRUE)
+    },
+    "q05" = function(x) {
+      stats::quantile(x, 0.05, na.rm = TRUE)
+    },
+    "q10" = function(x) {
+      stats::quantile(x, 0.1, na.rm = TRUE)
+    },
+    "q15" = function(x) {
+      stats::quantile(x, 0.15, na.rm = TRUE)
+    },
+    "q20" = function(x) {
+      stats::quantile(x, 0.2, na.rm = TRUE)
+    },
+    "q25" = function(x) {
+      stats::quantile(x, 0.25, na.rm = TRUE)
+    },
+    "q30" = function(x) {
+      stats::quantile(x, 0.3, na.rm = TRUE)
+    },
+    "q35" = function(x) {
+      stats::quantile(x, 0.35, na.rm = TRUE)
+    },
+    "q40" = function(x) {
+      stats::quantile(x, 0.4, na.rm = TRUE)
+    },
+    "q45" = function(x) {
+      stats::quantile(x, 0.45, na.rm = TRUE)
+    },
+    "q55" = function(x) {
+      stats::quantile(x, 0.55, na.rm = TRUE)
+    },
+    "q60" = function(x) {
+      stats::quantile(x, 0.6, na.rm = TRUE)
+    },
+    "q65" = function(x) {
+      stats::quantile(x, 0.65, na.rm = TRUE)
+    },
+    "q70" = function(x) {
+      stats::quantile(x, 0.7, na.rm = TRUE)
+    },
+    "q75" = function(x) {
+      stats::quantile(x, 0.75, na.rm = TRUE)
+    },
+    "q80" = function(x) {
+      stats::quantile(x, 0.8, na.rm = TRUE)
+    },
+    "q85" = function(x) {
+      stats::quantile(x, 0.85, na.rm = TRUE)
+    },
+    "q90" = function(x) {
+      stats::quantile(x, 0.9, na.rm = TRUE)
+    },
+    "q95" = function(x) {
+      stats::quantile(x, 0.95, na.rm = TRUE)
+    }
+  )
+  return(estimates_func[f])
 }

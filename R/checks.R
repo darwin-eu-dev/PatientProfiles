@@ -395,3 +395,117 @@ checkTable <- function(table) {
     cli::cli_abort("table should be a tibble")
   }
 }
+
+#' @noRd
+checkStrata <- function(strata, table) {
+  errorMessage <- "strata should be a unique named list that point to columns in table"
+  if (!is.list(strata)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(strata)) != length(strata)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(strata) > 0) {
+    if (!is.character(unlist(strata))) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!all(unlist(strata) %in% colnames(table))) {
+      cli::cli_abort(errorMessage)
+    }
+  }
+}
+
+#' @noRd
+checkVariablesFunctions <- function(variables, functions, table) {
+  errorMessage <- "variables should be a unique named list that point to columns in table"
+  if (!is.list(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(variables)) != length(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(variables))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(variables) %in% colnames(table))) {
+    cli::cli_abort(errorMessage)
+  }
+  errorMessage <- "functions should be a unique named list that point to functions. Check suported functions using availableFunctions()."
+  if (!is.list(functions)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(functions)) != length(functions)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(functions))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(functions) %in% unique(formats$format_key))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!identical(sort(names(variables)), sort(names(functions)))) {
+    cli::cli_abort("Names from variables and functions must be the same")
+  }
+  vt <- variableTypes(table)
+  requiredFunctions <- NULL
+  for (nam in names(variables)) {
+    requiredFunctions <- requiredFunctions %>%
+      dplyr::union_all(
+        tidyr::expand_grid(
+          variable = variables[[nam]],
+          format_key = functions[[nam]]
+        )
+      )
+  }
+  suportedFunctions <- vt %>%
+    dplyr::select("variable", "variable_classification") %>%
+    dplyr::left_join(
+      formats %>%
+        dplyr::select("variable_classification", "format_key"),
+      by = "variable_classification"
+    )
+  nonSuportedFunctions <- requiredFunctions %>%
+    dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))
+  if (nrow(nonSuportedFunctions) > 0) {
+    nonSuportedFunctions <- nonSuportedFunctions %>%
+      dplyr::left_join(vt, by = "variable")
+    errorMessage <- "Non supported functions found."
+    vars <- unique(nonSuportedFunctions$variable)
+    for (v in vars) {
+      errorMessage <- paste0(
+        errorMessage, " '", v, "' is `",
+        vt$variable_classification[vt$variable == v], "` and formats: ",
+        paste0(
+          nonSuportedFunctions$format_key[nonSuportedFunctions$variable == v],
+          collapse = ", "
+        ),
+        " are not suported."
+      )
+    }
+    cli::cli_abort(errorMessage)
+  }
+}
+
+#' @noRd
+checkSuppressCellCount <- function(suppressCellCount) {
+  checkmate::assertIntegerish(
+    suppressCellCount, lower = 0, len = 1, any.missing = F
+  )
+}
+
+#' @noRd
+checkBigMark <- function(bigMark) {
+  checkmate::checkCharacter(bigMark, min.chars = 0, len = 1, any.missing = F)
+}
+
+#' @noRd
+checkDecimalMark <- function(decimalMark) {
+  checkmate::checkCharacter(decimalMark, min.chars = 1, len = 1, any.missing = F)
+}
+
+#' @noRd
+checkSignificantDecimals <- function(significantDecimals) {
+  checkmate::assertIntegerish(
+    significantDecimals, lower = 0, len = 1, any.missing = F
+  )
+}

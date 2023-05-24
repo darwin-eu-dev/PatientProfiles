@@ -18,6 +18,7 @@ Classify the variables between 5 types: "numeric", "categorical", "binary",
 "date", or NA.
 }
 \examples{
+\donttest{
 library(PatientProfiles)
 library(tibble)
 x <- tibble(
@@ -26,5 +27,6 @@ x <- tibble(
   asthma = c(0, 1)
 )
 variableTypes(x)
+}
 
 }

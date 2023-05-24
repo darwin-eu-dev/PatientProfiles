@@ -1,6 +1,7 @@
 library(readr)
 library(here)
 library(usethis)
+library(stringr)
 
 formats <- read_csv(
   here("extras", "formats.csv"),
