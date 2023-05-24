@@ -24,5 +24,7 @@ addAttributes <- function(newcohort,
     }
   }
 
+  class(newcohort) <- class(oldcohort)
+
   return(newcohort)
 }
