@@ -462,6 +462,11 @@ supressCounts <- function(result, suppressCellCount) {
       result$value[ik & is] <- paste0("<", suppressCellCount)
       result$value[ik & !is] <- as.character(NA)
     }
+    result$value[
+      result$estimate == "count" &
+        suppressWarnings(as.numeric(result$value)) < suppressCellCount &
+        suppressWarnings(as.numeric(result$value)) > 0
+    ] <- paste0("<", suppressCellCount)
   }
   return(result)
 }
