@@ -57,17 +57,21 @@ summariseCharacteristics <- function (table,
   # create the summary
   result <- table %>%
     summaryValuesStrata(
-      strata, variables, functions, bigMark, decimalMark, significativeDecimals
+      strata, variables, functions, bigMark, decimalMark, significantDecimals
+    ) %>%
+    dplyr::select(
+      "strata_name", "strata_level", "variable", "variable_classification",
+      "estimate", "value"
     )
 
   # obscure counts
-  # result <- supressCounts(result, suppressCellCount)
+  result <- supressCounts(result, suppressCellCount)
 
   return(result)
 }
 
 #' @noRd
-getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, significativeDecimals) {
+getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, significantDecimals) {
   functions <- variablesNumeric %>%
     dplyr::pull("estimate") %>%
     unique()
@@ -86,7 +90,7 @@ getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, signific
           )) %>%
           dplyr::mutate(dplyr::across(
             dplyr::all_of(variablesFunction),
-            ~ niceNum(., bigMark, decimalMark, significativeDecimals)
+            ~ niceNum(., bigMark, decimalMark, significantDecimals)
           )) %>%
           tidyr::pivot_longer(
             dplyr::all_of(variablesFunction), names_to = "variable"
@@ -104,7 +108,7 @@ getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, signific
 }
 
 #' @noRd
-getDateValues <- function(x, variablesDate, groupVariable, bigMark, decimalMark, significativeDecimals) {
+getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDecimals) {
   functions <- variablesDate %>%
     dplyr::pull("estimate") %>%
     unique()
@@ -131,7 +135,7 @@ getDateValues <- function(x, variablesDate, groupVariable, bigMark, decimalMark,
       result.k <- result.k %>%
         dplyr::mutate(dplyr::across(
           dplyr::all_of(variablesFunction),
-          ~ niceNum(.x, bigMark, decimalMark, significativeDecimals)
+          ~ niceNum(.x, bigMark, decimalMark, significantDecimals)
         ))
     }
     result.k <- result.k %>%
@@ -152,7 +156,7 @@ getDateValues <- function(x, variablesDate, groupVariable, bigMark, decimalMark,
 }
 
 #' @noRd
-getBinaryValues <- function(x, variablesBinary, groupVariable, bigMark, decimalMark, significativeDecimals) {
+getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significantDecimals) {
   variablesFunction <- variablesBinary %>%
     dplyr::pull("variable") %>%
     unique()
@@ -171,10 +175,10 @@ getBinaryValues <- function(x, variablesBinary, groupVariable, bigMark, decimalM
     dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
     dplyr::mutate(
       "%" = base::paste0(
-        niceNum(.data[["%"]], bigMark, decimalMark, significativeDecimals),
+        niceNum(.data[["%"]], bigMark, decimalMark, significantDecimals),
         "%"
       ),
-      count = niceNum(.data$count, bigMark, decimalMark, significativeDecimals)
+      count = niceNum(.data$count, bigMark, decimalMark, significantDecimals)
     ) %>%
     dplyr::select(-"denominator") %>%
     tidyr::pivot_longer(c("count", "%"), names_to = "estimate") %>%
@@ -191,7 +195,7 @@ getBinaryValues <- function(x, variablesBinary, groupVariable, bigMark, decimalM
 }
 
 #' @noRd
-getCategoricalValues <- function(x, variablesCategorical, groupVariable, bigMark, decimalMark, significativeDecimals) {
+getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, significantDecimals) {
   variables <- variablesCategorical %>%
     dplyr::pull("variable") %>%
     unique()
@@ -212,7 +216,7 @@ getCategoricalValues <- function(x, variablesCategorical, groupVariable, bigMark
         dplyr::select("category") %>%
         dplyr::distinct()
       summaryX <- xx %>%
-        dplyr::group_by(.data$category, add = TRUE) %>%
+        dplyr::group_by(.data$category, .add = TRUE) %>%
         dplyr::summarise(count = as.numeric(dplyr::n()), .groups = "drop") %>%
         dplyr::right_join(categories, by = "category") %>%
         dplyr::right_join(denominator, by = "strata_level") %>%
@@ -227,10 +231,10 @@ getCategoricalValues <- function(x, variablesCategorical, groupVariable, bigMark
             dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
             dplyr::mutate(
               "%" = base::paste0(niceNum(
-                .data[["%"]], bigMark, decimalMark, significativeDecimals
+                .data[["%"]], bigMark, decimalMark, significantDecimals
               ), "%"),
               count = niceNum(
-                .data$count, bigMark, decimalMark, significativeDecimals
+                .data$count, bigMark, decimalMark, significantDecimals
               )
             ) %>%
             dplyr::select(-"denominator") %>%
@@ -274,7 +278,7 @@ getCategoricalValues <- function(x, variablesCategorical, groupVariable, bigMark
             dplyr::mutate(
               variable = .env$v, variable_classification = "categorical",
               value = niceNum(
-                .data$value, bigMark, decimalMark, significativeDecimals
+                .data$value, bigMark, decimalMark, significantDecimals
               )
             )
         )
@@ -284,7 +288,7 @@ getCategoricalValues <- function(x, variablesCategorical, groupVariable, bigMark
 }
 
 #' @noRd
-summaryValues <- function(x, variables, functions, bigMark, decimalMark, significativeDecimals) {
+summaryValues <- function(x, variables, functions, bigMark, decimalMark, significantDecimals) {
   # get which are the estimates that are needed
   requiredFunctions <- NULL
   for (nam in names(variables)) {
@@ -320,7 +324,7 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
     result <- dplyr::union_all(
       result,
       getNumericValues(
-        x, variablesNumeric, bigMark, decimalMark, significativeDecimals
+        x, variablesNumeric, bigMark, decimalMark, significantDecimals
       )
     )
   }
@@ -332,7 +336,7 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
     result <- dplyr::union_all(
       result,
       getDateValues(
-        x, variablesDate, bigMark, decimalMark, significativeDecimals
+        x, variablesDate, bigMark, decimalMark, significantDecimals
       )
     )
   }
@@ -344,7 +348,7 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
     result <- dplyr::union_all(
       result,
       getBinaryValues(
-        x, variablesBinary, bigMark, decimalMark, significativeDecimals
+        x, variablesBinary, bigMark, decimalMark, significantDecimals
       )
     )
   }
@@ -356,7 +360,7 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
     result <- dplyr::union_all(
       result,
       getCategoricalValues(
-        x, variablesCategorical, bigMark, decimalMark, significativeDecimals
+        x, variablesCategorical, bigMark, decimalMark, significantDecimals
       )
     )
   }
@@ -393,12 +397,12 @@ countSubjects <- function(x) {
 }
 
 #' @noRd
-summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decimalMark, significativeDecimals) {
+summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decimalMark, significantDecimals) {
   result <- x %>%
     dplyr::mutate(strata_level = as.character(NA)) %>%
     dplyr::group_by(.data$strata_level) %>%
     summaryValues(
-      variables, functions, bigMark, decimalMark, significativeDecimals
+      variables, functions, bigMark, decimalMark, significantDecimals
     ) %>%
     dplyr::mutate(strata_name = "overall")
   for (strat in names(strata)) {
@@ -413,7 +417,7 @@ summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decima
       dplyr::union_all(
         xx %>%
           summaryValues(
-            variables, functions, bigMark, decimalMark, significativeDecimals
+            variables, functions, bigMark, decimalMark, significantDecimals
           ) %>%
           dplyr::mutate(strata_name = .env$strat)
       )
@@ -424,14 +428,38 @@ summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decima
 }
 
 #' @noRd
-niceNum <- function(x, bigMark, decimalMark, significativeDecimals) {
+niceNum <- function(x, bigMark, decimalMark, significantDecimals) {
   if (all(x %% 1 == 0)) {
-    significativeDecimals <- 0
+    significantDecimals <- 0
   }
   base::format(
-    round(x, significativeDecimals),
+    round(x, significantDecimals),
     big.mark = bigMark,
     decimal.mark = decimalMark,
-    nsmall = significativeDecimals
+    nsmall = significantDecimals
   )
+}
+
+#' @noRd
+supressCounts <- function(result, suppressCellCount) {
+  if (suppressCellCount > 1) {
+    if ("number subjects" %in% result$variable) {
+      personCount <- "number subjects"
+    } else {
+      personCount <- "number records"
+    }
+    toObscure <- result %>%
+      dplyr::filter(.data$variable == .env$personCount) %>%
+      dplyr::mutate(value = as.numeric(.data$value)) %>%
+      dplyr::filter(.data$value > 0 | .data$value < .env$suppressCellCount) %>%
+      dplyr::select("strata_name", "strata_level")
+    for (k in seq_along(toObscure)) {
+      ik <- result$strata_name == toObscure$strata_name[k] &
+        result$strata_level == toObscure$strata_level[k]
+      is <- result$variable == personCount
+      result$value[ik & is] <- paste0("<", suppressCellCount)
+      result$value[ik & !is] <- as.character(NA)
+    }
+  }
+  return(result)
 }
