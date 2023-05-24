@@ -220,8 +220,16 @@ getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, 
       summaryX <- xx %>%
         dplyr::group_by(.data$category, .add = TRUE) %>%
         dplyr::summarise(count = as.numeric(dplyr::n()), .groups = "drop") %>%
-        dplyr::right_join(categories, by = "category") %>%
-        dplyr::right_join(denominator, by = "strata_level") %>%
+        dplyr::group_split(.data$strata_level) %>%
+        lapply(function(x) {
+          stra <- unique(x$strata_level)
+          x <- x %>%
+            dplyr::right_join(categories, by = "category") %>%
+            dplyr::mutate(strata_level = .env$stra)
+          return(x)
+        }) %>%
+        dplyr::bind_rows() %>%
+        dplyr::inner_join(denominator, by = "strata_level") %>%
         dplyr::mutate(count = dplyr::if_else(
           is.na(.data$count), 0, .data$count
         ))
@@ -413,7 +421,8 @@ summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decima
         "strata_level", dplyr::all_of(strata[[strat]]), remove = FALSE,
         sep = "&&"
       ) %>%
-      tidyr::separate_rows(.data$strata_level, sep = "&&", convert = TRUE) %>%
+      dplyr::mutate(strata_level = as.character(.data$strata_level)) %>%
+      tidyr::separate_rows("strata_level", sep = "&&", convert = FALSE) %>%
       dplyr::group_by(.data$strata_level)
     result <- result %>%
       dplyr::union_all(
