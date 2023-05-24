@@ -118,13 +118,14 @@ getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDec
       dplyr::filter(.data$estimate == .env$functions[k]) %>%
       dplyr::pull("variable")
     result.k <- x %>%
+      dplyr::mutate(dplyr::across(dplyr::all_of(variablesFunction), as.numeric)) %>%
       dplyr::summarise(dplyr::across(
         .cols = dplyr::all_of(variablesFunction),
         .fns = getFunctions(functions[k]),
         .names = "{.col}"
       ))
     if (availableFunctions("date") %>%
-        dplyr::filter(.data$fomrat_key == functions[k]) %>%
+        dplyr::filter(.data$format_key == functions[k]) %>%
         dplyr::pull("result") == "date") {
       result.k <- result.k %>%
         dplyr::mutate(dplyr::across(

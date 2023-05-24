@@ -28,24 +28,24 @@ numeric,range,diatance between maximum and minimum,numeric
 date,mean,mean of the date of interest.,date
 date,sd,standard deviation of the date of interest. ,numeric
 date,median,median of the date of interest.,date
-date,q05,qualtile of 05% the variable of interest.,numeric
-date,q10,qualtile of 10% the variable of interest.,numeric
-date,q15,qualtile of 05% the variable of interest.,numeric
-date,q20,qualtile of 05% the variable of interest.,numeric
-date,q25,qualtile of 10% the variable of interest.,numeric
-date,q30,qualtile of 05% the variable of interest.,numeric
-date,q35,qualtile of 05% the variable of interest.,numeric
-date,q40,qualtile of 10% the variable of interest.,numeric
-date,q45,qualtile of 05% the variable of interest.,numeric
-date,q55,qualtile of 10% the variable of interest.,numeric
-date,q60,qualtile of 05% the variable of interest.,numeric
-date,q65,qualtile of 05% the variable of interest.,numeric
-date,q70,qualtile of 10% the variable of interest.,numeric
-date,q75,qualtile of 05% the variable of interest.,numeric
-date,q80,qualtile of 05% the variable of interest.,numeric
-date,q85,qualtile of 10% the variable of interest.,numeric
-date,q90,qualtile of 05% the variable of interest.,numeric
-date,q95,qualtile of 05% the variable of interest.,numeric
+date,q05,qualtile of 05% the variable of interest.,date
+date,q10,qualtile of 10% the variable of interest.,date
+date,q15,qualtile of 05% the variable of interest.,date
+date,q20,qualtile of 05% the variable of interest.,date
+date,q25,qualtile of 10% the variable of interest.,date
+date,q30,qualtile of 05% the variable of interest.,date
+date,q35,qualtile of 05% the variable of interest.,date
+date,q40,qualtile of 10% the variable of interest.,date
+date,q45,qualtile of 05% the variable of interest.,date
+date,q55,qualtile of 10% the variable of interest.,date
+date,q60,qualtile of 05% the variable of interest.,date
+date,q65,qualtile of 05% the variable of interest.,date
+date,q70,qualtile of 10% the variable of interest.,date
+date,q75,qualtile of 05% the variable of interest.,date
+date,q80,qualtile of 05% the variable of interest.,date
+date,q85,qualtile of 10% the variable of interest.,date
+date,q90,qualtile of 05% the variable of interest.,date
+date,q95,qualtile of 05% the variable of interest.,date
 date,min,minimum of the date of interest.,date
 date,max,maximum of the date of interest.,date
 date,iqr,days between q75 and q25,numeric
