@@ -585,6 +585,7 @@ test_that("age at cohort end, no missing, check age computation", {
     ageImposeDay = FALSE
   ) %>%
     dplyr::collect()
+  print(result$age)
   expect_true(identical(result$age, c(0, 1)))
 
   result <- addDemographics(
@@ -593,6 +594,7 @@ test_that("age at cohort end, no missing, check age computation", {
     ageImposeDay = FALSE
   ) %>%
     dplyr::collect()
+  print(result$age)
   expect_true(identical(result$age, c(0, 1)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -627,6 +629,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 
   expect_true(all(c(colnames(cohort1), "age") %in% colnames(result)))
   expect_equal(nrow(result), 3)
+  print(result$age)
   expect_true(identical(result$age, c(9, 9, NA)))
 
   result_b <- addDemographics(
