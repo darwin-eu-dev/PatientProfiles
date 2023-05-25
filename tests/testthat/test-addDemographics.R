@@ -40,7 +40,6 @@ test_that("addDemographics, cohort and condition_occurrence", {
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
     ) %>%
     dplyr::collect()
-  print(s)
   expect_true(s$age == 53)
   expect_true(s$sex == "Female")
   expect_true(s$prior_history == 5447)
@@ -585,7 +584,6 @@ test_that("age at cohort end, no missing, check age computation", {
     ageImposeDay = FALSE
   ) %>%
     dplyr::collect()
-  print(result$age)
   expect_true(identical(result$age, c(0, 1)))
 
   result <- addDemographics(
@@ -594,7 +592,6 @@ test_that("age at cohort end, no missing, check age computation", {
     ageImposeDay = FALSE
   ) %>%
     dplyr::collect()
-  print(result$age)
   expect_true(identical(result$age, c(0, 1)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -629,7 +626,6 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 
   expect_true(all(c(colnames(cohort1), "age") %in% colnames(result)))
   expect_equal(nrow(result), 3)
-  print(result$age)
   expect_true(identical(result$age, c(9, 9, NA)))
 
   result_b <- addDemographics(
