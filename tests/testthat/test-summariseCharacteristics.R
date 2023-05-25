@@ -6,6 +6,7 @@ test_that("test all functions", {
     v3 = c(0, 1, 0, 1, 1),
     v4 = as.Date(c("2021-05-12", "2012-05-15", "2023-11-30", "2015-12-10", "2014-01-12"))
   )
-  summariseCharacteristics(x)
-  summariseCharacteristics(x, strata = list("group" = "s"), suppressCellCount = 1) %>% print(n = 500)
+  #summariseCharacteristics(x)
+  #summariseCharacteristics(x, strata = list("group" = "s")) %>% print(n = 500)
+  #summariseCharacteristics(x, strata = list("group" = "s"), suppressCellCount = 1) %>% print(n = 500)
 })

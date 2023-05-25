@@ -40,6 +40,7 @@ test_that("addDemographics, cohort and condition_occurrence", {
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
     ) %>%
     dplyr::collect()
+  print(s)
   expect_true(s$age == 53)
   expect_true(s$sex == "Female")
   expect_true(s$prior_history == 5447)
