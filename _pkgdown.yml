@@ -19,6 +19,10 @@ reference:
   desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
   - '`addCohortIntersect`'
+- subtitle: Add multiple values from table intersection
+  desc: Add multiple variables indicating the intersection between two tablea in the OMOP Common Data Model.
+- contents:
+  - '`addIntersect`'
 - subtitle: Summarise patient characteristics
   desc: Set of functions that allow the user to summarise patient characteristics
 - contents:
