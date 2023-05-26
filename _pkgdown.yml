@@ -30,4 +30,4 @@ reference:
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addAttributes|addCategories|mockPatientProfiles")
+  - matches("addAttributes|addCategories|getStartName|getEndName|getConceptName|mockPatientProfiles")
