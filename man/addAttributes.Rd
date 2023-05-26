@@ -17,3 +17,20 @@ new cohort with added attributes from the other given cohort
 \description{
 Get attributes from one cohort to another
 }
+\examples{
+\donttest{
+library(CDMConnector)
+library(PatientProfiles)
+library(dplyr)
+
+cdm <- mockPatientProfiles()
+attributes(cdm$cohort1)
+x <- cdm$cohort1 \%>\%
+  filter(cohort_definition_id == 1) \%>\%
+  computeQuery()
+attributes(x)
+x <- addAttributes(x, cdm$cohort1)
+attributes(cdm$cohort1)
+}
+
+}

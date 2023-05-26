@@ -7,6 +7,20 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(CDMConnector)
+#' library(PatientProfiles)
+#' library(dplyr)
+#'
+#' cdm <- mockPatientProfiles()
+#' attributes(cdm$cohort1)
+#' x <- cdm$cohort1 %>%
+#'   filter(cohort_definition_id == 1) %>%
+#'   computeQuery()
+#' attributes(x)
+#' x <- addAttributes(x, cdm$cohort1)
+#' attributes(cdm$cohort1)
+#' }
 #'
 addAttributes <- function(newcohort,
                           oldcohort) {
