@@ -25,66 +25,17 @@
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
-#' @noRd
+#'
+#' @export
 #'
 #' @examples
 #' \donttest{
-#' cohort1 <- dplyr::tibble(
-#'   cohort_definition_id = c(1, 1, 1, 1, 1),
-#'   subject_id = c(1, 1, 1, 2, 2),
-#'   cohort_start_date = as.Date(
-#'     c(
-#'       "2020-01-01",
-#'       "2020-01-15",
-#'       "2020-01-20",
-#'       "2020-01-01",
-#'       "2020-02-01"
-#'     )
-#'   ),
-#'   cohort_end_date = as.Date(
-#'     c(
-#'       "2020-01-01",
-#'       "2020-01-15",
-#'       "2020-01-20",
-#'       "2020-01-01",
-#'       "2020-02-01"
-#'     )
-#'   )
-#' )
+#' library(PatientProfiles)
 #'
-#' cohort2 <- dplyr::tibble(
-#'   cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
-#'   subject_id = c(1, 1, 1, 2, 2, 2, 1),
-#'   cohort_start_date = as.Date(
-#'     c(
-#'       "2020-01-15",
-#'       "2020-01-25",
-#'       "2020-01-26",
-#'       "2020-01-29",
-#'       "2020-03-15",
-#'       "2020-01-24",
-#'       "2020-02-16"
-#'     )
-#'   ),
-#'   cohort_end_date = as.Date(
-#'     c(
-#'       "2020-01-15",
-#'       "2020-01-25",
-#'       "2020-01-26",
-#'       "2020-01-29",
-#'       "2020-03-15",
-#'       "2020-01-24",
-#'       "2020-02-16"
-#'     )
-#'   ),
-#' )
-#'
-#' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
-#'
+#' cdm <- mockPatientProfiles()
 #' result <- cdm$cohort1 %>%
 #'   addIntersect(
-#'     cdm = cdm,
-#'     tableName = "cohort2", value = "date"
+#'     cdm = cdm, tableName = "cohort2", value = "date"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
@@ -92,14 +43,14 @@
 addIntersect <- function(x,
                          cdm,
                          tableName,
-                         value, # must be only one of the four now
+                         value,
                          filterVariable = NULL,
                          filterId = NULL,
                          idName = NULL,
                          window = list(c(0, Inf)), # list
                          indexDate = "cohort_start_date",
-                         targetStartDate = "cohort_start_date", # this is targetDate for time/event
-                         targetEndDate = "cohort_end_date", # can be NULL (incidence)
+                         targetStartDate = getStartName(tableName),
+                         targetEndDate = getEndName(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}",
                          tablePrefix = NULL) {
@@ -422,4 +373,70 @@ addIntersect <- function(x,
   x <- x %>% addAttributes(startTibble)
 
   return(x)
+}
+
+#' Get the name of the start date column for a certain table in the cdm
+#'
+#' @param tableName Name of the table
+#'
+#' @return Name of the start date column in that table
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' getStartName("condition_occurrence")
+#' }
+#'
+getStartName <- function(tableName) {
+  if (tableName %in% namesTable$table_name) {
+    return(namesTable$start_date_name[namesTable$table_name == tableName])
+  } else {
+    return("cohort_start_date")
+  }
+}
+
+#' Get the name of the end date column for a certain table in the cdm
+#'
+#' @param tableName Name of the table
+#'
+#' @return Name of the end date column in that table
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' getEndName("condition_occurrence")
+#' }
+#'
+getEndName <- function(tableName) {
+  if (tableName %in% namesTable$table_name) {
+    return(namesTable$end_date_name[namesTable$table_name == tableName])
+  } else {
+    return("cohort_end_date")
+  }
+}
+
+#' Get the name of the concept_id column for a certain table in the cdm
+#'
+#' @param tableName Name of the table
+#'
+#' @return Name of the concept_id column in that table
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' getConceptName("condition_occurrence")
+#' }
+#'
+getConceptName <- function(tableName) {
+  if (tableName %in% namesTable$table_name) {
+    return(namesTable$concept_id_name[namesTable$table_name == tableName])
+  } else {
+    return("cohort_definition_id")
+  }
 }
