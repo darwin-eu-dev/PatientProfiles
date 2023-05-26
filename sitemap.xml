@@ -70,6 +70,9 @@
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addInObservation.html</loc>
   </url>
   <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addIntersect.html</loc>
+  </url>
+  <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addPriorHistory.html</loc>
   </url>
   <url>
@@ -80,6 +83,15 @@
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/detectVariables.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/getConceptName.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/getEndName.html</loc>
+  </url>
+  <url>
+    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/getStartName.html</loc>
   </url>
   <url>
     <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/index.html</loc>

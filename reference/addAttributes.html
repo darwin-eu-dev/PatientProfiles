@@ -70,6 +70,104 @@
 <p>new cohort with added attributes from the other given cohort</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">CDMConnector</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://oxford-pharmacoepi.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "src"        "lazy_query"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GeneratedCohortSet"    "tbl_duckdb_connection" "tbl_dbi"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "tbl_sql"               "tbl_lazy"              "tbl"                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cohort_set</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;main.cohort1_set&gt; [2 x 2]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 cohort_1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 cohort_2   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cohort_attrition</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;main.cohort1_attrition&gt; [2 x 7]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id number_records number_subjects reason           reason_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1              3               2 Qualifying init…         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2              1               1 Qualifying init…         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: excluded_records &lt;dbl&gt;, excluded_subjects &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cohort_count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;main.cohort1_count&gt; [2 x 3]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id number_records number_subjects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1              3               2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2              1               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cohort_definition_id</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/computeQuery.html" class="external-link">computeQuery</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "src"        "lazy_query"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "tbl_duckdb_connection" "tbl_dbi"               "tbl_sql"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "tbl_lazy"              "tbl"                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">addAttributes</span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "src"        "lazy_query"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GeneratedCohortSet"    "tbl_duckdb_connection" "tbl_dbi"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "tbl_sql"               "tbl_lazy"              "tbl"                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cohort_set</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;main.cohort1_set&gt; [2 x 2]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 cohort_1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 cohort_2   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cohort_attrition</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;main.cohort1_attrition&gt; [2 x 7]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id number_records number_subjects reason           reason_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1              3               2 Qualifying init…         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2              1               1 Qualifying init…         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: excluded_records &lt;dbl&gt;, excluded_subjects &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cohort_count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;main.cohort1_count&gt; [2 x 3]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id number_records number_subjects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1              3               2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2              1               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
