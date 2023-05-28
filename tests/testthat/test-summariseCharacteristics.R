@@ -8,5 +8,7 @@ test_that("test all functions", {
   )
   summariseCharacteristics(x)
   summariseCharacteristics(x, strata = list("group" = "s"))
-  summariseCharacteristics(x, strata = list("group" = "s"), suppressCellCount = 1)
+  summariseCharacteristics(
+    x, strata = list("group" = "s"), suppressCellCount = 1
+  )
 })

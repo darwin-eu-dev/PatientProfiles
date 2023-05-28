@@ -471,11 +471,13 @@ supressCounts <- function(result, suppressCellCount) {
       result$value[ik & is] <- paste0("<", suppressCellCount)
       result$value[ik & !is] <- as.character(NA)
     }
-    result$value[
-      result$estimate == "count" &
-        suppressWarnings(as.numeric(result$value)) < suppressCellCount &
-        suppressWarnings(as.numeric(result$value)) > 0
-    ] <- paste0("<", suppressCellCount)
+    value <- suppressWarnings(as.numeric(result$value))
+    id <- unlist(lapply(strsplit(result$estimate, ": "), tail, n = 1)) ==
+      "count" & value < suppressCellCount & value > 0
+    result  <- result %>%
+      dplyr::mutate(value = dplyr::if_else(
+        .env$id, paste0("<", .env$suppressCellCount), .data$value
+      ))
   }
   return(result)
 }
