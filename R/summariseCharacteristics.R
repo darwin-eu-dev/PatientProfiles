@@ -159,40 +159,59 @@ getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDec
 
 #' @noRd
 getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significantDecimals) {
-  variablesFunction <- variablesBinary %>%
-    dplyr::pull("variable") %>%
+  functions <- variablesBinary %>%
+    dplyr::pull("estimate") %>%
     unique()
-  result <- x %>%
-    dplyr::mutate(denominator = 1) %>%
-    dplyr::summarise(dplyr::across(
-      .cols = dplyr::all_of(c(variablesFunction, "denominator")),
-      .fns = list("sum" = function(x) {sum(x)}),
-      .names = "{.col}"
-    )) %>%
-    tidyr::pivot_longer(
-      dplyr::all_of(variablesFunction),
-      names_to = "variable",
-      values_to = "count"
-    ) %>%
-    dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
-    dplyr::mutate(
-      "%" = base::paste0(
-        niceNum(.data[["%"]], bigMark, decimalMark, significantDecimals),
-        "%"
-      ),
-      count = niceNum(.data$count, bigMark, decimalMark, significantDecimals)
-    ) %>%
-    dplyr::select(-"denominator") %>%
-    tidyr::pivot_longer(c("count", "%"), names_to = "estimate") %>%
-    dplyr::inner_join(
-      variablesBinary %>%
-        dplyr::select("variable", "variable_classification", "estimate"),
-      by = c("variable", "estimate")
-    ) %>%
-    dplyr::select(
-      "strata_level", "variable", "variable_classification", "estimate",
-      "value"
-    )
+  result <- NULL
+  if ("count" %in% functions | "%" %in% functions) {
+    variablesFunction <- variablesBinary %>%
+      dplyr::filter(.data$estimate %in% c("count", "%")) %>%
+      dplyr::pull("variable") %>%
+      unique()
+    result <- result %>%
+      dplyr::union_all(
+        x %>%
+          dplyr::mutate(denominator = 1) %>%
+          dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(c(variablesFunction, "denominator")),
+            .fns = list("sum" = function(x) {sum(x)}),
+            .names = "{.col}"
+          )) %>%
+          tidyr::pivot_longer(
+            dplyr::all_of(variablesFunction),
+            names_to = "variable",
+            values_to = "count"
+          ) %>%
+          dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
+          dplyr::mutate(
+            "%" = base::paste0(
+              niceNum(.data[["%"]], bigMark, decimalMark, significantDecimals),
+              "%"
+            ),
+            count = niceNum(.data$count, bigMark, decimalMark, significantDecimals)
+          ) %>%
+          dplyr::select(-"denominator") %>%
+          tidyr::pivot_longer(c("count", "%"), names_to = "estimate") %>%
+          dplyr::inner_join(
+            variablesBinary %>%
+              dplyr::select("variable", "variable_classification", "estimate"),
+            by = c("variable", "estimate")
+          ) %>%
+          dplyr::select(
+            "strata_level", "variable", "variable_classification", "estimate",
+            "value"
+          )
+      )
+  }
+  functions <- functions[!(functions %in% c("count", "%"))]
+  if (length(functions) > 0) {
+    result <- result %>%
+      dplyr::union_all(
+        getNumericValues(
+          x, variablesBinary, bigMark, decimalMark, significantDecimals
+        )
+      )
+  }
   return(result)
 }
 
