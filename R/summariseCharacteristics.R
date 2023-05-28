@@ -159,15 +159,12 @@ getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDec
 
 #' @noRd
 getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significantDecimals) {
-  functions <- variablesBinary %>%
-    dplyr::pull("estimate") %>%
-    unique()
   result <- NULL
-  if ("count" %in% functions | "%" %in% functions) {
-    variablesFunction <- variablesBinary %>%
-      dplyr::filter(.data$estimate %in% c("count", "%")) %>%
-      dplyr::pull("variable") %>%
-      unique()
+  variablesFunction <- variablesBinary %>%
+    dplyr::filter(.data$estimate %in% c("count", "%")) %>%
+    dplyr::pull("variable") %>%
+    unique()
+  if (length(variablesFunction) > 0) {
     result <- result %>%
       dplyr::union_all(
         x %>%
@@ -203,8 +200,9 @@ getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significan
           )
       )
   }
-  functions <- functions[!(functions %in% c("count", "%"))]
-  if (length(functions) > 0) {
+  variablesBinary <- variablesBinary %>%
+    dplyr::filter(!(.data$estimates %in% c("count", "%")))
+  if (nrow(variablesBinary) > 0) {
     result <- result %>%
       dplyr::union_all(
         getNumericValues(
