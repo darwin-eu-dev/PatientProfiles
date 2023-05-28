@@ -335,7 +335,8 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getNumericValues(
         x, variablesNumeric, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
 
@@ -347,7 +348,8 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getDateValues(
         x, variablesDate, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
 
@@ -359,7 +361,8 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getBinaryValues(
         x, variablesBinary, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
 
@@ -371,9 +374,12 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getCategoricalValues(
         x, variablesCategorical, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
+
+  return(result)
 }
 
 #' @noRd
