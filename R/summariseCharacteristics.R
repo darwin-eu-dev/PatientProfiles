@@ -201,7 +201,7 @@ getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significan
       )
   }
   variablesBinary <- variablesBinary %>%
-    dplyr::filter(!(.data$estimates %in% c("count", "%")))
+    dplyr::filter(!(.data$estimate %in% c("count", "%")))
   if (nrow(variablesBinary) > 0) {
     result <- result %>%
       dplyr::union_all(
