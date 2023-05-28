@@ -417,11 +417,7 @@ summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decima
     dplyr::mutate(strata_name = "overall")
   for (strat in names(strata)) {
     xx <- x %>%
-      tidyr::unite(
-        "strata_level", dplyr::all_of(strata[[strat]]), remove = FALSE,
-        sep = "&&"
-      ) %>%
-      dplyr::mutate(strata_level = as.character(.data$strata_level)) %>%
+      uniteStrata(strata[[strat]]) %>%
       tidyr::separate_rows("strata_level", sep = "&&", convert = FALSE) %>%
       dplyr::group_by(.data$strata_level)
     result <- result %>%
@@ -477,6 +473,47 @@ supressCounts <- function(result, suppressCellCount) {
     result  <- result %>%
       dplyr::mutate(value = dplyr::if_else(
         .env$id, paste0("<", .env$suppressCellCount), .data$value
+      ))
+  }
+  return(result)
+}
+
+uniteStrata <- function(x,
+                        columns,
+                        sepStrata = "&&",
+                        sepStrataLevel = " & ") {
+  combinations <- x %>%
+    dplyr::select(dplyr::all_of(columns)) %>%
+    dplyr::distinct()
+  multiple <- combinations %>%
+    dplyr::filter(dplyr::if_any(
+      dplyr::all_of(columns), ~ grepl(.env$sepStrata, .)
+    ))
+  single <- combinations %>%
+    dplyr::anti_join(multiple, by = columns) %>%
+    tidyr::unite(
+      "strata_level", dplyr::all_of(columns), sep = sepStrataLevel,
+      remove = FALSE
+    )
+  multiple <- expandStrata(multiple, columns, sepStrata, sepStrataLevel)
+  x <- x %>%
+    dplyr::inner_join(dplyr::union_all(multiple, single), by = columns)
+  return(x)
+}
+
+expandStrata <- function(x, columns, sepStrata, sepStrataLevel) {
+  result <- NULL
+  for (k in 1:nrow(x)) {
+    result <- result %>%
+      dplyr::union_all(dplyr::bind_cols(
+        x[k,],
+        x[k,] %>%
+          tidyr::separate_longer_delim(dplyr::everything(), delim = sepStrata) %>%
+          do.call(what = tidyr::expand_grid) %>%
+          dplyr::distinct() %>%
+          tidyr::unite(
+            "strata_level", dplyr::all_of(columns), sep = sepStrataLevel
+          )
       ))
   }
   return(result)
