@@ -159,40 +159,57 @@ getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDec
 
 #' @noRd
 getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significantDecimals) {
+  result <- NULL
   variablesFunction <- variablesBinary %>%
+    dplyr::filter(.data$estimate %in% c("count", "%")) %>%
     dplyr::pull("variable") %>%
     unique()
-  result <- x %>%
-    dplyr::mutate(denominator = 1) %>%
-    dplyr::summarise(dplyr::across(
-      .cols = dplyr::all_of(c(variablesFunction, "denominator")),
-      .fns = list("sum" = function(x) {sum(x)}),
-      .names = "{.col}"
-    )) %>%
-    tidyr::pivot_longer(
-      dplyr::all_of(variablesFunction),
-      names_to = "variable",
-      values_to = "count"
-    ) %>%
-    dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
-    dplyr::mutate(
-      "%" = base::paste0(
-        niceNum(.data[["%"]], bigMark, decimalMark, significantDecimals),
-        "%"
-      ),
-      count = niceNum(.data$count, bigMark, decimalMark, significantDecimals)
-    ) %>%
-    dplyr::select(-"denominator") %>%
-    tidyr::pivot_longer(c("count", "%"), names_to = "estimate") %>%
-    dplyr::inner_join(
-      variablesBinary %>%
-        dplyr::select("variable", "variable_classification", "estimate"),
-      by = c("variable", "estimate")
-    ) %>%
-    dplyr::select(
-      "strata_level", "variable", "variable_classification", "estimate",
-      "value"
-    )
+  if (length(variablesFunction) > 0) {
+    result <- result %>%
+      dplyr::union_all(
+        x %>%
+          dplyr::mutate(denominator = 1) %>%
+          dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(c(variablesFunction, "denominator")),
+            .fns = list("sum" = function(x) {sum(x)}),
+            .names = "{.col}"
+          )) %>%
+          tidyr::pivot_longer(
+            dplyr::all_of(variablesFunction),
+            names_to = "variable",
+            values_to = "count"
+          ) %>%
+          dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
+          dplyr::mutate(
+            "%" = base::paste0(
+              niceNum(.data[["%"]], bigMark, decimalMark, significantDecimals),
+              "%"
+            ),
+            count = niceNum(.data$count, bigMark, decimalMark, significantDecimals)
+          ) %>%
+          dplyr::select(-"denominator") %>%
+          tidyr::pivot_longer(c("count", "%"), names_to = "estimate") %>%
+          dplyr::inner_join(
+            variablesBinary %>%
+              dplyr::select("variable", "variable_classification", "estimate"),
+            by = c("variable", "estimate")
+          ) %>%
+          dplyr::select(
+            "strata_level", "variable", "variable_classification", "estimate",
+            "value"
+          )
+      )
+  }
+  variablesBinary <- variablesBinary %>%
+    dplyr::filter(!(.data$estimate %in% c("count", "%")))
+  if (nrow(variablesBinary) > 0) {
+    result <- result %>%
+      dplyr::union_all(
+        getNumericValues(
+          x, variablesBinary, bigMark, decimalMark, significantDecimals
+        )
+      )
+  }
   return(result)
 }
 
@@ -335,7 +352,8 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getNumericValues(
         x, variablesNumeric, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
 
@@ -347,7 +365,8 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getDateValues(
         x, variablesDate, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
 
@@ -359,7 +378,8 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getBinaryValues(
         x, variablesBinary, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
 
@@ -371,9 +391,12 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       result,
       getCategoricalValues(
         x, variablesCategorical, bigMark, decimalMark, significantDecimals
-      )
+      ) %>%
+        dplyr::arrange(.data$variable)
     )
   }
+
+  return(result)
 }
 
 #' @noRd

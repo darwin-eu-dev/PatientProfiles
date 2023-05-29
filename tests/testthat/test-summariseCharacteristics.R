@@ -18,4 +18,43 @@ test_that("test all functions", {
     x, strata = list("group1" = c("s", "v2"), group2 = "s"),
     suppressCellCount = 1
   )
+
+  x <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1),
+    subject_id = c(1, 1, 2),
+    cohort_start_date = as.Date(c("1990-04-19", "1991-04-19", "2010-11-14")),
+    cohort_end_date = as.Date(c("1990-04-19", "1991-04-19", "2010-11-14")),
+    acetaminophen_m365_to_0 = c(1, 1, 0),
+    ibuprophen_m365_to_0 = c(0, 0, 0),
+    naloxone_m365_to_0 = c(0, 0, 0),
+    headache_minf_to_0 = c(0, 1, 0),
+    covid_minf_to_0 = c(1, 1, 0)
+  )
+  expect_no_error(summariseCharacteristics(
+    x, strata = list(), suppressCellCount = 1
+  ))
+
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    age = c(39, 40, 27, 7),
+    sex = c("Male", "Male", "Female", "Male"),
+    prior_history = c(365, 25, 14, 48),
+    number_visits = c(0, 1, 0, 0)
+  )
+  variables <- list(
+    numeric = c(
+      "age", "number_visits", "prior_history"
+    ),
+    categorical = c("sex")
+  )
+  functions <- list(
+    numeric = c("median", "q25", "q75"),
+    categorical = c("count", "%")
+  )
+  expect_no_error(
+    result <- summariseCharacteristics(
+      cohort, variables = variables, functions = functions
+    )
+  )
 })
