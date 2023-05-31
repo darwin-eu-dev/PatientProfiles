@@ -59,9 +59,9 @@ and a target cohort</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addCohortIntersectDays</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">cdm</span>,</span>
-<span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>  <span class="va">targetCohortTable</span>,</span>
 <span>  targetCohortId <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>  targetDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>  order <span class="op">=</span> <span class="st">"first"</span>,</span>
 <span>  window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
@@ -81,11 +81,6 @@ and a target cohort</p>
 cdm reference.</p></dd>
 
 
-<dt>indexDate</dt>
-<dd><p>Variable in x that contains the date to compute the
-intersection.</p></dd>
-
-
 <dt>targetCohortTable</dt>
 <dd><p>Cohort table to</p></dd>
 
@@ -94,6 +89,11 @@ intersection.</p></dd>
 <dd><p>Cohort IDs of interest from the other cohort table. If
 NULL, all cohorts will be used with a days variable added for each
 cohort of interest</p></dd>
+
+
+<dt>indexDate</dt>
+<dd><p>Variable in x that contains the date to compute the
+intersection.</p></dd>
 
 
 <dt>targetDate</dt>

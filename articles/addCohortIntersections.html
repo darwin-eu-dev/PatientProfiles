@@ -68,7 +68,7 @@
 Mike Du, Yuchen Guo, Kim López-Güell, Xintong Li, Núria Mercadé-Besora,
 and Edward Burn</h4>
             
-            <h4 data-toc-skip class="date">2023-05-29</h4>
+            <h4 data-toc-skip class="date">2023-05-31</h4>
       
       
       <div class="d-none name"><code>addCohortIntersections.Rmd</code></div>
@@ -123,7 +123,7 @@ which mimics a database formatted in OMOP.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 2</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 3</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -133,7 +133,7 @@ which mimics a database formatted in OMOP.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span>                       </span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 3, 1</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 3, 1, 2, 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2019-12-30, 2020-01-01, 2020-05-25, 2020-01-01, 2…</span></span>
@@ -163,7 +163,7 @@ the last 180 days before entering the cohort, we can use the
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 1</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 3, 2</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-01-02</span></span>
@@ -187,7 +187,7 @@ population. For example, we can look at the number of strokes in the
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 1</span></span>
 <span><span class="co">## $ subject_id            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 3, 2</span></span>
 <span><span class="co">## $ cohort_start_date     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
@@ -251,7 +251,7 @@ previous to the cohort start date of the main cohort. Namely:</p>
 <span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span><span class="va">cdm</span>, targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;dbplyr_024&gt; [2 x 5]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span></span>
 <span><span class="co">##   cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>                    1 1          2010-03-01        2015-01-01     </span></span>
@@ -275,7 +275,7 @@ interest. To only screen for those, we can set
 <code class="sourceCode R"><span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span><span class="va">cdm</span>, targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>, targetEndDate <span class="op">=</span> <span class="st">"cohort_start_date"</span><span class="op">)</span></span>
 <span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;dbplyr_030&gt; [2 x 5]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span></span>
 <span><span class="co">##   cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>                    1 1          2010-03-01        2015-01-01     </span></span>
@@ -316,7 +316,7 @@ patient did not experience the event, the function will return NA.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 6</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "1", "2"</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
@@ -347,7 +347,7 @@ have a cohort with vaccine records (e.g. cohort2):</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 6</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "1", "2"</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
@@ -386,7 +386,7 @@ above example.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 9</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1</span></span>
 <span><span class="co">## $ subject_id              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "1", "2"</span></span>
 <span><span class="co">## $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
@@ -416,7 +416,7 @@ use below example.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1037-azure:R 4.3.0/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1038-azure:R 4.3.0/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1</span></span>
 <span><span class="co">## $ subject_id              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "1", "2"</span></span>
 <span><span class="co">## $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
