@@ -7,9 +7,9 @@
 addCohortIntersectDate(
   x,
   cdm,
-  indexDate = "cohort_start_date",
   targetCohortTable,
   targetCohortId = NULL,
+  indexDate = "cohort_start_date",
   targetDate = "cohort_start_date",
   order = "first",
   window = c(0, Inf),
@@ -23,14 +23,14 @@ addCohortIntersectDate(
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
 
-\item{indexDate}{Variable in x that contains the date to compute the
-intersection.}
-
 \item{targetCohortTable}{Cohort table to}
 
 \item{targetCohortId}{Cohort IDs of interest from the other cohort table. If
 NULL, all cohorts will be used with a time variable added for each
 cohort of interest}
+
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
 
 \item{targetDate}{Date of interest in the other cohort table. Either
 cohort_start_date or cohort_end_date}
