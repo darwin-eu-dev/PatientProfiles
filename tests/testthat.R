@@ -1,7 +1,9 @@
 library(testthat)
 library(PatientProfiles)
 
+print("hi")
 print(Sys.getenv("CDM5_REDSHIFT_DBNAME"))
+print("hi2")
 
 availableConnections <- list(
   duckdb <- list(
