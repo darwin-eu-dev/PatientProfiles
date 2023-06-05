@@ -25,17 +25,14 @@ test_that("test user define table", {
     )
   )
 
-  cdm_1 <- mockPatientProfiles(test_table_1 = test_table_1)
-  cdm_2 <- mockPatientProfiles(test_table_1 = test_table_1, test_table_2 = test_table_2)
-
+  cdm_1 <- mockPatientProfiles(connectionDetails, test_table_1 = test_table_1)
   expect_true(all.equal(cdm_1$test_table_1 %>% dplyr::collect(), test_table_1))
   expect_true(length(cdm_1) == 10)
+
+  cdm_2 <- mockPatientProfiles(connectionDetails, test_table_1 = test_table_1, test_table_2 = test_table_2)
   expect_true(length(cdm_2) == 11)
   expect_true(all.equal(cdm_2$test_table_1 %>% dplyr::collect(), test_table_1))
   expect_true(all.equal(cdm_2$test_table_2 %>% dplyr::collect(), test_table_2))
-
-  DBI::dbDisconnect(attr(cdm_1, "dbcon"), shutdown = TRUE)
-  DBI::dbDisconnect(attr(cdm_2, "dbcon"), shutdown = TRUE)
 })
 
 test_that("check working example with cohort table", {
@@ -52,42 +49,37 @@ test_that("check working example with cohort table", {
     )
   )
 
-  cdm_1 <- mockPatientProfiles(cohort1 = test_table_1)
-  cdm_2 <- mockPatientProfiles(cohort2 = test_table_1)
-
+  cdm_1 <- mockPatientProfiles(connectionDetails, cohort1 = test_table_1)
   expect_true(all.equal(cdm_1$cohort1 %>% dplyr::collect(), test_table_1))
   expect_error(expect_true(all.equal(cdm_1$cohort2 %>% dplyr::collect(), test_table_1)))
+
+  cdm_2 <- mockPatientProfiles(connectionDetails, cohort2 = test_table_1)
   expect_true(all.equal(cdm_2$cohort2 %>% dplyr::collect(), test_table_1))
   expect_error(expect_true(all.equal(cdm_2$cohort1 %>% dplyr::collect(), test_table_1)))
-
-  DBI::dbDisconnect(attr(cdm_1, "dbcon"), shutdown = TRUE)
-  DBI::dbDisconnect(attr(cdm_2, "dbcon"), shutdown = TRUE)
 })
 
 
 test_that("check working example with defaults", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(connectionDetails)
 
   expect_true(length(cdm) == 9)
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 10)
   expect_true(nrow(cdm$person %>% dplyr::collect()) == 1)
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 
 test_that("check dug exposure and patient table size", {
-  cdm <- mockPatientProfiles(drug_exposure_size = 200, patient_size = 200)
+  cdm <- mockPatientProfiles(connectionDetails, drug_exposure_size = 200, patient_size = 200)
 
   expect_true(length(cdm) == 9)
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 200)
   expect_true(nrow(cdm$person %>% dplyr::collect()) == 200)
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("add cdm with person, cohort1 and observation_period", {
-  cdm <- mockPatientProfiles(
+  cdm <- mockPatientProfiles(connectionDetails,
     person = tibble::tibble(
       person_id = c(1, 2, 3, 4),
       gender_concept_id = c(8507, 8532, 8532, 8507),
@@ -130,7 +122,7 @@ test_that("attributes for cohort table", {
  test_table_1 <- addCohortCountAttr(test_table_1)
 
 
-  cdm <- mockPatientProfiles(test_table_1 = test_table_1)
+  cdm <- mockPatientProfiles(connectionDetails, test_table_1 = test_table_1)
 
   expect_true(all(names(attributes(cdm$cohort1)) %in%
              c("names","class","cohort_set","cohort_attrition","cohort_count")))
@@ -140,8 +132,5 @@ test_that("attributes for cohort table", {
 
   expect_true(all(names(attributes(cdm$test_table_1)) %in%
              c("names","class","cohort_set","cohort_attrition","cohort_count")))
-
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })

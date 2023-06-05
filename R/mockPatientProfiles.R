@@ -550,22 +550,22 @@ mockPatientProfiles <- function(connectionDetails = list(
       "x <- addCohortCountAttr(listTables[[\"", cohort, "\"]])"
     )))
     DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(scratchSchema, cohort),
+      conn = db, name = CDMConnector::inSchema(writeSchema, cohort),
       value = x, overwrite = TRUE
     )
     DBI::dbWriteTable(
       conn = db, name = CDMConnector::inSchema(
-        scratchSchema, paste0(cohort, "_set")
+        writeSchema, paste0(cohort, "_set")
       ), value = attr(x, "cohort_set"), overwrite = TRUE
     )
     DBI::dbWriteTable(
       conn = db, name = CDMConnector::inSchema(
-        scratchSchema, paste0(cohort, "_count")
+        writeSchema, paste0(cohort, "_count")
       ), value = attr(x, "cohort_count"), overwrite = TRUE
     )
     DBI::dbWriteTable(
       conn = db, name = CDMConnector::inSchema(
-        scratchSchema, paste0(cohort, "_attrition")
+        writeSchema, paste0(cohort, "_attrition")
       ), value = attr(x, "cohort_attrition"), overwrite = TRUE
     )
   }
@@ -585,8 +585,8 @@ mockPatientProfiles <- function(connectionDetails = list(
   # create the cdm object
   cdm <- CDMConnector::cdm_from_con(
     db,
-    cdm_schema = "main",
-    write_schema = "main",
+    cdm_schema = scratchSchema,
+    write_schema = writeSchema,
     cdm_tables = cdmTables,
     cohort_tables = cohorts
   )
@@ -668,10 +668,10 @@ updateWrittenTables <- function(scratchTables, writeTables) {
 #'
 #' @noRd
 #'
-disconnectMock <- function(connectionDetails) {
-  db <- connectionDetails[["con"]]
-  scratchSchema <- connectionDetails[["scratch_schema"]]
-  writeSchema <- connectionDetails[["write_schema"]]
+disconnectMockCdm <- function(cdm) {
+  db <- attr(cdm, "dbcon")
+  scratchSchema <- attr(cdm, "cdm_schema")
+  writeSchema <- attr(cdm, "write_schema")
   scratchTables <- getOption("mock_cdm_scratch_tables", NULL)
   writeTables <- getOption("mock_cdm_write_tables", NULL)
   for (tab in scratchTables) {

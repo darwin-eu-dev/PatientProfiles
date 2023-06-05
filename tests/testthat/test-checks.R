@@ -9,11 +9,11 @@ cohort1 <- dplyr::tibble(
     c("2020-01-01","2020-01-15")
   )
 )
-cdm <- mockPatientProfiles(cohort1 = cohort1)
+cdm <- mockPatientProfiles(connectionDetails,cohort1 = cohort1)
 
 expect_error(cdm$cohort1 %>% addDemographics(cdm))
 
-DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 
@@ -36,7 +36,7 @@ test_that("test checkCategory with length 1 ", {
     )
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1,person = person )
+  cdm <- mockPatientProfiles(connectionDetails,cohort1 = cohort1,person = person )
 
   categories <- list("age_group" = list(c(0, 69), c(70)))
 
@@ -52,7 +52,7 @@ test_that("test checkCategory with length 1 ", {
     expect_error(cdm$cohort1 %>% addAge(cdm, indexDate = "cohort_start_date") %>%
       addCategories(cdm, "age", categories))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 
@@ -95,11 +95,11 @@ cohort2 <- dplyr::tibble(
   ),
 )
 
-cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+cdm <- mockPatientProfiles(connectionDetails,cohort1 = cohort1, cohort2 = cohort2)
 
 expect_warning(cdm$cohort1 %>% addIntersect(cdm = cdm, tableName = "cohort2", value = c("flag", "count")) )
 
-DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 
@@ -121,13 +121,13 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     ),
     flag = c(0,0)
   )
-  cdm <- mockPatientProfiles(cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails,cohort1 = cohort1)
 
   expect_warning(x <- addInObservation(cdm$cohort1,cdm, name="flag"))
   expect_true(all(c("flag", "flag_1") %in% colnames(x)))
   expect_true(all(c("flag", "flag_new") %in% colnames(addInObservation(cdm$cohort1,cdm, name="flag_new"))))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
@@ -147,19 +147,19 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     flag = c(0,0),
     flag_1 = c(0,0)
   )
-  cdm <- mockPatientProfiles(cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails,cohort1 = cohort1)
 
   expect_warning(x <- addInObservation(cdm$cohort1,cdm, name="flag"))
   expect_true(all(c("flag", "flag_1", "flag_2") %in% colnames(x)))
   expect_true(all(c("flag", "flag_1", "flag_new") %in% colnames(addInObservation(cdm$cohort1,cdm, name="flag_new"))))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 
 })
 
 
 test_that(" test checkWindow in addIntersect" ,{
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 2)
+  cdm <- mockPatientProfiles(connectionDetails,seed = 11, patient_size = 2)
 
    expect_error(cdm$cohort1 %>% addIntersect( cdm,tableName = "cohort2",window = list(c(-NA, 0)), value = "date"))
    expect_error(cdm$cohort1 %>% addIntersect( cdm,tableName = "cohort2",window = list(c(-365, 0, 1)), value = "date"))
@@ -169,7 +169,7 @@ test_that(" test checkWindow in addIntersect" ,{
    expect_error(cdm$cohort1 %>% addIntersect( cdm,tableName = "cohort2",window = list(c(Inf,Inf)), value = "date"))
    expect_error(cdm$cohort1 %>% addIntersect( cdm,tableName = "cohort2",window = list(c(-Inf,-Inf)), value = "date"))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 
 })
 
@@ -248,7 +248,7 @@ test_that("checkNameStyle",{
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails,cohort1 = cohort1, cohort2 = cohort2)
 
   expect_true(all(c("count_all","flag_all") %in% colnames(cdm$cohort1 %>% addIntersect(cdm = cdm, tableName = "cohort2",
   value = c("flag", "count"),nameStyle = "{value}_{id_name}"))))
