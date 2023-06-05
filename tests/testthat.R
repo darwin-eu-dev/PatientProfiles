@@ -1,6 +1,8 @@
 library(testthat)
 library(PatientProfiles)
 
+print(Sys.getenv("CDM5_REDSHIFT_DBNAME"))
+
 availableConnections <- list(
   duckdb <- list(
     con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
