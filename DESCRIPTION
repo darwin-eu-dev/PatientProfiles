@@ -49,7 +49,7 @@ Imports:
     cli,
     pillar
 VignetteBuilder: knitr
-URL: https://oxford-pharmacoepi.github.io/PatientProfiles/
+URL: https://darwin-eu-dev.github.io/PatientProfiles/
 Language: en-US
 Depends: 
     R (>= 2.10)

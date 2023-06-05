@@ -11,7 +11,7 @@ Identify the characteristics of patients in data mapped to the Observational Med
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://oxford-pharmacoepi.github.io/PatientProfiles/}
+  \item \url{https://darwin-eu-dev.github.io/PatientProfiles/}
 }
 
 }
