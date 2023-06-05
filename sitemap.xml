@@ -1,111 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/404.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/404.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/CONTRIBUTING.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/CONTRIBUTING.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/LICENSE-text.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/LICENSE.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/articles/ExampleAnalysis.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/ExampleAnalysis.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/articles/addCohortIntersections.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/addCohortIntersections.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/articles/addPatientCharacteristics.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/addPatientCharacteristics.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/articles/index.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/authors.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/authors.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/index.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/index.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/PatientProfiles-package.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/PatientProfiles-package.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addAge.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addAttributes.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAttributes.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCategories.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCategories.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersect.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersect.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectCount.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectCount.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectDate.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectDate.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectDays.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectDays.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addCohortIntersectFlag.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectFlag.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addDateOfBirth.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirth.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addDemographics.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addFutureObservation.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addFutureObservation.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addInObservation.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservation.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addIntersect.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addIntersect.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addPriorHistory.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorHistory.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/addSex.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/availableFunctions.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/availableFunctions.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/detectVariables.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/detectVariables.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/getConceptName.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getConceptName.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/getEndName.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getEndName.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/getStartName.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getStartName.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/index.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/mockPatientProfiles.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/mockPatientProfiles.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/pipe.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/summariseCharacteristics.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCharacteristics.html</loc>
   </url>
   <url>
-    <loc>https://oxford-pharmacoepi.github.io/PatientProfiles/reference/variableTypes.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/variableTypes.html</loc>
   </url>
 </urlset>
