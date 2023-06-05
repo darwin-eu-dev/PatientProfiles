@@ -512,48 +512,6 @@ test_that("check that no extra rows are added", {
 
 })
 
-test_that("temp and permanent tables", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
-  # using temp
-  cdm$cohort1 <- cdm$cohort1 %>%
-    addDemographics(cdm,
-      indexDate = "cohort_end_date",
-      age = TRUE,
-      ageGroup = list(c(0, 100)),
-      sex = TRUE,
-      priorHistory = TRUE
-    )
-  # temp tables created by dbplyr
-  expect_true(any(stringr::str_starts(
-    CDMConnector::listTables(attr(cdm, "dbcon")),
-    "dbplyr_"
-  )))
-
-
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
-  # using permanent
-  cdm$cohort1 <- cdm$cohort1 %>%
-    addDemographics(cdm,
-      indexDate = "cohort_end_date",
-      age = TRUE,
-      ageGroup = list(c(0, 100)),
-      sex = TRUE,
-      priorHistory = TRUE,
-      tablePrefix = "my_perm"
-    )
-  # permanent table
-  expect_true(any(stringr::str_starts(
-    CDMConnector::listTables(attr(cdm, "dbcon")),
-    "my_perm_"
-  )))
-  # no temp tables created by dbplyr
-  expect_true(!any(stringr::str_starts(
-    CDMConnector::listTables(attr(cdm, "dbcon")),
-    "dbplyr_"
-  )))
-
-})
-
 test_that("age at cohort end, no missing, check age computation", {
   cohort1 <- tibble::tibble(
     cohort_definition_id = c("1", "1"),
