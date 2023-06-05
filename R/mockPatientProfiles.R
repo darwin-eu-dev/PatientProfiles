@@ -542,13 +542,11 @@ mockPatientProfiles <- function(connectionDetails = list(
     )
   }
 
-  cohorts <- c("cohort1", "cohort2", names(listTables))
   listTables[["cohort1"]] <- cohort1
   listTables[["cohort2"]] <- cohort2
+  cohorts <- names(listTables)
   for (cohort in cohorts) {
-    eval(parse(text = paste0(
-      "x <- addCohortCountAttr(listTables[[\"", cohort, "\"]])"
-    )))
+    x <- addCohortCountAttr(listTables[[cohort]])
     DBI::dbWriteTable(
       conn = db, name = CDMConnector::inSchema(writeSchema, cohort),
       value = x, overwrite = TRUE
