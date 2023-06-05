@@ -649,7 +649,7 @@ addCohortCountAttr <- function(cohort) {
 #'
 #' @noRd
 #'
-updateWrittenTables <- function(scratchTables, writeTables) {
+updateWrittenTables <- function(scratchTables = NULL, writeTables = NULL) {
   options(
     mock_cdm_scratch_tables = unique(c(
       scratchTables, getOption("mock_cdm_scratch_tables", NULL)
@@ -666,10 +666,10 @@ updateWrittenTables <- function(scratchTables, writeTables) {
 #'
 #' @noRd
 #'
-disconnectMockCdm <- function(cdm) {
-  db <- attr(cdm, "dbcon")
-  scratchSchema <- attr(cdm, "cdm_schema")
-  writeSchema <- attr(cdm, "write_schema")
+disconnectMockCdm <- function(connectionDetails) {
+  db <- connectionDetails[["con"]]
+  scratchSchema <- connectionDetails[["scratch_schema"]]
+  writeSchema <- connectionDetails[["write_schema"]]
   scratchTables <- getOption("mock_cdm_scratch_tables", NULL)
   writeTables <- getOption("mock_cdm_write_tables", NULL)
   for (tab in scratchTables) {
