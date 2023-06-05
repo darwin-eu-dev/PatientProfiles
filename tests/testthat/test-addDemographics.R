@@ -1,5 +1,5 @@
 test_that("addDemographics, input length, type, tableprefix", {
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
   expect_error(addDemographics(2, cdm))
   expect_error(addDemographics(cdm$cohort1, cdm$concept_ancestor))
@@ -8,12 +8,10 @@ test_that("addDemographics, input length, type, tableprefix", {
   expect_error(addDemographics(cdm$cohort1, cdm, ageGroup = 10))
   expect_error(addDemographics(cdm$cohort1, cdm, tablePrefix = 1))
   expect_error(addDemographics(cdm$cohort1, cdm, age = FALSE, sex = FALSE, priorHistory = FALSE, futureObservation = FALSE))
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("addDemographics, cohort and condition_occurrence", {
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
   oldcohort <- cdm$cohort1
   cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm, ageImposeMonth = TRUE, ageImposeDay = TRUE)
@@ -89,11 +87,11 @@ test_that("addDemographics, cohort and condition_occurrence", {
     )
   }
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("addDemographics, parameters", {
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
   cdm$cohort1 <- cdm$cohort1 %>%
     addDemographics(cdm,
       indexDate = "cohort_end_date",
@@ -136,11 +134,11 @@ test_that("addDemographics, parameters", {
   expect_true(s$prior_history == 4622)
   expect_true(s$age_group == "41 to 120")
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("partial demographics - cohorts", {
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
   # only age
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -241,11 +239,11 @@ test_that("partial demographics - cohorts", {
     )
   )
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("partial demographics - omop tables", {
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
   # only age
   cdm$condition_occurrence1a <- cdm$condition_occurrence %>%
@@ -300,7 +298,7 @@ test_that("partial demographics - omop tables", {
   expect_true(all(c("age", "sex", "prior_history")
   %in% names(cdm$condition_occurrence1d)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
@@ -334,6 +332,7 @@ test_that("priorHistory and future_observation - outside of observation period",
   )
 
   cdm <- mockPatientProfiles(
+    connectionDetails,
     person = person,
     observation_period = observation_period,
     cohort1 = cohort1
@@ -352,7 +351,7 @@ test_that("priorHistory and future_observation - outside of observation period",
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("priorHistory - multiple observation periods", {
@@ -389,6 +388,7 @@ test_that("priorHistory - multiple observation periods", {
   )
 
   cdm <- mockPatientProfiles(
+    connectionDetails,
     person = person,
     observation_period = observation_period,
     cohort1 = cohort1
@@ -416,7 +416,7 @@ test_that("priorHistory - multiple observation periods", {
     ))))
 
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("check that no extra rows are added", {
@@ -433,7 +433,7 @@ test_that("check that no extra rows are added", {
     observation_period_end_date = as.Date(c("2018-06-30", "2020-06-30", "2022-06-30"))
   )
   cdm <- mockPatientProfiles(
-    cohort1 = cohort1, observation_period = observation_period
+    connectionDetails, cohort1 = cohort1, observation_period = observation_period
   )
   # using temp
   cdm$cohort1_new <- cdm$cohort1 %>%
@@ -509,49 +509,7 @@ test_that("check that no extra rows are added", {
   )
 
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-})
 
-test_that("temp and permanent tables", {
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
-  # using temp
-  cdm$cohort1 <- cdm$cohort1 %>%
-    addDemographics(cdm,
-      indexDate = "cohort_end_date",
-      age = TRUE,
-      ageGroup = list(c(0, 100)),
-      sex = TRUE,
-      priorHistory = TRUE
-    )
-  # temp tables created by dbplyr
-  expect_true(any(stringr::str_starts(
-    CDMConnector::listTables(attr(cdm, "dbcon")),
-    "dbplyr_"
-  )))
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
-  # using permanent
-  cdm$cohort1 <- cdm$cohort1 %>%
-    addDemographics(cdm,
-      indexDate = "cohort_end_date",
-      age = TRUE,
-      ageGroup = list(c(0, 100)),
-      sex = TRUE,
-      priorHistory = TRUE,
-      tablePrefix = "my_perm"
-    )
-  # permanent table
-  expect_true(any(stringr::str_starts(
-    CDMConnector::listTables(attr(cdm, "dbcon")),
-    "my_perm_"
-  )))
-  # no temp tables created by dbplyr
-  expect_true(!any(stringr::str_starts(
-    CDMConnector::listTables(attr(cdm, "dbcon")),
-    "dbplyr_"
-  )))
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("age at cohort end, no missing, check age computation", {
@@ -574,7 +532,7 @@ test_that("age at cohort end, no missing, check age computation", {
     day_of_birth = c(01, 01)
   )
 
-  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
   # check if exact age is computed, ie, dob 2000-01-01, target date 2000-12-01  --> age 0
   # dob 2000-01-01, target date 2001-01-02  --> age 1
@@ -594,7 +552,7 @@ test_that("age at cohort end, no missing, check age computation", {
     dplyr::collect()
   expect_true(identical(result$age, c(0, 1)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("age at cohort entry, missing year/month/day of birth", {
@@ -617,7 +575,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
   result <- addAge(
     x = cdm$cohort1, cdm = cdm, ageImposeMonth = FALSE, ageImposeDay = FALSE,
@@ -637,7 +595,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 
   expect_equivalent(result, result_b)
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("multiple cohortIds, check age at cohort end", {
@@ -659,7 +617,7 @@ test_that("multiple cohortIds, check age at cohort end", {
     month_of_birth = c(NA, 01, 01),
     day_of_birth = c(01, 01, 01)
   )
-  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
   result <- addAge(x = cdm[["cohort1"]], cdm = cdm,
                    indexDate = "cohort_end_date") %>%
@@ -676,7 +634,7 @@ test_that("multiple cohortIds, check age at cohort end", {
 
   expect_equivalent(result, result_b)
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("age group checks", {
@@ -699,7 +657,7 @@ test_that("age group checks", {
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
   x <- cdm$cohort1 %>%
     addAge(cdm)
@@ -761,7 +719,7 @@ test_that("age group checks", {
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
   result1 <- cdm$cohort1 %>%
     addAge(cdm) %>%
     addCategories(
@@ -786,11 +744,11 @@ test_that("age group checks", {
     dplyr::filter(age == 10) %>%
     dplyr::pull("age_group")))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("age variable names", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(connectionDetails)
 
   result <- addAge(
     x = cdm[["cohort1"]], cdm = cdm,
@@ -805,13 +763,14 @@ test_that("age variable names", {
     dplyr::collect()
   expect_true(all(c("current_age", "working_age") %in% colnames(result)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("expected errors", {
   # check input length and type for each of the arguments
   cdm <-
     mockPatientProfiles(
+      connectionDetails,
       seed = 1,
       patient_size = 5
     )
@@ -832,9 +791,9 @@ test_that("expected errors", {
   expect_error(addAge(cdm$cohort1, cdm, indexDate = "cohort_start_date",
                       tablePrefix = 1))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
-  cdm <- mockPatientProfiles()
+
+  cdm <- mockPatientProfiles(connectionDetails)
 
   expect_error(result <- addAge(cdm = "a"))
   expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm,
@@ -848,7 +807,7 @@ test_that("expected errors", {
   expect_error(result <- addAge(x = cdm[["cohort1"]], cdm = cdm,
                                 ageDefaultDay = 1.1))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
   cohort1 <- tibble::tibble(
     cohort_definition_id = c("1", "1", "1"),
     subject_id = c("1", "2", "3"),
@@ -868,7 +827,7 @@ test_that("expected errors", {
     day_of_birth = c(NA, 02, 01)
   )
 
-  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
   cdm$cohort1 <- cdm$cohort1 %>% addAge(cdm)
 
@@ -893,12 +852,12 @@ test_that("expected errors", {
     list("age_group" = list(c(1, 2)))
   ))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("addCategories input",{
 
-  cdm <-mockPatientProfiles( seed = 1, patient_size = 5)
+  cdm <-mockPatientProfiles(connectionDetails, seed = 1, patient_size = 5)
 
   # overwrite when categories named same as variable, throw warning
   expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
@@ -944,7 +903,7 @@ test_that("addCategories input",{
 
   # Error when x is not a cdm object
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("test if column exist, overwrite", {
@@ -1002,7 +961,7 @@ test_that("test if column exist, overwrite", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>% addDemographics(cdm) %>% dplyr::collect()
 
@@ -1035,7 +994,7 @@ test_that("test if column exist, overwrite", {
                     dplyr::arrange(cohort_start_date, subject_id) %>%
                     dplyr::select(future_observation), na.rm = TRUE))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("date of birth", {
@@ -1058,7 +1017,7 @@ test_that("date of birth", {
     day_of_birth = c(01, 15)
   )
 
-  cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
  person_dob <- cdm$person %>%
     addDateOfBirth(cdm) %>%
@@ -1109,5 +1068,5 @@ test_that("date of birth", {
  expect_true(cohort_dob2 %>% dplyr::filter(subject_id == 2) %>% dplyr::pull(date_of_birth) ==
                "2005-01-01")
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })

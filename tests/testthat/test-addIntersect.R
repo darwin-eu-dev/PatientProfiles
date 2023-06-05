@@ -50,7 +50,7 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>%
     addIntersect(cdm = cdm, tableName = "cohort2", value = "date", nameStyle = "xx") %>%
@@ -188,7 +188,7 @@ test_that("working examples", {
     )
   )))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("working examples with cohort_end_date", {
@@ -243,7 +243,7 @@ test_that("working examples with cohort_end_date", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>%
     addIntersect(
@@ -255,7 +255,7 @@ test_that("working examples with cohort_end_date", {
 
   expect_true(all(result$date_all_0_to_inf == as.Date(c("2020-01-25", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("working examples with extra column", {
@@ -311,7 +311,7 @@ test_that("working examples with extra column", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   cdm$cohort2 <- cdm$cohort2 %>% dplyr::mutate(measurment_result = row_number())
 
@@ -352,9 +352,9 @@ test_that("working examples with extra column", {
     ),
   )
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   cdm$cohort2 <- cdm$cohort2 %>% dplyr::mutate(measurment_result = row_number())
 
@@ -376,7 +376,7 @@ test_that("working examples with extra column", {
   expect_true(all(result_2$measurment_result_0_to_inf == c("1; 2","1; 2",3,6,5) ))
   expect_true(all(is.na(result_3$measurment_result_m400_to_m200 )))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("working examples with multiple cohort Ids", {
@@ -431,7 +431,7 @@ test_that("working examples with multiple cohort Ids", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -494,7 +494,7 @@ test_that("working examples with multiple cohort Ids", {
   expect_true(all(result_2$days_id3_0_to_inf == c(46, 32, 27, 23, 43)))
   expect_true(all(result_2$flag_id3_0_to_inf == c(1, 1, 1, 1, 1)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("working examples calculating as incidence target cohort", {
@@ -529,7 +529,7 @@ test_that("working examples calculating as incidence target cohort", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -550,7 +550,7 @@ test_that("working examples calculating as incidence target cohort", {
   expect_true(all(result$test_all_0_to_inf == as.Date("2020-01-01")))
   # expect_true(("all_0_to_inf" %in% colnames(result_1)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("working examples with more than one window", {
@@ -605,7 +605,7 @@ test_that("working examples with more than one window", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -627,7 +627,7 @@ test_that("working examples with more than one window", {
   expect_true(all(result$date_all_0_to_inf == result_1$date_all_0_to_inf))
   expect_true(all(compareNA(result$date_all_minf_to_0, result_1$date_all_minf_to_0)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("working examples with tables, not cohorts", {
@@ -688,7 +688,7 @@ test_that("working examples with tables, not cohorts", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, condition_occurrence = condition_occurrence, drug_exposure = drug_exposure)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, condition_occurrence = condition_occurrence, drug_exposure = drug_exposure)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -763,7 +763,7 @@ test_that("working examples with tables, not cohorts", {
   # test output all zero column when no result found
   expect_true(all(is.na(result_4$days_id2_0_to_inf)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("check input length and type for each of the arguments", {
@@ -817,7 +817,7 @@ test_that("check input length and type for each of the arguments", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   expect_error(addIntersect("cdm$cohort1", cdm))
 
@@ -837,11 +837,11 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addIntersect(cdm$cohort1, cdm, tableName = "cohort2", value = "flag", nameStyle = "test_{nowindow}_{cohortName}"))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("test checkWindow function", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(connectionDetails)
 
   expect_error(cdm$cohort1 %>%
     addIntersect(
@@ -852,7 +852,7 @@ test_that("test checkWindow function", {
       tableName = "cohort2",
       window = c(150, -90)
     ))
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("test if column exist, overwrite", {
@@ -910,7 +910,7 @@ test_that("test if column exist, overwrite", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>%
     addIntersect(
@@ -944,7 +944,7 @@ test_that("test if column exist, overwrite", {
       dplyr::arrange(cohort_start_date, subject_id) %>%
       dplyr::select(date_all_0_to_30), na.rm = TRUE))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("overlapTable is empty, check return columns", {
@@ -999,7 +999,7 @@ test_that("overlapTable is empty, check return columns", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
 
   result <- cdm$cohort1 %>%
@@ -1022,7 +1022,7 @@ test_that("overlapTable is empty, check return columns", {
 
   expect_true(all(is.na(result$date_id2_0_to_inf)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("overlap is empty or not, multiple ids, check return columns", {
@@ -1079,7 +1079,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
     ),
   )
 
-  cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -1194,6 +1194,6 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
   expect_true(all(is.na(result$cohort_1_m30_to_m1)))
   expect_true(all(is.na(result$cohort_1_0_to_inf)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 

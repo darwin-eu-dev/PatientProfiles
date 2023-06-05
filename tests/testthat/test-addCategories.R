@@ -1,6 +1,6 @@
 
 test_that("addCategories, functionality", {
-  cdm <- mockPatientProfiles(seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
   agegroup <- cdm$cohort1 %>%
     addAge(cdm) %>%
     addCategories(cdm,
@@ -27,6 +27,4 @@ test_that("addCategories, functionality", {
                     dplyr::select(age_group) %>%
                     dplyr::pull() ==
                     c( "0 to 55&&50 to 120", "0 to 55&&50 to 120", "50 to 120", "50 to 120")))
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

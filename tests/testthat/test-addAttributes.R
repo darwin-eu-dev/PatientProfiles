@@ -1,5 +1,5 @@
 test_that("addAttributes, functionality", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(connectionDetails)
 
   oldcohort <- cdm$cohort1
   newcohort <- cdm$cohort1 %>%
@@ -14,15 +14,11 @@ test_that("addAttributes, functionality", {
       expect_true(identical(attr(newcohort, i), attr(oldcohort, i)))
     }
   }
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("addAttributes, expected errors", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(connectionDetails)
 
   expect_error(addAttributes(cdm))
   expect_error(addAttributes(cdm$cohort1, "cdm$cohort2"))
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

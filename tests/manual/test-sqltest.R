@@ -108,5 +108,4 @@ cohort <- cdm$cohort %>%
 
 expect_true(all(c("all_0_to_inf") %in% names(cohort)))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

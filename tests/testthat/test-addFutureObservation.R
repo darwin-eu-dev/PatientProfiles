@@ -1,6 +1,7 @@
 test_that("check input length and type for each of the arguments", {
   cdm <-
     mockPatientProfiles(
+      connectionDetails,
       seed = 1,
       patient_size = 5,
       latest_observation_start_date = "2019-01-01",
@@ -15,7 +16,7 @@ test_that("check input length and type for each of the arguments", {
   expect_error(addFutureObservation(cdm$cohort1, cdm, indexDate = "end_date"))
 
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("check condition_occurrence and cohort1 work", {
@@ -23,6 +24,7 @@ test_that("check condition_occurrence and cohort1 work", {
   # mock data
   cdm <-
     mockPatientProfiles(
+      connectionDetails,
       seed = 1,
       patient_size = 5,
       latest_observation_start_date = "2005-01-01",
@@ -36,7 +38,7 @@ test_that("check condition_occurrence and cohort1 work", {
   expect_true(typeof(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
   expect_true("future_observation" %in% colnames(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date")))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("check working example with cohort1", {
@@ -73,6 +75,7 @@ test_that("check working example with cohort1", {
 
   cdm <-
     mockPatientProfiles(
+      connectionDetails,
       seed = 1,
       cohort1 = cohort1,
       observation_period = obs_1
@@ -104,7 +107,7 @@ test_that("check working example with cohort1", {
         )
     )))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("check working example with condition_occurrence", {
@@ -141,6 +144,7 @@ test_that("check working example with condition_occurrence", {
 
   cdm <-
     mockPatientProfiles(
+      connectionDetails,
       seed = 1,
       condition_occurrence = condition_occurrence,
       observation_period = obs_1
@@ -173,7 +177,7 @@ test_that("check working example with condition_occurrence", {
       )
   ))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("different name", {
@@ -210,6 +214,7 @@ test_that("different name", {
 
   cdm <-
     mockPatientProfiles(
+      connectionDetails,
       seed = 1,
       condition_occurrence = condition_occurrence,
       observation_period = obs_1
@@ -223,7 +228,7 @@ test_that("different name", {
     )
   expect_true("fh" %in% names(cdm$condition_occurrence))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
@@ -257,6 +262,7 @@ test_that("priorHistory and future_observation - outside of observation period",
   )
 
   cdm <- mockPatientProfiles(
+    connectionDetails,
     person = person,
     observation_period = observation_period,
     cohort1 = cohort1
@@ -269,7 +275,7 @@ test_that("priorHistory and future_observation - outside of observation period",
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
 
 test_that("multiple observation periods", {
@@ -306,6 +312,7 @@ test_that("multiple observation periods", {
   )
 
   cdm <- mockPatientProfiles(
+    connectionDetails,
     person = person,
     observation_period = observation_period,
     cohort1 = cohort1
@@ -335,5 +342,5 @@ test_that("multiple observation periods", {
       units = "days"
     ))))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  
 })
