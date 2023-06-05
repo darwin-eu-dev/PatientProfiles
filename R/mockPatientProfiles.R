@@ -679,4 +679,5 @@ disconnectMockCdm <- function(cdm) {
     DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
   }
   DBI::dbDisconnect(db, shutdown = TRUE)
+  options(mock_cdm_scratch_tables = NULL, mock_cdm_write_tables = NULL)
 }
