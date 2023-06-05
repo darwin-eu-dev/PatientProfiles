@@ -64,45 +64,45 @@
 #' }
 #'
 mockPatientProfiles <- function(connectionDetails = list(
-  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-  scratch_schema = "main",
-  write_schema = "main"
-),
-drug_exposure = NULL,
-drug_strength = NULL,
-observation_period = NULL,
-condition_occurrence = NULL,
-visit_occurrence = NULL,
-concept_ancestor = NULL,
-person = NULL,
-cohort1 = NULL,
-cohort2 = NULL,
-drug_concept_id_size = 5,
-ancestor_concept_id_size = 5,
-condition_concept_id_size = 5,
-visit_concept_id_size = 5,
-visit_occurrence_id_size = 5,
-ingredient_concept_id_size = 1,
-drug_exposure_size = 10,
-patient_size = 1,
-min_drug_exposure_start_date = "2000-01-01",
-max_drug_exposure_start_date = "2020-01-01",
-earliest_date_of_birth = NULL,
-latest_date_of_birth = NULL,
-earliest_observation_start_date = NULL,
-latest_observation_start_date = NULL,
-min_days_to_observation_end = NULL,
-max_days_to_observation_end = NULL,
-earliest_condition_start_date = NULL,
-latest_condition_start_date = NULL,
-min_days_to_condition_end = NULL,
-max_days_to_condition_end = NULL,
-earliest_visit_start_date = NULL,
-latest_visit_start_date = NULL,
-min_days_to_visit_end = NULL,
-max_days_to_visit_end = NULL,
-seed = 1,
-...) {
+                                  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+                                  scratch_schema = "main",
+                                  write_schema = "main"
+                                ),
+                                drug_exposure = NULL,
+                                drug_strength = NULL,
+                                observation_period = NULL,
+                                condition_occurrence = NULL,
+                                visit_occurrence = NULL,
+                                concept_ancestor = NULL,
+                                person = NULL,
+                                cohort1 = NULL,
+                                cohort2 = NULL,
+                                drug_concept_id_size = 5,
+                                ancestor_concept_id_size = 5,
+                                condition_concept_id_size = 5,
+                                visit_concept_id_size = 5,
+                                visit_occurrence_id_size = 5,
+                                ingredient_concept_id_size = 1,
+                                drug_exposure_size = 10,
+                                patient_size = 1,
+                                min_drug_exposure_start_date = "2000-01-01",
+                                max_drug_exposure_start_date = "2020-01-01",
+                                earliest_date_of_birth = NULL,
+                                latest_date_of_birth = NULL,
+                                earliest_observation_start_date = NULL,
+                                latest_observation_start_date = NULL,
+                                min_days_to_observation_end = NULL,
+                                max_days_to_observation_end = NULL,
+                                earliest_condition_start_date = NULL,
+                                latest_condition_start_date = NULL,
+                                min_days_to_condition_end = NULL,
+                                max_days_to_condition_end = NULL,
+                                earliest_visit_start_date = NULL,
+                                latest_visit_start_date = NULL,
+                                min_days_to_visit_end = NULL,
+                                max_days_to_visit_end = NULL,
+                                seed = 1,
+                                ...) {
 
   # Put ... into a list
   listTables <- list(...)
@@ -543,8 +543,12 @@ seed = 1,
   }
 
   cohorts <- c("cohort1", "cohort2", names(listTables))
+  listTables[["cohort1"]] <- cohort1
+  listTables[["cohort2"]] <- cohort2
   for (cohort in cohorts) {
-    eval(parse(text = paste0("x <- addCohortCountAttr(", cohort, ")")))
+    eval(parse(text = paste0(
+      "x <- addCohortCountAttr(listTables[[\"", cohort, "\"]])"
+    )))
     DBI::dbWriteTable(
       conn = db, name = CDMConnector::inSchema(scratchSchema, cohort),
       value = x, overwrite = TRUE
@@ -566,115 +570,26 @@ seed = 1,
     )
   }
 
-  # write attributes for cohort1 and cohort2 into DBI
-  for (i in 4:length(names(attributes(cohort1)))) {
-    name <- names(attributes(cohort1))[[i]]
-    DBI::dbWithTransaction(db, {
-      DBI::dbWriteTable(db, paste0(
-        "cohort1_",
-        substr(name, 8, nchar(name))
-      ),
-      attr(cohort1, which = names(attributes(cohort1))[[i]]),
-      overwrite = TRUE
-      )
-    })
-  }
+  cdmTables <- c(
+    "drug_strength", "drug_exposure", "person", "concept_ancestor",
+    "observation_period", "condition_occurrence", "visit_occurrence"
+  )
+  writeTables <- tidyr::expand_grid(
+      cohort_name = cohorts, attribute = c("", "_set", "_count", "_attrition")
+    ) %>%
+    dplyr::mutate(name = paste0(.data$cohort_name, .data$attribute)) %>%
+    dplyr::pull("name")
 
-  for (i in 4:length(names(attributes(cohort2)))) {
-    name <- names(attributes(cohort2))[[i]]
-    DBI::dbWithTransaction(db, {
-      DBI::dbWriteTable(db, paste0(
-        "cohort2_",
+  updateWrittenTables(cdmTables, writeTables)
 
-        substr(name, 8, nchar(name))
-      ),
-      attr(cohort2, which = names(attributes(cohort2))[[i]]),
-      overwrite = TRUE
-      )
-    })
-  }
-
-  if (length(listTables) > 0) {
-    for (i in 1:length(listTables)) {
-
-
-
-      if (any(names(attributes(listTables[[i]])) %in%
-              c("cohort_attrition", "cohort_count", "cohort_set"))) {
-
-        cohort_attr <- intersect(names(attributes(listTables[[i]])),
-                                 c("cohort_set", "cohort_attrition", "cohort_count"))
-
-        for (k in cohort_attr) {
-
-
-          DBI::dbWithTransaction(db, {
-            DBI::dbWriteTable(db,  paste0(
-              names(listTables)[i],"_",
-              substr(k, 8, nchar(k))
-            ),
-            attr(listTables[[i]], which = k),
-            overwrite = TRUE)
-          })
-
-        }
-
-        #store in database
-        DBI::dbWithTransaction(db, {
-          DBI::dbWriteTable(db, names(listTables)[i],
-                            listTables[[i]],
-                            overwrite = TRUE)
-        })
-
-      } else
-
-      {
-        #store in database
-        DBI::dbWithTransaction(db, {
-          DBI::dbWriteTable(db, names(listTables)[i],
-                            listTables[[i]],
-                            overwrite = TRUE
-          )
-        })
-
-
-      }}
-  }
-  if (length(listTables) > 0) {
-    cdm <- CDMConnector::cdm_from_con(
-      db,
-      cdm_schema = "main",
-      write_schema = "main",
-      cdm_tables = c(
-        "drug_strength",
-        "drug_exposure",
-        "person",
-        "concept_ancestor",
-        "observation_period",
-        "condition_occurrence",
-        "visit_occurrence"
-      ),
-      cohort_tables = c("cohort1", "cohort2", names(listTables))
-    )
-  } else {
-    cdm <- CDMConnector::cdm_from_con(
-      db,
-      cdm_schema = "main",
-      write_schema = "main",
-      cdm_tables = c(
-        "drug_strength",
-        "drug_exposure",
-        "person",
-        "concept_ancestor",
-        "observation_period",
-        "condition_occurrence",
-        "visit_occurrence"
-      ),
-      cohort_tables = c("cohort1", "cohort2")
-    )
-  }
-
-
+  # create the cdm object
+  cdm <- CDMConnector::cdm_from_con(
+    db,
+    cdm_schema = "main",
+    write_schema = "main",
+    cdm_tables = cdmTables,
+    cohort_tables = cohorts
+  )
 
   return(cdm)
 }
@@ -727,4 +642,43 @@ addCohortCountAttr <- function(cohort) {
   }
 
   return(cohort)
+}
+
+#' Update tables that have been modified in scratch or write schema
+#'
+#' @param scratchTables Tables written in the scratch schema
+#' @param writeTables Tables written in the write schema
+#'
+#' @noRd
+#'
+updateWrittenTables <- function(scratchTables, writeTables) {
+  options(
+    mock_cdm_scratch_tables = unique(c(
+      scratchTables, getOption("mock_cdm_scratch_tables", NULL)
+    )),
+    mock_cdm_write_tables = unique(c(
+      writeTables, getOption("mock_cdm_write_tables", NULL)
+    ))
+  )
+}
+
+#' Delete tables that have been added during the testing
+#'
+#' @param connectionDetails Connection details of the mock database
+#'
+#' @noRd
+#'
+disconnectMock <- function(connectionDetails) {
+  db <- connectionDetails[["con"]]
+  scratchSchema <- connectionDetails[["scratch_schema"]]
+  writeSchema <- connectionDetails[["write_schema"]]
+  scratchTables <- getOption("mock_cdm_scratch_tables", NULL)
+  writeTables <- getOption("mock_cdm_write_tables", NULL)
+  for (tab in scratchTables) {
+    DBI::dbRemoveTable(db, CDMConnector::inSchema(scratchSchema, tab))
+  }
+  for (tab in writeTables) {
+    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
+  }
+  DBI::dbDisconnect(db, shutdown = TRUE)
 }
