@@ -8,7 +8,7 @@ availableConnections <- list(
     write_schema = "main"
   )
 )
-for (k in seq_len(availableConnections)) {
+for (k in seq_along(availableConnections)) {
   connectionDetails <- availableConnections[[k]]
   test_check("PatientProfiles")
   disconnectMockCdm(connectionDetails)
