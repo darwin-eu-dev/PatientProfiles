@@ -507,7 +507,7 @@ supressCounts <- function(result, suppressCellCount) {
       result$value[ik & !is] <- as.character(NA)
     }
     value <- suppressWarnings(as.numeric(result$value))
-    id <- unlist(lapply(strsplit(result$estimate, ": "), tail, n = 1)) ==
+    id <- unlist(lapply(strsplit(result$estimate, ": "), utils::tail, n = 1)) ==
       "count" & value < suppressCellCount & value > 0
     result  <- result %>%
       dplyr::mutate(value = dplyr::if_else(
