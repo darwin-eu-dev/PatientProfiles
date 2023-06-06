@@ -40,9 +40,8 @@ Categorize a numeric variable
 \donttest{
 library(DBI)
 library(duckdb)
-library(tibble)
 library(PatientProfiles)
-cohort1 <- tibble::tibble(
+cohort1 <- dplyr::tibble(
   cohort_definition_id = c("1", "1", "1"),
   subject_id = c("1", "2", "3"),
   cohort_start_date = c(
@@ -53,7 +52,7 @@ cohort1 <- tibble::tibble(
   )
 )
 
-person <- tibble::tibble(
+person <- dplyr::tibble(
   person_id = c("1", "2", "3"),
   gender_concept_id = c("8507", "8507", "8507"),
   year_of_birth = c(1980, 1970, 2000),

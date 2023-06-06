@@ -74,7 +74,7 @@ test_that("first vs last event - cohort table", {
   # depending on user choice, should get back either the
   # first or last outcome record
 
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c("1", "2"),
     cohort_start_date = c(
@@ -87,7 +87,7 @@ test_that("first vs last event - cohort table", {
     )
   )
 
-  cohort2 <- tibble::tibble(
+  cohort2 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c("1", "1", "1", "2"),
     cohort_start_date = c(
@@ -195,7 +195,7 @@ test_that("multiple cohort entries per person", {
   # in the presence of multiple cohort entries in the index cohort
   # each record should be treated independently
 
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c("1", "1", "2"),
     cohort_start_date = c(
@@ -210,7 +210,7 @@ test_that("multiple cohort entries per person", {
     )
   )
 
-  cohort2 <- tibble::tibble(
+  cohort2 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c("1", "1", "1", "2"),
     cohort_start_date = c(

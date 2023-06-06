@@ -28,8 +28,7 @@ Detect automatically variables with a certain classification
 \examples{
 \donttest{
 library(PatientProfiles)
-library(tibble)
-x <- tibble(
+x <- dplyr::tibble(
   person_id = c(1, 2),
   start_date = as.Date(c("2020-05-02", "2021-11-19")),
   asthma = c(0, 1)
