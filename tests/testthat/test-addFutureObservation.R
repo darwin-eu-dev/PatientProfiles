@@ -16,7 +16,7 @@ test_that("check input length and type for each of the arguments", {
   expect_error(addFutureObservation(cdm$cohort1, cdm, indexDate = "end_date"))
 
 
-  
+
 })
 
 test_that("check condition_occurrence and cohort1 work", {
@@ -38,12 +38,12 @@ test_that("check condition_occurrence and cohort1 work", {
   expect_true(typeof(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
   expect_true("future_observation" %in% colnames(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date")))
 
-  
+
 })
 
 test_that("check working example with cohort1", {
   # create mock tables for testing
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "1", "1"),
     subject_id = c("1", "2", "3"),
     cohort_start_date = c(
@@ -58,7 +58,7 @@ test_that("check working example with cohort1", {
     )
   )
 
-  obs_1 <- tibble::tibble(
+  obs_1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -89,7 +89,7 @@ test_that("check working example with cohort1", {
 
   expect_true(all(result %>%
     dplyr::select("future_observation") ==
-    tibble::tibble(
+    dplyr::tibble(
       future_observation =
         c(
           as.numeric(difftime(as.Date("2014-01-01"),
@@ -107,12 +107,12 @@ test_that("check working example with cohort1", {
         )
     )))
 
-  
+
 })
 
 test_that("check working example with condition_occurrence", {
   # create mock tables for testing
-  condition_occurrence <- tibble::tibble(
+  condition_occurrence <- dplyr::tibble(
     condition_occurrence_id = c("1", "1", "1"),
     person_id = c("1", "2", "3"),
     condition_start_date = c(
@@ -127,7 +127,7 @@ test_that("check working example with condition_occurrence", {
     )
   )
 
-  obs_1 <- tibble::tibble(
+  obs_1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -158,7 +158,7 @@ test_that("check working example with condition_occurrence", {
 
   expect_true(all(
     result %>% dplyr::select("future_observation") ==
-      tibble::tibble(
+      dplyr::tibble(
         future_observation =
           c(
             as.numeric(difftime(as.Date("2014-01-01"),
@@ -177,12 +177,12 @@ test_that("check working example with condition_occurrence", {
       )
   ))
 
-  
+
 })
 
 test_that("different name", {
   # create mock tables for testing
-  condition_occurrence <- tibble::tibble(
+  condition_occurrence <- dplyr::tibble(
     condition_occurrence_id = c("1", "1", "1"),
     person_id = c("1", "2", "3"),
     condition_start_date = c(
@@ -197,7 +197,7 @@ test_that("different name", {
     )
   )
 
-  obs_1 <- tibble::tibble(
+  obs_1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -228,21 +228,21 @@ test_that("different name", {
     )
   expect_true("fh" %in% names(cdm$condition_occurrence))
 
-  
+
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
 
   # futureHistory should be NA if index date is outside of an observation period
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = 1,
     year_of_birth = 1980,
     month_of_birth = 01,
     day_of_birth = 01
   )
-  observation_period <- tibble::tibble(
+  observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2),
     person_id = c(1, 2),
     observation_period_start_date = c(
@@ -254,7 +254,7 @@ test_that("priorHistory and future_observation - outside of observation period",
       as.Date("2015-01-01")
     )
   )
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c(1, 2),
     cohort_start_date = as.Date(c("2012-02-01")),
@@ -275,7 +275,7 @@ test_that("priorHistory and future_observation - outside of observation period",
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
 
-  
+
 })
 
 test_that("multiple observation periods", {
@@ -283,14 +283,14 @@ test_that("multiple observation periods", {
   # with multiple observation periods,
   # future history should relate to the current observation period
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = 1,
     year_of_birth = 1980,
     month_of_birth = 01,
     day_of_birth = 01
   )
-  observation_period <- tibble::tibble(
+  observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2, 3),
     person_id = c(1, 1, 2),
     observation_period_start_date = c(
@@ -304,7 +304,7 @@ test_that("multiple observation periods", {
       as.Date("2015-01-01")
     )
   )
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c(1, 2),
     cohort_start_date = as.Date(c("2012-02-01")),
@@ -342,5 +342,5 @@ test_that("multiple observation periods", {
       units = "days"
     ))))
 
-  
+
 })

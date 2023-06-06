@@ -43,7 +43,6 @@ Imports:
     tidyr,
     checkmate,
     lubridate,
-    tibble,
     DBI,
     rlang,
     cli,

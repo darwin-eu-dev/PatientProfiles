@@ -322,9 +322,8 @@ futureObservationQuery <- function(indexDate, name) {
 #' \donttest{
 #' library(DBI)
 #' library(duckdb)
-#' library(tibble)
 #' library(PatientProfiles)
-#' cohort1 <- tibble::tibble(
+#' cohort1 <- dplyr::tibble(
 #'   cohort_definition_id = c("1", "1", "1"),
 #'   subject_id = c("1", "2", "3"),
 #'   cohort_start_date = c(
@@ -335,7 +334,7 @@ futureObservationQuery <- function(indexDate, name) {
 #'   )
 #' )
 #'
-#' person <- tibble::tibble(
+#' person <- dplyr::tibble(
 #'   person_id = c("1", "2", "3"),
 #'   gender_concept_id = c("8507", "8532", "8507"),
 #'   year_of_birth = c(2000, 1995, NA),
@@ -395,9 +394,8 @@ addAge <- function(x,
 #' \donttest{
 #' library(DBI)
 #' library(duckdb)
-#' library(tibble)
 #' library(PatientProfiles)
-#' cohort1 <- tibble::tibble(
+#' cohort1 <- dplyr::tibble(
 #'   cohort_definition_id = c("1", "1", "1"),
 #'   subject_id = c("1", "2", "3"),
 #'   cohort_start_date = c(
@@ -412,7 +410,7 @@ addAge <- function(x,
 #'   )
 #' )
 #'
-#' obs_1 <- tibble::tibble(
+#' obs_1 <- dplyr::tibble(
 #'   observation_period_id = c("1", "2", "3"),
 #'   person_id = c("1", "2", "3"),
 #'   observation_period_start_date = c(
@@ -481,9 +479,8 @@ addFutureObservation <- function(x,
 #' \donttest{
 #' library(DBI)
 #' library(duckdb)
-#' library(tibble)
 #' library(PatientProfiles)
-#' cohort1 <- tibble::tibble(
+#' cohort1 <- dplyr::tibble(
 #'   cohort_definition_id = c("1", "1", "1"),
 #'   subject_id = c("1", "2", "3"),
 #'   cohort_start_date = c(
@@ -498,7 +495,7 @@ addFutureObservation <- function(x,
 #'   )
 #' )
 #'
-#' obs_1 <- tibble::tibble(
+#' obs_1 <- dplyr::tibble(
 #'   observation_period_id = c("1", "2", "3"),
 #'   person_id = c("1", "2", "3"),
 #'   observation_period_start_date = c(

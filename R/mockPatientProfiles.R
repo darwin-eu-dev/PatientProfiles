@@ -449,7 +449,7 @@ mockPatientProfiles <- function(connectionDetails = list(
   }
 
   if (is.null(person)) {
-    person <- tibble::tibble(
+    person <- dplyr::tibble(
       person_id = id,
       gender_concept_id = gender_id,
       year_of_birth = DOB_year,
@@ -459,7 +459,7 @@ mockPatientProfiles <- function(connectionDetails = list(
   }
 
   if (is.null(observation_period)) {
-    observation_period <- tibble::tibble(
+    observation_period <- dplyr::tibble(
       observation_period_id = id,
       person_id = id,
       observation_period_start_date = obs_start_date,
@@ -470,7 +470,7 @@ mockPatientProfiles <- function(connectionDetails = list(
 
 
   if (is.null(condition_occurrence)) {
-    condition_occurrence <- tibble::tibble(
+    condition_occurrence <- dplyr::tibble(
       condition_occurrence_id = id,
       person_id = id,
       condition_concept_id = condition_concept_id,
@@ -483,7 +483,7 @@ mockPatientProfiles <- function(connectionDetails = list(
   if (is.null(visit_occurrence)) {
     id <- sample(seq(1:patient_size))
 
-    visit_occurrence <- tibble::tibble(
+    visit_occurrence <- dplyr::tibble(
       visit_occurrence_id = visit_occurrence_id,
       person_id = id,
       visit_concept_id = visit_concept_id,
@@ -505,7 +505,7 @@ mockPatientProfiles <- function(connectionDetails = list(
 
   # cohort table 1
   if (is.null(cohort1)) {
-    cohort1 <- tibble::tibble(
+    cohort1 <- dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 3),
       cohort_start_date = as.Date(c("2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01")),
@@ -518,7 +518,7 @@ mockPatientProfiles <- function(connectionDetails = list(
 
   # cohort table 2
   if (is.null(cohort2)) {
-    cohort2 <- tibble::tibble(
+    cohort2 <- dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 3, 1),
       subject_id = c(1, 3, 1, 2, 1),
       cohort_start_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25")),

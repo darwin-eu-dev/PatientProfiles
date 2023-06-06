@@ -18,7 +18,7 @@ expect_error(cdm$cohort1 %>% addDemographics(cdm))
 
 
 test_that("test checkCategory with length 1 ", {
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = 1,
     year_of_birth = c(1980, 1950),
@@ -52,7 +52,7 @@ test_that("test checkCategory with length 1 ", {
     expect_error(cdm$cohort1 %>% addAge(cdm, indexDate = "cohort_start_date") %>%
       addCategories(cdm, "age", categories))
 
-  
+
 })
 
 
@@ -127,7 +127,7 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   expect_true(all(c("flag", "flag_1") %in% colnames(x)))
   expect_true(all(c("flag", "flag_new") %in% colnames(addInObservation(cdm$cohort1,cdm, name="flag_new"))))
 
-  
+
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
@@ -153,7 +153,7 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   expect_true(all(c("flag", "flag_1", "flag_2") %in% colnames(x)))
   expect_true(all(c("flag", "flag_1", "flag_new") %in% colnames(addInObservation(cdm$cohort1,cdm, name="flag_new"))))
 
-  
+
 
 })
 
@@ -169,7 +169,7 @@ test_that(" test checkWindow in addIntersect" ,{
    expect_error(cdm$cohort1 %>% addIntersect( cdm,tableName = "cohort2",window = list(c(Inf,Inf)), value = "date"))
    expect_error(cdm$cohort1 %>% addIntersect( cdm,tableName = "cohort2",window = list(c(-Inf,-Inf)), value = "date"))
 
-  
+
 
 })
 

@@ -305,14 +305,14 @@ test_that("priorHistory and future_observation - outside of observation period",
 
   # priorHistory should be NA if index date is outside of an observation period
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = 1,
     year_of_birth = 1980,
     month_of_birth = 01,
     day_of_birth = 01
   )
-  observation_period <- tibble::tibble(
+  observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2),
     person_id = c(1, 2),
     observation_period_start_date = c(
@@ -324,7 +324,7 @@ test_that("priorHistory and future_observation - outside of observation period",
       as.Date("2015-01-01")
     )
   )
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c(1, 2),
     cohort_start_date = as.Date(c("2012-02-01")),
@@ -359,14 +359,14 @@ test_that("priorHistory - multiple observation periods", {
   # with multiple observation periods,
   # prior history should relate to the most recent observation start date
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = 1,
     year_of_birth = 1980,
     month_of_birth = 01,
     day_of_birth = 01
   )
-  observation_period <- tibble::tibble(
+  observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2, 3),
     person_id = c(1, 1, 2),
     observation_period_start_date = c(
@@ -380,7 +380,7 @@ test_that("priorHistory - multiple observation periods", {
       as.Date("2015-01-01")
     )
   )
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
     subject_id = c(1, 2),
     cohort_start_date = as.Date(c("2012-02-01")),
@@ -513,7 +513,7 @@ test_that("check that no extra rows are added", {
 })
 
 test_that("age at cohort end, no missing, check age computation", {
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "1"),
     subject_id = c("1", "2"),
     cohort_start_date = c(
@@ -524,7 +524,7 @@ test_that("age at cohort end, no missing, check age computation", {
     )
   )
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c("1", "2"),
     gender_concept_id = c("8507", "8507"),
     year_of_birth = c(2001, 2001),
@@ -556,7 +556,7 @@ test_that("age at cohort end, no missing, check age computation", {
 })
 
 test_that("age at cohort entry, missing year/month/day of birth", {
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "1", "1"),
     subject_id = c("1", "2", "3"),
     cohort_start_date = c(
@@ -567,7 +567,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
     )
   )
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8507", "8507"),
     year_of_birth = c(2000, NA, 2000),
@@ -599,7 +599,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 })
 
 test_that("multiple cohortIds, check age at cohort end", {
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "2", "3"),
     subject_id = c("1", "2", "3"),
     cohort_start_date = c(
@@ -610,7 +610,7 @@ test_that("multiple cohortIds, check age at cohort end", {
     )
   )
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8532", "8507"),
     year_of_birth = c(2000, 2000, NA),
@@ -638,7 +638,7 @@ test_that("multiple cohortIds, check age at cohort end", {
 })
 
 test_that("age group checks", {
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "1", "1"),
     subject_id = c("1", "2", "3"),
     cohort_start_date = c(
@@ -649,7 +649,7 @@ test_that("age group checks", {
     )
   )
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8507", "8507"),
     year_of_birth = c(1980, 1970, 2000),
@@ -711,7 +711,7 @@ test_that("age group checks", {
   expect_true(identical(result1b, result3b))
 
   # if age has missing values
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8507", "8507"),
     year_of_birth = c(NA, 1970, 2000),
@@ -808,7 +808,7 @@ test_that("expected errors", {
                                 ageDefaultDay = 1.1))
 
 
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "1", "1"),
     subject_id = c("1", "2", "3"),
     cohort_start_date = c(
@@ -819,7 +819,7 @@ test_that("expected errors", {
     )
   )
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8507", "8507"),
     year_of_birth = c(1980, 1970, 2000),
@@ -998,7 +998,7 @@ test_that("test if column exist, overwrite", {
 })
 
 test_that("date of birth", {
-  cohort1 <- tibble::tibble(
+  cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "1"),
     subject_id = c("1", "2"),
     cohort_start_date = c(
@@ -1009,7 +1009,7 @@ test_that("date of birth", {
     )
   )
 
-  person <- tibble::tibble(
+  person <- dplyr::tibble(
     person_id = c("1", "2"),
     gender_concept_id = c("8507", "8507"),
     year_of_birth = c(2001, 2005),
