@@ -35,7 +35,8 @@ Suggests:
     stringr,
     odbc,
     ggplot2,
-    spelling
+    spelling,
+    RPostgres
 Imports: 
     magrittr,
     CDMConnector (>= 0.5.1),
