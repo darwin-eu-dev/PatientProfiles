@@ -43,24 +43,24 @@
 #' result <- summariseCharacteristics(x)
 #' }
 #'
-summariseCharacteristics <- function (table,
-                                      strata = list(),
-                                      variables = list(
-                                        numericVariables = detectVariables(table, "numeric"),
-                                        dateVariables = detectVariables(table, "date"),
-                                        binaryVariables = detectVariables(table, "binary"),
-                                        categoricalVariables = detectVariables(table, "categorical")
-                                      ),
-                                      functions = list(
-                                        numericVariables = c("median", "q25", "q75"),
-                                        dateVariables = c("median", "q25", "q75"),
-                                        binaryVariables = c("count", "%"),
-                                        categoricalVariables = c("count", "%")
-                                      ),
-                                      suppressCellCount = 5,
-                                      bigMark = ",",
-                                      decimalMark = ".",
-                                      significantDecimals = 2) {
+summariseCharacteristics <- function(table,
+                                     strata = list(),
+                                     variables = list(
+                                       numericVariables = detectVariables(table, "numeric"),
+                                       dateVariables = detectVariables(table, "date"),
+                                       binaryVariables = detectVariables(table, "binary"),
+                                       categoricalVariables = detectVariables(table, "categorical")
+                                     ),
+                                     functions = list(
+                                       numericVariables = c("median", "q25", "q75"),
+                                       dateVariables = c("median", "q25", "q75"),
+                                       binaryVariables = c("count", "%"),
+                                       categoricalVariables = c("count", "%")
+                                     ),
+                                     suppressCellCount = 5,
+                                     bigMark = ",",
+                                     decimalMark = ".",
+                                     significantDecimals = 2) {
   # initial checks
   checkTable(table)
   checkStrata(strata, table)
@@ -110,7 +110,8 @@ getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, signific
             ~ niceNum(., bigMark, decimalMark, significantDecimals)
           )) %>%
           tidyr::pivot_longer(
-            dplyr::all_of(variablesFunction), names_to = "variable"
+            dplyr::all_of(variablesFunction),
+            names_to = "variable"
           ) %>%
           dplyr::mutate(
             estimate = .env$functions[k], variable_classification = "numeric"
@@ -134,7 +135,7 @@ getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDec
     variablesFunction <- variablesDate %>%
       dplyr::filter(.data$estimate == .env$functions[k]) %>%
       dplyr::pull("variable")
-    result.k <- x %>%
+    resultK <- x %>%
       dplyr::mutate(dplyr::across(dplyr::all_of(variablesFunction), as.numeric)) %>%
       dplyr::summarise(dplyr::across(
         .cols = dplyr::all_of(variablesFunction),
@@ -142,28 +143,29 @@ getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDec
         .names = "{.col}"
       ))
     if (availableFunctions("date") %>%
-        dplyr::filter(.data$format_key == functions[k]) %>%
-        dplyr::pull("result") == "date") {
-      result.k <- result.k %>%
+      dplyr::filter(.data$format_key == functions[k]) %>%
+      dplyr::pull("result") == "date") {
+      resultK <- resultK %>%
         dplyr::mutate(dplyr::across(
           dplyr::all_of(variablesFunction),
           ~ as.character(as.Date(round(.x), origin = "1970-01-01"))
         ))
     } else {
-      result.k <- result.k %>%
+      resultK <- resultK %>%
         dplyr::mutate(dplyr::across(
           dplyr::all_of(variablesFunction),
           ~ niceNum(.x, bigMark, decimalMark, significantDecimals)
         ))
     }
-    result.k <- result.k %>%
+    resultK <- resultK %>%
       tidyr::pivot_longer(
-        dplyr::all_of(variablesFunction), names_to = "variable"
+        dplyr::all_of(variablesFunction),
+        names_to = "variable"
       ) %>%
       dplyr::mutate(
         estimate = .env$functions[k], variable_classification = "date"
       )
-    result <- dplyr::union_all(result, result.k)
+    result <- dplyr::union_all(result, resultK)
   }
   result <- result %>%
     dplyr::select(
@@ -187,7 +189,9 @@ getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significan
           dplyr::mutate(denominator = 1) %>%
           dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(c(variablesFunction, "denominator")),
-            .fns = list("sum" = function(x) {sum(x)}),
+            .fns = list("sum" = function(x) {
+              sum(x)
+            }),
             .names = "{.col}"
           )) %>%
           tidyr::pivot_longer(
@@ -245,7 +249,7 @@ getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, 
       dplyr::filter(.data$variable == .env$v) %>%
       dplyr::pull("estimate") %>%
       unique()
-    if (length(functions[functions != "distinct"]) >  0) {
+    if (length(functions[functions != "distinct"]) > 0) {
       categories <- xx %>%
         dplyr::ungroup() %>%
         dplyr::select("category") %>%
@@ -345,7 +349,8 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
   }
   requiredFunctions <- requiredFunctions %>%
     dplyr::left_join(
-      variableTypes(x) %>% dplyr::select(-"variable_type"), by = "variable"
+      variableTypes(x) %>% dplyr::select(-"variable_type"),
+      by = "variable"
     )
 
   # results
@@ -509,7 +514,7 @@ supressCounts <- function(result, suppressCellCount) {
     value <- suppressWarnings(as.numeric(result$value))
     id <- unlist(lapply(strsplit(result$estimate, ": "), utils::tail, n = 1)) ==
       "count" & value < suppressCellCount & value > 0
-    result  <- result %>%
+    result <- result %>%
       dplyr::mutate(value = dplyr::if_else(
         .env$id, paste0("<", .env$suppressCellCount), .data$value
       ))
@@ -531,7 +536,8 @@ uniteStrata <- function(x,
   single <- combinations %>%
     dplyr::anti_join(multiple, by = columns) %>%
     tidyr::unite(
-      "strata_level", dplyr::all_of(columns), sep = sepStrataLevel,
+      "strata_level", dplyr::all_of(columns),
+      sep = sepStrataLevel,
       remove = FALSE
     )
   multiple <- expandStrata(multiple, columns, sepStrata, sepStrataLevel)
@@ -545,13 +551,14 @@ expandStrata <- function(x, columns, sepStrata, sepStrataLevel) {
   for (k in 1:nrow(x)) {
     result <- result %>%
       dplyr::union_all(dplyr::bind_cols(
-        x[k,],
-        x[k,] %>%
+        x[k, ],
+        x[k, ] %>%
           tidyr::separate_longer_delim(dplyr::everything(), delim = sepStrata) %>%
           do.call(what = tidyr::expand_grid) %>%
           dplyr::distinct() %>%
           tidyr::unite(
-            "strata_level", dplyr::all_of(columns), sep = sepStrataLevel
+            "strata_level", dplyr::all_of(columns),
+            sep = sepStrataLevel
           )
       ))
   }

@@ -1,6 +1,6 @@
 test_that("test all functions", {
   x <- dplyr::tibble(
-    s  = c("g1", "g1", "g2", "g1&&g2", "g2", "g1&&g2"),
+    s = c("g1", "g1", "g2", "g1&&g2", "g2", "g1&&g2"),
     v1 = c(1, 2, 3, 4, 6, 3),
     v2 = c("a", "b", "a&&b", "b", "0", "0&&ab"),
     v3 = c(0, 1, 0, 1, 1, 0),
@@ -12,10 +12,12 @@ test_that("test all functions", {
   s1 <- summariseCharacteristics(x)
   s2 <- summariseCharacteristics(x, strata = list("group" = "s"))
   s3 <- summariseCharacteristics(
-    x, strata = list("group" = "s"), suppressCellCount = 1
+    x,
+    strata = list("group" = "s"), suppressCellCount = 1
   )
   s4 <- summariseCharacteristics(
-    x, strata = list("group1" = c("s", "v2"), group2 = "s"),
+    x,
+    strata = list("group1" = c("s", "v2"), group2 = "s"),
     suppressCellCount = 1
   )
 
@@ -31,7 +33,8 @@ test_that("test all functions", {
     covid_minf_to_0 = c(1, 1, 0)
   )
   expect_no_error(summariseCharacteristics(
-    x, strata = list(), suppressCellCount = 1
+    x,
+    strata = list(), suppressCellCount = 1
   ))
 
   cohort <- dplyr::tibble(
@@ -54,7 +57,8 @@ test_that("test all functions", {
   )
   expect_no_error(
     result <- summariseCharacteristics(
-      cohort, variables = variables, functions = functions
+      cohort,
+      variables = variables, functions = functions
     )
   )
 })

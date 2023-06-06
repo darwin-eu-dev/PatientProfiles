@@ -7,12 +7,14 @@ test_that("test variableTypes", {
   vt <- variableTypes(x)
   expect_true(identical(vt$variable, colnames(x)))
   expect_true(all(
-    vt$variable_type== c("dbl", "date", "dbl", "dbl", "dbl", "chr", "chr", "lgl")
+    vt$variable_type == c("dbl", "date", "dbl", "dbl", "dbl", "chr", "chr", "lgl")
   ))
   expect_true(identical(
     vt$variable_classification,
-    c("numeric", "date", "binary", "binary", "numeric", "categorical",
-      "categorical", "binary")
+    c(
+      "numeric", "date", "binary", "binary", "numeric", "categorical",
+      "categorical", "binary"
+    )
   ))
   expect_true(identical(detectVariables(x, "numeric"), c("x1", "x5")))
   expect_true(identical(detectVariables(x, "date"), "x2"))
@@ -42,4 +44,3 @@ test_that("test functions", {
     c("format_key", "applied_function", "result")
   ))
 })
-

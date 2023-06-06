@@ -83,7 +83,7 @@ addDemographics <- function(x,
   }
 
   ## check for standard types of user error
-  person_variable <- checkX(x)
+  personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
   checkmate::assertIntegerish(
@@ -109,10 +109,18 @@ addDemographics <- function(x,
   }
 
   # check variable names
-  if(age) {ageName <- checkSnakeCase(ageName)}
-  if(sex) {sexName <- checkSnakeCase(sexName)}
-  if(priorHistory) {priorHistoryName <- checkSnakeCase(priorHistoryName)}
-  if(futureObservation) {futureObservationName <- checkSnakeCase(futureObservationName)}
+  if (age) {
+    ageName <- checkSnakeCase(ageName)
+  }
+  if (sex) {
+    sexName <- checkSnakeCase(sexName)
+  }
+  if (priorHistory) {
+    priorHistoryName <- checkSnakeCase(priorHistoryName)
+  }
+  if (futureObservation) {
+    futureObservationName <- checkSnakeCase(futureObservationName)
+  }
 
   checkNewName(ageName, x)
   checkNewName(sexName, x)
@@ -131,22 +139,22 @@ addDemographics <- function(x,
       "month_of_birth",
       "day_of_birth"
     ) %>%
-    dplyr::rename(!!person_variable := "person_id")
+    dplyr::rename(!!personVariable := "person_id")
 
   if (priorHistory == TRUE || futureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
     obsPeriodDetails <- x %>%
-      dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
+      dplyr::select(dplyr::all_of(c(personVariable, indexDate))) %>%
       dplyr::distinct() %>%
       dplyr::inner_join(
         cdm[["observation_period"]] %>%
-          dplyr::rename(!!person_variable := "person_id") %>%
+          dplyr::rename(!!personVariable := "person_id") %>%
           dplyr::select(
-            dplyr::all_of(person_variable),
+            dplyr::all_of(personVariable),
             "observation_period_start_date",
             "observation_period_end_date"
           ),
-        by = person_variable
+        by = personVariable
       ) %>%
       dplyr::filter(.data$observation_period_start_date <=
         .data[[indexDate]] &
@@ -157,34 +165,36 @@ addDemographics <- function(x,
   # update dates
   if (age) {
     personDetails <- personDetails %>%
-    dplyr::filter(!is.na(.data$year_of_birth)) %>%
-    addDateOfBirth(cdm,
-                   name = "date_of_birth",
-                   missingDay = ageDefaultDay,
-                   missingMonth = ageDefaultMonth,
-                   imposeDay = ageImposeDay,
-                   imposeMonth = ageImposeMonth)
+      dplyr::filter(!is.na(.data$year_of_birth)) %>%
+      addDateOfBirth(cdm,
+        name = "date_of_birth",
+        missingDay = ageDefaultDay,
+        missingMonth = ageDefaultMonth,
+        imposeDay = ageImposeDay,
+        imposeMonth = ageImposeMonth
+      )
   }
 
   # join if not the person table
-  if(any(!c("person_id", "gender_concept_id") %in% colnames(x))){
-  x <- x %>%
-    dplyr::left_join(
-      personDetails %>%
-        dplyr::select(dplyr::any_of(c(
-          person_variable,
-          "date_of_birth",
-          "gender_concept_id",
-          "observation_period_start_date",
-          "observation_period_end_date"
-        ))),
-      by = person_variable
-    )}
+  if (any(!c("person_id", "gender_concept_id") %in% colnames(x))) {
+    x <- x %>%
+      dplyr::left_join(
+        personDetails %>%
+          dplyr::select(dplyr::any_of(c(
+            personVariable,
+            "date_of_birth",
+            "gender_concept_id",
+            "observation_period_start_date",
+            "observation_period_end_date"
+          ))),
+        by = personVariable
+      )
+  }
 
   if (priorHistory == TRUE || futureObservation == TRUE) {
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
-        by = c(person_variable, indexDate)
+        by = c(personVariable, indexDate)
       )
   }
 
@@ -232,9 +242,10 @@ addDemographics <- function(x,
 
   if (sex == TRUE) {
     x <- x %>%
-    dplyr::mutate(!!sexName := dplyr::if_else(!is.na(.data[[sexName]]),
-                                           .data[[sexName]],
-                                           "None"))
+      dplyr::mutate(!!sexName := dplyr::if_else(!is.na(.data[[sexName]]),
+        .data[[sexName]],
+        "None"
+      ))
   }
 
   if (is.null(tablePrefix)) {
@@ -261,7 +272,6 @@ addDemographics <- function(x,
       missingCategoryValue = "None",
       tablePrefix = tablePrefix
     )
-
   }
 
   # put back the initial attributes to the output tibble
@@ -582,9 +592,8 @@ addInObservation <- function(x,
                              indexDate = "cohort_start_date",
                              name = "in_observation",
                              tablePrefix = NULL) {
-
   ## check for standard types of user error
-  person_variable <- checkX(x)
+  personVariable <- checkX(x)
   checkCdm(cdm, c("observation_period"))
   checkVariableInX(indexDate, x)
   checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
@@ -596,16 +605,18 @@ addInObservation <- function(x,
 
   x <- x %>%
     addDemographics(cdm,
-                    indexDate = indexDate,
-                    age = FALSE,
-                    sex = FALSE,
-                    priorHistory = TRUE,
-                    futureObservation = TRUE,
-                    tablePrefix = NULL
+      indexDate = indexDate,
+      age = FALSE,
+      sex = FALSE,
+      priorHistory = TRUE,
+      futureObservation = TRUE,
+      tablePrefix = NULL
     ) %>%
     dplyr::mutate(
       !!name := as.numeric(dplyr::if_else(
-        is.na(.data$prior_history)| is.na(.data$future_observation)|.data$prior_history < 0|.data$future_observation<0,0,1))) %>%
+        is.na(.data$prior_history) | is.na(.data$future_observation) | .data$prior_history < 0 | .data$future_observation < 0, 0, 1
+      ))
+    ) %>%
     dplyr::select(
       -"prior_history", -"future_observation"
     )

@@ -1,5 +1,5 @@
 test_that("test user define table", {
-  test_table_1 <- dplyr::tibble(
+  testTable1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1),
     subject_id = c(1, 1, 2, 3),
     cohort_start_date = c(
@@ -12,7 +12,7 @@ test_that("test user define table", {
     )
   )
 
-  test_table_2 <- dplyr::tibble(
+  testTable2 <- dplyr::tibble(
     cohort_definition_id = c(2, 2, 2, 2),
     subject_id = c(1, 1, 2, 3),
     cohort_start_date = c(
@@ -25,18 +25,18 @@ test_that("test user define table", {
     )
   )
 
-  cdm_1 <- mockPatientProfiles(connectionDetails, test_table_1 = test_table_1)
-  expect_true(all.equal(cdm_1$test_table_1 %>% dplyr::collect(), test_table_1))
-  expect_true(length(cdm_1) == 10)
+  cdm1 <- mockPatientProfiles(connectionDetails, testTable1 = testTable1)
+  expect_true(all.equal(cdm1$testTable1 %>% dplyr::collect(), testTable1))
+  expect_true(length(cdm1) == 10)
 
-  cdm_2 <- mockPatientProfiles(connectionDetails, test_table_1 = test_table_1, test_table_2 = test_table_2)
-  expect_true(length(cdm_2) == 11)
-  expect_true(all.equal(cdm_2$test_table_1 %>% dplyr::collect(), test_table_1))
-  expect_true(all.equal(cdm_2$test_table_2 %>% dplyr::collect(), test_table_2))
+  cdm2 <- mockPatientProfiles(connectionDetails, testTable1 = testTable1, testTable2 = testTable2)
+  expect_true(length(cdm2) == 11)
+  expect_true(all.equal(cdm2$testTable1 %>% dplyr::collect(), testTable1))
+  expect_true(all.equal(cdm2$testTable2 %>% dplyr::collect(), testTable2))
 })
 
 test_that("check working example with cohort table", {
-  test_table_1 <- dplyr::tibble(
+  testTable1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1),
     subject_id = c(1, 1, 2, 3),
     cohort_start_date = c(
@@ -49,13 +49,13 @@ test_that("check working example with cohort table", {
     )
   )
 
-  cdm_1 <- mockPatientProfiles(connectionDetails, cohort1 = test_table_1)
-  expect_true(all.equal(cdm_1$cohort1 %>% dplyr::collect(), test_table_1))
-  expect_error(expect_true(all.equal(cdm_1$cohort2 %>% dplyr::collect(), test_table_1)))
+  cdm1 <- mockPatientProfiles(connectionDetails, cohort1 = testTable1)
+  expect_true(all.equal(cdm1$cohort1 %>% dplyr::collect(), testTable1))
+  expect_error(expect_true(all.equal(cdm1$cohort2 %>% dplyr::collect(), testTable1)))
 
-  cdm_2 <- mockPatientProfiles(connectionDetails, cohort2 = test_table_1)
-  expect_true(all.equal(cdm_2$cohort2 %>% dplyr::collect(), test_table_1))
-  expect_error(expect_true(all.equal(cdm_2$cohort1 %>% dplyr::collect(), test_table_1)))
+  cdm2 <- mockPatientProfiles(connectionDetails, cohort2 = testTable1)
+  expect_true(all.equal(cdm2$cohort2 %>% dplyr::collect(), testTable1))
+  expect_error(expect_true(all.equal(cdm2$cohort1 %>% dplyr::collect(), testTable1)))
 })
 
 
@@ -65,8 +65,6 @@ test_that("check working example with defaults", {
   expect_true(length(cdm) == 9)
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 10)
   expect_true(nrow(cdm$person %>% dplyr::collect()) == 1)
-
-
 })
 
 
@@ -107,30 +105,30 @@ test_that("add cdm with person, cohort1 and observation_period", {
 })
 
 test_that("attributes for cohort table", {
-
-  test_table_1 <- dplyr::tibble(
+  testTable1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1),
     subject_id = c(1, 1, 2, 3),
     cohort_start_date = c(
       as.Date("2010-01-01"), as.Date("2013-01-01"),
-      as.Date("2010-01-02"), as.Date("2010-01-01")),
+      as.Date("2010-01-02"), as.Date("2010-01-01")
+    ),
     cohort_end_date = c(
       as.Date("2012-01-01"), as.Date("2015-01-01"),
-      as.Date("2015-01-01"), as.Date("2015-01-01"))
+      as.Date("2015-01-01"), as.Date("2015-01-01")
+    )
   )
 
- test_table_1 <- addCohortCountAttr(test_table_1)
+  testTable1 <- addCohortCountAttr(testTable1)
 
 
-  cdm <- mockPatientProfiles(connectionDetails, test_table_1 = test_table_1)
+  cdm <- mockPatientProfiles(connectionDetails, testTable1 = testTable1)
 
   expect_true(all(names(attributes(cdm$cohort1)) %in%
-             c("names","class","cohort_set","cohort_attrition","cohort_count")))
+    c("names", "class", "cohort_set", "cohort_attrition", "cohort_count")))
 
   expect_true(all(names(attributes(cdm$cohort2)) %in%
-             c("names","class","cohort_set","cohort_attrition","cohort_count")))
+    c("names", "class", "cohort_set", "cohort_attrition", "cohort_count")))
 
-  expect_true(all(names(attributes(cdm$test_table_1)) %in%
-             c("names","class","cohort_set","cohort_attrition","cohort_count")))
-
+  expect_true(all(names(attributes(cdm$testTable1)) %in%
+    c("names", "class", "cohort_set", "cohort_attrition", "cohort_count")))
 })

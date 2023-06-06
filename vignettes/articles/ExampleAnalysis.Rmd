@@ -44,50 +44,64 @@ For both cohorts we'll also require that those included are aged between 40 and 
 
 
 ```{r}
-celecoxib_codes <- getDescendants(cdm, conceptId = 1118084)
-diclofenac_codes <- getDescendants(cdm, conceptId = 1124300)
+celecoxibCodes <- getDescendants(cdm, conceptId = 1118084)
+diclofenacCodes <- getDescendants(cdm, conceptId = 1124300)
 
 # celecoxib
-cdm$celecoxib <- cdm$drug_era %>% 
-  inner_join(celecoxib_codes %>% 
-               select(concept_id),
-             by = c("drug_concept_id"="concept_id"), 
-             copy = TRUE) %>% 
-  addAge(cdm, indexDate = "drug_era_start_date") %>% 
-  filter(age >= 40 & age <= 50) %>% 
-  rename("subject_id" = "person_id", 
-         "cohort_start_date" = "drug_era_start_date", 
-         "cohort_end_date" = "drug_era_end_date") %>% 
-  mutate(cohort_definition_id = 1L) %>% 
-  select("cohort_definition_id", "subject_id", 
-         "cohort_start_date", "cohort_end_date") %>% 
+cdm$celecoxib <- cdm$drug_era %>%
+  inner_join(
+    celecoxibCodes %>%
+      select(concept_id),
+    by = c("drug_concept_id" = "concept_id"),
+    copy = TRUE
+  ) %>%
+  addAge(cdm, indexDate = "drug_era_start_date") %>%
+  filter(age >= 40 & age <= 50) %>%
+  rename(
+    "subject_id" = "person_id",
+    "cohort_start_date" = "drug_era_start_date",
+    "cohort_end_date" = "drug_era_end_date"
+  ) %>%
+  mutate(cohort_definition_id = 1L) %>%
+  select(
+    "cohort_definition_id", "subject_id",
+    "cohort_start_date", "cohort_end_date"
+  ) %>%
   compute()
 
 # diclofenac
-cdm$diclofenac <- cdm$drug_era %>% 
-  inner_join(diclofenac_codes %>% 
-               select(concept_id),
-             by = c("drug_concept_id"="concept_id"), 
-             copy = TRUE) %>% 
-  addAge(cdm, indexDate = "drug_era_start_date") %>% 
-  filter(age >= 40 & age <= 50) %>% 
-  rename("subject_id" = "person_id", 
-         "cohort_start_date" = "drug_era_start_date", 
-         "cohort_end_date" = "drug_era_end_date") %>% 
-  mutate(cohort_definition_id = 2L) %>% 
-  select("cohort_definition_id", "subject_id", 
-         "cohort_start_date", "cohort_end_date") %>% 
+cdm$diclofenac <- cdm$drug_era %>%
+  inner_join(
+    diclofenacCodes %>%
+      select(concept_id),
+    by = c("drug_concept_id" = "concept_id"),
+    copy = TRUE
+  ) %>%
+  addAge(cdm, indexDate = "drug_era_start_date") %>%
+  filter(age >= 40 & age <= 50) %>%
+  rename(
+    "subject_id" = "person_id",
+    "cohort_start_date" = "drug_era_start_date",
+    "cohort_end_date" = "drug_era_end_date"
+  ) %>%
+  mutate(cohort_definition_id = 2L) %>%
+  select(
+    "cohort_definition_id", "subject_id",
+    "cohort_start_date", "cohort_end_date"
+  ) %>%
   compute()
 
-cdm$exposure_cohort <- union_all(cdm$celecoxib, 
-                        cdm$diclofenac) %>% 
+cdm$exposure_cohort <- union_all(
+  cdm$celecoxib,
+  cdm$diclofenac
+) %>%
   compute()
 cdm$exposure_cohort <- newGeneratedCohortSet(cdm$exposure_cohort)
 ```
 ```{r, echo = FALSE}
 DBI::dbWriteTable(con, "cohort_set", dplyr::tibble(cohort_definition_id = 1, cohort_name = "na"))
 cdm$exposure_cohort <- newGeneratedCohortSet(
-  cohortRef = cdm$exposure_cohort, 
+  cohortRef = cdm$exposure_cohort,
   cohortSetRef = dplyr::tbl(con, CDMConnector::inSchema(attr(cdm, "write_schema"), "cohort_set"))
 )
 ```
@@ -95,27 +109,32 @@ cdm$exposure_cohort <- newGeneratedCohortSet(
 As well as our two drug cohorts, we'll define a cohort of people with a condition occurrence of gastrointestinal (GI) bleeding. 
 
 ```{r}
-gi_bleed_codes <- getDescendants(cdm, conceptId = 192671)
+giBleedCodes <- getDescendants(cdm, conceptId = 192671)
 
 # gi_bleed
-cdm$gi_bleed <- cdm$condition_occurrence %>% 
-  inner_join(gi_bleed_codes %>% 
-               select(concept_id),
-             by = c("condition_concept_id"="concept_id"), 
-             copy = TRUE) %>% 
-  rename("subject_id" = "person_id", 
-         "cohort_start_date" = "condition_start_date") %>% 
-  mutate(cohort_end_date = cohort_start_date) %>% 
-  mutate(cohort_definition_id = 1L) %>% 
-  select("cohort_definition_id", "subject_id", 
-         "cohort_start_date", "cohort_end_date") %>% 
+cdm$gi_bleed <- cdm$condition_occurrence %>%
+  inner_join(
+    giBleedCodes %>%
+      select(concept_id),
+    by = c("condition_concept_id" = "concept_id"),
+    copy = TRUE
+  ) %>%
+  rename(
+    "subject_id" = "person_id",
+    "cohort_start_date" = "condition_start_date"
+  ) %>%
+  mutate(cohort_end_date = cohort_start_date) %>%
+  mutate(cohort_definition_id = 1L) %>%
+  select(
+    "cohort_definition_id", "subject_id",
+    "cohort_start_date", "cohort_end_date"
+  ) %>%
   compute()
 cdm$gi_bleed <- newGeneratedCohortSet(cdm$gi_bleed)
-
 ```
 ```{r, echo = FALSE}
 cdm$gi_bleed <- newGeneratedCohortSet(
-  cohortRef = cdm$gi_bleed, 
+  cohortRef = cdm$gi_bleed,
   cohortSetRef = dplyr::tbl(con, CDMConnector::inSchema(attr(cdm, "write_schema"), "cohort_set"))
 )
 ```
@@ -127,94 +146,109 @@ We can use the `addDemographics` to help describe the characteristics of our coh
 
 ```{r}
 cdm$exposure_cohort %>%
-  addDemographics(cdm) %>% 
-  collect() %>% 
+  addDemographics(cdm) %>%
+  collect() %>%
   mutate(name = case_when(
-  cohort_definition_id == 1 ~ "celecoxib",
-  cohort_definition_id == 2 ~ "diclofenac",
-  .default = as.character(cohort_definition_id)
-)) %>% 
-  collect()%>% 
+    cohort_definition_id == 1 ~ "celecoxib",
+    cohort_definition_id == 2 ~ "diclofenac",
+    .default = as.character(cohort_definition_id)
+  )) %>%
+  collect() %>%
   ggplot() +
   facet_grid(sex ~ name) +
-  geom_histogram(aes(age), binwidth = 1,
-                 colour = "black")+
+  geom_histogram(aes(age),
+    binwidth = 1,
+    colour = "black"
+  ) +
   theme_bw()
 ```
 
 
 ```{r}
 cdm$gi_bleed %>%
-  addDemographics(cdm) %>% 
-  collect()%>% 
+  addDemographics(cdm) %>%
+  collect() %>%
   mutate(name = case_when(
-  cohort_definition_id == 1 ~ "gi_bleed",
-  .default = as.character(cohort_definition_id)
-)) %>% 
-  collect()%>% 
+    cohort_definition_id == 1 ~ "gi_bleed",
+    .default = as.character(cohort_definition_id)
+  )) %>%
+  collect() %>%
   ggplot() +
   facet_grid(sex ~ name) +
-  geom_histogram(aes(age), binwidth = 1,
-                 colour = "black")+
+  geom_histogram(aes(age),
+    binwidth = 1,
+    colour = "black"
+  ) +
   theme_bw()
 ```
 
 ## Cohort intersection
 We can also see whether individuals had GI bleeding in some time period relative to their cohort start date using the `flagCohortPresence` function. In this case we'll look at two time periods, before their cohort start date and after.
 ```{r}
-cdm$exposure_cohort <- cdm$exposure_cohort %>% 
-  addCohortIntersectFlag(cdm = cdm,
-                         targetCohortTable = "gi_bleed", 
-                         indexDate = "cohort_start_date",
-                         window = c(-Inf, -1), 
-                         nameStyle = "gi_bleed_history") %>% 
-  addCohortIntersectFlag(cdm = cdm,
-                         targetCohortTable = "gi_bleed", 
-                         indexDate = "cohort_start_date",
-                         window = c(0, Inf), 
-                         nameStyle = "gi_bleed_outcome")
+cdm$exposure_cohort <- cdm$exposure_cohort %>%
+  addCohortIntersectFlag(
+    cdm = cdm,
+    targetCohortTable = "gi_bleed",
+    indexDate = "cohort_start_date",
+    window = c(-Inf, -1),
+    nameStyle = "gi_bleed_history"
+  ) %>%
+  addCohortIntersectFlag(
+    cdm = cdm,
+    targetCohortTable = "gi_bleed",
+    indexDate = "cohort_start_date",
+    window = c(0, Inf),
+    nameStyle = "gi_bleed_outcome"
+  )
 ```
 
 ```{r}
-cdm$exposure_cohort %>% 
-  group_by(gi_bleed_history, gi_bleed_outcome) %>% 
-  count() %>% 
+cdm$exposure_cohort %>%
+  group_by(gi_bleed_history, gi_bleed_outcome) %>%
+  count() %>%
   collect()
 ```
 
 We can also see time to GI bleeding using the `timeToCohort`
 ```{r}
-cdm$exposure_cohort %>% 
-  addCohortIntersectDays(cdm = cdm,
-                         targetCohortTable = "gi_bleed", 
-                         window = c(0, Inf), 
-                         nameStyle = "time_to_event") %>% 
+cdm$exposure_cohort %>%
+  addCohortIntersectDays(
+    cdm = cdm,
+    targetCohortTable = "gi_bleed",
+    window = c(0, Inf),
+    nameStyle = "time_to_event"
+  ) %>%
   mutate(name = case_when(
-  cohort_definition_id == 1 ~ "celecoxib",
-  cohort_definition_id == 2 ~ "diclofenac",
-  .default = as.character(cohort_definition_id)
-)) %>% 
-   group_by(name) %>% 
-   summarise(min_time_to_event= min(time_to_event, na.rm=TRUE),
-            q25_time_to_event = quantile(time_to_event, 0.25, na.rm=TRUE),
-            median_time_to_event = median(time_to_event, na.rm=TRUE),
-            q75_time_to_event = quantile(time_to_event, 0.75, na.rm=TRUE),
-            max_time_to_event = max(time_to_event, na.rm=TRUE)) %>% 
-   collect() %>% 
-  ggplot(aes(x = name, group = name,
-             fill = name)) +
-  geom_boxplot(aes(
-    lower = q25_time_to_event, 
-    upper = q75_time_to_event, 
-    middle = median_time_to_event, 
-    ymin = min_time_to_event, 
-    ymax = max_time_to_event),
-    stat = "identity", width = 0.5) + 
-  theme_bw()+ 
+    cohort_definition_id == 1 ~ "celecoxib",
+    cohort_definition_id == 2 ~ "diclofenac",
+    .default = as.character(cohort_definition_id)
+  )) %>%
+  group_by(name) %>%
+  summarise(
+    min_time_to_event = min(time_to_event, na.rm = TRUE),
+    q25_time_to_event = quantile(time_to_event, 0.25, na.rm = TRUE),
+    median_time_to_event = median(time_to_event, na.rm = TRUE),
+    q75_time_to_event = quantile(time_to_event, 0.75, na.rm = TRUE),
+    max_time_to_event = max(time_to_event, na.rm = TRUE)
+  ) %>%
+  collect() %>%
+  ggplot(aes(
+    x = name, group = name,
+    fill = name
+  )) +
+  geom_boxplot(
+    aes(
+      lower = q25_time_to_event,
+      upper = q75_time_to_event,
+      middle = median_time_to_event,
+      ymin = min_time_to_event,
+      ymax = max_time_to_event
+    ),
+    stat = "identity", width = 0.5
+  ) +
+  theme_bw() +
   theme(legend.position = "none") +
-  ylim(0, NA)+
-  xlab("")+
+  ylim(0, NA) +
+  xlab("") +
   ylab("Time to GI bleeding")
-
-
 ```

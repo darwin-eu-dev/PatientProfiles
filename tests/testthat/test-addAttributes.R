@@ -1,17 +1,17 @@
 test_that("addAttributes, functionality", {
   cdm <- mockPatientProfiles(connectionDetails)
 
-  oldcohort <- cdm$cohort1
-  newcohort <- cdm$cohort1 %>%
+  oldCohort <- cdm$cohort1
+  newCohort <- cdm$cohort1 %>%
     addDemographics(cdm)
 
-  newcohort <- newcohort %>%
-    addAttributes(oldcohort)
+  newCohort <- newCohort %>%
+    addAttributes(oldCohort)
 
-  expect_true(length(attributes(newcohort)) == length(attributes(oldcohort)))
-  for(i in names(attributes(newcohort))) {
-    if(i != "names" && i != "class") {
-      expect_true(identical(attr(newcohort, i), attr(oldcohort, i)))
+  expect_true(length(attributes(newCohort)) == length(attributes(oldCohort)))
+  for (i in names(attributes(newCohort))) {
+    if (i != "names" && i != "class") {
+      expect_true(identical(attr(newCohort, i), attr(oldCohort, i)))
     }
   }
 })

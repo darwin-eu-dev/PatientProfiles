@@ -32,10 +32,10 @@
 #'
 #' @examples
 #' \donttest{
-#'library(PatientProfiles)
-#'cdm <- mockPatientProfiles()
-#'cdm$cohort1 %>%
-#'  addDateOfBirth(cdm)
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>%
+#'   addDateOfBirth(cdm)
 #' }
 addDateOfBirth <- function(x,
                            cdm,
@@ -52,7 +52,7 @@ addDateOfBirth <- function(x,
   # personIdentifier <- parameters$person_identifier
   # impose day
 
-  person_variable <- checkX(x)
+  personVariable <- checkX(x)
 
   cdm$person <- cdm$person %>%
     dplyr::filter(!is.na(.data$year_of_birth))
@@ -64,8 +64,8 @@ addDateOfBirth <- function(x,
   } else {
     person <- cdm$person %>%
       dplyr::mutate(day_of_birth = dplyr::if_else(
-        is.na(.data$day_of_birth), .env$missingDay, .data$day_of_birth)
-      )
+        is.na(.data$day_of_birth), .env$missingDay, .data$day_of_birth
+      ))
   }
   # impose month
   if (imposeMonth) {
@@ -74,8 +74,8 @@ addDateOfBirth <- function(x,
   } else {
     person <- person %>%
       dplyr::mutate(month_of_birth = dplyr::if_else(
-        is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth)
-      )
+        is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth
+      ))
   }
   person <- person %>%
     dplyr::mutate(
@@ -86,30 +86,29 @@ addDateOfBirth <- function(x,
     dplyr::mutate(!!name := as.Date(paste0(
       .data$year_of_birth1, "-", .data$month_of_birth1, "-",
       .data$day_of_birth1
-    )))  %>%
+    ))) %>%
     dplyr::select(!c("year_of_birth1", "month_of_birth1", "day_of_birth1"))
 
 
   # Add to other table (if not person)
-  if(isPersonTable(x)){
+  if (isPersonTable(x)) {
     return(person)
   } else {
     x <- x %>%
       dplyr::left_join(
         person %>%
-          dplyr::rename(!!person_variable := "person_id") %>%
-          dplyr::select(dplyr::all_of(c(person_variable, .env$name))),
-        by = person_variable
+          dplyr::rename(!!personVariable := "person_id") %>%
+          dplyr::select(dplyr::all_of(c(personVariable, .env$name))),
+        by = personVariable
       )
     return(x)
   }
-
 }
 
-isPersonTable <- function(x){
-
- return(all(colnames(x) %in%
-    c("person_id", "gender_concept_id",
-      "year_of_birth", "month_of_birth", "day_of_birth")))
-
+isPersonTable <- function(x) {
+  return(all(colnames(x) %in%
+    c(
+      "person_id", "gender_concept_id",
+      "year_of_birth", "month_of_birth", "day_of_birth"
+    )))
 }
