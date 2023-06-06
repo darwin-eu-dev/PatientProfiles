@@ -9,6 +9,7 @@ addCategories(
   cdm,
   variable,
   categories,
+  missingCategoryValue = "None",
   overlap = FALSE,
   tablePrefix = NULL
 )
@@ -23,6 +24,10 @@ cdm reference.}
 
 \item{categories}{List of lists of named categories with lower and upper
 limit.}
+
+\item{missingCategoryValue}{Value to assign to those individuals not in
+any named category. If NULL or NA, missing will values will be
+given.}
 
 \item{overlap}{TRUE if the categories given overlap}
 
