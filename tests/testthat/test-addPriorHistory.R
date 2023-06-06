@@ -13,13 +13,9 @@ test_that("check input length and type for each of the arguments", {
   expect_error(addPriorHistory(cdm$cohort1, "cdm"))
 
   expect_error(addPriorHistory(cdm$cohort1, cdm, indexDate = "end_date"))
-
-
-
 })
 
 test_that("check condition_occurrence and cohort1 work", {
-
   # mock data
   cdm <-
     mockPatientProfiles(connectionDetails,
@@ -35,8 +31,6 @@ test_that("check condition_occurrence and cohort1 work", {
   # check it works with condition_occurrence table in mockdb
   expect_true(typeof(cdm$condition_occurrence %>% addPriorHistory(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
   expect_true("prior_history" %in% colnames(cdm$condition_occurrence %>% addPriorHistory(cdm, indexDate = "condition_start_date")))
-
-
 })
 
 test_that("check working example with cohort1", {
@@ -56,7 +50,7 @@ test_that("check working example with cohort1", {
     )
   )
 
-  obs_1 <- dplyr::tibble(
+  obs1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -75,7 +69,7 @@ test_that("check working example with cohort1", {
     mockPatientProfiles(connectionDetails,
       seed = 1,
       cohort1 = cohort1,
-      observation_period = obs_1
+      observation_period = obs1
     )
 
   result <- cdm$cohort1 %>%
@@ -85,8 +79,6 @@ test_that("check working example with cohort1", {
   expect_true(all(colnames(cohort1) %in% colnames(result)))
 
   expect_true(all(result %>% dplyr::select("prior_history") == dplyr::tibble(prior_history = c(28, 28, 31))))
-
-
 })
 
 test_that("check working example with condition_occurrence", {
@@ -106,7 +98,7 @@ test_that("check working example with condition_occurrence", {
     )
   )
 
-  obs_1 <- dplyr::tibble(
+  obs1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -125,7 +117,7 @@ test_that("check working example with condition_occurrence", {
     mockPatientProfiles(connectionDetails,
       seed = 1,
       condition_occurrence = condition_occurrence,
-      observation_period = obs_1
+      observation_period = obs1
     )
 
   result <-
@@ -136,13 +128,11 @@ test_that("check working example with condition_occurrence", {
   expect_true(all(
     result %>% dplyr::select("prior_history") == dplyr::tibble(prior_history = c(28, 28, 31))
   ))
-
-
 })
 
 test_that("different name", {
   # create mock tables for testing
-  condition_occurrence <- dplyr::tibble(
+  conditionOccurrence <- dplyr::tibble(
     condition_occurrence_id = c("1", "1", "1"),
     person_id = c("1", "2", "3"),
     condition_start_date = c(
@@ -157,7 +147,7 @@ test_that("different name", {
     )
   )
 
-  obs_1 <- dplyr::tibble(
+  obs1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -175,8 +165,8 @@ test_that("different name", {
   cdm <-
     mockPatientProfiles(connectionDetails,
       seed = 1,
-      condition_occurrence = condition_occurrence,
-      observation_period = obs_1
+      condition_occurrence = conditionOccurrence,
+      observation_period = obs1
     )
 
   cdm$condition_occurrence <-
@@ -186,12 +176,9 @@ test_that("different name", {
       priorHistoryName = "ph"
     )
   expect_true("ph" %in% names(cdm$condition_occurrence))
-
-
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
-
   # priorHistory should be NA if index date is outside of an observation period
 
   person <- dplyr::tibble(
@@ -232,12 +219,9 @@ test_that("priorHistory and future_observation - outside of observation period",
     )
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
-
-
 })
 
 test_that("multiple observation periods", {
-
   # with multiple observation periods,
   # prior history should relate to the most recent observation start date
 
@@ -286,6 +270,4 @@ test_that("multiple observation periods", {
       as.Date("2010-01-01"),
       units = "days"
     ))))
-
-
 })

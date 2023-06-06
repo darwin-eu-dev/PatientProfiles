@@ -31,10 +31,10 @@ checkX <- function(x) {
       " or 'subject_id')"
     ))
   }
-  person_variable <- dplyr::if_else(
+  personVariable <- dplyr::if_else(
     "person_id" %in% colnames(x), "person_id", "subject_id"
   )
-  return(person_variable)
+  return(personVariable)
 }
 
 #' @noRd
@@ -117,7 +117,7 @@ checkCategory <- function(category, overlap = FALSE) {
     dplyr::arrange(.data$lower_bound)
 
   # check overlap
-  if(!overlap) {
+  if (!overlap) {
     if (nrow(result) > 1) {
       lower <- result$lower_bound[2:nrow(result)]
       upper <- result$upper_bound[1:(nrow(result) - 1)]
@@ -364,21 +364,21 @@ checkCohortNames <- function(x, targetCohortId, name) {
 #' @noRd
 checkSnakeCase <- function(name) {
   wrong <- FALSE
- for(i in seq_along(name)) {
-   n <- name[i]
-   n <- gsub("[a-z]","",n)
-   n <- gsub("[0-9]","",n)
-   n <- gsub("_","",n)
-   if(nchar(n) > 0) {
-     oldname <- name[i]
-     name[i] <- gsub("([[:upper:]])", "\\L\\1", perl = TRUE, name[i])
-     name[i] <- gsub("[^a-z,0-9.-]", "_", name[i])
-     name[i] <- gsub("-", "_", name[i])
-     cli::cli_alert(paste0(oldname," has been changed to ",name[i]))
-     wrong <- TRUE
-   }
- }
-  if(wrong) {
+  for (i in seq_along(name)) {
+    n <- name[i]
+    n <- gsub("[a-z]", "", n)
+    n <- gsub("[0-9]", "", n)
+    n <- gsub("_", "", n)
+    if (nchar(n) > 0) {
+      oldname <- name[i]
+      name[i] <- gsub("([[:upper:]])", "\\L\\1", perl = TRUE, name[i])
+      name[i] <- gsub("[^a-z,0-9.-]", "_", name[i])
+      name[i] <- gsub("-", "_", name[i])
+      cli::cli_alert(paste0(oldname, " has been changed to ", name[i]))
+      wrong <- TRUE
+    }
+  }
+  if (wrong) {
     cli::cli_alert("some provided names were not in snake_case")
     cli::cli_alert("names have been changed to lower case")
     cli::cli_alert("special symbols in names have been changed to '_'")
@@ -390,7 +390,7 @@ checkSnakeCase <- function(name) {
 checkVariableClassification <- function(variableClassification) {
   errorMessage <- "variableClassification must be a choice between numeric, date, binary and categorical."
   if (!is.character(variableClassification) |
-      length(variableClassification) != 1) {
+    length(variableClassification) != 1) {
     cli::cli_abort(errorMessage)
   }
   if (!(variableClassification %in% c("numeric", "date", "binary", "categorical"))) {
@@ -505,7 +505,8 @@ checkVariablesFunctions <- function(variables, functions, table) {
 #' @noRd
 checkSuppressCellCount <- function(suppressCellCount) {
   checkmate::assertIntegerish(
-    suppressCellCount, lower = 0, len = 1, any.missing = F
+    suppressCellCount,
+    lower = 0, len = 1, any.missing = F
   )
 }
 
@@ -522,6 +523,7 @@ checkDecimalMark <- function(decimalMark) {
 #' @noRd
 checkSignificantDecimals <- function(significantDecimals) {
   checkmate::assertIntegerish(
-    significantDecimals, lower = 0, len = 1, any.missing = F
+    significantDecimals,
+    lower = 0, len = 1, any.missing = F
   )
 }

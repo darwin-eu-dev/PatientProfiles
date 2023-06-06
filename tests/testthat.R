@@ -11,7 +11,8 @@ if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
   availableConnections <- availableConnections %>%
     append(value = list(list(
       con = DBI::dbConnect(
-        RPostgres::Redshift(), dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
+        RPostgres::Redshift(),
+        dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
         port = Sys.getenv("CDM5_REDSHIFT_PORT"),
         host = Sys.getenv("CDM5_REDSHIFT_HOST"),
         user = Sys.getenv("CDM5_REDSHIFT_USER"),
@@ -27,4 +28,3 @@ for (k in seq_along(availableConnections)) {
   test_check("PatientProfiles")
   PatientProfiles:::disconnectMockCdm(connectionDetails)
 }
-

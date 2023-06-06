@@ -4,12 +4,12 @@
 \alias{addAttributes}
 \title{Get attributes from one cohort to another}
 \usage{
-addAttributes(newcohort, oldcohort)
+addAttributes(newCohort, oldCohort)
 }
 \arguments{
-\item{newcohort}{cohort to which to attach the attributes}
+\item{newCohort}{cohort to which to attach the attributes}
 
-\item{oldcohort}{cohort from which to get the attributes}
+\item{oldCohort}{cohort from which to get the attributes}
 }
 \value{
 new cohort with added attributes from the other given cohort

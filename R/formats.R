@@ -52,7 +52,7 @@ assertClassification <- function(x, tib) {
     if (x[i] == "lgl") {
       return("binary")
     } else if (x[i] %in% c("chr", "fct", "ord")) {
-        return("categorical")
+      return("categorical")
     } else if (x[i] %in% c("date", "dttm")) {
       return("date")
     } else if (x[i] == "drtn") {
@@ -96,7 +96,7 @@ assertClassification <- function(x, tib) {
 availableFunctions <- function(variableClassification = NULL) {
   if (is.null(variableClassification)) {
     return(formats)
-  } else{
+  } else {
     checkVariableClassification(variableClassification)
     x <- formats %>%
       dplyr::filter(.data$variable_classification == .env$variableClassification) %>%
@@ -153,7 +153,7 @@ detectVariables <- function(table,
 
 #' @noRd
 getFunctions <- function(f) {
-  estimates_func <- list(
+  estimatesFunc <- list(
     "min" = function(x) {
       base::min(x, na.rm = TRUE)
     },
@@ -233,5 +233,5 @@ getFunctions <- function(f) {
       stats::quantile(x, 0.95, na.rm = TRUE)
     }
   )
-  return(estimates_func[f])
+  return(estimatesFunc[f])
 }

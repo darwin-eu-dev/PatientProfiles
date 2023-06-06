@@ -14,13 +14,9 @@ test_that("check input length and type for each of the arguments", {
   expect_error(addFutureObservation(cdm$cohort1, "cdm"))
 
   expect_error(addFutureObservation(cdm$cohort1, cdm, indexDate = "end_date"))
-
-
-
 })
 
 test_that("check condition_occurrence and cohort1 work", {
-
   # mock data
   cdm <-
     mockPatientProfiles(
@@ -37,8 +33,6 @@ test_that("check condition_occurrence and cohort1 work", {
   # check it works with condition_occurrence table in mockdb
   expect_true(typeof(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
   expect_true("future_observation" %in% colnames(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date")))
-
-
 })
 
 test_that("check working example with cohort1", {
@@ -58,7 +52,7 @@ test_that("check working example with cohort1", {
     )
   )
 
-  obs_1 <- dplyr::tibble(
+  obs1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -78,7 +72,7 @@ test_that("check working example with cohort1", {
       connectionDetails,
       seed = 1,
       cohort1 = cohort1,
-      observation_period = obs_1
+      observation_period = obs1
     )
 
   result <- cdm$cohort1 %>%
@@ -106,8 +100,6 @@ test_that("check working example with cohort1", {
           ))
         )
     )))
-
-
 })
 
 test_that("check working example with condition_occurrence", {
@@ -127,7 +119,7 @@ test_that("check working example with condition_occurrence", {
     )
   )
 
-  obs_1 <- dplyr::tibble(
+  obs1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -147,7 +139,7 @@ test_that("check working example with condition_occurrence", {
       connectionDetails,
       seed = 1,
       condition_occurrence = condition_occurrence,
-      observation_period = obs_1
+      observation_period = obs1
     )
 
   result <- cdm$condition_occurrence %>%
@@ -176,8 +168,6 @@ test_that("check working example with condition_occurrence", {
           )
       )
   ))
-
-
 })
 
 test_that("different name", {
@@ -197,7 +187,7 @@ test_that("different name", {
     )
   )
 
-  obs_1 <- dplyr::tibble(
+  obs1 <- dplyr::tibble(
     observation_period_id = c("1", "2", "3"),
     person_id = c("1", "2", "3"),
     observation_period_start_date = c(
@@ -217,7 +207,7 @@ test_that("different name", {
       connectionDetails,
       seed = 1,
       condition_occurrence = condition_occurrence,
-      observation_period = obs_1
+      observation_period = obs1
     )
 
   cdm$condition_occurrence <-
@@ -227,12 +217,9 @@ test_that("different name", {
       futureObservationName = "fh"
     )
   expect_true("fh" %in% names(cdm$condition_occurrence))
-
-
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
-
   # futureHistory should be NA if index date is outside of an observation period
 
   person <- dplyr::tibble(
@@ -274,12 +261,9 @@ test_that("priorHistory and future_observation - outside of observation period",
     )
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
-
-
 })
 
 test_that("multiple observation periods", {
-
   # with multiple observation periods,
   # future history should relate to the current observation period
 
@@ -341,6 +325,4 @@ test_that("multiple observation periods", {
       as.Date("2013-02-01"),
       units = "days"
     ))))
-
-
 })
