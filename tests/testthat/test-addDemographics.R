@@ -347,10 +347,9 @@ test_that("priorHistory and future_observation - outside of observation period",
       priorHistory = TRUE,
       futureObservation = TRUE
     )
-  # both should be NA
-  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
-  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
-
+  # both should be missing
+  expect_true(is.na(all(cdm$cohort1a %>% dplyr::pull(prior_history))))
+  expect_true(is.na(all(cdm$cohort1a %>% dplyr::pull(future_observation))))
 
 })
 
@@ -728,9 +727,9 @@ test_that("age group checks", {
     dplyr::collect() %>%
     dplyr::arrange(age)
 
-  expect_true(is.na(result1 %>%
+  expect_true(result1 %>%
     dplyr::filter(is.na(age)) %>%
-    dplyr::pull("age_group")))
+    dplyr::pull("age_group") == "None")
 
   # not all ages in age group
   result2 <- cdm$cohort1 %>%
@@ -740,9 +739,9 @@ test_that("age group checks", {
     ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
-  expect_true(is.na(result2 %>%
+  expect_true(result2 %>%
     dplyr::filter(age == 10) %>%
-    dplyr::pull("age_group")))
+    dplyr::pull("age_group") == "None")
 
 
 })
@@ -1067,6 +1066,33 @@ test_that("date of birth", {
                "2001-01-01")
  expect_true(cohort_dob2 %>% dplyr::filter(subject_id == 2) %>% dplyr::pull(date_of_birth) ==
                "2005-01-01")
+
+
+})
+
+test_that("missing levels - report as none", {
+  cdm <- mockPatientProfiles(connectionDetails)
+
+  result <- cdm[["cohort1"]] %>%
+    addDemographics(cdm,
+                    ageGroup =  list(c(0, 25)),
+                    sex = FALSE,
+                    priorHistory = FALSE, futureObservation = FALSE
+    ) %>%
+    dplyr::collect()
+  expect_true(all(!is.na(result$age_group)))
+
+
+  result <- cdm$cohort1 %>%
+    addSex(cdm) %>%
+    dplyr::collect()
+  expect_true(all(!is.na(result$sex)))
+
+  result <- cdm$person %>%
+    dplyr::mutate(gender_concept_id = "111") %>%
+    addSex(cdm) %>%
+    dplyr::collect()
+  expect_true(all(!is.na(result$sex)))
 
 
 })

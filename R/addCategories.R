@@ -22,6 +22,9 @@
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
+#' @param missingCategoryValue Value to assign to those individuals not in
+#' any named category. If NULL or NA, missing will values will be
+#' given.
 #' @param overlap TRUE if the categories given overlap
 #' @param tablePrefix The stem for the permanent tables that will be created. If
 #' NULL, temporary tables will be used throughout.
@@ -70,6 +73,7 @@ addCategories <- function(x,
                           cdm,
                           variable,
                           categories,
+                          missingCategoryValue = "None",
                           overlap = FALSE,
                           tablePrefix = NULL) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
@@ -155,6 +159,14 @@ addCategories <- function(x,
     }
 
     x <- dplyr::select(x, -"variable")
+
+    # add missing as category
+    if(!is.null(missingCategoryValue) && !is.na(missingCategoryValue)){
+      x <- x %>%
+        dplyr::mutate(!!name := dplyr::if_else(!is.na(.data[[name]]),
+                                               .data[[name]],
+                                               .env$missingCategoryValue))
+    }
 
     if (!is.null(tablePrefix)) {
       x <- CDMConnector::computeQuery(

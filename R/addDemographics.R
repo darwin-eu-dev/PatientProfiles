@@ -166,6 +166,8 @@ addDemographics <- function(x,
                    imposeMonth = ageImposeMonth)
   }
 
+  # join if not the person table
+  if(any(!c("person_id", "gender_concept_id") %in% colnames(x))){
   x <- x %>%
     dplyr::left_join(
       personDetails %>%
@@ -177,7 +179,7 @@ addDemographics <- function(x,
           "observation_period_end_date"
         ))),
       by = person_variable
-    )
+    )}
 
   if (priorHistory == TRUE || futureObservation == TRUE) {
     x <- x %>%
@@ -228,6 +230,13 @@ addDemographics <- function(x,
       ))
     )
 
+  if (sex == TRUE) {
+    x <- x %>%
+    dplyr::mutate(!!sexName := dplyr::if_else(!is.na(.data[[sexName]]),
+                                           .data[[sexName]],
+                                           "None"))
+  }
+
   if (is.null(tablePrefix)) {
     x <- x %>%
       CDMConnector::computeQuery()
@@ -249,8 +258,10 @@ addDemographics <- function(x,
       cdm = cdm,
       variable = ageName,
       categories = ageGroup,
+      missingCategoryValue = "None",
       tablePrefix = tablePrefix
     )
+
   }
 
   # put back the initial attributes to the output tibble
