@@ -26,7 +26,7 @@ reference:
 - subtitle: Summarise patient characteristics
   desc: Set of functions that allow the user to summarise patient characteristics
 - contents:
-  - matches("variableTypes|availableFunctions|detectVariables|summariseCharacteristics")
+  - matches("variableTypes|availableFunctions|detectVariables|summariseResult")
 - subtitle: Other functions
   desc: Helper functions
 - contents:

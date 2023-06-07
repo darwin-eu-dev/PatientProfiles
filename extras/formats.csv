@@ -1,4 +1,4 @@
-variable_classification,format_key,applied_function,result
+variable_type,format_key,applied_function,result
 numeric,mean,mean of the variable of interest.,numeric
 numeric,sd,standard deviation of the variable of interest.,numeric
 numeric,median,median of the variable of interest.,numeric

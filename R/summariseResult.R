@@ -17,15 +17,13 @@
 #' Summarise the characteristics of different individuals
 #'
 #' @param table Table with different records
-#' @param strata List of the stratifications to be considered.
+#' @param group List of groups to be considered.
+#' @param strata List of the stratifications within each group to be considered.
 #' @param variables List of the different groups of variables, by default they
 #' are automatically classified.
 #' @param functions List of functions to be applied to each one of the group of
 #' variables.
-#' @param suppressCellCount Minimum count of records to report results.
-#' @param bigMark Big mark delimiter.
-#' @param decimalMark Decimal separator.
-#' @param significantDecimals Number of significant decimals reported.
+#' @param minCellCount Minimum count of records to report results.
 #'
 #' @return Table that summarises the characteristics of the individual.
 #'
@@ -40,62 +38,108 @@
 #' x <- cdm$cohort1 %>%
 #'   addDemographics(cdm) %>%
 #'   collect()
-#' result <- summariseCharacteristics(x)
+#' result <- summariseResult(x)
 #' }
 #'
-summariseCharacteristics <- function(table,
-                                     strata = list(),
-                                     variables = list(
-                                       numericVariables = detectVariables(table, "numeric"),
-                                       dateVariables = detectVariables(table, "date"),
-                                       binaryVariables = detectVariables(table, "binary"),
-                                       categoricalVariables = detectVariables(table, "categorical")
-                                     ),
-                                     functions = list(
-                                       numericVariables = c("median", "q25", "q75"),
-                                       dateVariables = c("median", "q25", "q75"),
-                                       binaryVariables = c("count", "%"),
-                                       categoricalVariables = c("count", "%")
-                                     ),
-                                     suppressCellCount = 5,
-                                     bigMark = ",",
-                                     decimalMark = ".",
-                                     significantDecimals = 2) {
+summariseResult <- function(table,
+                            group = list(),
+                            strata = list(),
+                            variables = list(
+                              numericVariables = detectVariables(table, "numeric"),
+                              dateVariables = detectVariables(table, "date"),
+                              binaryVariables = detectVariables(table, "binary"),
+                              categoricalVariables = detectVariables(table, "categorical")
+                            ),
+                            functions = list(
+                              numericVariables = c("median", "q25", "q75"),
+                              dateVariables = c("median", "q25", "q75"),
+                              binaryVariables = c("count", "%"),
+                              categoricalVariables = c("count", "%")
+                            ),
+                            minCellCount = 5) {
+
+  # collect table
+  table <- table %>% dplyr::collect()
+
   # initial checks
   checkTable(table)
+  checkStrata(group, table)
   checkStrata(strata, table)
   checkVariablesFunctions(variables, functions, table)
-  checkSuppressCellCount(suppressCellCount)
-  checkBigMark(bigMark)
-  checkDecimalMark(decimalMark)
-  checkSignificantDecimals(significantDecimals)
+  checkSuppressCellCount(minCellCount)
 
-  # create the summary
+  # create the summary for overall
   result <- table %>%
     summaryValuesStrata(
-      strata, variables, functions, bigMark, decimalMark, significantDecimals
+      strata, variables, functions
     ) %>%
-    dplyr::select(
-      "strata_name", "strata_level", "variable", "variable_classification",
-      "estimate", "value"
-    ) %>%
+    dplyr::mutate(group_name = "Overall",
+                  group_level = "Overall") %>%
+    dplyr::select(dplyr::all_of(
+     c("group_name", "group_level",
+      "strata_name", "strata_level", "variable",
+      "variable_level", "variable_type",
+      "estimate_type", "estimate")
+    )) %>%
     dplyr::arrange(.data$strata_name, .data$strata_level)
 
+  # add results for each group
+ for(i in seq_along(group)){
+  workingGroup <- group[[i]]
+  workingGroupName <- names(group)[i]
+  table <- table %>%
+    tidyr::unite("group_var",
+                 c(dplyr::all_of(.env$workingGroup)),
+                 remove = FALSE, sep = " and ")
+  workingGroupLevels <- table %>%
+    dplyr::select(dplyr::all_of("group_var")) %>%
+    dplyr::distinct() %>%
+    dplyr::pull()
+
+    for(j in seq_along(workingGroupLevels)){
+     workingResult <- table %>%
+        dplyr::filter(
+          .data[["group_var"]] == workingGroupLevels[[j]]) %>%
+        summaryValuesStrata(
+          strata, variables, functions
+        ) %>%
+        dplyr::mutate(group_name = workingGroupName,
+                      group_level = workingGroupLevels[[j]]) %>%
+        dplyr::select(dplyr::all_of(
+          c("group_name", "group_level",
+            "strata_name", "strata_level", "variable",
+            "variable_level", "variable_type",
+            "estimate_type", "estimate")
+        )) %>%
+        dplyr::arrange(.data$strata_name, .data$strata_level)
+
+     result <- dplyr::bind_rows(result, workingResult)
+
+    }
+
+
+
+ }
+
+
+
+
+
   # obscure counts
-  result <- supressCounts(result, suppressCellCount)
+  result <- supressCounts(result, minCellCount)
 
   return(result)
 }
 
 #' @noRd
-getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, significantDecimals) {
+getNumericValues <- function(x, variablesNumeric) {
   functions <- variablesNumeric %>%
-    dplyr::pull("estimate") %>%
+    dplyr::pull("estimate_type") %>%
     unique()
   result <- NULL
   for (k in seq_along(functions)) {
     variablesFunction <- variablesNumeric %>%
-      dplyr::filter(.data$estimate == .env$functions[k]) %>%
+      dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
       dplyr::pull("variable")
     result <- result %>%
       dplyr::union_all(
@@ -105,20 +149,18 @@ getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, signific
             .fns = getFunctions(functions[k]),
             .names = "{.col}"
           )) %>%
-          dplyr::mutate(dplyr::across(
-            dplyr::all_of(variablesFunction),
-            ~ niceNum(., bigMark, decimalMark, significantDecimals)
-          )) %>%
           tidyr::pivot_longer(
             dplyr::all_of(variablesFunction),
-            names_to = "variable"
+            names_to = "variable",
+            values_to = "estimate",
+            values_transform = list(estimate = as.character)
           ) %>%
           dplyr::mutate(
-            estimate = .env$functions[k], variable_classification = "numeric"
+            estimate_type = .env$functions[k], variable_type = "numeric"
           ) %>%
           dplyr::select(
-            "strata_level", "variable", "variable_classification", "estimate",
-            "value"
+            "strata_level", "variable", "variable_type", "estimate_type",
+            "estimate"
           )
       )
   }
@@ -126,14 +168,14 @@ getNumericValues <- function(x, variablesNumeric, bigMark, decimalMark, signific
 }
 
 #' @noRd
-getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDecimals) {
+getDateValues <- function(x, variablesDate) {
   functions <- variablesDate %>%
-    dplyr::pull("estimate") %>%
+    dplyr::pull("estimate_type") %>%
     unique()
   result <- NULL
   for (k in seq_along(functions)) {
     variablesFunction <- variablesDate %>%
-      dplyr::filter(.data$estimate == .env$functions[k]) %>%
+      dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
       dplyr::pull("variable")
     resultK <- x %>%
       dplyr::mutate(dplyr::across(dplyr::all_of(variablesFunction), as.numeric)) %>%
@@ -150,36 +192,31 @@ getDateValues <- function(x, variablesDate, bigMark, decimalMark, significantDec
           dplyr::all_of(variablesFunction),
           ~ as.character(as.Date(round(.x), origin = "1970-01-01"))
         ))
-    } else {
-      resultK <- resultK %>%
-        dplyr::mutate(dplyr::across(
-          dplyr::all_of(variablesFunction),
-          ~ niceNum(.x, bigMark, decimalMark, significantDecimals)
-        ))
     }
     resultK <- resultK %>%
       tidyr::pivot_longer(
         dplyr::all_of(variablesFunction),
-        names_to = "variable"
+        names_to = "variable",
+        values_to = "estimate"
       ) %>%
       dplyr::mutate(
-        estimate = .env$functions[k], variable_classification = "date"
+        estimate_type = .env$functions[k], variable_type = "date"
       )
     result <- dplyr::union_all(result, resultK)
   }
   result <- result %>%
     dplyr::select(
-      "strata_level", "variable", "variable_classification", "estimate",
-      "value"
+      "strata_level", "variable", "variable_type", "estimate_type",
+      "estimate"
     )
   return(result)
 }
 
 #' @noRd
-getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significantDecimals) {
+getBinaryValues <- function(x, variablesBinary) {
   result <- NULL
   variablesFunction <- variablesBinary %>%
-    dplyr::filter(.data$estimate %in% c("count", "%")) %>%
+    dplyr::filter(.data$estimate_type %in% c("count", "%")) %>%
     dplyr::pull("variable") %>%
     unique()
   if (length(variablesFunction) > 0) {
@@ -200,33 +237,29 @@ getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significan
             values_to = "count"
           ) %>%
           dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
-          dplyr::mutate(
-            "%" = base::paste0(
-              niceNum(.data[["%"]], bigMark, decimalMark, significantDecimals),
-              "%"
-            ),
-            count = niceNum(.data$count, bigMark, decimalMark, significantDecimals)
-          ) %>%
           dplyr::select(-"denominator") %>%
-          tidyr::pivot_longer(c("count", "%"), names_to = "estimate") %>%
+          tidyr::pivot_longer(c("count", "%"),
+            names_to = "estimate_type",
+            values_to = "estimate"
+          ) %>%
           dplyr::inner_join(
             variablesBinary %>%
-              dplyr::select("variable", "variable_classification", "estimate"),
-            by = c("variable", "estimate")
+              dplyr::select("variable", "variable_type", "estimate_type"),
+            by = c("variable", "estimate_type")
           ) %>%
           dplyr::select(
-            "strata_level", "variable", "variable_classification", "estimate",
-            "value"
+            "strata_level", "variable", "variable_type", "estimate_type",
+            "estimate"
           )
       )
   }
   variablesBinary <- variablesBinary %>%
-    dplyr::filter(!(.data$estimate %in% c("count", "%")))
+    dplyr::filter(!(.data$estimate_type %in% c("count", "%")))
   if (nrow(variablesBinary) > 0) {
     result <- result %>%
       dplyr::union_all(
         getNumericValues(
-          x, variablesBinary, bigMark, decimalMark, significantDecimals
+          x, variablesBinary
         )
       )
   }
@@ -234,7 +267,7 @@ getBinaryValues <- function(x, variablesBinary, bigMark, decimalMark, significan
 }
 
 #' @noRd
-getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, significantDecimals) {
+getCategoricalValues <- function(x, variablesCategorical) {
   variables <- variablesCategorical %>%
     dplyr::pull("variable") %>%
     unique()
@@ -243,25 +276,25 @@ getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, 
     dplyr::summarise(denominator = dplyr::n())
   for (v in variables) {
     xx <- x %>%
-      dplyr::select("strata_level", "category" = dplyr::all_of(v)) %>%
-      tidyr::separate_rows("category", sep = "&&", convert = TRUE)
+      dplyr::select("strata_level", "variable_level" = dplyr::all_of(v)) %>%
+      tidyr::separate_rows("variable_level", sep = "&&", convert = TRUE)
     functions <- variablesCategorical %>%
       dplyr::filter(.data$variable == .env$v) %>%
-      dplyr::pull("estimate") %>%
+      dplyr::pull("estimate_type") %>%
       unique()
     if (length(functions[functions != "distinct"]) > 0) {
       categories <- xx %>%
         dplyr::ungroup() %>%
-        dplyr::select("category") %>%
+        dplyr::select("variable_level") %>%
         dplyr::distinct()
       summaryX <- xx %>%
-        dplyr::group_by(.data$category, .add = TRUE) %>%
+        dplyr::group_by(.data$variable_level, .add = TRUE) %>%
         dplyr::summarise(count = as.numeric(dplyr::n()), .groups = "drop") %>%
         dplyr::group_split(.data$strata_level) %>%
         lapply(function(x) {
           stra <- unique(x$strata_level)
           x <- x %>%
-            dplyr::right_join(categories, by = "category") %>%
+            dplyr::right_join(categories, by = "variable_level") %>%
             dplyr::mutate(strata_level = .env$stra)
           return(x)
         }) %>%
@@ -276,24 +309,19 @@ getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, 
         dplyr::union_all(
           summaryX %>%
             dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
-            dplyr::mutate(
-              "%" = base::paste0(niceNum(
-                .data[["%"]], bigMark, decimalMark, significantDecimals
-              ), "%"),
-              count = niceNum(
-                .data$count, bigMark, decimalMark, significantDecimals
-              )
-            ) %>%
             dplyr::select(-"denominator") %>%
-            tidyr::pivot_longer(c("count", "%"), names_to = "estimate") %>%
-            dplyr::filter(.data$estimate %in% .env$functions) %>%
+            tidyr::pivot_longer(c("count", "%"),
+              names_to = "estimate_type",
+              values_to = "estimate"
+            ) %>%
+            dplyr::filter(.data$estimate_type %in% .env$functions) %>%
             dplyr::mutate(
-              variable = .env$v, variable_classification = "categorical",
-              estimate = paste0(.data$category, ": ", .data$estimate)
+              variable = .env$v, variable_type = "categorical"
             ) %>%
             dplyr::select(
-              "strata_level", "variable", "variable_classification",
-              "estimate", "value"
+              "strata_level", "variable",
+              "variable_level", "variable_type",
+              "estimate_type", "estimate"
             )
         )
     }
@@ -302,12 +330,11 @@ getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, 
         dplyr::union_all(
           xx %>%
             dplyr::summarise(
-              value = dplyr::n_distinct(.data$category), .groups = "drop"
+              estimate = dplyr::n_distinct(.data$variable_level), .groups = "drop"
             ) %>%
             dplyr::mutate(
-              value = format(round(.data$value), big.mark = bigMark),
-              variable = .env$v, estimate = "distinct",
-              variable_classification = "categorical"
+              variable = .env$v, estimate_type = "distinct",
+              variable_type = "categorical"
             )
         )
     }
@@ -321,12 +348,12 @@ getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, 
               .fns = getFunctions(functions),
               .names = "{.fn}"
             )) %>%
-            tidyr::pivot_longer(!"strata_level", names_to = "estimate") %>%
+            tidyr::pivot_longer(!"strata_level",
+              names_to = "estimate_type",
+              values_to = "estimate"
+            ) %>%
             dplyr::mutate(
-              variable = .env$v, variable_classification = "categorical",
-              value = niceNum(
-                .data$value, bigMark, decimalMark, significantDecimals
-              )
+              variable = .env$v, variable_type = "categorical"
             )
         )
     }
@@ -335,7 +362,7 @@ getCategoricalValues <- function(x, variablesCategorical, bigMark, decimalMark, 
 }
 
 #' @noRd
-summaryValues <- function(x, variables, functions, bigMark, decimalMark, significantDecimals) {
+summaryValues <- function(x, variables, functions) {
   # get which are the estimates that are needed
   requiredFunctions <- NULL
   for (nam in names(variables)) {
@@ -343,22 +370,22 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
       dplyr::union_all(
         tidyr::expand_grid(
           variable = variables[[nam]],
-          estimate = functions[[nam]]
+          estimate_type = functions[[nam]]
         )
       )
   }
   requiredFunctions <- requiredFunctions %>%
     dplyr::left_join(
-      variableTypes(x) %>% dplyr::select(-"variable_type"),
+      variableTypes(x) %>% dplyr::select(-"type_sum"),
       by = "variable"
     )
 
   # results
   result <- x %>%
-    dplyr::summarise(value = as.character(dplyr::n()), .groups = "drop") %>%
+    dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
     dplyr::mutate(
-      variable = "number records", variable_classification = as.character(NA),
-      estimate = "count"
+      variable = "number records", variable_type = as.character(NA),
+      estimate_type = "count"
     )
 
   # count subjects
@@ -367,25 +394,26 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
 
   # numeric variables
   variablesNumeric <- requiredFunctions %>%
-    dplyr::filter(.data$variable_classification == "numeric")
+    dplyr::filter(.data$variable_type == "numeric")
   if (nrow(variablesNumeric) > 0) {
     result <- dplyr::union_all(
       result,
       getNumericValues(
-        x, variablesNumeric, bigMark, decimalMark, significantDecimals
+        x, variablesNumeric
       ) %>%
+        dplyr::mutate(estimate = as.character(.data$estimate)) %>%
         dplyr::arrange(.data$variable)
     )
   }
 
   # date variables
   variablesDate <- requiredFunctions %>%
-    dplyr::filter(.data$variable_classification == "date")
+    dplyr::filter(.data$variable_type == "date")
   if (nrow(variablesDate) > 0) {
     result <- dplyr::union_all(
       result,
       getDateValues(
-        x, variablesDate, bigMark, decimalMark, significantDecimals
+        x, variablesDate
       ) %>%
         dplyr::arrange(.data$variable)
     )
@@ -393,26 +421,31 @@ summaryValues <- function(x, variables, functions, bigMark, decimalMark, signifi
 
   # binary variables
   variablesBinary <- requiredFunctions %>%
-    dplyr::filter(.data$variable_classification == "binary")
+    dplyr::filter(.data$variable_type == "binary")
   if (nrow(variablesBinary) > 0) {
     result <- dplyr::union_all(
       result,
       getBinaryValues(
-        x, variablesBinary, bigMark, decimalMark, significantDecimals
+        x, variablesBinary
       ) %>%
+        dplyr::mutate(estimate = as.character(.data$estimate)) %>%
         dplyr::arrange(.data$variable)
     )
   }
 
+  result <- result %>%
+    dplyr::mutate(variable_level = as.character(NA))
+
   # categorical variables
   variablesCategorical <- requiredFunctions %>%
-    dplyr::filter(.data$variable_classification == "categorical")
+    dplyr::filter(.data$variable_type == "categorical")
   if (nrow(variablesCategorical) > 0) {
     result <- dplyr::union_all(
       result,
       getCategoricalValues(
-        x, variablesCategorical, bigMark, decimalMark, significantDecimals
+        x, variablesCategorical
       ) %>%
+        dplyr::mutate(estimate = as.character(.data$estimate)) %>%
         dplyr::arrange(.data$variable)
     )
   }
@@ -437,12 +470,12 @@ countSubjects <- function(x) {
   if (i | j) {
     result <- x %>%
       dplyr::summarise(
-        value = as.character(dplyr::n_distinct(.data[[personVariable]])),
+        estimate = as.character(dplyr::n_distinct(.data[[personVariable]])),
         .groups = "drop"
       ) %>%
       dplyr::mutate(
-        variable = "number subjects", variable_classification = as.character(NA),
-        estimate = "count"
+        variable = "number subjects", variable_type = as.character(NA),
+        estimate_type = "count"
       )
     return(result)
   } else {
@@ -451,14 +484,14 @@ countSubjects <- function(x) {
 }
 
 #' @noRd
-summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decimalMark, significantDecimals) {
+summaryValuesStrata <- function(x, strata, variables, functions) {
   result <- x %>%
-    dplyr::mutate(strata_level = as.character(NA)) %>%
+    dplyr::mutate(strata_level = "Overall") %>%
     dplyr::group_by(.data$strata_level) %>%
     summaryValues(
-      variables, functions, bigMark, decimalMark, significantDecimals
+      variables, functions
     ) %>%
-    dplyr::mutate(strata_name = "overall")
+    dplyr::mutate(strata_name = "Overall")
   for (strat in names(strata)) {
     xx <- x %>%
       uniteStrata(strata[[strat]]) %>%
@@ -468,7 +501,7 @@ summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decima
       dplyr::union_all(
         xx %>%
           summaryValues(
-            variables, functions, bigMark, decimalMark, significantDecimals
+            variables, functions
           ) %>%
           dplyr::mutate(strata_name = .env$strat)
       )
@@ -479,21 +512,8 @@ summaryValuesStrata <- function(x, strata, variables, functions, bigMark, decima
 }
 
 #' @noRd
-niceNum <- function(x, bigMark, decimalMark, significantDecimals) {
-  if (all(x %% 1 == 0)) {
-    significantDecimals <- 0
-  }
-  base::format(
-    round(x, significantDecimals),
-    big.mark = bigMark,
-    decimal.mark = decimalMark,
-    nsmall = significantDecimals
-  )
-}
-
-#' @noRd
-supressCounts <- function(result, suppressCellCount) {
-  if (suppressCellCount > 1) {
+supressCounts <- function(result, minCellCount) {
+  if (minCellCount > 1) {
     if ("number subjects" %in% result$variable) {
       personCount <- "number subjects"
     } else {
@@ -501,22 +521,24 @@ supressCounts <- function(result, suppressCellCount) {
     }
     toObscure <- result %>%
       dplyr::filter(.data$variable == .env$personCount) %>%
-      dplyr::mutate(value = as.numeric(.data$value)) %>%
-      dplyr::filter(.data$value > 0 | .data$value < .env$suppressCellCount) %>%
-      dplyr::select("strata_name", "strata_level")
+      dplyr::mutate(estimate = as.numeric(.data$estimate)) %>%
+      dplyr::filter(.data$estimate > 0 & .data$estimate < .env$minCellCount) %>%
+      dplyr::select("group_name","group_level", "strata_name", "strata_level")
     for (k in seq_along(toObscure)) {
-      ik <- result$strata_name == toObscure$strata_name[k] &
+      ik <- result$group_name == toObscure$group_name[k] &
+        result$group_level == toObscure$group_level[k] &
+        result$strata_name == toObscure$strata_name[k] &
         result$strata_level == toObscure$strata_level[k]
       is <- result$variable == personCount
-      result$value[ik & is] <- paste0("<", suppressCellCount)
-      result$value[ik & !is] <- as.character(NA)
+      result$estimate[ik & is] <- paste0("<", minCellCount)
+      result$estimate[ik & !is] <- as.character(NA)
     }
-    value <- suppressWarnings(as.numeric(result$value))
-    id <- unlist(lapply(strsplit(result$estimate, ": "), utils::tail, n = 1)) ==
-      "count" & value < suppressCellCount & value > 0
+    estimate <- suppressWarnings(as.numeric(result$estimate))
+    id <- unlist(lapply(strsplit(result$estimate_type, ": "), utils::tail, n = 1)) ==
+      "count" & estimate < minCellCount & estimate > 0
     result <- result %>%
-      dplyr::mutate(value = dplyr::if_else(
-        .env$id, paste0("<", .env$suppressCellCount), .data$value
+      dplyr::mutate(estimate = dplyr::if_else(
+        .env$id, paste0("<", .env$minCellCount), .data$estimate
       ))
   }
   return(result)
@@ -525,7 +547,7 @@ supressCounts <- function(result, suppressCellCount) {
 uniteStrata <- function(x,
                         columns,
                         sepStrata = "&&",
-                        sepStrataLevel = " & ") {
+                        sepStrataLevel = " and ") {
   combinations <- x %>%
     dplyr::select(dplyr::all_of(columns)) %>%
     dplyr::distinct()
