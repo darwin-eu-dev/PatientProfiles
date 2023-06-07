@@ -5,10 +5,10 @@
 \title{Show the available functions for the 4 classifications of data that are
 supported (numeric, date, binary and categorical)}
 \usage{
-availableFunctions(variableClassification = NULL)
+availableFunctions(variableType = NULL)
 }
 \arguments{
-\item{variableClassification}{A choice between: "numeric", "date", "binary"
+\item{variableType}{A choice between: "numeric", "date", "binary"
 or "categorical".}
 }
 \value{

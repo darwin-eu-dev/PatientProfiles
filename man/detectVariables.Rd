@@ -6,7 +6,7 @@
 \usage{
 detectVariables(
   table,
-  variableClassification,
+  variableType,
   exclude = c("person_id", "subject_id", "cohort_definition_id", "cohort_name",
     "strata_name", "strata_level")
 )
@@ -14,7 +14,7 @@ detectVariables(
 \arguments{
 \item{table}{Tibble}
 
-\item{variableClassification}{Classification of interest, choice between
+\item{variableType}{Classification of interest, choice between
 "numeric", "date", "binary" and "categorical"}
 
 \item{exclude}{Variables to exclude}

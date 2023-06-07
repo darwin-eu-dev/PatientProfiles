@@ -7,10 +7,10 @@ test_that("test variableTypes", {
   vt <- variableTypes(x)
   expect_true(identical(vt$variable, colnames(x)))
   expect_true(all(
-    vt$variable_type == c("dbl", "date", "dbl", "dbl", "dbl", "chr", "chr", "lgl")
+    vt$type_sum == c("dbl", "date", "dbl", "dbl", "dbl", "chr", "chr", "lgl")
   ))
   expect_true(identical(
-    vt$variable_classification,
+    vt$variable_type,
     c(
       "numeric", "date", "binary", "binary", "numeric", "categorical",
       "categorical", "binary"

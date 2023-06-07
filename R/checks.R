@@ -387,13 +387,13 @@ checkSnakeCase <- function(name) {
 }
 
 #' @noRd
-checkVariableClassification <- function(variableClassification) {
-  errorMessage <- "variableClassification must be a choice between numeric, date, binary and categorical."
-  if (!is.character(variableClassification) |
-    length(variableClassification) != 1) {
+checkVariableType <- function(variableType) {
+  errorMessage <- "variableType must be a choice between numeric, date, binary and categorical."
+  if (!is.character(variableType) |
+    length(variableType) != 1) {
     cli::cli_abort(errorMessage)
   }
-  if (!(variableClassification %in% c("numeric", "date", "binary", "categorical"))) {
+  if (!(variableType %in% c("numeric", "date", "binary", "categorical"))) {
     cli::cli_abort(errorMessage)
   }
 }
@@ -474,11 +474,11 @@ checkVariablesFunctions <- function(variables, functions, table) {
       )
   }
   suportedFunctions <- vt %>%
-    dplyr::select("variable", "variable_classification") %>%
+    dplyr::select("variable", "variable_type") %>%
     dplyr::left_join(
       formats %>%
-        dplyr::select("variable_classification", "format_key"),
-      by = "variable_classification"
+        dplyr::select("variable_type", "format_key"),
+      by = "variable_type"
     )
   nonSuportedFunctions <- requiredFunctions %>%
     dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))
@@ -490,7 +490,7 @@ checkVariablesFunctions <- function(variables, functions, table) {
     for (v in vars) {
       errorMessage <- paste0(
         errorMessage, " '", v, "' is `",
-        vt$variable_classification[vt$variable == v], "` and formats: ",
+        vt$variable_type[vt$variable == v], "` and formats: ",
         paste0(
           nonSuportedFunctions$format_key[nonSuportedFunctions$variable == v],
           collapse = ", "

@@ -38,10 +38,10 @@ variableTypes <- function(table) {
   checkTable(table)
   x <- dplyr::tibble(
     variable = colnames(table),
-    variable_type = lapply(table, pillar::type_sum) %>% unlist()
+    type_sum = lapply(table, pillar::type_sum) %>% unlist()
   ) %>%
-    dplyr::mutate(variable_classification = assertClassification(
-      .data$variable_type, .env$table
+    dplyr::mutate(variable_type = assertClassification(
+      .data$type_sum, .env$table
     ))
   return(x)
 }
@@ -74,7 +74,7 @@ assertClassification <- function(x, tib) {
 #' Show the available functions for the 4 classifications of data that are
 #' supported (numeric, date, binary and categorical)
 #'
-#' @param variableClassification A choice between: "numeric", "date", "binary"
+#' @param variableType A choice between: "numeric", "date", "binary"
 #' or "categorical".
 #'
 #' @return A tibble with the available functions for a certain variable
@@ -93,14 +93,14 @@ assertClassification <- function(x, tib) {
 #'
 #' @export
 #'
-availableFunctions <- function(variableClassification = NULL) {
-  if (is.null(variableClassification)) {
+availableFunctions <- function(variableType = NULL) {
+  if (is.null(variableType)) {
     return(formats)
   } else {
-    checkVariableClassification(variableClassification)
+    checkVariableType(variableType)
     x <- formats %>%
-      dplyr::filter(.data$variable_classification == .env$variableClassification) %>%
-      dplyr::select(-"variable_classification")
+      dplyr::filter(.data$variable_type == .env$variableType) %>%
+      dplyr::select(-"variable_type")
     return(x)
   }
 }
@@ -108,7 +108,7 @@ availableFunctions <- function(variableClassification = NULL) {
 #' Detect automatically variables with a certain classification
 #'
 #' @param table Tibble
-#' @param variableClassification Classification of interest, choice between
+#' @param variableType Classification of interest, choice between
 #' "numeric", "date", "binary" and "categorical"
 #' @param exclude Variables to exclude
 #'
@@ -128,20 +128,20 @@ availableFunctions <- function(variableClassification = NULL) {
 #' @export
 #'
 detectVariables <- function(table,
-                            variableClassification,
+                            variableType,
                             exclude = c(
                               "person_id", "subject_id", "cohort_definition_id",
                               "cohort_name", "strata_name", "strata_level"
                             )) {
   # initial checks
   checkTable(table)
-  checkVariableClassification(variableClassification)
+  checkVariableType(variableType)
   checkExclude(exclude)
 
   # get variable types
   variables <- variableTypes(table) %>%
     dplyr::filter(
-      .data$variable_classification == .env$variableClassification
+      .data$variable_type == .env$variableType
     ) %>%
     dplyr::pull("variable")
 
