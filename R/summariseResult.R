@@ -57,15 +57,16 @@ summariseResult <- function(table,
                               categoricalVariables = c("count", "%")
                             ),
                             minCellCount = 5) {
+
+  # collect table
+  table <- table %>% dplyr::collect()
+
   # initial checks
   checkTable(table)
   checkStrata(group, table)
   checkStrata(strata, table)
   checkVariablesFunctions(variables, functions, table)
   checkSuppressCellCount(minCellCount)
-
-  # collect table
-  table <- table %>% dplyr::collect()
 
   # create the summary for overall
   result <- table %>%
