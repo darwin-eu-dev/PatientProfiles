@@ -7,7 +7,9 @@
 summariseResult(
   table,
   group = list(),
+  includeOverallGroup = FALSE,
   strata = list(),
+  includeOverallStrata = TRUE,
   variables = list(numericVariables = detectVariables(table, "numeric"), dateVariables =
     detectVariables(table, "date"), binaryVariables = detectVariables(table, "binary"),
     categoricalVariables = detectVariables(table, "categorical")),
@@ -22,7 +24,13 @@ summariseResult(
 
 \item{group}{List of groups to be considered.}
 
+\item{includeOverallGroup}{TRUE or FALSE. If TRUE, results for an overall
+group will be reported when a list of groups has been specified.}
+
 \item{strata}{List of the stratifications within each group to be considered.}
+
+\item{includeOverallStrata}{TRUE or FALSE. If TRUE, results for an overall
+strata will be reported when a list of strata has been specified.}
 
 \item{variables}{List of the different groups of variables, by default they
 are automatically classified.}
