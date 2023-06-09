@@ -151,3 +151,38 @@ test_that("table in db or local", {
   CDMConnector::cdm_disconnect(cdm)
 
 })
+
+test_that("with and with overall groups and strata", {
+  cdm <- PatientProfiles::mockPatientProfiles(patient_size = 1000,
+                                              drug_exposure_size = 1000 )
+
+  test_data <- cdm$condition_occurrence %>%
+    addDemographics(cdm, indexDate = "condition_start_date",
+                    ageGroup = list(c(0,30), c(31,60))) %>%
+    dplyr::collect()
+
+  expect_false(any(test_data %>%
+    summariseResult(strata = list("sex" = "sex"),
+                    includeOverallStrata = FALSE) %>%
+    dplyr::pull("strata_name") %in%
+    c("Overall")))
+  expect_true(any(test_data %>%
+                     summariseResult(strata = list("sex" = "sex"),
+                                     includeOverallStrata = TRUE) %>%
+                     dplyr::pull("strata_name") %in%
+                     c("Overall")))
+
+  expect_false(any(test_data %>%
+                     summariseResult(group = list("sex" = "sex"),
+                                     includeOverallGroup = FALSE) %>%
+                     dplyr::pull("group_name") %in%
+                     c("Overall")))
+  expect_true(any(test_data %>%
+                     summariseResult(group = list("sex" = "sex"),
+                                     includeOverallGroup = TRUE) %>%
+                     dplyr::pull("group_name") %in%
+                     c("Overall")))
+
+  CDMConnector::cdm_disconnect(cdm)
+
+})
