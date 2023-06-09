@@ -380,9 +380,9 @@ test_that("working examples with extra column", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$measurment_result_covid_0_to_inf == c(1, 1, 2, 6, 5)))
-  expect_true(all(is.na(result1$measurment_result_na_0_to_inf)))
-  expect_true(all(result2$measurment_result_0_to_inf == c("1; 2", "1; 2", 3, 6, 5)))
+  expect_true(all(result$measurment_result_covid_0_to_inf == c(1, 1, 2, 5, 7)))
+  expect_true(all(is.na(result1$measurment_result_covid_0_to_inf)))
+  expect_true(all(result2$measurment_result_0_to_inf == c("1; 2", "1; 2", 3, 5, 7)))
   expect_true(all(is.na(result3$measurment_result_m400_to_m200)))
 })
 
