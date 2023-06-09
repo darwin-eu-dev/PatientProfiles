@@ -36,7 +36,8 @@ Suggests:
     odbc,
     ggplot2,
     spelling,
-    RPostgres
+    RPostgres,
+    dbplyr
 Imports: 
     magrittr,
     CDMConnector (>= 0.5.1),

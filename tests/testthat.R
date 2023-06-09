@@ -23,23 +23,38 @@ availableConnections <- list(list(
 #     )))
 # }
 
-if (Sys.getenv("CDM5_SQL_SERVER_USER") != "") {
-  availableConnections <- availableConnections %>%
-    append(value = list(list(
-      con = DBI::dbConnect(
-        odbc::odbc(),
-        Driver   = "ODBC Driver 18 for SQL Server",
-        Server   = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
-        Database = Sys.getenv("CDM5_SQL_SERVER_CDM_DATABASE"),
-        UID      = Sys.getenv("CDM5_SQL_SERVER_USER"),
-        PWD      = Sys.getenv("CDM5_SQL_SERVER_PASSWORD"),
-        TrustServerCertificate = "yes",
-        Port     = 1433
-      ),
-      scratch_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA"),
-      write_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
-    )))
-}
+# if (Sys.getenv("CDM5_SQL_SERVER_USER") != "") {
+#   availableConnections <- availableConnections %>%
+#     append(value = list(list(
+#       con = DBI::dbConnect(
+#         odbc::odbc(),
+#         Driver   = "ODBC Driver 18 for SQL Server",
+#         Server   = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
+#         Database = Sys.getenv("CDM5_SQL_SERVER_CDM_DATABASE"),
+#         UID      = Sys.getenv("CDM5_SQL_SERVER_USER"),
+#         PWD      = Sys.getenv("CDM5_SQL_SERVER_PASSWORD"),
+#         TrustServerCertificate = "yes",
+#         Port     = 1433
+#       ),
+#       scratch_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA"),
+#       write_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
+#     )))
+# }
+
+availableConnections <- list(list(
+  con = DBI::dbConnect(
+    odbc::odbc(),
+    Driver   = "ODBC Driver 18 for SQL Server",
+    Server   = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
+    Database = Sys.getenv("CDM5_SQL_SERVER_CDM_DATABASE"),
+    UID      = Sys.getenv("CDM5_SQL_SERVER_USER"),
+    PWD      = Sys.getenv("CDM5_SQL_SERVER_PASSWORD"),
+    TrustServerCertificate = "yes",
+    Port     = 1433
+  ),
+  scratch_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA"),
+  write_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
+))
 
 
 for (k in seq_along(availableConnections)) {
