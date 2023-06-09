@@ -14,11 +14,8 @@ test_that("addAttributes, functionality", {
       expect_true(identical(attr(newCohort, i), attr(oldCohort, i)))
     }
   }
-})
 
-test_that("addAttributes, expected errors", {
-  cdm <- mockPatientProfiles(connectionDetails)
-
+  # expect errors
   expect_error(addAttributes(cdm))
   expect_error(addAttributes(cdm$cohort1, "cdm$cohort2"))
 })

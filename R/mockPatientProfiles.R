@@ -530,8 +530,8 @@ mockPatientProfiles <- function(connectionDetails = list(
 
   # into in-memory database
   db <- connectionDetails[["con"]]
-  scratchSchema <- connectionDetails[["scratch_schema"]]
-  writeSchema <- connectionDetails[["write_schema"]]
+  scratchSchema <- strsplit(connectionDetails[["scratch_schema"]], "\\.")[[1]]
+  writeSchema <- strsplit(connectionDetails[["write_schema"]], "\\.")[[1]]
 
   tablesToScratchScartch <- c(
     "drug_strength", "drug_exposure", "person", "observation_period",

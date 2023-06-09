@@ -36,7 +36,7 @@ if (Sys.getenv("CDM5_SQL_SERVER_USER") != "") {
         TrustServerCertificate = "yes",
         Port     = 1433
       ),
-      scratch_schema = Sys.getenv("CDM5_SQL_SERVER_SCRATCH_SCHEMA"),
+      scratch_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA"),
       write_schema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA")
     )))
 }
