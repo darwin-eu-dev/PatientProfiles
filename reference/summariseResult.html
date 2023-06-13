@@ -53,7 +53,9 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">summariseResult</span><span class="op">(</span></span>
 <span>  <span class="va">table</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  includeOverallGroup <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  includeOverallStrata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>numericVariables <span class="op">=</span> <span class="fu"><a href="detectVariables.html">detectVariables</a></span><span class="op">(</span><span class="va">table</span>, <span class="st">"numeric"</span><span class="op">)</span>, dateVariables <span class="op">=</span></span>
 <span>    <span class="fu"><a href="detectVariables.html">detectVariables</a></span><span class="op">(</span><span class="va">table</span>, <span class="st">"date"</span><span class="op">)</span>, binaryVariables <span class="op">=</span> <span class="fu"><a href="detectVariables.html">detectVariables</a></span><span class="op">(</span><span class="va">table</span>, <span class="st">"binary"</span><span class="op">)</span>,</span>
 <span>    categoricalVariables <span class="op">=</span> <span class="fu"><a href="detectVariables.html">detectVariables</a></span><span class="op">(</span><span class="va">table</span>, <span class="st">"categorical"</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -74,8 +76,18 @@
 <dd><p>List of groups to be considered.</p></dd>
 
 
+<dt>includeOverallGroup</dt>
+<dd><p>TRUE or FALSE. If TRUE, results for an overall
+group will be reported when a list of groups has been specified.</p></dd>
+
+
 <dt>strata</dt>
 <dd><p>List of the stratifications within each group to be considered.</p></dd>
+
+
+<dt>includeOverallStrata</dt>
+<dd><p>TRUE or FALSE. If TRUE, results for an overall
+strata will be reported when a list of strata has been specified.</p></dd>
 
 
 <dt>variables</dt>
