@@ -130,7 +130,7 @@ addDemographics <- function(x,
   if (age == TRUE ||  priorHistory == TRUE || futureObservation == TRUE) {
   checkmate::assert_true(
     inherits(x %>%
-               head(1) %>%
+               utils::head(1) %>%
                dplyr::pull(indexDate),
              c("Date", "POSIXt")))
   }

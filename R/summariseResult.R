@@ -261,7 +261,7 @@ getBinaryValues <- function(x, variablesBinary) {
             "estimate"
           )
       ) %>%
-      dplyr::mutate(estimate = as.character(estimate))
+      dplyr::mutate(estimate = as.character(.data$estimate))
   }
   variablesBinary <- variablesBinary %>%
     dplyr::filter(!(.data$estimate_type %in% c("count", "%")))
