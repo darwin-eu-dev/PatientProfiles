@@ -675,12 +675,11 @@ updateWrittenTables <- function(scratchTables = NULL, writeTables = NULL) {
 #'
 disconnectMockCdm <- function(connectionDetails) {
   db <- connectionDetails[["con"]]
-  scratchSchema <- connectionDetails[["scratch_schema"]]
   writeSchema <- connectionDetails[["write_schema"]]
   scratchTables <- getOption("mock_cdm_scratch_tables", NULL)
   writeTables <- getOption("mock_cdm_write_tables", NULL)
   for (tab in scratchTables) {
-    DBI::dbRemoveTable(db, CDMConnector::inSchema(scratchSchema, tab))
+    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
   }
   for (tab in writeTables) {
     DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
