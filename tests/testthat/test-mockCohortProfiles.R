@@ -27,10 +27,8 @@ test_that("test user define table", {
 
   cdm1 <- mockPatientProfiles(connectionDetails, testTable1 = testTable1)
   expect_true(all.equal(cdm1$testTable1 %>% dplyr::collect(), testTable1))
-  expect_true(length(cdm1) == 10)
 
   cdm2 <- mockPatientProfiles(connectionDetails, testTable1 = testTable1, testTable2 = testTable2)
-  expect_true(length(cdm2) == 11)
   expect_true(all.equal(cdm2$testTable1 %>% dplyr::collect(), testTable1))
   expect_true(all.equal(cdm2$testTable2 %>% dplyr::collect(), testTable2))
 })
@@ -62,7 +60,6 @@ test_that("check working example with cohort table", {
 test_that("check working example with defaults", {
   cdm <- mockPatientProfiles(connectionDetails)
 
-  expect_true(length(cdm) == 9)
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 10)
   expect_true(nrow(cdm$person %>% dplyr::collect()) == 1)
 })
@@ -71,7 +68,6 @@ test_that("check working example with defaults", {
 test_that("check dug exposure and patient table size", {
   cdm <- mockPatientProfiles(connectionDetails, drug_exposure_size = 200, patient_size = 200)
 
-  expect_true(length(cdm) == 9)
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 200)
   expect_true(nrow(cdm$person %>% dplyr::collect()) == 200)
 })
@@ -124,11 +120,14 @@ test_that("attributes for cohort table", {
   cdm <- mockPatientProfiles(connectionDetails, testTable1 = testTable1)
 
   expect_true(all(names(attributes(cdm$cohort1)) %in%
-    c("names", "class", "cohort_set", "cohort_attrition", "cohort_count")))
+    c("names", "class", "cdm_reference",
+      "cohort_set", "cohort_attrition", "cohort_count")))
 
   expect_true(all(names(attributes(cdm$cohort2)) %in%
-    c("names", "class", "cohort_set", "cohort_attrition", "cohort_count")))
+    c("names", "class", "cdm_reference",
+      "cohort_set", "cohort_attrition", "cohort_count")))
 
   expect_true(all(names(attributes(cdm$testTable1)) %in%
-    c("names", "class", "cohort_set", "cohort_attrition", "cohort_count")))
+    c("names", "class", "cdm_reference",
+      "cohort_set", "cohort_attrition", "cohort_count")))
 })

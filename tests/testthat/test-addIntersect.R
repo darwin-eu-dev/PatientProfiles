@@ -308,7 +308,13 @@ test_that("working examples with extra column", {
 
   cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
-  cdm$cohort2 <- cdm$cohort2 %>% dplyr::mutate(measurment_result = row_number())
+  cdm$cohort2 <- cdm$cohort2 %>%
+    dbplyr::window_order(
+      .data$cohort_definition_id, .data$subject_id, .data$cohort_start_date
+    ) %>%
+    dplyr::mutate(measurment_result = dplyr::row_number()) %>%
+    dbplyr::window_order() %>%
+    CDMConnector::computeQuery()
 
   result <- cdm$cohort1 %>%
     addIntersect(cdm, "cohort2", c("flag", "measurment_result"), "cohort_definition_id", 1, "covid", list(c(0, Inf))) %>%
@@ -351,7 +357,13 @@ test_that("working examples with extra column", {
 
   cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
-  cdm$cohort2 <- cdm$cohort2 %>% dplyr::mutate(measurment_result = row_number())
+  cdm$cohort2 <- cdm$cohort2 %>%
+    dbplyr::window_order(
+      .data$cohort_definition_id, .data$subject_id, .data$cohort_start_date
+    ) %>%
+    dplyr::mutate(measurment_result = dplyr::row_number()) %>%
+    dbplyr::window_order() %>%
+    CDMConnector::computeQuery()
 
   result2 <- cdm$cohort1 %>%
     addIntersect(cdm, "cohort2", "measurment_result",
@@ -368,9 +380,9 @@ test_that("working examples with extra column", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result$measurment_result_covid_0_to_inf == c(1, 1, 2, 6, 5)))
-  expect_true(all(is.na(result1$measurment_result_na_0_to_inf)))
-  expect_true(all(result2$measurment_result_0_to_inf == c("1; 2", "1; 2", 3, 6, 5)))
+  expect_true(all(result$measurment_result_covid_0_to_inf == c(1, 1, 2, 5, 7)))
+  expect_true(all(is.na(result1$measurment_result_covid_0_to_inf)))
+  expect_true(all(result2$measurment_result_0_to_inf == c("1; 2", "1; 2", 3, 5, 7)))
   expect_true(all(is.na(result3$measurment_result_m400_to_m200)))
 })
 

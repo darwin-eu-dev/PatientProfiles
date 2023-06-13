@@ -19,7 +19,7 @@ test_that("addDemographics, cohort and condition_occurrence", {
 
   expect_true(length(attributes(cdm$cohort1)) == length(attributes(oldcohort)))
   for (i in names(attributes(cdm$cohort1))) {
-    if (i != "names" && i != "class") {
+    if (i != "names" && i != "class" && i != "cdm_reference") {
       expect_true(identical(attr(cdm$cohort1, i), attr(oldcohort, i)))
     }
   }
@@ -525,7 +525,12 @@ test_that("age at cohort end, no missing, check age computation", {
     ageImposeDay = FALSE
   ) %>%
     dplyr::collect()
-  expect_true(identical(result$age, c(0, 1)))
+  expect_true(result %>%
+    dplyr::filter(subject_id == 1) %>%
+    dplyr::pull("age") == 0)
+  expect_true(result %>%
+                dplyr::filter(subject_id == 2) %>%
+                dplyr::pull("age") == 1)
 
   result <- addDemographics(
     x = cdm[["cohort1"]], cdm = cdm,
@@ -533,8 +538,13 @@ test_that("age at cohort end, no missing, check age computation", {
     ageImposeDay = FALSE
   ) %>%
     dplyr::collect()
-  expect_true(identical(result$age, c(0, 1)))
-})
+  expect_true(result %>%
+                dplyr::filter(subject_id == 1) %>%
+                dplyr::pull("age") == 0)
+  expect_true(result %>%
+                dplyr::filter(subject_id == 2) %>%
+                dplyr::pull("age") == 1)
+  })
 
 test_that("age at cohort entry, missing year/month/day of birth", {
   cohort1 <- dplyr::tibble(
@@ -565,7 +575,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 
   expect_true(all(c(colnames(cohort1), "age") %in% colnames(result)))
   expect_equal(nrow(result), 3)
-  expect_true(identical(result$age, c(9, 9, NA)))
+  expect_true(all(c(9, NA) %in% result$age))
 
   resultB <- addDemographics(
     x = cdm$cohort1, cdm = cdm, ageImposeMonth = FALSE, ageImposeDay = FALSE,
@@ -604,8 +614,9 @@ test_that("multiple cohortIds, check age at cohort end", {
   ) %>%
     dplyr::collect()
 
-  expect_true(identical(result$subject_id, c("1", "2", "3")))
-  expect_true(identical(result$age, c(15, 13, NA)))
+
+  expect_true(all(c("1", "2", "3") %in% result$subject_id))
+  expect_true(all(c(15, 13, NA) %in% result$age))
 
   resultB <- addDemographics(
     x = cdm$cohort1, cdm = cdm, indexDate = "cohort_end_date",

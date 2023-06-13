@@ -127,6 +127,14 @@ addDemographics <- function(x,
   checkNewName(priorHistoryName, x)
   checkNewName(futureObservationName, x)
 
+  if (age == TRUE ||  priorHistory == TRUE || futureObservation == TRUE) {
+  checkmate::assert_true(
+    inherits(x %>%
+               head(1) %>%
+               dplyr::pull(indexDate),
+             c("Date", "POSIXt")))
+  }
+
   # Start code
   startTibble <- x
   startNames <- names(x)

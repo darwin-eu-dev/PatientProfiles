@@ -1,4 +1,5 @@
 test_that("output format - one outcome cohort", {
+  # output format - one outcome cohort ----
   # additional column should be added
   # with the name as specified
 
@@ -21,13 +22,10 @@ test_that("output format - one outcome cohort", {
       targetCohortTable = "cohort2"
     )
   expect_true(ncol(cdm$cohort1b) == 5)
-})
 
-test_that("output format - multiple outcome cohorts", {
+  # output format - multiple outcome cohorts ----
   # additional columns (one per outcome cohort) should be added
   # with the name as specified
-
-  cdm <- mockPatientProfiles(connectionDetails)
 
   # In 0 to Inf - 2 target cohorts have someone
   cdm$cohort1a <- cdm$cohort1 %>%

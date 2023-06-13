@@ -36,10 +36,11 @@ Suggests:
     odbc,
     ggplot2,
     spelling,
-    RPostgres
+    RPostgres,
+    dbplyr
 Imports: 
     magrittr,
-    CDMConnector (>= 0.5.1),
+    CDMConnector (>= 1.0.0),
     dplyr,
     tidyr,
     checkmate,
