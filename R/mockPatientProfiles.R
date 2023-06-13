@@ -65,8 +65,8 @@
 #'
 mockPatientProfiles <- function(connectionDetails = list(
                                   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-                                  scratch_schema = "main",
-                                  write_schema = "main"
+                                  write_schema = "main",
+                                  mock_prefix = NULL
                                 ),
                                 drug_exposure = NULL,
                                 drug_strength = NULL,
@@ -528,18 +528,22 @@ mockPatientProfiles <- function(connectionDetails = list(
     )
   }
 
-  # into in-memory database
+  # into database
   db <- connectionDetails[["con"]]
-  scratchSchema <- strsplit(connectionDetails[["scratch_schema"]], "\\.")[[1]]
   writeSchema <- strsplit(connectionDetails[["write_schema"]], "\\.")[[1]]
 
-  tablesToScratchScartch <- c(
+  tablesToInsert <- c(
     "drug_strength", "drug_exposure", "person", "observation_period",
     "condition_occurrence", "visit_occurrence", "concept_ancestor"
   )
-  for (tab in tablesToScratchScartch) {
+
+  for (tab in tablesToInsert) {
     DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(scratchSchema, tab),
+      conn = db,
+      name = CDMConnector::inSchema(writeSchema,
+                                    table = paste0(
+                                      connectionDetails[["mock_prefix"]],
+                                                   tab)),
       value = eval(parse(text = tab)), overwrite = TRUE
     )
   }
@@ -585,9 +589,10 @@ mockPatientProfiles <- function(connectionDetails = list(
   # create the cdm object
   cdm <- CDMConnector::cdm_from_con(
     db,
-    cdm_schema = scratchSchema,
-    write_schema = writeSchema,
-    cdm_tables = cdmTables,
+    cdm_schema =  c(schema = writeSchema,
+                    prefix = connectionDetails$mock_prefix),
+    write_schema =  c(schema = writeSchema,
+                      prefix = connectionDetails$mock_prefix),
     cohort_tables = cohorts
   )
 

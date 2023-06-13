@@ -6,7 +6,7 @@
 \usage{
 mockPatientProfiles(
   connectionDetails = list(con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-    scratch_schema = "main", write_schema = "main"),
+    write_schema = "main", mock_prefix = NULL),
   drug_exposure = NULL,
   drug_strength = NULL,
   observation_period = NULL,
