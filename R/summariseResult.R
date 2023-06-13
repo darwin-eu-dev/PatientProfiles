@@ -251,7 +251,8 @@ getBinaryValues <- function(x, variablesBinary) {
             "strata_level", "variable", "variable_type", "estimate_type",
             "estimate"
           )
-      )
+      ) %>%
+      dplyr::mutate(estimate = as.character(estimate))
   }
   variablesBinary <- variablesBinary %>%
     dplyr::filter(!(.data$estimate_type %in% c("count", "%")))
