@@ -18,7 +18,11 @@
 #'
 #' @param table Table with different records
 #' @param group List of groups to be considered.
+#' @param includeOverallGroup TRUE or FALSE. If TRUE, results for an overall
+#' group will be reported when a list of groups has been specified.
 #' @param strata List of the stratifications within each group to be considered.
+#' @param includeOverallStrata TRUE or FALSE. If TRUE, results for an overall
+#' strata will be reported when a list of strata has been specified.
 #' @param variables List of the different groups of variables, by default they
 #' are automatically classified.
 #' @param functions List of functions to be applied to each one of the group of
@@ -43,7 +47,9 @@
 #'
 summariseResult <- function(table,
                             group = list(),
+                            includeOverallGroup = FALSE,
                             strata = list(),
+                            includeOverallStrata = TRUE,
                             variables = list(
                               numericVariables = detectVariables(table, "numeric"),
                               dateVariables = detectVariables(table, "date"),
@@ -69,9 +75,11 @@ summariseResult <- function(table,
   checkSuppressCellCount(minCellCount)
 
   # create the summary for overall
+  result <- list()
+  if(isTRUE(includeOverallGroup) || length(group) == 0) {
   result <- table %>%
     summaryValuesStrata(
-      strata, variables, functions
+      strata, variables, functions, includeOverall = includeOverallStrata
     ) %>%
     dplyr::mutate(group_name = "Overall",
                   group_level = "Overall") %>%
@@ -82,6 +90,7 @@ summariseResult <- function(table,
       "estimate_type", "estimate")
     )) %>%
     dplyr::arrange(.data$strata_name, .data$strata_level)
+  }
 
   # add results for each group
  for(i in seq_along(group)){
@@ -101,7 +110,7 @@ summariseResult <- function(table,
         dplyr::filter(
           .data[["group_var"]] == workingGroupLevels[[j]]) %>%
         summaryValuesStrata(
-          strata, variables, functions
+          strata, variables, functions, includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(group_name = workingGroupName,
                       group_level = workingGroupLevels[[j]]) %>%
@@ -484,7 +493,13 @@ countSubjects <- function(x) {
 }
 
 #' @noRd
-summaryValuesStrata <- function(x, strata, variables, functions) {
+summaryValuesStrata <- function(x, strata,
+                                variables,
+                                functions,
+                                includeOverall) {
+
+  result <- list()
+  if(isTRUE(includeOverall) || length(strata) == 0){
   result <- x %>%
     dplyr::mutate(strata_level = "Overall") %>%
     dplyr::group_by(.data$strata_level) %>%
@@ -492,13 +507,14 @@ summaryValuesStrata <- function(x, strata, variables, functions) {
       variables, functions
     ) %>%
     dplyr::mutate(strata_name = "Overall")
+  }
   for (strat in names(strata)) {
     xx <- x %>%
       uniteStrata(strata[[strat]]) %>%
       tidyr::separate_rows("strata_level", sep = "&&", convert = FALSE) %>%
       dplyr::group_by(.data$strata_level)
     result <- result %>%
-      dplyr::union_all(
+      dplyr::bind_rows(
         xx %>%
           summaryValues(
             variables, functions
