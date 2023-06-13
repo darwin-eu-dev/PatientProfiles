@@ -96,14 +96,31 @@ cdm$exposure_cohort <- union_all(
   cdm$diclofenac
 ) %>%
   compute()
-cdm$exposure_cohort <- newGeneratedCohortSet(cdm$exposure_cohort)
 ```
+
 ```{r, echo = FALSE}
-DBI::dbWriteTable(con, "cohort_set", dplyr::tibble(cohort_definition_id = 1, cohort_name = "na"))
-cdm$exposure_cohort <- newGeneratedCohortSet(
-  cohortRef = cdm$exposure_cohort,
-  cohortSetRef = dplyr::tbl(con, CDMConnector::inSchema(attr(cdm, "write_schema"), "cohort_set"))
-)
+DBI::dbWriteTable(con, "exposure_cohort_set", 
+                  dplyr::tibble(cohort_definition_id = c(1,2),
+                                cohort_name = c("celecoxib", "diclofenac")))
+DBI::dbWriteTable(con, "exposure_cohort_count", 
+                  cdm$exposure_cohort %>% 
+  group_by(cohort_definition_id) %>% 
+  tally(name = "number_records") %>% 
+    collect() %>% 
+  inner_join(cdm$exposure_cohort %>% 
+  group_by(subject_id, cohort_definition_id) %>% 
+  distinct() %>% 
+  group_by(cohort_definition_id) %>% 
+  tally(name = "number_subjects") %>% 
+  collect(),
+  by = "cohort_definition_id"))
+cdm$exposure_cohort_set <- con %>% dplyr::tbl(in_schema("main", 
+                                                   "exposure_cohort_set"))
+cdm$exposure_cohort_count <- con %>% dplyr::tbl(in_schema("main", 
+                                                   "exposure_cohort_count"))
+cdm$exposure_cohort <- newGeneratedCohortSet(cdm$exposure_cohort, 
+                                             cohortSetRef = cdm$exposure_cohort_set, 
+                                             cohortCountRef = cdm$exposure_cohort_count)
 ```
 
 As well as our two drug cohorts, we'll define a cohort of people with a condition occurrence of gastrointestinal (GI) bleeding. 
@@ -130,13 +147,34 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
     "cohort_start_date", "cohort_end_date"
   ) %>%
   compute()
-cdm$gi_bleed <- newGeneratedCohortSet(cdm$gi_bleed)
 ```
+
 ```{r, echo = FALSE}
-cdm$gi_bleed <- newGeneratedCohortSet(
-  cohortRef = cdm$gi_bleed,
-  cohortSetRef = dplyr::tbl(con, CDMConnector::inSchema(attr(cdm, "write_schema"), "cohort_set"))
-)
+
+DBI::dbWriteTable(con, "gi_bleed_cohort_set", 
+                  dplyr::tibble(cohort_definition_id = c(1),
+                                cohort_name = c("gi_bleed")))
+DBI::dbWriteTable(con, "gi_bleed_cohort_count", 
+                  cdm$gi_bleed %>% 
+  group_by(cohort_definition_id) %>% 
+  tally(name = "number_records") %>% 
+    collect() %>% 
+  inner_join(cdm$gi_bleed %>% 
+  group_by(subject_id, cohort_definition_id) %>% 
+  distinct() %>% 
+  group_by(cohort_definition_id) %>% 
+  tally(name = "number_subjects") %>% 
+  collect(),
+  by = "cohort_definition_id"))
+
+cdm$gi_bleed_cohort_set <- con %>% dplyr::tbl(in_schema("main", 
+                                                   "gi_bleed_cohort_set"))
+cdm$gi_bleed_cohort_count <- con %>% dplyr::tbl(in_schema("main", 
+                                                   "gi_bleed_cohort_count"))
+cdm$gi_bleed <- newGeneratedCohortSet(cdm$gi_bleed, 
+                                             cohortSetRef = cdm$gi_bleed_cohort_set, 
+                                             cohortCountRef = cdm$gi_bleed_cohort_count)
+
 ```
 
 
