@@ -11,3 +11,5 @@
 ^\.github$
 ^extras
 ^cran-comments\.md$
+^vignettes/articles$
+^codecov\.yml$

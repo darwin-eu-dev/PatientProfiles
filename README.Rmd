@@ -3,25 +3,26 @@ output: github_document
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(warning = FALSE,
+knitr::opts_chunk$set(
+  warning = FALSE, message = FALSE,
   collapse = TRUE,
   comment = "#>",
-fig.path = "man/figures/README-",
-out.width = "100%"
+  fig.path = "man/figures/README-",
+  out.width = "100%"
 )
 ```
 
 # PatientProfiles <img src='man/figures/Hex.png' align="right" height="139"/>
 
 [![CRAN status](https://www.r-pkg.org/badges/version/PatientProfiles)](https://CRAN.R-project.org/package=PatientProfiles)
-[![codecov.io](https://codecov.io/github/darwin-eu/PatientProfiles/coverage.svg?branch=main)](https://codecov.io/github/darwin-eu/PatientProfiles?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/PatientProfiles/actions)
-[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://www.tidyverse.org/lifecycle/#experimental)
+[![codecov.io](https://codecov.io/github/darwin-eu-dev/PatientProfiles/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu-dev/PatientProfiles?branch=main)
+[![R-CMD-check](https://github.com/darwin-eu-dev/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu-dev/PatientProfiles/actions)
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
 
 ## Package overview
 
-PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition_occurrence, drug_exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age (relative to a date in the table), and days of prior history. Time varying characteristics, such as age, can be estimated relative to any dates in the corresponding table. In additition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables. 
+PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition occurrence, drug exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age, and days of prior history. Time varying characteristics, such as age, can be estimated relative to any date in the corresponding table. In addition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables. 
 
 ## Package installation
 
@@ -29,7 +30,7 @@ You can install the latest version of PatientProfiles like so:
 
 ```{r, eval=FALSE}
 install.packages("remotes")
-remotes::install_github("oxford-pharmacoepi/PatientProfiles")
+remotes::install_github("darwin-eu-dev/PatientProfiles")
 ```
 
 ## Example usage
@@ -44,131 +45,240 @@ library(dplyr)
 
 Creating a connection to a Postgres database would for example look like:
 ```{r, eval=FALSE}
-con <- DBI::dbConnect(RPostgres::Postgres(),
-                      dbname = Sys.getenv("CDM5_POSTGRESQL_DBNAME"),
-                      host = Sys.getenv("CDM5_POSTGRESQL_HOST"),
-                      user = Sys.getenv("CDM5_POSTGRESQL_USER"),
-                      password = Sys.getenv("CDM5_POSTGRESQL_PASSWORD"))
+con <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  dbname = Sys.getenv("CDM5_POSTGRESQL_DBNAME"),
+  host = Sys.getenv("CDM5_POSTGRESQL_HOST"),
+  user = Sys.getenv("CDM5_POSTGRESQL_USER"),
+  password = Sys.getenv("CDM5_POSTGRESQL_PASSWORD")
+)
 
-cdm <- CDMConnector::cdm_from_con(con, 
-                    cdm_schema = Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA"), 
-                    write_schema = Sys.getenv("CDM5_POSTGRESQL_RESULT_SCHEMA"))
+cdm <- cdm_from_con(
+  con,
+  cdm_schema = Sys.getenv("CDM5_POSTGRESQL_CDM_SCHEMA"),
+  write_schema = Sys.getenv("CDM5_POSTGRESQL_RESULT_SCHEMA")
+)
 ```
-To see how you would create a reference to your database please consult the CDMConnector package documentation. For this example though we´ll work with simulated data, and we'll generate an example cdm reference like so:
+To see how you would create a reference to your database please consult the CDMConnector package [documentation](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html). For this example though we'll work with simulated data, and we'll generate an example cdm reference like so:
 
 ```{r}
 cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
 ```
 
-### Adding individuals´ chartacteristics
-#### Adding chartacteristics to patient-level data
-Say we wanted to get individuals´sex and age at condition start date for records in the condition_occurrence table. We can use the `addAge` and `addSex` functions to do this:
+### Adding individuals´ characteristics
+#### Adding characteristics to patient-level data
+Say we wanted to get individuals´sex and age at condition start date for records in the condition occurrence table. We can use the `addAge` and `addSex` functions to do this:
 
 ```{r}
-cdm$condition_occurrence %>% 
+cdm$condition_occurrence %>%
   glimpse()
 
-cdm$condition_occurrence <- cdm$condition_occurrence  %>% 
-  addAge(cdm = cdm, indexDate = "condition_start_date")  %>% 
+cdm$condition_occurrence <- cdm$condition_occurrence %>%
+  addAge(cdm = cdm, indexDate = "condition_start_date") %>%
   addSex(cdm)
 
-cdm$condition_occurrence %>% 
+cdm$condition_occurrence %>%
   glimpse()
 ```
 
 We could, for example, then limit our data to only males aged between 18 and 65
 ```{r}
-cdm$condition_occurrence  %>%
+cdm$condition_occurrence %>%
   filter(age >= 18 & age <= 65) %>%
   filter(sex == "Male")
 ```
 
-#### Adding chartacteristics of a cohort
+#### Adding characteristics of a cohort
 As with other tables in the OMOP CDM, we can work in a similar way with cohort tables. For example, say we have the below cohort table
 
 ```{r}
-cdm$cohort1 %>% 
+cdm$cohort1 %>%
   glimpse()
 ```
 
 We can add age, age groups, sex, and days of prior history to a cohort like so
 ```{r}
-cdm$cohort1 <- cdm$cohort1 %>% 
-  addAge(cdm = cdm, indexDate = "cohort_start_date",
-         ageGroup =  list(c(0, 18),  
-                          c(19, 65), 
-                          c(66, 100))
-          ) %>% 
-  addSex(cdm = cdm) %>% 
+cdm$cohort1 <- cdm$cohort1 %>%
+  addAge(
+    cdm = cdm,
+    indexDate = "cohort_start_date",
+    ageGroup = list(c(0, 18), c(19, 65), c(66, 100))
+  ) %>%
+  addSex(cdm = cdm) %>%
   addPriorHistory(cdm = cdm)
 
-cdm$cohort1 %>% 
+cdm$cohort1 %>%
   glimpse()
 ```
 
 We could use this information to subset the cohort. For example limiting to those with at least 365 days of prior history available before their cohort start date like so
 ```{r}
-cdm$cohort1  %>%
+cdm$cohort1 %>%
   filter(prior_history >= 365)
 ```
 
 ### Cohort intersections
 
-#### Intersections with patient-level data 
-We can use `addIntersect` to add the intersection between a cohort table and OMOP CDM tables.
+#### Detect the presence of another cohort in a certain window
+We can use `addCohortIntersectFlag` to add a flag for the presence (or not) of a cohort in a certain window.
 
-```{r, echo=FALSE}
-cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
 ```
-
-For example, if we want to identify anyone with a drug exposure prior to their cohort start date we could do this like so:
-
 ```{r}
-cdm$cohort1 %>% 
+cdm$cohort1 %>%
   glimpse()
 
-cdm$cohort1  <- cdm$cohort1 %>% 
-  addTableIntersect(cdm = cdm,
-                    name = "history_of_drug_exposure",
-                    tableName = "drug_exposure", 
-                    window = c(NA, -1),  
-                    value = "binary")
+cdm$cohort1 <- cdm$cohort1 %>%
+  addCohortIntersectFlag(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    window = c(-Inf, -1)
+  )
 
-cdm$cohort1 %>% 
+cdm$cohort1 %>%
   glimpse()
-
 ```
 
-#### Intersections with another cohort
+#### Count appearances of a certain cohort in a certain window
+If we wanted the number of appearances, we could instead use the `addCohortIntersectCount` function
 
-We can use `addIntersect` to compare two cohort tables.
-
-```{r, echo=FALSE}
-cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
 ```
-
-Say we have the two following cohort tables
 ```{r}
-cdm$cohort1 %>% 
-  glimpse()
-cdm$cohort2 %>% 
+cdm$cohort1 %>%
   glimpse()
 
+cdm$cohort1 <- cdm$cohort1 %>%
+  addCohortIntersectCount(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    window = list("short_term" = c(1, 30), "mid_term" = c(31, 180))
+  )
+
+cdm$cohort1 %>%
+  glimpse()
 ```
 
-If we want to add a variable to cohorts in the cohort table 1 identifying whether an individual was in the cohort table cohort2 and cohort definition id 1 any time prior to the cohort start date. we could add this like so:
+#### Add a column with the first/last event in a certain window
+Say we wanted the date at which an individual was in another cohort then we can use the `addCohortIntersectDate` function. As there might be multiple records for the other cohort, we can also choose the first or the last appearance in that cohort.
 
+First occurrence:
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
 ```{r}
-cdm$cohort1 <- cdm$cohort1 %>% 
-  addIntersect(cdm = cdm,  
-                     name = "history_of_cohort_2_id_1",
-                     cohortTableName = "cohort2", 
-                     cohortId = 1,
-                     window = c(NA, -1),  
-                     value = "binary")
-
-cdm$cohort2 %>% 
+cdm$cohort1 %>%
   glimpse()
 
+cdm$cohort1 <- cdm$cohort1 %>%
+  addCohortIntersectDate(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "first",
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>%
+  glimpse()
 ```
 
+Last occurrence:
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>%
+  glimpse()
+
+cdm$cohort1 <- cdm$cohort1 %>%
+  addCohortIntersectDate(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "last",
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>%
+  glimpse()
+```
+
+#### Add the number of days instead of the date
+Instead of returning a date, we could return the days to the intersection by using `addCohortIntersectDays`
+
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>%
+  glimpse()
+
+cdm$cohort1 <- cdm$cohort1 %>%
+  addCohortIntersectDays(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "last",
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>%
+  glimpse()
+```
+
+#### Combine multiple cohort intersects
+If we want to combine multiple cohort intersects we can concatenate the operations using the `pipe` operator:
+
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>%
+  glimpse()
+
+cdm$cohort1 <- cdm$cohort1 %>%
+  addCohortIntersectDate(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    order = "last",
+    window = c(-Inf, Inf)
+  ) %>%
+  addCohortIntersectCount(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    window = c(-Inf, Inf)
+  )
+
+cdm$cohort1 %>%
+  glimpse()
+```
+
+A more efficient implementation for getting multiple types of intersection results is provided by `addCohortIntersectTime`
+```{r, echo = FALSE}
+cdm <- mockPatientProfiles()
+```
+```{r}
+cdm$cohort1 %>%
+  glimpse()
+
+cdm$cohort1 <- cdm$cohort1 %>%
+  addCohortIntersect(
+    cdm = cdm,
+    targetCohortTable = "cohort2",
+    targetCohortId = 1,
+    count = TRUE,
+    flag = TRUE,
+    days = TRUE,
+    date = TRUE,
+    window = list("any_time" = c(-Inf, Inf))
+  )
+
+cdm$cohort1 %>%
+  glimpse()
+```

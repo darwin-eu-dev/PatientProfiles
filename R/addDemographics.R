@@ -1,12 +1,26 @@
+# Copyright 2023 DARWIN EU (C)
+#
+# This file is part of PatientProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-#' It adds all demographics columns to the given cohort table: Age, Sex,
-#' PriorHistory, and ageGroup if desired
+#' Compute demographic characteristics at a certain date
 #'
-#' @param x cohort table in which to add follow up of individuals
-#' @param cdm cdm with the person and observation_period tables to get the info
-#' for the individuals in the cohort
-#' @param indexDate name of the column with the date at which consider
-#' demographic information
+#' @param x Table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the
+#' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
 #' indexDate
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing
@@ -48,8 +62,8 @@ addDemographics <- function(x,
                             ageName = "age",
                             ageDefaultMonth = 1,
                             ageDefaultDay = 1,
-                            ageImposeMonth = TRUE,
-                            ageImposeDay = TRUE,
+                            ageImposeMonth = FALSE,
+                            ageImposeDay = FALSE,
                             ageGroup = NULL,
                             sex = TRUE,
                             sexName = "sex",
@@ -69,7 +83,7 @@ addDemographics <- function(x,
   }
 
   ## check for standard types of user error
-  person_variable <- checkX(x)
+  personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
   checkmate::assertIntegerish(
@@ -94,7 +108,35 @@ addDemographics <- function(x,
     cli::cli_abort("age, sex, priorHistory, futureObservation can not be FALSE")
   }
 
+  # check variable names
+  if (age) {
+    ageName <- checkSnakeCase(ageName)
+  }
+  if (sex) {
+    sexName <- checkSnakeCase(sexName)
+  }
+  if (priorHistory) {
+    priorHistoryName <- checkSnakeCase(priorHistoryName)
+  }
+  if (futureObservation) {
+    futureObservationName <- checkSnakeCase(futureObservationName)
+  }
+
+  checkNewName(ageName, x)
+  checkNewName(sexName, x)
+  checkNewName(priorHistoryName, x)
+  checkNewName(futureObservationName, x)
+
+  if (age == TRUE ||  priorHistory == TRUE || futureObservation == TRUE) {
+  checkmate::assert_true(
+    inherits(x %>%
+               utils::head(1) %>%
+               dplyr::pull(indexDate),
+             c("Date", "POSIXt")))
+  }
+
   # Start code
+  startTibble <- x
   startNames <- names(x)
 
   personDetails <- cdm[["person"]] %>%
@@ -105,22 +147,22 @@ addDemographics <- function(x,
       "month_of_birth",
       "day_of_birth"
     ) %>%
-    dplyr::rename(!!person_variable := "person_id")
+    dplyr::rename(!!personVariable := "person_id")
 
   if (priorHistory == TRUE || futureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
     obsPeriodDetails <- x %>%
-      dplyr::select(dplyr::all_of(c(person_variable, indexDate))) %>%
+      dplyr::select(dplyr::all_of(c(personVariable, indexDate))) %>%
       dplyr::distinct() %>%
       dplyr::inner_join(
         cdm[["observation_period"]] %>%
-          dplyr::rename(!!person_variable := "person_id") %>%
+          dplyr::rename(!!personVariable := "person_id") %>%
           dplyr::select(
-            dplyr::all_of(person_variable),
+            dplyr::all_of(personVariable),
             "observation_period_start_date",
             "observation_period_end_date"
           ),
-        by = person_variable
+        by = personVariable
       ) %>%
       dplyr::filter(.data$observation_period_start_date <=
         .data[[indexDate]] &
@@ -130,66 +172,37 @@ addDemographics <- function(x,
 
   # update dates
   if (age) {
-    # impose month
-    if (ageImposeMonth == TRUE) {
-      personDetails <- personDetails %>%
-        dplyr::mutate(month_of_birth = .env$ageDefaultMonth)
-    } else {
-      personDetails <- personDetails %>%
-        dplyr::mutate(month_of_birth = dplyr::if_else(
-          is.na(.data$month_of_birth),
-          .env$ageDefaultMonth,
-          .data$month_of_birth
-        ))
-    }
-    # impose day
-    if (ageImposeDay == TRUE) {
-      personDetails <- personDetails %>%
-        dplyr::mutate(day_of_birth = .env$ageDefaultDay)
-    } else {
-      personDetails <- personDetails %>%
-        dplyr::mutate(day_of_birth = dplyr::if_else(
-          is.na(.data$day_of_birth),
-          .env$ageDefaultDay,
-          .data$day_of_birth
-        ))
-    }
+    personDetails <- personDetails %>%
+      dplyr::filter(!is.na(.data$year_of_birth)) %>%
+      addDateOfBirth(cdm,
+        name = "date_of_birth",
+        missingDay = ageDefaultDay,
+        missingMonth = ageDefaultMonth,
+        imposeDay = ageImposeDay,
+        imposeMonth = ageImposeMonth
+      )
   }
 
-  personDetails <- personDetails %>%
-    dplyr::filter(!is.na(.data$year_of_birth)) %>%
-    dplyr::mutate(
-      year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
-      month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
-      day_of_birth1 = as.character(as.integer(.data$day_of_birth))
-    ) %>%
-    dplyr::mutate(birth_date = as.Date(
-      paste0(
-        .data$year_of_birth1,
-        "-",
-        .data$month_of_birth1,
-        "-",
-        .data$day_of_birth1
+  # join if not the person table
+  if (any(!c("person_id", "gender_concept_id") %in% colnames(x))) {
+    x <- x %>%
+      dplyr::left_join(
+        personDetails %>%
+          dplyr::select(dplyr::any_of(c(
+            personVariable,
+            "date_of_birth",
+            "gender_concept_id",
+            "observation_period_start_date",
+            "observation_period_end_date"
+          ))),
+        by = personVariable
       )
-    ))
-
-  x <- x %>%
-    dplyr::left_join(
-      personDetails %>%
-        dplyr::select(dplyr::any_of(c(
-          person_variable,
-          "birth_date",
-          "gender_concept_id",
-          "observation_period_start_date",
-          "observation_period_end_date"
-        ))),
-      by = person_variable
-    )
+  }
 
   if (priorHistory == TRUE || futureObservation == TRUE) {
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
-        by = c(person_variable, indexDate)
+        by = c(personVariable, indexDate)
       )
   }
 
@@ -235,6 +248,14 @@ addDemographics <- function(x,
       ))
     )
 
+  if (sex == TRUE) {
+    x <- x %>%
+      dplyr::mutate(!!sexName := dplyr::if_else(!is.na(.data[[sexName]]),
+        .data[[sexName]],
+        "None"
+      ))
+  }
+
   if (is.null(tablePrefix)) {
     x <- x %>%
       CDMConnector::computeQuery()
@@ -254,11 +275,15 @@ addDemographics <- function(x,
   if (!is.null(ageGroup)) {
     x <- addCategories(x,
       cdm = cdm,
-      variable = "age",
+      variable = ageName,
       categories = ageGroup,
+      missingCategoryValue = "None",
       tablePrefix = tablePrefix
     )
   }
+
+  # put back the initial attributes to the output tibble
+  x <- x %>% addAttributes(startTibble)
 
   return(x)
 }
@@ -267,10 +292,10 @@ addDemographics <- function(x,
 
 ageQuery <- function(indexDate, name) {
   return(glue::glue('floor(dbplyr::sql(
-    sqlGetAge(
-      dialect = CDMConnector::dbms(cdm),
-      dob = "birth_date",
-      dateOfInterest = "{indexDate}"
+    CDMConnector::datediff(
+      start = "date_of_birth",
+      end = "{indexDate}",
+      interval = "year"
     )
   ))') %>%
     rlang::parse_exprs() %>%
@@ -298,4 +323,368 @@ futureObservationQuery <- function(indexDate, name) {
                           "observation_period_end_date")') %>%
     rlang::parse_exprs() %>%
     rlang::set_names(glue::glue(name)))
+}
+
+#' Compute the age of the individuals at a certain date
+#'
+#' @param x Table with individuals in the cdm.
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the age.
+#' @param ageName Name of the new column that contains age.
+#' @param ageGroup List of age groups to be added.
+#' @param ageDefaultMonth Month of the year assigned to individuals with missing
+#' month of birth. By default: 1.
+#' @param ageDefaultDay day of the month assigned to individuals with missing
+#' day of birth. By default: 1.
+#' @param ageImposeMonth Whether the month of the date of birth will be
+#' considered as missing for all the individuals.
+#' @param ageImposeDay Whether the day of the date of birth will be considered
+#' as missing for all the individuals.
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
+#' @return tibble with the age column added
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DBI)
+#' library(duckdb)
+#' library(PatientProfiles)
+#' cohort1 <- dplyr::tibble(
+#'   cohort_definition_id = c("1", "1", "1"),
+#'   subject_id = c("1", "2", "3"),
+#'   cohort_start_date = c(
+#'     as.Date("2010-01-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
+#'   ),
+#'   cohort_end_date = c(
+#'     as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
+#'   )
+#' )
+#'
+#' person <- dplyr::tibble(
+#'   person_id = c("1", "2", "3"),
+#'   gender_concept_id = c("8507", "8532", "8507"),
+#'   year_of_birth = c(2000, 1995, NA),
+#'   month_of_birth = c(NA, 07, 08),
+#'   day_of_birth = c(01, 25, 03)
+#' )
+#' cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+#' addAge(x = cdm[["cohort1"]], cdm = cdm)
+#' }
+addAge <- function(x,
+                   cdm,
+                   indexDate = "cohort_start_date",
+                   ageName = "age",
+                   ageGroup = NULL,
+                   ageDefaultMonth = 1,
+                   ageDefaultDay = 1,
+                   ageImposeMonth = FALSE,
+                   ageImposeDay = FALSE,
+                   tablePrefix = NULL) {
+  x <- x %>%
+    addDemographics(
+      cdm = cdm,
+      indexDate = indexDate,
+      age = TRUE,
+      ageName = ageName,
+      ageGroup = ageGroup,
+      ageDefaultDay = ageDefaultDay,
+      ageDefaultMonth = ageDefaultMonth,
+      ageImposeDay = ageImposeDay,
+      ageImposeMonth = ageImposeMonth,
+      sex = FALSE,
+      priorHistory = FALSE,
+      futureObservation = FALSE,
+      tablePrefix = tablePrefix
+    )
+
+  return(x)
+}
+
+#' Compute the number of days till the end of the observation period at a
+#' certain date
+#'
+#' @param x Table with individuals in the cdm.
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the future
+#' observation.
+#' @param futureObservationName name of the new column to be added
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
+#' @return cohort table with added column containing future observation of the
+#' individuals
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DBI)
+#' library(duckdb)
+#' library(PatientProfiles)
+#' cohort1 <- dplyr::tibble(
+#'   cohort_definition_id = c("1", "1", "1"),
+#'   subject_id = c("1", "2", "3"),
+#'   cohort_start_date = c(
+#'     as.Date("2010-03-03"),
+#'     as.Date("2010-03-01"),
+#'     as.Date("2010-02-01")
+#'   ),
+#'   cohort_end_date = c(
+#'     as.Date("2015-01-01"),
+#'     as.Date("2013-01-01"),
+#'     as.Date("2013-01-01")
+#'   )
+#' )
+#'
+#' obs_1 <- dplyr::tibble(
+#'   observation_period_id = c("1", "2", "3"),
+#'   person_id = c("1", "2", "3"),
+#'   observation_period_start_date = c(
+#'     as.Date("2010-02-03"),
+#'     as.Date("2010-02-01"),
+#'     as.Date("2010-01-01")
+#'   ),
+#'   observation_period_end_date = c(
+#'     as.Date("2014-01-01"),
+#'     as.Date("2012-01-01"),
+#'     as.Date("2012-01-01")
+#'   )
+#' )
+#'
+#' cdm <-
+#'   mockPatientProfiles(
+#'     seed = 1,
+#'     cohort1 = cohort1,
+#'     observation_period = obs_1
+#'   )
+#'
+#' result <- cdm$cohort1 %>% addFutureObservation(cdm)
+#' }
+addFutureObservation <- function(x,
+                                 cdm,
+                                 indexDate = "cohort_start_date",
+                                 futureObservationName = "future_observation",
+                                 tablePrefix = NULL) {
+  x <- x %>%
+    addDemographics(
+      cdm = cdm,
+      indexDate = indexDate,
+      age = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = FALSE,
+      priorHistory = FALSE,
+      futureObservation = TRUE,
+      futureObservationName = futureObservationName,
+      tablePrefix = tablePrefix
+    )
+
+  return(x)
+}
+
+#' Compute the number of days of prior history in the current observation period
+#' at a certain date
+#'
+#' @param x Table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the prior
+#' history.
+#' @param priorHistoryName name of the new column to be added
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
+#' @return cohort table with added column containing prior history of the
+#' individuals
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DBI)
+#' library(duckdb)
+#' library(PatientProfiles)
+#' cohort1 <- dplyr::tibble(
+#'   cohort_definition_id = c("1", "1", "1"),
+#'   subject_id = c("1", "2", "3"),
+#'   cohort_start_date = c(
+#'     as.Date("2010-03-03"),
+#'     as.Date("2010-03-01"),
+#'     as.Date("2010-02-01")
+#'   ),
+#'   cohort_end_date = c(
+#'     as.Date("2015-01-01"),
+#'     as.Date("2013-01-01"),
+#'     as.Date("2013-01-01")
+#'   )
+#' )
+#'
+#' obs_1 <- dplyr::tibble(
+#'   observation_period_id = c("1", "2", "3"),
+#'   person_id = c("1", "2", "3"),
+#'   observation_period_start_date = c(
+#'     as.Date("2010-02-03"),
+#'     as.Date("2010-02-01"),
+#'     as.Date("2010-01-01")
+#'   ),
+#'   observation_period_end_date = c(
+#'     as.Date("2014-01-01"),
+#'     as.Date("2012-01-01"),
+#'     as.Date("2012-01-01")
+#'   )
+#' )
+#'
+#' cdm <-
+#'   mockPatientProfiles(
+#'     seed = 1,
+#'     cohort1 = cohort1,
+#'     observation_period = obs_1
+#'   )
+#'
+#' result <- cdm$cohort1 %>% addPriorHistory(cdm)
+#' }
+addPriorHistory <- function(x,
+                            cdm,
+                            indexDate = "cohort_start_date",
+                            priorHistoryName = "prior_history",
+                            tablePrefix = NULL) {
+  x <- x %>%
+    addDemographics(
+      cdm = cdm,
+      indexDate = indexDate,
+      age = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = FALSE,
+      priorHistory = TRUE,
+      priorHistoryName = priorHistoryName,
+      futureObservation = FALSE,
+      tablePrefix = tablePrefix
+    )
+
+  return(x)
+}
+
+#' Indicate if a certain record is within the observation period
+#'
+#' @param x Table with individuals in the cdm.
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param indexDate Variable in x that contains the date to compute the
+#' observation flag.
+#' @param name name of the column to hold the result of the query:
+#' 1 if the individual is in observation, 0 if not
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
+#' @return cohort table with the added binary column assessing inObservation
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>% addInObservation(cdm)
+#' }
+#'
+addInObservation <- function(x,
+                             cdm,
+                             indexDate = "cohort_start_date",
+                             name = "in_observation",
+                             tablePrefix = NULL) {
+  ## check for standard types of user error
+  personVariable <- checkX(x)
+  checkCdm(cdm, c("observation_period"))
+  checkVariableInX(indexDate, x)
+  checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
+  name <- checkNewName(name, x)
+  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+
+  # Start code
+  name <- rlang::enquo(name)
+
+  x <- x %>%
+    addDemographics(cdm,
+      indexDate = indexDate,
+      age = FALSE,
+      sex = FALSE,
+      priorHistory = TRUE,
+      futureObservation = TRUE,
+      tablePrefix = NULL
+    ) %>%
+    dplyr::mutate(
+      !!name := as.numeric(dplyr::if_else(
+        is.na(.data$prior_history) | is.na(.data$future_observation) | .data$prior_history < 0 | .data$future_observation < 0, 0, 1
+      ))
+    ) %>%
+    dplyr::select(
+      -"prior_history", -"future_observation"
+    )
+
+  if (is.null(tablePrefix)) {
+    x <- x %>%
+      CDMConnector::computeQuery()
+  } else {
+    x <- x %>%
+      CDMConnector::computeQuery(
+        name = paste0(tablePrefix, "_with_observation"),
+        temporary = FALSE,
+        schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
+  }
+
+  return(x)
+}
+
+#' Compute the sex of the individuals
+#'
+#' @param x Table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
+#' @param sexName name of the new column to be added
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
+#' @return table x with the added column with sex information
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>% addSex(cdm)
+#' }
+#'
+addSex <- function(x,
+                   cdm,
+                   sexName = "sex",
+                   tablePrefix = NULL) {
+  x <- x %>%
+    addDemographics(
+      cdm = cdm,
+      indexDate = NULL,
+      age = FALSE,
+      ageName = FALSE,
+      ageGroup = NULL,
+      ageDefaultDay = NULL,
+      ageDefaultMonth = NULL,
+      ageImposeDay = FALSE,
+      ageImposeMonth = FALSE,
+      sex = TRUE,
+      sexName = sexName,
+      priorHistory = FALSE,
+      futureObservation = FALSE,
+      tablePrefix = tablePrefix
+    )
+
+  return(x)
 }

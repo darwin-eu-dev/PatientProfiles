@@ -1,10 +1,31 @@
-#' It creates categories from a numeric variable.
+# Copyright 2023 DARWIN EU (C)
+#
+# This file is part of PatientProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#' Categorize a numeric variable
 #'
-#' @param x Table in the database.
-#' @param cdm cdm reference
+#' @param x Table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
+#' @param missingCategoryValue Value to assign to those individuals not in
+#' any named category. If NULL or NA, missing will values will be
+#' given.
+#' @param overlap TRUE if the categories given overlap
 #' @param tablePrefix The stem for the permanent tables that will be created. If
 #' NULL, temporary tables will be used throughout.
 #'
@@ -17,9 +38,8 @@
 #' \donttest{
 #' library(DBI)
 #' library(duckdb)
-#' library(tibble)
 #' library(PatientProfiles)
-#' cohort1 <- tibble::tibble(
+#' cohort1 <- dplyr::tibble(
 #'   cohort_definition_id = c("1", "1", "1"),
 #'   subject_id = c("1", "2", "3"),
 #'   cohort_start_date = c(
@@ -30,7 +50,7 @@
 #'   )
 #' )
 #'
-#' person <- tibble::tibble(
+#' person <- dplyr::tibble(
 #'   person_id = c("1", "2", "3"),
 #'   gender_concept_id = c("8507", "8507", "8507"),
 #'   year_of_birth = c(1980, 1970, 2000),
@@ -53,6 +73,8 @@ addCategories <- function(x,
                           cdm,
                           variable,
                           categories,
+                          missingCategoryValue = "None",
+                          overlap = FALSE,
                           tablePrefix = NULL) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
     cli::cli_abort("x is not a table")
@@ -67,34 +89,88 @@ addCategories <- function(x,
   )
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
+
+  for (i in seq_along(categories)) {
+    if (!is.null(names(categories)) && variable == names(categories)[i]) {
+      cli::cli_warn(paste0(
+        "Categories name '",
+        names(categories)[i],
+        "' already existed, the original variable has been overwritten."
+      ))
+    }
+  }
+
+  if (length(unique(names(categories))) < length((names(categories)))) {
+    cli::cli_abort(
+      "Categories have repeated names, please rename the groups."
+    )
+  }
+
   if (is.null(names(categories))) {
-    nam <- rep("", length(categories))
+    nam <- paste0("category_", seq_along(categories))
   } else {
     nam <- names(categories)
   }
 
   categoryTibble <- list()
   for (k in seq_along(categories)) {
-    categoryTibble[[nam[k]]] <- checkCategory(categories[[k]])
+    categoryTibble[[nam[k]]] <- checkCategory(categories[[k]],
+                                              overlap = overlap)
   }
 
   for (k in seq_along(categories)) {
     categoryTibbleK <- categoryTibble[[k]]
     name <- names(categoryTibble)[k]
+
+    x <- dplyr::mutate(x, variable := .data[[variable]])
     x <- dplyr::mutate(x, !!name := as.character(NA))
-    for (i in 1:nrow(categoryTibbleK)) {
-      lower <- categoryTibbleK$lower_bound[i]
-      upper <- categoryTibbleK$upper_bound[i]
-      category <- categoryTibbleK$category_label[i]
+    if (!overlap) {
+      for (i in 1:nrow(categoryTibbleK)) {
+        lower <- categoryTibbleK$lower_bound[i]
+        upper <- categoryTibbleK$upper_bound[i]
+        category <- categoryTibbleK$category_label[i]
+        x <- x %>%
+          dplyr::mutate(!!name := dplyr::if_else(
+            is.na(.data[[name]]) &
+              .data$variable >= .env$lower &
+              .data$variable <= .env$upper,
+            .env$category,
+            .data[[name]]
+          ))
+      }
+    } else {
+      for (i in 1:nrow(categoryTibbleK)) {
+        lower <- categoryTibbleK$lower_bound[i]
+        upper <- categoryTibbleK$upper_bound[i]
+        category <- categoryTibbleK$category_label[i]
+        x <- x %>%
+          dplyr::mutate(!!name := dplyr::if_else(
+            is.na(.data[[name]]) &
+              .data$variable >= .env$lower &
+              .data$variable <= .env$upper,
+            .env$category,
+            dplyr::if_else(
+              !is.na(.data[[name]]) &
+                .data$variable >= .env$lower &
+                .data$variable <= .env$upper,
+              paste0(.data[[name]], "&&", .env$category),
+              .data[[name]]
+            )
+          ))
+      }
+    }
+
+    x <- dplyr::select(x, -"variable")
+
+    # add missing as category
+    if (!is.null(missingCategoryValue) && !is.na(missingCategoryValue)) {
       x <- x %>%
-        dplyr::mutate(!!name := dplyr::if_else(
-          is.na(.data[[name]]) &
-            .data[[variable]] >= .env$lower &
-            .data[[variable]] <= .env$upper,
-          .env$category,
-          .data[[name]]
+        dplyr::mutate(!!name := dplyr::if_else(!is.na(.data[[name]]),
+          .data[[name]],
+          .env$missingCategoryValue
         ))
     }
+
     if (!is.null(tablePrefix)) {
       x <- CDMConnector::computeQuery(
         x,

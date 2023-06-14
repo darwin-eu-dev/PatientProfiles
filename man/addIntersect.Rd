@@ -2,7 +2,7 @@
 % Please edit documentation in R/addIntersect.R
 \name{addIntersect}
 \alias{addIntersect}
-\title{It creates columns to indicate overlaps information}
+\title{It creates columns to indicate overlap information between two tables}
 \usage{
 addIntersect(
   x,
@@ -14,18 +14,18 @@ addIntersect(
   idName = NULL,
   window = list(c(0, Inf)),
   indexDate = "cohort_start_date",
-  targetStartDate = "cohort_start_date",
-  targetEndDate = "cohort_end_date",
+  targetStartDate = getStartName(tableName),
+  targetEndDate = getEndName(tableName),
   order = "first",
   nameStyle = "{value}_{id_name}_{window_name}",
   tablePrefix = NULL
 )
 }
 \arguments{
-\item{x}{table containing the individual for which the overlap indicator to
-be attached as extra columns}
+\item{x}{Table with individuals in the cdm}
 
-\item{cdm}{cdm containing the tables}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
 \item{tableName}{name of the cohort that we want to check for overlap}
 
@@ -42,7 +42,8 @@ filterId}
 
 \item{window}{window to consider events of}
 
-\item{indexDate}{date of reference in table x}
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
 
 \item{targetStartDate}{date of reference in cohort table, either for start
 (in overlap) or on its own (for incidence)}
@@ -62,66 +63,16 @@ be created. If NULL, temporary tables will be used throughout.}
 table with added columns with overlap information
 }
 \description{
-It creates columns to indicate overlaps information
+It creates columns to indicate overlap information between two tables
 }
 \examples{
 \donttest{
-cohort1 <- dplyr::tibble(
-  cohort_definition_id = c(1, 1, 1, 1, 1),
-  subject_id = c(1, 1, 1, 2, 2),
-  cohort_start_date = as.Date(
-    c(
-      "2020-01-01",
-      "2020-01-15",
-      "2020-01-20",
-      "2020-01-01",
-      "2020-02-01"
-    )
-  ),
-  cohort_end_date = as.Date(
-    c(
-      "2020-01-01",
-      "2020-01-15",
-      "2020-01-20",
-      "2020-01-01",
-      "2020-02-01"
-    )
-  )
-)
+library(PatientProfiles)
 
-cohort2 <- dplyr::tibble(
-  cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
-  subject_id = c(1, 1, 1, 2, 2, 2, 1),
-  cohort_start_date = as.Date(
-    c(
-      "2020-01-15",
-      "2020-01-25",
-      "2020-01-26",
-      "2020-01-29",
-      "2020-03-15",
-      "2020-01-24",
-      "2020-02-16"
-    )
-  ),
-  cohort_end_date = as.Date(
-    c(
-      "2020-01-15",
-      "2020-01-25",
-      "2020-01-26",
-      "2020-01-29",
-      "2020-03-15",
-      "2020-01-24",
-      "2020-02-16"
-    )
-  ),
-)
-
-cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
-
+cdm <- mockPatientProfiles()
 result <- cdm$cohort1 \%>\%
   addIntersect(
-    cdm = cdm,
-    tableName = "cohort2", value = "date"
+    cdm = cdm, tableName = "cohort2", value = "date"
   ) \%>\%
   dplyr::collect()
 }

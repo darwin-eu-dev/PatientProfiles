@@ -1,8 +1,24 @@
-#' It creates columns to indicate overlaps information
+# Copyright 2023 DARWIN EU (C)
+#
+# This file is part of PatientProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#' It creates columns to indicate overlap information between two tables
 #'
-#' @param x table containing the individual for which the overlap indicator to
-#' be attached as extra columns
-#' @param cdm cdm containing the tables
+#' @param x Table with individuals in the cdm
+#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
+#' cdm reference.
 #' @param tableName name of the cohort that we want to check for overlap
 #' @param filterVariable the variable that we are going to use to filter (e.g.
 #' cohort_definition_id)
@@ -12,7 +28,8 @@
 #' filterId
 #' @param value value of interest to add: it can be count, flag, date or time
 #' @param window window to consider events of
-#' @param indexDate date of reference in table x
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
@@ -24,66 +41,17 @@
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
+#'
 #' @export
 #'
 #' @examples
 #' \donttest{
-#' cohort1 <- dplyr::tibble(
-#'   cohort_definition_id = c(1, 1, 1, 1, 1),
-#'   subject_id = c(1, 1, 1, 2, 2),
-#'   cohort_start_date = as.Date(
-#'     c(
-#'       "2020-01-01",
-#'       "2020-01-15",
-#'       "2020-01-20",
-#'       "2020-01-01",
-#'       "2020-02-01"
-#'     )
-#'   ),
-#'   cohort_end_date = as.Date(
-#'     c(
-#'       "2020-01-01",
-#'       "2020-01-15",
-#'       "2020-01-20",
-#'       "2020-01-01",
-#'       "2020-02-01"
-#'     )
-#'   )
-#' )
+#' library(PatientProfiles)
 #'
-#' cohort2 <- dplyr::tibble(
-#'   cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
-#'   subject_id = c(1, 1, 1, 2, 2, 2, 1),
-#'   cohort_start_date = as.Date(
-#'     c(
-#'       "2020-01-15",
-#'       "2020-01-25",
-#'       "2020-01-26",
-#'       "2020-01-29",
-#'       "2020-03-15",
-#'       "2020-01-24",
-#'       "2020-02-16"
-#'     )
-#'   ),
-#'   cohort_end_date = as.Date(
-#'     c(
-#'       "2020-01-15",
-#'       "2020-01-25",
-#'       "2020-01-26",
-#'       "2020-01-29",
-#'       "2020-03-15",
-#'       "2020-01-24",
-#'       "2020-02-16"
-#'     )
-#'   ),
-#' )
-#'
-#' cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
-#'
+#' cdm <- mockPatientProfiles()
 #' result <- cdm$cohort1 %>%
 #'   addIntersect(
-#'     cdm = cdm,
-#'     tableName = "cohort2", value = "date"
+#'     cdm = cdm, tableName = "cohort2", value = "date"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
@@ -91,22 +59,22 @@
 addIntersect <- function(x,
                          cdm,
                          tableName,
-                         value, # must be only one of the four now
+                         value,
                          filterVariable = NULL,
                          filterId = NULL,
                          idName = NULL,
                          window = list(c(0, Inf)), # list
                          indexDate = "cohort_start_date",
-                         targetStartDate = "cohort_start_date", # this is targetDate for time/event
-                         targetEndDate = "cohort_end_date", # can be NULL (incidence)
+                         targetStartDate = getStartName(tableName),
+                         targetEndDate = getEndName(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}",
                          tablePrefix = NULL) {
   # initial checks
-  person_variable <- checkX(x)
+  personVariable <- checkX(x)
   checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
   checkCdm(cdm, tableName)
-  person_variable_table <- checkX(cdm[[tableName]])
+  personVariableTable <- checkX(cdm[[tableName]])
   extraValue <- checkValue(value, cdm[[tableName]], tableName)
   filterTbl <- checkFilter(filterVariable, filterId, idName, cdm[[tableName]])
   windowTbl <- checkWindow(window)
@@ -116,11 +84,13 @@ addIntersect <- function(x,
   checkmate::assertChoice(order, c("first", "last"))
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  if (!is.null(idName)) {
+    idName <- checkSnakeCase(idName)
+  }
 
+  startTibble <- x
   originalColnames <- colnames(x)
-  ## missing function to correct names
 
-  # Start code
   # define overlapTable that contains the events of interest
   overlapTable <- cdm[[tableName]]
   if (!is.null(filterTbl)) {
@@ -128,13 +98,13 @@ addIntersect <- function(x,
       dplyr::filter(.data[[filterVariable]] %in% .env$filterId)
   } else {
     filterVariable <- "id"
-    filterTbl <- dplyr::tibble(id = 1, id_name = "all")
-    overlapTable <- dplyr::mutate(overlapTable, id = 1)
+    filterTbl <- dplyr::tibble("id" = 1, "id_name" = "all")
+    overlapTable <- dplyr::mutate(overlapTable, "id" = 1)
   }
   if (is.null(targetEndDate)) {
     overlapTable <- overlapTable %>%
       dplyr::select(
-        !!person_variable := dplyr::all_of(person_variable_table),
+        !!personVariable := dplyr::all_of(personVariableTable),
         "id" = dplyr::all_of(filterVariable),
         "overlap_start_date" = dplyr::all_of(targetStartDate),
         "overlap_end_date" = dplyr::all_of(targetStartDate),
@@ -143,7 +113,7 @@ addIntersect <- function(x,
   } else {
     overlapTable <- overlapTable %>%
       dplyr::select(
-        !!person_variable := dplyr::all_of(person_variable_table),
+        !!personVariable := dplyr::all_of(personVariableTable),
         "id" = dplyr::all_of(filterVariable),
         "overlap_start_date" = dplyr::all_of(targetStartDate),
         "overlap_end_date" = dplyr::all_of(targetEndDate),
@@ -153,13 +123,11 @@ addIntersect <- function(x,
 
   result <- x %>%
     dplyr::select(
-      dplyr::all_of(person_variable),
+      dplyr::all_of(personVariable),
       "index_date" = dplyr::all_of(indexDate)
     ) %>%
     dplyr::distinct() %>%
-    dplyr::inner_join(overlapTable, by = person_variable)
-
-
+    dplyr::inner_join(overlapTable, by = personVariable)
 
   if (is.null(tablePrefix)) {
     result <- CDMConnector::computeQuery(result)
@@ -174,43 +142,33 @@ addIntersect <- function(x,
   # Start loop for different windows
 
   for (i in c(1:nrow(windowTbl))) {
-    result_w <- result
-    if(overlapTable %>% dplyr::tally() %>% dplyr::pull() == 0)
-    {
-      result_w <- x %>%
-        dplyr::select(
-          dplyr::all_of(person_variable),
-          "index_date" = dplyr::all_of(indexDate)
-        ) %>%
-        dplyr::distinct() %>%
-        dplyr::full_join(overlapTable, by = person_variable) %>%
-        dplyr::mutate(indicator = 0)} else {
-      if (!is.infinite(windowTbl$upper[i])) {
-        result_w <- result_w %>%
-          dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
-            date = "overlap_start_date", number = -windowTbl$upper[i]
-          )), 1, 0))
-      } else {
-        result_w <- result_w %>% dplyr::mutate(indicator = 1)
-      }
-
-      if (!is.infinite(windowTbl$lower[i])) {
-        result_w <- result_w %>%
-          dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
-            date = "overlap_end_date", number = -windowTbl$lower[i]
-          )), 0, .data$indicator))
-      }}
-    if (is.null(tablePrefix)) {
-      result_w <- CDMConnector::computeQuery(result_w)
+    resultW <- result
+    if (!is.infinite(windowTbl$upper[i])) {
+      resultW <- resultW %>%
+        dplyr::mutate(indicator = dplyr::if_else(.data$index_date >= as.Date(!!CDMConnector::dateadd(
+          date = "overlap_start_date", number = -windowTbl$upper[i]
+        )), 1, 0))
     } else {
-      result_w <- CDMConnector::computeQuery(
-        result_w, paste0(tablePrefix, "_window"), FALSE, attr(cdm, "write_schema"), TRUE
+      resultW <- resultW %>% dplyr::mutate(indicator = 1)
+    }
+
+    if (!is.infinite(windowTbl$lower[i])) {
+      resultW <- resultW %>%
+        dplyr::mutate(indicator = dplyr::if_else(.data$index_date > as.Date(!!CDMConnector::dateadd(
+          date = "overlap_end_date", number = -windowTbl$lower[i]
+        )), 0, .data$indicator))
+    }
+    if (is.null(tablePrefix)) {
+      resultW <- CDMConnector::computeQuery(resultW)
+    } else {
+      resultW <- CDMConnector::computeQuery(
+        resultW, paste0(tablePrefix, "_window"), FALSE, attr(cdm, "write_schema"), TRUE
       )
     }
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
-      resultCF <- result_w %>%
-        dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
+      resultCF <- resultW %>%
+        dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id) %>%
         dplyr::summarise(count = sum(.data$indicator, na.rm = TRUE), .groups = "drop") %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
@@ -237,9 +195,9 @@ addIntersect <- function(x,
     }
     # add date, time or other
     if (length(value[!(value %in% c("count", "flag"))]) > 0) {
-      resultDTO <- result_w %>%
+      resultDTO <- resultW %>%
         dplyr::filter(.data$indicator == 1) %>%
-        dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id)
+        dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id)
       if (order == "first") {
         resultDTO <- resultDTO %>%
           dplyr::summarise(
@@ -255,39 +213,40 @@ addIntersect <- function(x,
       }
       resultDTO <- resultDTO %>%
         dplyr::right_join(
-          result_w %>%
-            dplyr::select(dplyr::all_of(c(person_variable, "index_date", "id"))) %>%
+          resultW %>%
+            dplyr::select(dplyr::all_of(c(personVariable, "index_date", "id"))) %>%
             dplyr::distinct(),
-          by = c(person_variable, "index_date", "id")
+          by = c(personVariable, "index_date", "id")
         )
-      if ("time" %in% value) {
+      if ("days" %in% value) {
         resultDTO <- resultDTO %>%
           dplyr::mutate(
-            time = !!CDMConnector::datediff("index_date", "date", interval = "day")
+            days = !!CDMConnector::datediff("index_date", "date", interval = "day")
           )
       }
       if (length(extraValue) > 0) {
         resultDTO <- resultDTO %>%
           dplyr::left_join(
-            result_w %>%
+            resultW %>%
               dplyr::select(
-                dplyr::all_of(person_variable), "index_date", "id",
+                dplyr::all_of(personVariable), "index_date", "id",
                 "date" = "overlap_start_date", dplyr::all_of(extraValue)
               ) %>%
               dplyr::inner_join(
                 resultDTO %>%
                   dplyr::select(dplyr::all_of(
-                    c(person_variable, "index_date", "id", "date")
+                    c(personVariable, "index_date", "id", "date")
                   )),
-                by = c(
-                  dplyr::all_of(person_variable), "index_date", "id", "date"
-                )
+                by = c(personVariable, "index_date", "id", "date")
               ) %>%
-              dplyr::group_by(.data[[person_variable]], .data$index_date, .data$id) %>%
-              dplyr::summarise(dplyr::across(
-                dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
-              )),
-            by = c(dplyr::all_of(person_variable), "index_date", "id")
+              dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id) %>%
+              dplyr::summarise(
+                dplyr::across(
+                  dplyr::all_of(extraValue), ~ str_flatten(.x, collapse = "; ")
+                ),
+                .groups = "drop"
+              ),
+            by = c(personVariable, "index_date", "id")
           )
       }
       resultDTO <- resultDTO %>%
@@ -329,14 +288,15 @@ addIntersect <- function(x,
       dplyr::rename(!!indexDate := "index_date") %>%
       dplyr::rename_all(tolower)
 
+    namesToEliminate <- intersect(names(x), names(resultCountFlag))
+    namesToEliminate <- namesToEliminate[
+      !(namesToEliminate %in% c(personVariable, indexDate))
+    ]
     x <- x %>%
-      dplyr::select(
-        names(x)[!(names(x) %in% names(resultCountFlag))],
-        dplyr::all_of(c(person_variable, indexDate))
-      ) %>%
+      dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
       dplyr::left_join(
         resultCountFlag,
-        by = dplyr::all_of(c(person_variable, indexDate))
+        by = c(personVariable, indexDate)
       )
     currentColnames <- colnames(x)
     x <- x %>%
@@ -375,13 +335,15 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
+      namesToEliminate <- intersect(names(x), names(resultDateTimeOtherX))
+      namesToEliminate <- namesToEliminate[
+        !(namesToEliminate %in% c(personVariable, indexDate))
+      ]
+
       x <- x %>%
-        dplyr::select(
-          names(x)[!(names(x) %in% names(resultDateTimeOtherX))],
-          dplyr::all_of(c(person_variable, indexDate))
-        ) %>%
+        dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
         dplyr::left_join(resultDateTimeOtherX,
-          by = dplyr::all_of(c(person_variable, indexDate))
+          by = c(personVariable, indexDate)
         )
     }
 
@@ -395,26 +357,105 @@ addIntersect <- function(x,
     }
   }
 
-  # # Rename new columns in results if previously existing in x
-  # colnames_repeated <- colnames(result_all)[colnames(result_all) %in% colnames(x)]
-  # colnames_repeated <- colnames_repeated[!(colnames_repeated %in% c(conceptIdname, "cohort_start_date", "cohort_end_date", "subject_id"))]
-  #
-  # for(col in colnames_repeated) {
-  #   col_x <- col
-  #   num <- 1
-  #   col_new <- paste0(col,"_", num)
-  #   while(col_new %in% colnames(x)) {
-  #     num <- num + 1
-  #     col_x <- col_new
-  #     col_new <- paste0(col,"_",num)
-  #   }
-  #   warning("New column has been named `",col_new,"` because `", col_x,"` already exists in x")
-  #
-  #   col_new <- rlang::enquo(col_new)
-  #     result_all <- result_all %>%
-  #     dplyr::rename(!!col_new := col) %>%
-  #       CDMConnector::computeQuery()
-  # }
+  colnames <- expand.grid(value = value, id_name = filterTbl$id_name, window_name = windowTbl$window_name) %>%
+    dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
+    dplyr::mutate(val = ifelse(value %in% c("flag", "count"), 0,
+      ifelse(value %in% "date", as.Date(NA),
+        ifelse(value %in% "days", as.numeric(NA), as.character(NA))
+      )
+    )) %>%
+    dplyr::select(.data$column, .data$val) %>%
+    dplyr::anti_join(dplyr::tibble(column = colnames(x)), by = "column")
+
+  if (colnames %>% dplyr::tally() %>% dplyr::pull() != 0) {
+    x <- x %>%
+      dplyr::cross_join(
+        colnames %>%
+          tidyr::pivot_wider(
+            names_from = .data$column,
+            values_from = .data$val
+          ),
+        copy = TRUE
+      )
+  }
+
+  if (is.null(tablePrefix)) {
+    x <- CDMConnector::computeQuery(x)
+  } else {
+    x <- CDMConnector::computeQuery(
+      x, paste0(tablePrefix, "_intersect"), FALSE, attr(cdm, "write_schema"),
+      TRUE
+    )
+  }
+
+  # put back the initial attributes to the output tibble
+  x <- x %>% addAttributes(startTibble)
 
   return(x)
+}
+
+#' Get the name of the start date column for a certain table in the cdm
+#'
+#' @param tableName Name of the table
+#'
+#' @return Name of the start date column in that table
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' getStartName("condition_occurrence")
+#' }
+#'
+getStartName <- function(tableName) {
+  if (tableName %in% namesTable$table_name) {
+    return(namesTable$start_date_name[namesTable$table_name == tableName])
+  } else {
+    return("cohort_start_date")
+  }
+}
+
+#' Get the name of the end date column for a certain table in the cdm
+#'
+#' @param tableName Name of the table
+#'
+#' @return Name of the end date column in that table
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' getEndName("condition_occurrence")
+#' }
+#'
+getEndName <- function(tableName) {
+  if (tableName %in% namesTable$table_name) {
+    return(namesTable$end_date_name[namesTable$table_name == tableName])
+  } else {
+    return("cohort_end_date")
+  }
+}
+
+#' Get the name of the concept_id column for a certain table in the cdm
+#'
+#' @param tableName Name of the table
+#'
+#' @return Name of the concept_id column in that table
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' getConceptName("condition_occurrence")
+#' }
+#'
+getConceptName <- function(tableName) {
+  if (tableName %in% namesTable$table_name) {
+    return(namesTable$concept_id_name[namesTable$table_name == tableName])
+  } else {
+    return("cohort_definition_id")
+  }
 }

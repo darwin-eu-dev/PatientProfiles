@@ -2,19 +2,34 @@
 % Please edit documentation in R/addCategories.R
 \name{addCategories}
 \alias{addCategories}
-\title{It creates categories from a numeric variable.}
+\title{Categorize a numeric variable}
 \usage{
-addCategories(x, cdm, variable, categories, tablePrefix = NULL)
+addCategories(
+  x,
+  cdm,
+  variable,
+  categories,
+  missingCategoryValue = "None",
+  overlap = FALSE,
+  tablePrefix = NULL
+)
 }
 \arguments{
-\item{x}{Table in the database.}
+\item{x}{Table with individuals in the cdm}
 
-\item{cdm}{cdm reference}
+\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
+cdm reference.}
 
 \item{variable}{Target variable that we want to categorize.}
 
 \item{categories}{List of lists of named categories with lower and upper
 limit.}
+
+\item{missingCategoryValue}{Value to assign to those individuals not in
+any named category. If NULL or NA, missing will values will be
+given.}
+
+\item{overlap}{TRUE if the categories given overlap}
 
 \item{tablePrefix}{The stem for the permanent tables that will be created. If
 NULL, temporary tables will be used throughout.}
@@ -23,16 +38,15 @@ NULL, temporary tables will be used throughout.}
 tibble with the categorical variable added.
 }
 \description{
-It creates categories from a numeric variable.
+Categorize a numeric variable
 }
 \examples{
 #'
 \donttest{
 library(DBI)
 library(duckdb)
-library(tibble)
 library(PatientProfiles)
-cohort1 <- tibble::tibble(
+cohort1 <- dplyr::tibble(
   cohort_definition_id = c("1", "1", "1"),
   subject_id = c("1", "2", "3"),
   cohort_start_date = c(
@@ -43,7 +57,7 @@ cohort1 <- tibble::tibble(
   )
 )
 
-person <- tibble::tibble(
+person <- dplyr::tibble(
   person_id = c("1", "2", "3"),
   gender_concept_id = c("8507", "8507", "8507"),
   year_of_birth = c(1980, 1970, 2000),

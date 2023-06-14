@@ -1,0 +1,108 @@
+variable_type,format_key,applied_function,result
+numeric,mean,mean of the variable of interest.,numeric
+numeric,sd,standard deviation of the variable of interest.,numeric
+numeric,median,median of the variable of interest.,numeric
+numeric,q05,qualtile of 05% the variable of interest.,numeric
+numeric,q10,qualtile of 10% the variable of interest.,numeric
+numeric,q15,qualtile of 05% the variable of interest.,numeric
+numeric,q20,qualtile of 05% the variable of interest.,numeric
+numeric,q25,qualtile of 10% the variable of interest.,numeric
+numeric,q30,qualtile of 05% the variable of interest.,numeric
+numeric,q35,qualtile of 05% the variable of interest.,numeric
+numeric,q40,qualtile of 10% the variable of interest.,numeric
+numeric,q45,qualtile of 05% the variable of interest.,numeric
+numeric,q55,qualtile of 10% the variable of interest.,numeric
+numeric,q60,qualtile of 05% the variable of interest.,numeric
+numeric,q65,qualtile of 05% the variable of interest.,numeric
+numeric,q70,qualtile of 10% the variable of interest.,numeric
+numeric,q75,qualtile of 05% the variable of interest.,numeric
+numeric,q80,qualtile of 05% the variable of interest.,numeric
+numeric,q85,qualtile of 10% the variable of interest.,numeric
+numeric,q90,qualtile of 05% the variable of interest.,numeric
+numeric,q95,qualtile of 05% the variable of interest.,numeric
+numeric,min,minimum of the variable of interest.,numeric
+numeric,max,maximum of the variable of interest.,numeric
+numeric,sum,sum of all the values for the variable of interest.,numeric
+numeric,iqr,distance between q75 and q25,numeric
+numeric,range,diatance between maximum and minimum,numeric
+date,mean,mean of the date of interest.,date
+date,sd,standard deviation of the date of interest. ,numeric
+date,median,median of the date of interest.,date
+date,q05,qualtile of 05% the variable of interest.,date
+date,q10,qualtile of 10% the variable of interest.,date
+date,q15,qualtile of 05% the variable of interest.,date
+date,q20,qualtile of 05% the variable of interest.,date
+date,q25,qualtile of 10% the variable of interest.,date
+date,q30,qualtile of 05% the variable of interest.,date
+date,q35,qualtile of 05% the variable of interest.,date
+date,q40,qualtile of 10% the variable of interest.,date
+date,q45,qualtile of 05% the variable of interest.,date
+date,q55,qualtile of 10% the variable of interest.,date
+date,q60,qualtile of 05% the variable of interest.,date
+date,q65,qualtile of 05% the variable of interest.,date
+date,q70,qualtile of 10% the variable of interest.,date
+date,q75,qualtile of 05% the variable of interest.,date
+date,q80,qualtile of 05% the variable of interest.,date
+date,q85,qualtile of 10% the variable of interest.,date
+date,q90,qualtile of 05% the variable of interest.,date
+date,q95,qualtile of 05% the variable of interest.,date
+date,min,minimum of the date of interest.,date
+date,max,maximum of the date of interest.,date
+date,iqr,days between q75 and q25,numeric
+date,range,days between maximum and minimum,numeric
+categorical,count,number of times that each category is observed.,numeric
+categorical,%,percentage of individuals with that category,numeric
+categorical,distinct,number of distinct categories,numeric
+categorical,mean,mean number of individuals per category,numeric
+categorical,sd,standard deviation of the number of individuals per category,numeric
+categorical,median,median number of individuals per category,numeric
+categorical,q05,qualtile of 05% the variable of interest.,numeric
+categorical,q10,qualtile of 10% the variable of interest.,numeric
+categorical,q15,qualtile of 05% the variable of interest.,numeric
+categorical,q20,qualtile of 05% the variable of interest.,numeric
+categorical,q25,qualtile of 10% the variable of interest.,numeric
+categorical,q30,qualtile of 05% the variable of interest.,numeric
+categorical,q35,qualtile of 05% the variable of interest.,numeric
+categorical,q40,qualtile of 10% the variable of interest.,numeric
+categorical,q45,qualtile of 05% the variable of interest.,numeric
+categorical,q55,qualtile of 10% the variable of interest.,numeric
+categorical,q60,qualtile of 05% the variable of interest.,numeric
+categorical,q65,qualtile of 05% the variable of interest.,numeric
+categorical,q70,qualtile of 10% the variable of interest.,numeric
+categorical,q75,qualtile of 05% the variable of interest.,numeric
+categorical,q80,qualtile of 05% the variable of interest.,numeric
+categorical,q85,qualtile of 10% the variable of interest.,numeric
+categorical,q90,qualtile of 05% the variable of interest.,numeric
+categorical,q95,qualtile of 05% the variable of interest.,numeric
+categorical,min,minimum number of individuals per category,numeric
+categorical,max,maximum number of individuals per category,numeric
+categorical,iqr,difference between q75 and q25 of individuals per category,numeric
+categorical,range,distance between maximum and minimum of individuals per category,numeric
+binary,count,number of times that each category is observed.,numeric
+binary,%,percentage of individuals with that category,percentage
+binary,mean,mean of the variable of interest.,numeric
+binary,sd,standard deviation of the variable of interest.,numeric
+binary,median,median of the variable of interest.,numeric
+binary,q05,qualtile of 05% the variable of interest.,numeric
+binary,q10,qualtile of 10% the variable of interest.,numeric
+binary,q15,qualtile of 05% the variable of interest.,numeric
+binary,q20,qualtile of 05% the variable of interest.,numeric
+binary,q25,qualtile of 10% the variable of interest.,numeric
+binary,q30,qualtile of 05% the variable of interest.,numeric
+binary,q35,qualtile of 05% the variable of interest.,numeric
+binary,q40,qualtile of 10% the variable of interest.,numeric
+binary,q45,qualtile of 05% the variable of interest.,numeric
+binary,q55,qualtile of 10% the variable of interest.,numeric
+binary,q60,qualtile of 05% the variable of interest.,numeric
+binary,q65,qualtile of 05% the variable of interest.,numeric
+binary,q70,qualtile of 10% the variable of interest.,numeric
+binary,q75,qualtile of 05% the variable of interest.,numeric
+binary,q80,qualtile of 05% the variable of interest.,numeric
+binary,q85,qualtile of 10% the variable of interest.,numeric
+binary,q90,qualtile of 05% the variable of interest.,numeric
+binary,q95,qualtile of 05% the variable of interest.,numeric
+binary,min,minimum of the variable of interest.,numeric
+binary,max,maximum of the variable of interest.,numeric
+binary,sum,sum of all the values for the variable of interest.,numeric
+binary,iqr,distance between q75 and q25,numeric
+binary,range,diatance between maximum and minimum,numeric

@@ -1,7 +1,22 @@
+# Copyright 2023 DARWIN EU (C)
+#
+# This file is part of PatientProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 #' It creates a mock database for testing PatientProfiles package
 #'
-#'
+#' @param connectionDetails Connection an details to create the cdm mock object
 #' @param drug_exposure default null user can define its own table
 #' @param drug_strength default null user can define its own table
 #' @param observation_period default null user can define its own table
@@ -13,7 +28,7 @@
 #' @param drug_exposure_size number of unique drug exposure
 #' @param patient_size number of unique patient
 #' @param min_drug_exposure_start_date user define minimum drug exposure start date
-#' @param max_drug_exposure_start_date user define maximium drug exposure start date
+#' @param max_drug_exposure_start_date user define maximum drug exposure start date
 #' @param seed seed
 #' @param condition_concept_id_size number of unique row in the condition concept table
 #' @param visit_concept_id_size number of unique visit concept id
@@ -34,7 +49,7 @@
 #' @param max_days_to_visit_end the maximum number of days of the visit integer
 
 #' @param concept_ancestor the concept ancestor table
-#' @param ancestor_concept_id_size the size of ceoncept ancestor table
+#' @param ancestor_concept_id_size the size of concept ancestor table
 
 #' @param cohort1 cohort table for test to run in getindication
 #' @param cohort2 cohort table for test to run in getindication
@@ -43,7 +58,17 @@
 #' @export
 #'
 #' @examples
-mockPatientProfiles <- function(drug_exposure = NULL,
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' }
+#'
+mockPatientProfiles <- function(connectionDetails = list(
+                                  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+                                  write_schema = "main",
+                                  mock_prefix = NULL
+                                ),
+                                drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
                                 condition_occurrence = NULL,
@@ -80,6 +105,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
                                 ...) {
   # Put ... into a list
   listTables <- list(...)
+
 
   # checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -215,13 +241,14 @@ mockPatientProfiles <- function(drug_exposure = NULL,
 
     # generate drug exposure start date
     drug_exposure_start_date <-
-      sample(seq(
-        as.Date(min_drug_exposure_start_date),
-        as.Date(max_drug_exposure_start_date),
-        by = "day"
-      ),
-      drug_exposure_size,
-      replace = TRUE
+      sample(
+        seq(
+          as.Date(min_drug_exposure_start_date),
+          as.Date(max_drug_exposure_start_date),
+          by = "day"
+        ),
+        drug_exposure_size,
+        replace = TRUE
       )
     # generate drug exposure end date to happens after drug exposure start date
     drug_exposure_end_date <-
@@ -258,7 +285,6 @@ mockPatientProfiles <- function(drug_exposure = NULL,
   )
 
   if (is.null(person) | is.null(observation_period)) {
-
     # Define earliest possible date of birth for person table
     if (is.null(earliest_date_of_birth)) {
       earliest_date_of_birth <- as.Date("1920-01-01")
@@ -268,13 +294,14 @@ mockPatientProfiles <- function(drug_exposure = NULL,
       latest_date_of_birth <- as.Date("2000-01-01")
     }
 
-    DOB <- sample(seq(
-      as.Date(earliest_date_of_birth),
-      as.Date(latest_date_of_birth),
-      by = "day"
-    ),
-    patient_size,
-    replace = TRUE
+    DOB <- sample(
+      seq(
+        as.Date(earliest_date_of_birth),
+        as.Date(latest_date_of_birth),
+        by = "day"
+      ),
+      patient_size,
+      replace = TRUE
     )
     # year, month, day
     DOB_year <- as.numeric(format(DOB, "%Y"))
@@ -293,13 +320,14 @@ mockPatientProfiles <- function(drug_exposure = NULL,
       latest_observation_start_date <- as.Date("2010-01-01")
     }
     obs_start_date <-
-      sample(seq(
-        as.Date(earliest_observation_start_date),
-        as.Date(latest_observation_start_date),
-        by = "day"
-      ),
-      patient_size,
-      replace = TRUE
+      sample(
+        seq(
+          as.Date(earliest_observation_start_date),
+          as.Date(latest_observation_start_date),
+          by = "day"
+        ),
+        patient_size,
+        replace = TRUE
       ) # start date for the period
 
 
@@ -333,13 +361,14 @@ mockPatientProfiles <- function(drug_exposure = NULL,
       latest_condition_start_date <- as.Date("2020-01-01")
     }
     condition_start_date <-
-      sample(seq(
-        as.Date(earliest_condition_start_date),
-        as.Date(latest_condition_start_date),
-        by = "day"
-      ),
-      patient_size,
-      replace = TRUE
+      sample(
+        seq(
+          as.Date(earliest_condition_start_date),
+          as.Date(latest_condition_start_date),
+          by = "day"
+        ),
+        patient_size,
+        replace = TRUE
       ) # start date for the period
 
 
@@ -379,13 +408,14 @@ mockPatientProfiles <- function(drug_exposure = NULL,
       latest_visit_start_date <- as.Date("2020-01-01")
     }
     visit_start_date <-
-      sample(seq(
-        as.Date(earliest_visit_start_date),
-        as.Date(latest_visit_start_date),
-        by = "day"
-      ),
-      patient_size,
-      replace = TRUE
+      sample(
+        seq(
+          as.Date(earliest_visit_start_date),
+          as.Date(latest_visit_start_date),
+          by = "day"
+        ),
+        patient_size,
+        replace = TRUE
       ) # start date for the period
 
 
@@ -422,7 +452,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
   }
 
   if (is.null(person)) {
-    person <- tibble::tibble(
+    person <- dplyr::tibble(
       person_id = id,
       gender_concept_id = gender_id,
       year_of_birth = DOB_year,
@@ -432,7 +462,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
   }
 
   if (is.null(observation_period)) {
-    observation_period <- tibble::tibble(
+    observation_period <- dplyr::tibble(
       observation_period_id = id,
       person_id = id,
       observation_period_start_date = obs_start_date,
@@ -443,7 +473,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
 
 
   if (is.null(condition_occurrence)) {
-    condition_occurrence <- tibble::tibble(
+    condition_occurrence <- dplyr::tibble(
       condition_occurrence_id = id,
       person_id = id,
       condition_concept_id = condition_concept_id,
@@ -456,7 +486,7 @@ mockPatientProfiles <- function(drug_exposure = NULL,
   if (is.null(visit_occurrence)) {
     id <- sample(seq(1:patient_size))
 
-    visit_occurrence <- tibble::tibble(
+    visit_occurrence <- dplyr::tibble(
       visit_occurrence_id = visit_occurrence_id,
       person_id = id,
       visit_concept_id = visit_concept_id,
@@ -478,16 +508,19 @@ mockPatientProfiles <- function(drug_exposure = NULL,
 
   # cohort table 1
   if (is.null(cohort1)) {
-    cohort1 <- tibble::tibble(
+    cohort1 <- dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 3),
       cohort_start_date = as.Date(c("2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01")),
       cohort_end_date = as.Date(c("2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"))
     )
   }
+
+
+
   # cohort table 2
   if (is.null(cohort2)) {
-    cohort2 <- tibble::tibble(
+    cohort2 <- dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 3, 1),
       subject_id = c(1, 3, 1, 2, 1),
       cohort_start_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25")),
@@ -495,119 +528,162 @@ mockPatientProfiles <- function(drug_exposure = NULL,
     )
   }
 
+  # into database
+  db <- connectionDetails[["con"]]
+  writeSchema <- strsplit(connectionDetails[["write_schema"]], "\\.")[[1]]
 
+  tablesToInsert <- c(
+    "drug_strength", "drug_exposure", "person", "observation_period",
+    "condition_occurrence", "visit_occurrence", "concept_ancestor"
+  )
 
-
-  # into in-memory database
-  db <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "drug_strength",
-      drug_strength,
-      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "drug_exposure",
-      drug_exposure,
-      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "person",
-      person,
-      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "observation_period",
-      observation_period,
-      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "condition_occurrence",
-      condition_occurrence,
-      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "visit_occurrence",
-      visit_occurrence,
-      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "concept_ancestor",
-      concept_ancestor,
-      overwrite = TRUE
-    )
-  })
-
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "cohort1",
-      cohort1,
-      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "cohort2",
-      cohort2,
-      overwrite = TRUE
-    )
-  })
-  if (length(listTables) > 0) {
-    for (i in 1:length(listTables)) {
-      DBI::dbWithTransaction(db, {
-        DBI::dbWriteTable(db, names(listTables)[i],
-          listTables[[i]],
-          overwrite = TRUE
-        )
-      })
-    }
-  }
-  if (length(listTables) > 0) {
-    cdm <- CDMConnector::cdm_from_con(
-      db,
-      cdm_schema = "main",
-      write_schema = "main",
-      cdm_tables = c(
-        "drug_strength",
-        "drug_exposure",
-        "person",
-        "concept_ancestor",
-        "observation_period",
-        "condition_occurrence",
-        "visit_occurrence"
-      ),
-      cohort_tables = c("cohort1", "cohort2", names(listTables))
-    )
-  } else {
-    cdm <- CDMConnector::cdm_from_con(
-      db,
-      cdm_schema = "main",
-      write_schema = "main",
-      cdm_tables = c(
-        "drug_strength",
-        "drug_exposure",
-        "person",
-        "concept_ancestor",
-        "observation_period",
-        "condition_occurrence",
-        "visit_occurrence"
-      ),
-      cohort_tables = c("cohort1", "cohort2")
+  for (tab in tablesToInsert) {
+    DBI::dbWriteTable(
+      conn = db,
+      name = CDMConnector::inSchema(writeSchema,
+                                    table = paste0(
+                                      connectionDetails[["mock_prefix"]],
+                                                   tab)),
+      value = eval(parse(text = tab)), overwrite = TRUE
     )
   }
+
+  listTables[["cohort1"]] <- cohort1
+  listTables[["cohort2"]] <- cohort2
+  cohorts <- names(listTables)
+  for (cohort in cohorts) {
+    x <- addCohortCountAttr(listTables[[cohort]])
+    DBI::dbWriteTable(
+      conn = db, name = CDMConnector::inSchema(writeSchema, cohort),
+      value = x, overwrite = TRUE
+    )
+    DBI::dbWriteTable(
+      conn = db, name = CDMConnector::inSchema(
+        writeSchema, paste0(cohort, "_set")
+      ), value = attr(x, "cohort_set"), overwrite = TRUE
+    )
+    DBI::dbWriteTable(
+      conn = db, name = CDMConnector::inSchema(
+        writeSchema, paste0(cohort, "_count")
+      ), value = attr(x, "cohort_count"), overwrite = TRUE
+    )
+    DBI::dbWriteTable(
+      conn = db, name = CDMConnector::inSchema(
+        writeSchema, paste0(cohort, "_attrition")
+      ), value = attr(x, "cohort_attrition"), overwrite = TRUE
+    )
+  }
+
+  cdmTables <- c(
+    "drug_strength", "drug_exposure", "person", "concept_ancestor",
+    "observation_period", "condition_occurrence", "visit_occurrence"
+  )
+  writeTables <- tidyr::expand_grid(
+    cohort_name = cohorts, attribute = c("", "_set", "_count", "_attrition")
+  ) %>%
+    dplyr::mutate(name = paste0(.data$cohort_name, .data$attribute)) %>%
+    dplyr::pull("name")
+
+  updateWrittenTables(cdmTables, writeTables)
+
+  # create the cdm object
+  cdm <- CDMConnector::cdm_from_con(
+    db,
+    cdm_schema =  c(schema = writeSchema,
+                    prefix = connectionDetails$mock_prefix),
+    write_schema =  c(schema = writeSchema,
+                      prefix = connectionDetails$mock_prefix),
+    cohort_tables = cohorts
+  )
 
   return(cdm)
+}
+
+
+#' Function to add attributes to cohort table
+#' it adds cohort_count, cohort_set, cohort_count, cohort_attrition
+#'
+#' @noRd
+#'
+addCohortCountAttr <- function(cohort) {
+  # add cohort set
+  if (!("cohort_set" %in% attributes(cohort))) {
+    attr(cohort, "cohort_set") <- cohort %>%
+      dplyr::select("cohort_definition_id") %>%
+      dplyr::distinct() %>%
+      dplyr::collect() %>%
+      dplyr::mutate("cohort_name" = paste0(
+        "cohort_",
+        .data$cohort_definition_id
+      ))
+  }
+
+  # add cohort count
+  if (!("cohort_count" %in% attributes(cohort))) {
+    attr(cohort, "cohort_count") <- cohort %>%
+      dplyr::group_by(.data$cohort_definition_id) %>%
+      dplyr::summarise(
+        number_records = dplyr::n(),
+        number_subjects = dplyr::n_distinct(.data$subject_id)
+      ) %>%
+      dplyr::collect()
+  }
+
+  # add cohort attrition
+  if (!("cohort_attrition" %in% attributes(cohort))) {
+    attr(cohort, "cohort_attrition") <- cohort %>%
+      dplyr::group_by(.data$cohort_definition_id) %>%
+      dplyr::summarise(
+        number_records = dplyr::n(),
+        number_subjects = dplyr::n_distinct(.data$subject_id)
+      ) %>%
+      dplyr::collect() %>%
+      dplyr::mutate(
+        "reason" = "Qualifying initial records",
+        "reason_id" = 1,
+        "excluded_records" = 0,
+        "excluded_subjects" = 0
+      )
+  }
+
+  return(cohort)
+}
+
+#' Update tables that have been modified in scratch or write schema
+#'
+#' @param scratchTables Tables written in the scratch schema
+#' @param writeTables Tables written in the write schema
+#'
+#' @noRd
+#'
+updateWrittenTables <- function(scratchTables = NULL, writeTables = NULL) {
+  options(
+    mock_cdm_scratch_tables = unique(c(
+      scratchTables, getOption("mock_cdm_scratch_tables", NULL)
+    )),
+    mock_cdm_write_tables = unique(c(
+      writeTables, getOption("mock_cdm_write_tables", NULL)
+    ))
+  )
+}
+
+#' Delete tables that have been added during the testing
+#'
+#' @param connectionDetails Connection details of the mock database
+#'
+#' @noRd
+#'
+disconnectMockCdm <- function(connectionDetails) {
+  db <- connectionDetails[["con"]]
+  writeSchema <- connectionDetails[["write_schema"]]
+  scratchTables <- getOption("mock_cdm_scratch_tables", NULL)
+  writeTables <- getOption("mock_cdm_write_tables", NULL)
+  for (tab in scratchTables) {
+    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
+  }
+  for (tab in writeTables) {
+    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
+  }
+  DBI::dbDisconnect(db, shutdown = TRUE)
+  options(mock_cdm_scratch_tables = NULL, mock_cdm_write_tables = NULL)
 }

@@ -1,54 +1,18 @@
-#' @noRd
-varyingParameters <- function(parameters) {
-  x <- lapply(parameters, function(x) {
-    length(unique(x)) == 1
-  }) %>%
-    unlist()
-  x <- names(x[!x])
-  return(x)
-}
-
-#' @noRd
-checkName <- function(name, parameters) {
-  checkmate::assertCharacter(name, len = 1, min.chars = 1, any.missing = FALSE)
-  x <- varyingParameters(parameters)
-  elements <- stringr::str_match_all(name, "\\{([^\\{\\}]+)\\}")
-  elements <- elements[[1]][, 2]
-  x <- x[!(x %in% elements)]
-  if (length(x) > 0) {
-    cli::cli_abort(paste0(
-      "variables: ", paste0(x, collapse = ", "), " not included in name."
-    ))
-  }
-  elements <- elements[!(elements %in% names(parameters))]
-  if (length(elements) > 0) {
-    cli::cli_abort(paste0(
-      "variables: ",
-      paste0(elements, collapse = ", "),
-      " contained in name and not included in iput parameters."
-    ))
-  }
-  invisible(NULL)
-}
-
-#' @noRd
-repairName <- function(name, parameters, colnamesTable) {
-  nameEquivalence <- expand.grid(parameters) %>%
-    dplyr::as_tibble() %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(generated_name = glue::glue(.env$name)) %>%
-    dplyr::mutate(corrected_name = .data$generated_name) %>%
-    dplyr::select("generated_name", "corrected_name")
-  k <- 1
-  id <- which(nameEquivalence$generated_name %in% colnamesTable)
-  while (length(id) > 0) {
-    nameEquivalence$corrected_name[id] <-
-      paste0(nameEquivalence$generated_name[id], "_", k)
-    id <- which(nameEquivalence$corrected_name %in% colnamesTable)
-    k <- k + 1
-  }
-  return(nameEquivalence)
-}
+# Copyright 2023 DARWIN EU (C)
+#
+# This file is part of PatientProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 #' @noRd
 checkX <- function(x) {
@@ -67,10 +31,10 @@ checkX <- function(x) {
       " or 'subject_id')"
     ))
   }
-  person_variable <- dplyr::if_else(
+  personVariable <- dplyr::if_else(
     "person_id" %in% colnames(x), "person_id", "subject_id"
   )
-  return(person_variable)
+  return(personVariable)
 }
 
 #' @noRd
@@ -104,7 +68,7 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 }
 
 #' @noRd
-checkCategory <- function(category) {
+checkCategory <- function(category, overlap = FALSE) {
   checkmate::assertList(
     category,
     types = "integerish", any.missing = FALSE, unique = TRUE,
@@ -153,25 +117,28 @@ checkCategory <- function(category) {
     dplyr::arrange(.data$lower_bound)
 
   # check overlap
-  if (nrow(result) > 1) {
-    lower <- result$lower_bound[2:nrow(result)]
-    upper <- result$upper_bound[1:(nrow(result) - 1)]
-    if (!all(lower > upper)) {
-      cli::cli_abort("There can not be overlap between categories")
+  if (!overlap) {
+    if (nrow(result) > 1) {
+      lower <- result$lower_bound[2:nrow(result)]
+      upper <- result$upper_bound[1:(nrow(result) - 1)]
+      if (!all(lower > upper)) {
+        cli::cli_abort("There can not be overlap between categories")
+      }
     }
   }
+
   return(result)
 }
 
 #' @noRd
-checkAgeGroup <- function(ageGroup) {
+checkAgeGroup <- function(ageGroup, overlap = FALSE) {
   checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
   if (!is.null(ageGroup)) {
     if (is.numeric(ageGroup[[1]])) {
       ageGroup <- list("age_group" = ageGroup)
     }
     for (k in seq_along(ageGroup)) {
-      invisible(checkCategory(ageGroup[[k]]))
+      invisible(checkCategory(ageGroup[[k]], overlap))
     }
     if (is.null(names(ageGroup))) {
       names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
@@ -261,11 +228,16 @@ checkNewName <- function(name, x) {
 #' @noRd
 getWindowNames <- function(window) {
   getname <- function(element) {
-    element <- as.character(element)
+    element <- tolower(as.character(element))
     element <- gsub("-", "m", element)
     return(paste0(element[1], "_to_", element[2]))
   }
-  windowNames <- lapply(window, getname)
+  windowNames <- names(window)
+  if (is.null(windowNames)) {
+    windowNames <- lapply(window, getname)
+  } else {
+    windowNames[windowNames == ""] <- lapply(window[windowNames == ""], getname)
+  }
   return(windowNames)
 }
 
@@ -328,9 +300,9 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
 checkValue <- function(value, x, name) {
   checkmate::assertCharacter(value, any.missing = FALSE, min.len = 1)
   checkmate::assertTRUE(
-    all(value %in% c("flag", "count", "date", "time", colnames(x)))
+    all(value %in% c("flag", "count", "date", "days", colnames(x)))
   )
-  valueOptions <- c("flag", "count", "date", "time")
+  valueOptions <- c("flag", "count", "date", "days")
   valueOptions <- valueOptions[valueOptions %in% colnames(x)]
   if (length(valueOptions) > 0) {
     cli::cli_warn(paste0(
@@ -342,5 +314,216 @@ checkValue <- function(value, x, name) {
       obtain that column please rename and run again."
     ))
   }
-  return(value[!(value %in% c("flag", "count", "date", "time"))])
+  return(value[!(value %in% c("flag", "count", "date", "days"))])
+}
+
+#' @noRd
+checkCohortNames <- function(x, targetCohortId, name) {
+  if (!("GeneratedCohortSet" %in% class(x))) {
+    cli::cli_abort(
+      "cdm[[targetCohortTable]]) must be a 'GeneratedCohortSet'. Please use a
+      generateCohortSet function or create it with
+      CDMConnector::newGeneratedCohortSet()."
+    )
+  }
+  cohort <- CDMConnector::cohortSet(x)
+  filterVariable <- "cohort_definition_id"
+  if (is.null(targetCohortId)) {
+    if (is.null(cohort)) {
+      idName <- NULL
+      filterVariable <- NULL
+      targetCohortId <- NULL
+    } else {
+      cohort <- dplyr::collect(cohort)
+      idName <- cohort$cohort_name
+      targetCohortId <- cohort$cohort_definition_id
+    }
+  } else {
+    if (is.null(cohort)) {
+      idName <- paste0(name, "_", targetCohortId)
+    } else {
+      idName <- cohort %>%
+        dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
+        dplyr::arrange(.data$cohort_definition_id) %>%
+        dplyr::pull("cohort_name")
+      if (length(idName) != length(targetCohortId)) {
+        cli::cli_abort(
+          "some of the cohort ids given do not exist in the cohortSet of cdm[[targetCohortName]]"
+        )
+      }
+    }
+  }
+  parameters <- list(
+    "filter_variable" = filterVariable,
+    "filter_id" = targetCohortId,
+    "id_name" = idName
+  )
+  return(parameters)
+}
+
+#' @noRd
+checkSnakeCase <- function(name) {
+  wrong <- FALSE
+  for (i in seq_along(name)) {
+    n <- name[i]
+    n <- gsub("[a-z]", "", n)
+    n <- gsub("[0-9]", "", n)
+    n <- gsub("_", "", n)
+    if (nchar(n) > 0) {
+      oldname <- name[i]
+      name[i] <- gsub("([[:upper:]])", "\\L\\1", perl = TRUE, name[i])
+      name[i] <- gsub("[^a-z,0-9.-]", "_", name[i])
+      name[i] <- gsub("-", "_", name[i])
+      cli::cli_alert(paste0(oldname, " has been changed to ", name[i]))
+      wrong <- TRUE
+    }
+  }
+  if (wrong) {
+    cli::cli_alert("some provided names were not in snake_case")
+    cli::cli_alert("names have been changed to lower case")
+    cli::cli_alert("special symbols in names have been changed to '_'")
+  }
+  return(name)
+}
+
+#' @noRd
+checkVariableType <- function(variableType) {
+  errorMessage <- "variableType must be a choice between numeric, date, binary and categorical."
+  if (!is.character(variableType) |
+    length(variableType) != 1) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!(variableType %in% c("numeric", "date", "binary", "categorical"))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+#' @noRd
+checkExclude <- function(exclude) {
+  if (!is.null(exclude) & !is.character(exclude)) {
+    cli::cli_abort("eclude must a character vector or NULL")
+  }
+}
+
+#' @noRd
+checkTable <- function(table) {
+  if (!("tbl" %in% class(table))) {
+    cli::cli_abort("table should be a tibble")
+  }
+}
+
+#' @noRd
+checkStrata <- function(strata, table) {
+  errorMessage <- "strata should be a unique named list that point to columns in table"
+  if (!is.list(strata)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(strata)) != length(strata)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(strata) > 0) {
+    if (!is.character(unlist(strata))) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!all(unlist(strata) %in% colnames(table))) {
+      cli::cli_abort(errorMessage)
+    }
+  }
+}
+
+#' @noRd
+checkVariablesFunctions <- function(variables, functions, table) {
+  errorMessage <- "variables should be a unique named list that point to columns in table"
+  if (!is.list(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(variables)) != length(variables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(variables))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(variables) %in% colnames(table))) {
+    cli::cli_abort(errorMessage)
+  }
+  errorMessage <- "functions should be a unique named list that point to functions. Check suported functions using availableFunctions()."
+  if (!is.list(functions)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(functions)) != length(functions)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.character(unlist(functions))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(functions) %in% unique(formats$format_key))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!identical(sort(names(variables)), sort(names(functions)))) {
+    cli::cli_abort("Names from variables and functions must be the same")
+  }
+  vt <- variableTypes(table)
+  requiredFunctions <- NULL
+  for (nam in names(variables)) {
+    requiredFunctions <- requiredFunctions %>%
+      dplyr::union_all(
+        tidyr::expand_grid(
+          variable = variables[[nam]],
+          format_key = functions[[nam]]
+        )
+      )
+  }
+  suportedFunctions <- vt %>%
+    dplyr::select("variable", "variable_type") %>%
+    dplyr::left_join(
+      formats %>%
+        dplyr::select("variable_type", "format_key"),
+      by = "variable_type"
+    )
+  nonSuportedFunctions <- requiredFunctions %>%
+    dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))
+  if (nrow(nonSuportedFunctions) > 0) {
+    nonSuportedFunctions <- nonSuportedFunctions %>%
+      dplyr::left_join(vt, by = "variable")
+    errorMessage <- "Non supported functions found."
+    vars <- unique(nonSuportedFunctions$variable)
+    for (v in vars) {
+      errorMessage <- paste0(
+        errorMessage, " '", v, "' is `",
+        vt$variable_type[vt$variable == v], "` and formats: ",
+        paste0(
+          nonSuportedFunctions$format_key[nonSuportedFunctions$variable == v],
+          collapse = ", "
+        ),
+        " are not suported."
+      )
+    }
+    cli::cli_abort(errorMessage)
+  }
+}
+
+#' @noRd
+checkSuppressCellCount <- function(suppressCellCount) {
+  checkmate::assertIntegerish(
+    suppressCellCount,
+    lower = 0, len = 1, any.missing = F
+  )
+}
+
+#' @noRd
+checkBigMark <- function(bigMark) {
+  checkmate::checkCharacter(bigMark, min.chars = 0, len = 1, any.missing = F)
+}
+
+#' @noRd
+checkDecimalMark <- function(decimalMark) {
+  checkmate::checkCharacter(decimalMark, min.chars = 1, len = 1, any.missing = F)
+}
+
+#' @noRd
+checkSignificantDecimals <- function(significantDecimals) {
+  checkmate::assertIntegerish(
+    significantDecimals,
+    lower = 0, len = 1, any.missing = F
+  )
 }

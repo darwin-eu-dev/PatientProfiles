@@ -130,7 +130,7 @@
 #
 #   expect_true(all(compareNA(result_three_cols$'drug_exposure_end_date_drug_exposure_(0,NA)', c("2020-01-25","2020-01-25","2020-01-25","2020-01-24","2020-03-15"))))
 #
-#  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+#
 #
 # })
 #
@@ -207,6 +207,6 @@
 #
 #   expect_error(addCohortIntersect(cdm$cohort1, cdm, value = "number", order = "first", tableName = "drug_exposure", filter = "can't filter with this"))
 #
-#   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+#
 #
 # })

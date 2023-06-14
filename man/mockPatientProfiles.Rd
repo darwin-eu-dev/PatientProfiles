@@ -5,6 +5,8 @@
 \title{It creates a mock database for testing PatientProfiles package}
 \usage{
 mockPatientProfiles(
+  connectionDetails = list(con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+    write_schema = "main", mock_prefix = NULL),
   drug_exposure = NULL,
   drug_strength = NULL,
   observation_period = NULL,
@@ -43,6 +45,8 @@ mockPatientProfiles(
 )
 }
 \arguments{
+\item{connectionDetails}{Connection an details to create the cdm mock object}
+
 \item{drug_exposure}{default null user can define its own table}
 
 \item{drug_strength}{default null user can define its own table}
@@ -63,7 +67,7 @@ mockPatientProfiles(
 
 \item{drug_concept_id_size}{number of unique drug concept id}
 
-\item{ancestor_concept_id_size}{the size of ceoncept ancestor table}
+\item{ancestor_concept_id_size}{the size of concept ancestor table}
 
 \item{condition_concept_id_size}{number of unique row in the condition concept table}
 
@@ -79,7 +83,7 @@ mockPatientProfiles(
 
 \item{min_drug_exposure_start_date}{user define minimum drug exposure start date}
 
-\item{max_drug_exposure_start_date}{user define maximium drug exposure start date}
+\item{max_drug_exposure_start_date}{user define maximum drug exposure start date}
 
 \item{earliest_date_of_birth}{the earliest date of birth of patient in person table format "dd-mm-yyyy"}
 
@@ -118,4 +122,11 @@ cdm of the mock database following user's specifications
 }
 \description{
 It creates a mock database for testing PatientProfiles package
+}
+\examples{
+\donttest{
+library(PatientProfiles)
+cdm <- mockPatientProfiles()
+}
+
 }
