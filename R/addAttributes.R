@@ -67,3 +67,31 @@ addCohortName <- function(cohort) {
       copy = TRUE
     )
 }
+
+#' Add cdm name
+#'
+#' @param table Table in the cdm
+#' @param cdm A cdm reference object
+#'
+#' @return Table with an extra column with the cdm names
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#'
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>%
+#'   addCdmName()
+#' }
+#'
+addCdmName <- function(table, cdm = NULL) {
+  if (is.null(cdm)) {
+    cdm <- attr(cdm, "cdm_reference")
+  }
+  table %>%
+    dplyr::mutate(
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA))
+    )
+}
