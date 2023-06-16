@@ -287,7 +287,7 @@ getCategoricalValues <- function(x, variablesCategorical) {
   for (v in variables) {
     xx <- x %>%
       dplyr::select("strata_level", "variable_level" = dplyr::all_of(v)) %>%
-      tidyr::separate_rows("variable_level", sep = "&&", convert = TRUE)
+      dplyr::mutate(variable_level = as.character(.data$variable_level))
     functions <- variablesCategorical %>%
       dplyr::filter(.data$variable == .env$v) %>%
       dplyr::pull("estimate_type") %>%
