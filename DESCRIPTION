@@ -37,7 +37,8 @@ Suggests:
     ggplot2,
     spelling,
     RPostgres,
-    dbplyr
+    dbplyr,
+    PaRe
 Imports: 
     magrittr,
     CDMConnector (>= 1.0.0),
