@@ -88,7 +88,7 @@ addCohortName <- function(cohort) {
 #'
 addCdmName <- function(table, cdm = NULL) {
   if (is.null(cdm)) {
-    cdm <- attr(cdm, "cdm_reference")
+    cdm <- attr(table, "cdm_reference")
   }
   table %>%
     dplyr::mutate(
