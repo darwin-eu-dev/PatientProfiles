@@ -63,7 +63,9 @@ addAttributes <- function(newcohort,
 addCohortName <- function(cohort) {
   cohort %>%
     dplyr::left_join(
-      CDMConnector::cohortSet(cohort), by = "cohort_definition_id",
+      CDMConnector::cohortSet(cohort) %>%
+        dplyr::select("cohort_definition_id", "cohort_name"),
+      by = "cohort_definition_id",
       copy = TRUE
     )
 }
