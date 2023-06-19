@@ -39,7 +39,13 @@ Suggests:
     RPostgres,
     dbplyr,
     PaRe,
-    here
+    here,
+    magick,
+    ggplot2,
+    plotly,
+    ggraph,
+    DT,
+    cowplot
 Imports: 
     magrittr,
     CDMConnector (>= 1.0.0),
