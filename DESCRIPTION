@@ -38,7 +38,8 @@ Suggests:
     spelling,
     RPostgres,
     dbplyr,
-    PaRe
+    PaRe,
+    here
 Imports: 
     magrittr,
     CDMConnector (>= 1.0.0),
