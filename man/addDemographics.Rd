@@ -17,8 +17,8 @@ addDemographics(
   ageGroup = NULL,
   sex = TRUE,
   sexName = "sex",
-  priorHistory = TRUE,
-  priorHistoryName = "prior_history",
+  priorObservation = TRUE,
+  priorObservationName = "prior_observation",
   futureObservation = TRUE,
   futureObservationName = "future_observation",
   tablePrefix = NULL
@@ -56,10 +56,10 @@ will be considered as missing for all the individuals.}
 
 \item{sexName}{Sex variable name}
 
-\item{priorHistory}{TRUE or FALSE. If TRUE, days of between the start
+\item{priorObservation}{TRUE or FALSE. If TRUE, days of between the start
 of the current observation period and the indexDate will be calculated}
 
-\item{priorHistoryName}{Prior history variable name}
+\item{priorObservationName}{Prior observation variable name}
 
 \item{futureObservation}{TRUE or FALSE. If TRUE, days between the
 indexDate and the end of the current observation period will be

@@ -134,7 +134,7 @@ PatientProfiles functions can be used on both OMOP CDM tables and cohort tables.
 
 `addInObservation()`: adds a new binary column to the input table, indicating whether the subjects are being observed at a specific time. 
 
-`addPriorHistory()`: appends a column to the input table containing the number of days each patient has been in observation up to a specified date. 
+`addPriorObservation()`: appends a column to the input table containing the number of days each patient has been in observation up to a specified date. 
 
 `addFutureObservation()`: adds a column with the days of future observation for an individual at a certain date
 
@@ -153,7 +153,7 @@ cdm$cohort1 <- cdm$cohort1 %>%
   filter(
     in_observation == 1
   ) %>%
-  addPriorHistory(
+  addPriorObservation(
     cdm = cdm
   ) %>%
   addFutureObservation(
@@ -164,7 +164,7 @@ cdm$cohort1 %>%
   glimpse()
 ```
 
-If the database allows for multiple observation periods, it's important to note that the results of the previous functions will be based on the period where "indexDate" falls within. If a patient is not under observation at the specified date, `addPriorHistory()` and `addFutureObservation()` functions will return NA.
+If the database allows for multiple observation periods, it's important to note that the results of the previous functions will be based on the period where "indexDate" falls within. If a patient is not under observation at the specified date, `addPriorObservation()` and `addFutureObservation()` functions will return NA.
 
 ## Example: get all characteristics at once
 
@@ -184,8 +184,8 @@ cdm$cohort2 <- cdm$cohort2 %>%
     ageGroup = NULL,
     sex = TRUE,
     sexName = "sex",
-    priorHistory = TRUE,
-    priorHistoryName = "prior_history",
+    priorObservation = TRUE,
+    priorObservationName = "prior_observation",
     futureObservation = FALSE,
   )
 

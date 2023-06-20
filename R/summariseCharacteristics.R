@@ -82,7 +82,7 @@ summariseCharacteristics <- function(cohort,
   variables <- list(
     dates = c("cohort_start_date", "cohort_end_date"),
     numeric = c(
-      "age", "number_visits"[!is.null(windowVisitOcurrence)], "prior_history",
+      "age", "number_visits"[!is.null(windowVisitOcurrence)], "prior_observation",
       "future_observation"
     ),
     categorical = c("sex", "age_group"[!is.null(ageGroup)])
