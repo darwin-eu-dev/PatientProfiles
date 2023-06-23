@@ -8,11 +8,11 @@ test_that("check input length and type for each of the arguments", {
       min_days_to_observation_end = 1
     )
 
-  expect_error(addPriorHistory("cdm$cohort1", cdm))
+  expect_error(addPriorObservation("cdm$cohort1", cdm))
 
-  expect_error(addPriorHistory(cdm$cohort1, "cdm"))
+  expect_error(addPriorObservation(cdm$cohort1, "cdm"))
 
-  expect_error(addPriorHistory(cdm$cohort1, cdm, indexDate = "end_date"))
+  expect_error(addPriorObservation(cdm$cohort1, cdm, indexDate = "end_date"))
 })
 
 test_that("check condition_occurrence and cohort1 work", {
@@ -26,11 +26,11 @@ test_that("check condition_occurrence and cohort1 work", {
       min_days_to_observation_end = 1
     )
   # check it works with cohort1 table in mockdb
-  expect_true(typeof(cdm$cohort1 %>% addPriorHistory(cdm) %>% dplyr::collect()) == "list")
-  expect_true("prior_history" %in% colnames(cdm$cohort1 %>% addPriorHistory(cdm)))
+  expect_true(typeof(cdm$cohort1 %>% addPriorObservation(cdm) %>% dplyr::collect()) == "list")
+  expect_true("prior_observation" %in% colnames(cdm$cohort1 %>% addPriorObservation(cdm)))
   # check it works with condition_occurrence table in mockdb
-  expect_true(typeof(cdm$condition_occurrence %>% addPriorHistory(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
-  expect_true("prior_history" %in% colnames(cdm$condition_occurrence %>% addPriorHistory(cdm, indexDate = "condition_start_date")))
+  expect_true(typeof(cdm$condition_occurrence %>% addPriorObservation(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
+  expect_true("prior_observation" %in% colnames(cdm$condition_occurrence %>% addPriorObservation(cdm, indexDate = "condition_start_date")))
 })
 
 test_that("check working example with cohort1", {
@@ -73,12 +73,12 @@ test_that("check working example with cohort1", {
     )
 
   result <- cdm$cohort1 %>%
-    addPriorHistory(cdm) %>%
+    addPriorObservation(cdm) %>%
     dplyr::collect()
 
   expect_true(all(colnames(cohort1) %in% colnames(result)))
 
-  expect_true(all(result %>% dplyr::select("prior_history") == dplyr::tibble(prior_history = c(28, 28, 31))))
+  expect_true(all(result %>% dplyr::select("prior_observation") == dplyr::tibble(prior_observation = c(28, 28, 31))))
 })
 
 test_that("check working example with condition_occurrence", {
@@ -122,11 +122,11 @@ test_that("check working example with condition_occurrence", {
 
   result <-
     cdm$condition_occurrence %>%
-    addPriorHistory(cdm, indexDate = "condition_start_date") %>%
+    addPriorObservation(cdm, indexDate = "condition_start_date") %>%
     dplyr::collect()
 
   expect_true(all(
-    result %>% dplyr::select("prior_history") == dplyr::tibble(prior_history = c(28, 28, 31))
+    result %>% dplyr::select("prior_observation") == dplyr::tibble(prior_observation = c(28, 28, 31))
   ))
 })
 
@@ -171,9 +171,9 @@ test_that("different name", {
 
   cdm$condition_occurrence <-
     cdm$condition_occurrence %>%
-    addPriorHistory(cdm,
+    addPriorObservation(cdm,
       indexDate = "condition_start_date",
-      priorHistoryName = "ph"
+      priorObservationName = "ph"
     )
   expect_true("ph" %in% names(cdm$condition_occurrence))
 })
@@ -214,11 +214,11 @@ test_that("priorHistory and future_observation - outside of observation period",
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addPriorHistory(cdm,
+    addPriorObservation(cdm,
       indexDate = "cohort_start_date"
     )
   # both should be NA
-  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_history))))
+  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_observation))))
 })
 
 test_that("multiple observation periods", {
@@ -260,12 +260,12 @@ test_that("multiple observation periods", {
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addPriorHistory(cdm,
+    addPriorObservation(cdm,
       indexDate = "cohort_start_date"
     )
 
   expect_true(nrow(cdm$cohort1a %>% dplyr::collect()) == 2)
-  expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_history) ==
+  expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_observation) ==
     as.numeric(difftime(as.Date("2012-02-01"),
       as.Date("2010-01-01"),
       units = "days"
