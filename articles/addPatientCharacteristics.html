@@ -68,7 +68,7 @@
 Mike Du, Yuchen Guo, Kim López-Güell, Xintong Li, Núria Mercadé-Besora,
 and Edward Burn</h4>
             
-            <h4 data-toc-skip class="date">2023-06-18</h4>
+            <h4 data-toc-skip class="date">2023-06-23</h4>
       
       
       <div class="d-none name"><code>addPatientCharacteristics.rmd</code></div>
@@ -135,7 +135,7 @@ patients in 20-year age band and if they are 60 years old or more.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span>
 <span><span class="co">## $ condition_occurrence_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…</span></span>
 <span><span class="co">## $ person_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…</span></span>
 <span><span class="co">## $ condition_concept_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4, 5, 1, 2, 3, 4, 3, 2, 1, 2, 1, 5, 3, 4, 4, 1…</span></span>
@@ -170,7 +170,7 @@ patients in 20-year age band and if they are 60 years old or more.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 8</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span>
 <span><span class="co">## $ condition_occurrence_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 314, 349, 234, 193, 919, 113, 277, 26, 276, 65…</span></span>
 <span><span class="co">## $ person_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 314, 349, 234, 193, 919, 113, 277, 26, 276, 65…</span></span>
 <span><span class="co">## $ condition_concept_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4, 1, 2, 3, 4, 3, 2, 1, 5, 3, 4, 1, 2, 4, 5, 2…</span></span>
@@ -196,7 +196,7 @@ bands.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 9</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span>
 <span><span class="co">## $ condition_occurrence_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 314, 349, 234, 193, 919, 113, 277, 26, 276, 65…</span></span>
 <span><span class="co">## $ person_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 314, 349, 234, 193, 919, 113, 277, 26, 276, 65…</span></span>
 <span><span class="co">## $ condition_concept_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4, 1, 2, 3, 4, 3, 2, 1, 5, 3, 4, 1, 2, 4, 5, 2…</span></span>
@@ -226,7 +226,7 @@ bands.</p>
 <span></span>
 <span><span class="va">numConditions</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   SQL [2 x 2]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">##   ageBand_20     n</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span> 60 to 79      29</span></span>
@@ -241,9 +241,9 @@ functionalities applied to a cohort table:</p>
 <p><code><a href="../reference/addInObservation.html">addInObservation()</a></code>: adds a new binary column to the
 input table, indicating whether the subjects are being observed at a
 specific time.</p>
-<p><code><a href="../reference/addPriorHistory.html">addPriorHistory()</a></code>: appends a column to the input table
-containing the number of days each patient has been in observation up to
-a specified date.</p>
+<p><code><a href="../reference/addPriorObservation.html">addPriorObservation()</a></code>: appends a column to the input
+table containing the number of days each patient has been in observation
+up to a specified date.</p>
 <p><code><a href="../reference/addFutureObservation.html">addFutureObservation()</a></code>: adds a column with the days of
 future observation for an individual at a certain date</p>
 <p>We can use the first function to obtain patients which are in
@@ -255,7 +255,7 @@ future observation days. Notice that we are not using the argument
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 2</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 3</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -268,7 +268,7 @@ future observation days. Notice that we are not using the argument
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">in_observation</span> <span class="op">==</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addPriorHistory.html">addPriorHistory</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addFutureObservation.html">addFutureObservation</a></span><span class="op">(</span></span>
@@ -279,19 +279,20 @@ future observation days. Notice that we are not using the argument
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 1, 1, 1</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 3, 1, 2, 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-03-01, 2020-08-01, 2020-02-02, 2020-04-01</span></span>
 <span><span class="co">## $ in_observation       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1</span></span>
-<span><span class="co">## $ prior_history        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4635, 5350, 4168, 5198</span></span>
+<span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4635, 5350, 4168, 5198</span></span>
 <span><span class="co">## $ future_observation   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 36925, 18232, 17348, 18384</span></span></code></pre>
 <p>If the database allows for multiple observation periods, it’s
 important to note that the results of the previous functions will be
 based on the period where “indexDate” falls within. If a patient is not
-under observation at the specified date, <code><a href="../reference/addPriorHistory.html">addPriorHistory()</a></code>
-and <code><a href="../reference/addFutureObservation.html">addFutureObservation()</a></code> functions will return NA.</p>
+under observation at the specified date,
+<code><a href="../reference/addPriorObservation.html">addPriorObservation()</a></code> and
+<code><a href="../reference/addFutureObservation.html">addFutureObservation()</a></code> functions will return NA.</p>
 </div>
 <div class="section level2">
 <h2 id="example-get-all-characteristics-at-once">Example: get all characteristics at once<a class="anchor" aria-label="anchor" href="#example-get-all-characteristics-at-once"></a>
@@ -307,7 +308,7 @@ the day they enter a cohort, we can use the function
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 3, 1</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 3, 1, 2, 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2019-12-30, 2020-01-01, 2020-05-25, 2020-01-01, 2…</span></span>
@@ -321,8 +322,8 @@ the day they enter a cohort, we can use the function
 <span>    ageGroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    sex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    sexName <span class="op">=</span> <span class="st">"sex"</span>,</span>
-<span>    priorHistory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    priorHistoryName <span class="op">=</span> <span class="st">"prior_history"</span>,</span>
+<span>    priorObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    priorObservationName <span class="op">=</span> <span class="st">"prior_observation"</span>,</span>
 <span>    futureObservation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="op">)</span></span>
 <span></span>
@@ -330,14 +331,14 @@ the day they enter a cohort, we can use the function
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
-<span><span class="co">## Database: DuckDB 0.8.0 [unknown@Linux 5.15.0-1039-azure:R 4.3.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1040-azure:R 4.3.1/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 3, 2, 1</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 3, 1, 2, 1, 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-05-25, 2020-01-01, 2020-05-25, 2…</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-05-25, 2020-01-01, 2020-05-25, 2…</span></span>
 <span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 42, 41, 50, 41, 40</span></span>
 <span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Male", "Male", "Male"</span></span>
-<span><span class="co">## $ prior_history        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4635, 5343, 4167, 5343, 5196</span></span></code></pre>
+<span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4635, 5343, 4167, 5343, 5196</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
