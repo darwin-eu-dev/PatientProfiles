@@ -17,8 +17,6 @@
 #' Compute demographic characteristics at a certain date
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the
 #' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
@@ -52,11 +50,10 @@
 #' \donttest{
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#' cdm$cohort1 %>% addDemographics(cdm)
+#' cdm$cohort1 %>% addDemographics()
 #' }
 #'
 addDemographics <- function(x,
-                            cdm,
                             indexDate = "cohort_start_date",
                             age = TRUE,
                             ageName = "age",
@@ -73,6 +70,11 @@ addDemographics <- function(x,
                             futureObservationName = "future_observation",
                             tablePrefix = NULL) {
   ## change ageDefaultMonth, ageDefaultDay to integer
+
+  cdm <- attr(x, "cdm_reference") # get cdm_reference from a cdm table
+  if (isFALSE(methods::is(cdm, "cdm_reference"))) {
+    rlang::abort("The table x is not associated with a cdm_reference!")
+  }
 
   if (typeof(ageDefaultMonth) == "character") {
     ageDefaultMonth <- as.integer(ageDefaultMonth)
@@ -137,7 +139,7 @@ addDemographics <- function(x,
 
   # Start code
   startTibble <- x
-  startNames <- names(x)
+  startNames <- colnames(x)
 
   personDetails <- cdm[["person"]] %>%
     dplyr::select(

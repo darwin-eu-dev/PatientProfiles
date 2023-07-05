@@ -288,7 +288,7 @@ addIntersect <- function(x,
       dplyr::rename(!!indexDate := "index_date") %>%
       dplyr::rename_all(tolower)
 
-    namesToEliminate <- intersect(names(x), names(resultCountFlag))
+    namesToEliminate <- intersect(colnames(x), names(resultCountFlag))
     namesToEliminate <- namesToEliminate[
       !(namesToEliminate %in% c(personVariable, indexDate))
     ]
@@ -335,7 +335,7 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
-      namesToEliminate <- intersect(names(x), names(resultDateTimeOtherX))
+      namesToEliminate <- intersect(colnames(x), names(resultDateTimeOtherX))
       namesToEliminate <- namesToEliminate[
         !(namesToEliminate %in% c(personVariable, indexDate))
       ]
