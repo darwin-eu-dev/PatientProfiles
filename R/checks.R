@@ -362,7 +362,7 @@ checkCohortNames <- function(x, targetCohortId, name) {
 }
 
 #' @noRd
-checkSnakeCase <- function(name) {
+checkSnakeCase <- function(name, verbose = TRUE) {
   wrong <- FALSE
   for (i in seq_along(name)) {
     n <- name[i]
@@ -374,11 +374,13 @@ checkSnakeCase <- function(name) {
       name[i] <- gsub("([[:upper:]])", "\\L\\1", perl = TRUE, name[i])
       name[i] <- gsub("[^a-z,0-9.-]", "_", name[i])
       name[i] <- gsub("-", "_", name[i])
-      cli::cli_alert(paste0(oldname, " has been changed to ", name[i]))
+      if(verbose) {
+        cli::cli_alert(paste0(oldname, " has been changed to ", name[i]))
+      }
       wrong <- TRUE
     }
   }
-  if (wrong) {
+  if (wrong && verbose) {
     cli::cli_alert("some provided names were not in snake_case")
     cli::cli_alert("names have been changed to lower case")
     cli::cli_alert("special symbols in names have been changed to '_'")
