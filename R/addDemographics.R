@@ -137,7 +137,7 @@ addDemographics <- function(x,
 
   # Start code
   startTibble <- x
-  startNames <- names(x)
+  startNames <- colnames(x)
 
   personDetails <- cdm[["person"]] %>%
     dplyr::select(

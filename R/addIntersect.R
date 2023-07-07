@@ -288,7 +288,7 @@ addIntersect <- function(x,
       dplyr::rename(!!indexDate := "index_date") %>%
       dplyr::rename_all(tolower)
 
-    namesToEliminate <- intersect(names(x), names(resultCountFlag))
+    namesToEliminate <- intersect(colnames(x), colnames(resultCountFlag))
     namesToEliminate <- namesToEliminate[
       !(namesToEliminate %in% c(personVariable, indexDate))
     ]
@@ -335,7 +335,7 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
-      namesToEliminate <- intersect(names(x), names(resultDateTimeOtherX))
+      namesToEliminate <- intersect(colnames(x), colnames(resultDateTimeOtherX))
       namesToEliminate <- namesToEliminate[
         !(namesToEliminate %in% c(personVariable, indexDate))
       ]
@@ -365,6 +365,7 @@ addIntersect <- function(x,
       )
     )) %>%
     dplyr::select(.data$column, .data$val) %>%
+    dplyr::mutate(column = checkSnakeCase(.data$column, verbose = F)) %>%
     dplyr::anti_join(dplyr::tibble(column = colnames(x)), by = "column")
 
   if (colnames %>% dplyr::tally() %>% dplyr::pull() != 0) {

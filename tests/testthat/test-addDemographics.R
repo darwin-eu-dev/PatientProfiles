@@ -148,7 +148,7 @@ test_that("partial demographics - cohorts", {
     )
   # age and age group
   expect_equal(
-    names(cdm$cohort1a),
+    colnames(cdm$cohort1a),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -167,7 +167,7 @@ test_that("partial demographics - cohorts", {
       futureObservation = FALSE
     )
   expect_equal(
-    names(cdm$cohort1b),
+    colnames(cdm$cohort1b),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -186,7 +186,7 @@ test_that("partial demographics - cohorts", {
       futureObservation = FALSE
     )
   expect_equal(
-    names(cdm$cohort1c),
+    colnames(cdm$cohort1c),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -205,7 +205,7 @@ test_that("partial demographics - cohorts", {
       futureObservation = TRUE
     )
   expect_equal(
-    names(cdm$cohort1d),
+    colnames(cdm$cohort1d),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -226,7 +226,7 @@ test_that("partial demographics - cohorts", {
     )
   # age and age group
   expect_equal(
-    names(cdm$cohort1e),
+    colnames(cdm$cohort1e),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -249,9 +249,9 @@ test_that("partial demographics - omop tables", {
       priorObservation = FALSE
     )
   # age and age group
-  expect_true(c("age") %in% names(cdm$condition_occurrence1a))
+  expect_true(c("age") %in% colnames(cdm$condition_occurrence1a))
   expect_true(all(!c("sex", "age_group", "prior_observation") %in%
-    names(cdm$condition_occurrence1a)))
+    colnames(cdm$condition_occurrence1a)))
 
   # only sex
   cdm$cohort1b <- cdm$cohort1 %>%
@@ -264,7 +264,7 @@ test_that("partial demographics - omop tables", {
     )
   expect_true(c("sex") %in% names(cdm$cohort1b))
   expect_true(all(!c("age", "age_group", "prior_observation") %in%
-    names(cdm$cohort1b)))
+    colnames(cdm$cohort1b)))
 
   # only prior history
   cdm$cohort1c <- cdm$cohort1 %>%
@@ -275,9 +275,9 @@ test_that("partial demographics - omop tables", {
       sex = FALSE,
       priorObservation = TRUE
     )
-  expect_true(c("prior_observation") %in% names(cdm$cohort1c))
+  expect_true(c("prior_observation") %in% colnames(cdm$cohort1c))
   expect_true(all(!c("age", "age_group", "sex") %in%
-    names(cdm$cohort1c)))
+    colnames(cdm$cohort1c)))
 
   # all
   cdm$condition_occurrence1d <- cdm$condition_occurrence %>%
@@ -290,7 +290,7 @@ test_that("partial demographics - omop tables", {
     )
   # age and age group
   expect_true(all(c("age", "sex", "prior_observation")
-  %in% names(cdm$condition_occurrence1d)))
+  %in% colnames(cdm$condition_occurrence1d)))
 })
 
 test_that("priorObservation and future_observation - outside of observation period", {
