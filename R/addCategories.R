@@ -153,7 +153,7 @@ addCategories <- function(x,
               !is.na(.data[[name]]) &
                 .data$variable >= .env$lower &
                 .data$variable <= .env$upper,
-              paste0(.data[[name]], "&&", .env$category),
+              paste0(.data[[name]], " and ", .env$category),
               .data[[name]]
             )
           ))
