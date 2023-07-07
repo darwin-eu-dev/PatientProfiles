@@ -216,7 +216,7 @@ test_that("different name", {
       indexDate = "condition_start_date",
       futureObservationName = "fh"
     )
-  expect_true("fh" %in% names(cdm$condition_occurrence))
+  expect_true("fh" %in% colnames(cdm$condition_occurrence))
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {

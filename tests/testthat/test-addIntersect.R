@@ -1195,3 +1195,16 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
   expect_true(all(is.na(result$cohort_1_m30_to_m1)))
   expect_true(all(is.na(result$cohort_1_0_to_inf)))
 })
+
+test_that("non snake columns not repeated in output", {
+  cdm <- mockPatientProfiles()
+  attr(cdm$cohort1, "cohort_set") <- attr(cdm$cohort1, "cohort_set") %>% dplyr::mutate(cohort_name = toupper(cohort_name))
+  cdm$cohort2 <- cdm$cohort2 %>%
+    addCohortIntersectFlag(cdm, "cohort1")
+
+  expect_true("cohort_1_0_to_inf" %in% colnames(cdm$cohort2))
+  expect_true("cohort_2_0_to_inf" %in% colnames(cdm$cohort2))
+  expect_false("COHORT_1_0_to_inf" %in% colnames(cdm$cohort2))
+  expect_false("COHORT_2_0_to_inf" %in% colnames(cdm$cohort2))
+
+  })
