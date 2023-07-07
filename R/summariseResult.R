@@ -512,7 +512,6 @@ summaryValuesStrata <- function(x, strata,
   for (strat in names(strata)) {
     xx <- x %>%
       uniteStrata(strata[[strat]]) %>%
-      tidyr::separate_rows("strata_level", sep = "&&", convert = FALSE) %>%
       dplyr::group_by(.data$strata_level)
     result <- result %>%
       dplyr::bind_rows(
