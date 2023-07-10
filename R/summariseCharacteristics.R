@@ -57,35 +57,52 @@ summariseCharacteristics <- function(cohort,
   #   minCellCount = minCellCount
   # )
 
-  # add characteristics
+  # add names
+  # ageGroup
+  # windowVisitOccurrence
+  # covariates
+
+  # add baseline characteristics
   cohort <- cohort %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
     ) %>%
     PatientProfiles::addDemographics(cdm, ageGroup = ageGroup)
+
+  # add number of visits
   if (!is.null(windowVisitOcurrence)) {
     cohort <- cohort %>%
       PatientProfiles::addIntersect(
-        cdm, "visit_occurrence", "flag", window = windowVisitOcurrence,
-        targetEndDate = NULL, nameStyle = "number_visits"
+        cdm = cdm, targetCohortTable = "visit_occurrence", value = "flag",
+        window = windowVisitOcurrence, targetEndDate = NULL,
+        nameStyle = "number_visits_{window_name}"
       )
+    columNamesVisits <- paste0("number_visits_", names(windowVisitOcurrence))
+  } else {
+    columNamesVisits <- NULL
   }
+
+  # add covariates
+  columNamesCovariates <- colnames(cohort)
   for (k in seq_along(covariates)) {
     cohort <- cohort %>%
       PatientProfiles::addCohortIntersectFlag(
-        cdm, names(covariates)[k], window = covariates[[k]]
+        cdm = cdm, targetCohortTable = names(covariates)[k],
+        window = covariates[[k]], nameStyle = paste0(
+          "{cohort_name}_", names(covariates)[k], "_{window_name}"
+        )
       )
   }
+  columNamesCovariates <- setdiff(columNamesCovariates, colnames(cohort))
 
   # get variables
   variables <- list(
     dates = c("cohort_start_date", "cohort_end_date"),
     numeric = c(
-      "age", "number_visits"[!is.null(windowVisitOcurrence)], "prior_observation",
-      "future_observation"
+      "age", columNamesVisits, "prior_observation", "future_observation"
     ),
-    categorical = c("sex", "age_group"[!is.null(ageGroup)])
+    categorical = c("sex", names(ageGroup))
   )
 
   # set functions
@@ -95,18 +112,14 @@ summariseCharacteristics <- function(cohort,
     categorical = c("count", "%")
   )
 
-  if (length(covariates) > 0) {
-    variables$covariates <- colnames(cohort)[!c(colnames(cohort) %in% c(
-      "subject_id", "cohort_definition_id", unlist(variables)
-    ))]
+  if (length(columNamesCovariates) > 0) {
+    variables$covariates <- columNamesCovariates
     functions$covariates <- c("count", "%")
   }
 
   # update cohort_names
   cohort <- cohort %>%
-    dplyr::left_join(
-      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
-    )
+    dplyr::left_join(attr(cohort, "cohort_set"), by = "cohort_definition_id")
 
   # summarise results
   results <- cohort %>%
@@ -121,6 +134,48 @@ summariseCharacteristics <- function(cohort,
         utils::packageVersion("PatientProfiles")
       )
     )
+
+  # style visits
+  if (length(columNamesVisits) > 0) {
+    results <- results %>%
+      dplyr::mutate(window_name = dplyr::if_else(
+        grepl("number_visits_", .data$variable),
+        gsub("number_visits_", .data$variable),
+        NA_character_
+      ))
+  }
+
+  # style covariates
+  if (length(columNamesCovariates) > 0) {
+    for (k in seq_along(covariates)) {
+      covariatesColumns <- columNamesCovariates[
+        grepl(paste0("_", names(covariates)[k], "_"), columNamesCovariates)
+      ]
+      results <- results %>%
+        dplyr::mutate(
+          window_name = dplyr::if_else(
+            .data$variable %in% .env$covariatesColumns,
+            extractWindowName(.data$variable, names(covariates)[k]),
+            dplyr::if_else(
+              length(columNamesVisits) > 0, .data$window_name, NA_character_
+            )
+          ),
+          variable_type = dplyr::if_else(
+            .data$variable %in% .env$covariatesColumns,
+            extractCohortName(.data$variable, names(covariates)[k]),
+            .data$variable_type
+          )
+       )
+    }
+  }
+
+  # select variables
+  results <- results %>%
+    dplyr::select(dplyr::any_of(c(
+      "cdm_name", "generated_by", "group_name", "group_level", "strata_name",
+      "strata_level", "variable", "variable_level", "window_name",
+      "estimate_type", "estimate"
+    )))
 
   return(results)
 }

@@ -27,7 +27,7 @@ tableSummary <- function(table,
   # initial checks
 
   # filter data
-  for (k in seq_along(filterRows)) {
+  for (k in seq_along(filterRow)) {
     table <- table %>%
       dplyr::filter(.data[[names(filterRow)[k]]] %in% filterRow[[k]])
   }
@@ -53,7 +53,7 @@ tableSummary <- function(table,
         names_from = "names_columns", values_from = "value"
       ) %>%
       dplyr::inner_join(
-        dplyr::tibble(old_name = pivotWider, name = namesPivotWider),
+        dplyr::tibble(old_name = pivotWider, variable = namesPivotWider),
         by = "old_name"
       ) %>%
       dplyr::select(-"old_name")
@@ -65,8 +65,7 @@ tableSummary <- function(table,
         values_from = dplyr::all_of(estimateColumn)
       )
     table <- newNamesColumns %>%
-      dplyr::bind_rows(table) %>%
-      dplyr::relocate("name")
+      dplyr::bind_rows(table)
   }
 
   # hide columns
@@ -92,7 +91,9 @@ tableSummary <- function(table,
 #'
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
-#'   summariseCharacteristics(cdm = cdm, minCellCount = 1) %>%
+#'   summariseCharacteristics(
+#'     cdm = cdm, minCellCount = 1, covariates = list(cohort2 = c(-Inf, -1))
+#'   ) %>%
 #'   tableCharacteristics()
 #' }
 #'
