@@ -18,10 +18,13 @@
 #' cohorts.
 #'
 #' @param cohort A cohort in the cdm
+#' @param cdm A cdm reference.
 #' @param strata Stratification list
 #' @param ageGroup A list of age groups.
-#' @param tableIntersect ...
-#' @param cohortIntersect ...
+#' @param tableIntersect A list of arguments that uses addTableIntersect
+#' function to add covariates and comorbidities.
+#' @param cohortIntersect A list of arguments that uses addCohortIntersect
+#' function to add covariates and comorbidities.
 #' @param minCellCount minimum counts due to obscure
 #'
 #' @return A summary of the characteristics of the individuals
@@ -50,6 +53,7 @@
 #' )
 #' }
 summariseCharacteristics <- function(cohort,
+                                     cdm = attr(cohort, "cohort_reference"),
                                      strata = list(),
                                      ageGroup = NULL,
                                      tableIntersect = list(
@@ -60,7 +64,6 @@ summariseCharacteristics <- function(cohort,
                                      ),
                                      cohortIntersect = list(),
                                      minCellCount = 5) {
-  cdm <- attr(cohort, "cohort_reference")
   # check initial tables
   # checkInputs(
   #   cohort = cohort, cdm = cdm, strata = strata, ageGroup = ageGroup,
@@ -77,25 +80,50 @@ summariseCharacteristics <- function(cohort,
   cohort <- cohort %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date"
+      "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
     ) %>%
     PatientProfiles::addDemographics(cdm, ageGroup = ageGroup)
 
+  variables <- dplyr::tibble(
+    variable = c("cohort_start_date", "cohort_end_date"),
+    variable_type = "date"
+  ) %>%
+    dplyr::union_all(dplyr::tibble(
+      variable = c("age", "prior_observation", "future_observation"),
+      variable_type = "numeric"
+    )) %>%
+    dplyr::union_all(dplyr::tibble(
+      variable = c("sex", names(ageGroup)),
+      variable_type = "categorical"
+    ))
+
+
   # add tableIntersect
-  columTableIntersect <- colnames(cohort)
   for (k in seq_along(tableIntersect)) {
+    columTableIntersect <- colnames(cohort)
     cohort <- cohort %>%
       PatientProfiles::addIntersect(
-        cdm = cdm, targetCohortTable = "visit_occurrence", value = "flag",
-        window = windowVisitOcurrence, targetEndDate = NULL,
-        nameStyle = "number_visits_{window_name}"
+        cdm = cdm, targetCohortTable = tableIntersect[[k]][["targetTable"]],
+        value = tableIntersect[[k]][["value"]],
+        window = tableIntersect[[k]][["window"]],
+        nameStyle = paste0(
+          tableIntersect[[k]][["targetTable"]], "_{value}_{window_name}"
+        )
       )
+    columTableIntersect <- setdiff(columTableIntersect, colnames(cohort))
+    variables <- variables %>%
+      dplyr::union_all(dplyr::tibble(
+        variable = columTableIntersect,
+        variable_type = switch(
+          tableIntersect[[k]][["value"]], "flag" = "binary", "date" = "date",
+          "time" = "numeric", "count" = "numeric", "categorical"
+        )
+      ))
   }
-  columTableIntersect <- setdiff(columTableIntersect, colnames(cohort))
 
   # add cohortIntersect
-  columCohortIntersect <- colnames(cohort)
   for (k in seq_along(cohortIntersect)) {
+    columCohortIntersect <- colnames(cohort)
     cohort <- cohort %>%
       PatientProfiles::addCohortIntersectFlag(
         cdm = cdm, targetCohortTable = covariates[[k]][["cohortName"]],
@@ -103,8 +131,16 @@ summariseCharacteristics <- function(cohort,
           "{cohort_name}_", covariates[[k]][["cohortName"]], "_{window_name}"
         )
       )
+    columCohortIntersect <- setdiff(columCohortIntersect, colnames(cohort))
+    variables <- variables %>%
+      dplyr::union_all(dplyr::tibble(
+        variable = columCohortIntersect,
+        variable_type = switch(
+          cohortIntersect[[k]][["value"]], "flag" = "binary", "date" = "date",
+          "time" = "numeric", "count" = "numeric", "categorical"
+        )
+      ))
   }
-  columCohortIntersect <- setdiff(columCohortIntersect, colnames(cohort))
 
   # get variables
   variables <- list(
