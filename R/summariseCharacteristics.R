@@ -130,7 +130,7 @@ summariseCharacteristics <- function(cohort,
           tableIntersect[[k]][["value"]], "flag" = "binary", "date" = "date",
           "time" = "numeric", "count" = "numeric", "categorical"
         ),
-        group_name = names(tableIntersect)[k]
+        variable_group = names(tableIntersect)[k]
       ))
   }
 
@@ -152,7 +152,7 @@ summariseCharacteristics <- function(cohort,
           cohortIntersect[[k]][["value"]], "flag" = "binary", "date" = "date",
           "time" = "numeric", "count" = "numeric"
         ),
-        group_name = names(cohortIntersect)[k]
+        variable_group = names(cohortIntersect)[k]
       ))
   }
 
@@ -187,71 +187,60 @@ summariseCharacteristics <- function(cohort,
     dplyr::mutate(results_type = "summary characteristics")
 
   # style intersects
-  x <- c(tableIntersect, cohortIntersect)
-  patternNames <- lapply(names(x), function(xx) {
+  results <- tidyResults(results, variables, c(tableIntersect, cohortIntersect))
+
+  # select variables
+  results <- results %>%
+    dplyr::select(
+      "cdm_name", "results_type", "group_name", "group_level", "strata_name",
+      "strata_level", "variable", "variable_level", "estimate_type", "estimate"
+    )
+
+  return(results)
+}
+
+tidyResults <- function(results, variables, intersect) {
+  patternNames <- lapply(names(intersect), function(x) {
     tidyr::expand_grid(
-      value = x[[xx]][["value"]], window_name = names(x[[xx]][["window"]])
+      value = intersect[[x]][["value"]],
+      window_name = names(intersect[[x]][["window"]])
     ) %>%
-      dplyr::mutate(group_name = .env$xx)
+      dplyr::mutate(variable_group = .env$x)
   }) %>%
     dplyr::bind_rows() %>%
     dplyr::mutate(
       pattern = paste0("_", .data$value, "_", .data$window_name),
-      name = gsub("_", " ", paste(
-        .data$group_name, .data$value, "in", dplyr::if_else(
+      variable_new = gsub("_", " ", paste(
+        .data$variable_group, .data$value, "in", dplyr::if_else(
           substr(.data$window_name, 1, 1) == "m" &
             suppressWarnings(!is.na(as.numeric(substr(
               .data$window_name, 2, 2)
             ))),
           gsub("m", "-", paste(.data$window_name, "days")), .data$window_name
-      )))
-    )
-  variables %>%
-    dplyr::filter(!is.na(.data$group_name)) %>%
-    tidyr::separate(
-      col = "variable", sep = c("_count_|_flag_|_time_|_count_"),
-      into = c("variable", "window_name")
+        )))
     ) %>%
-    dplyr::
-  if (length(columNamesCovariates) > 0) {
-    for (k in seq_along(covariates)) {
-      covariatesColumns <- columNamesCovariates[
-        grepl(paste0("_", names(covariates)[k], "_"), columNamesCovariates)
-      ]
-      results <- results %>%
+    dplyr::select("pattern", "variable_group", "variable_new")
+  results %>%
+    dplyr::left_join(
+      variables %>%
+        dplyr::select(-"variable_type") %>%
+        dplyr::filter(!is.na(.data$variable_group)) %>%
+        dplyr::inner_join(patternNames, by = "variable_group") %>%
+        dplyr::rowwise() %>%
+        dplyr::filter(grepl(.data$pattern, .data$variable)) %>%
         dplyr::mutate(
-          window_name = dplyr::if_else(
-            .data$variable %in% .env$covariatesColumns,
-            extractWindowName(.data$variable, names(covariates)[k]),
-            dplyr::if_else(
-              length(columNamesVisits) > 0, .data$window_name, NA_character_
-            )
-          ),
-          variable_type = dplyr::if_else(
-            .data$variable %in% .env$covariatesColumns,
-            extractCohortName(.data$variable, names(covariates)[k]),
-            .data$variable_type
-          )
-       )
-    }
-  }
-
-  # select variables
-  results <- results %>%
-    dplyr::select(dplyr::any_of(c(
-      "cdm_name", "generated_by", "group_name", "group_level", "strata_name",
-      "strata_level", "variable", "variable_level", "window_name",
-      "estimate_type", "estimate"
-    )))
-
-  return(results)
-}
-
-addWindowName <- function(window) {
-  if (!is.list(window)) {
-    window <- list(window)
-  }
-  if (length(window) > 0) {
-
-  }
+          variable_level_new = gsub(.data$pattern, "", .data$variable)
+        ) %>%
+        dplyr::select(-c("pattern", "variable_group")),
+      by = "variable"
+    ) %>%
+    dplyr::mutate(
+      variable = dplyr::if_else(
+        is.na(.data$variable_new), .data$variable, .data$variable_new
+      ),
+      variable_level = dplyr::if_else(
+        is.na(.data$variable_level_new), .data$variable_level,
+        .data$variable_level_new
+      )
+    )
 }

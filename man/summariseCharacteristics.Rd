@@ -7,27 +7,29 @@ cohorts.}
 \usage{
 summariseCharacteristics(
   cohort,
-  cdm,
+  cdm = attr(cohort, "cdm_reference"),
   strata = list(),
   ageGroup = NULL,
-  windowVisitOcurrence = NULL,
-  covariates = list(),
+  tableIntersect = list(Visits = list(tableName = "visit_occurrence", value = "count",
+    window = c(-365, 0))),
+  cohortIntersect = list(),
   minCellCount = 5
 )
 }
 \arguments{
 \item{cohort}{A cohort in the cdm}
 
-\item{cdm}{A cdm_reference created by CDMConnector}
+\item{cdm}{A cdm reference.}
 
 \item{strata}{Stratification list}
 
 \item{ageGroup}{A list of age groups.}
 
-\item{windowVisitOcurrence}{Window to count visit occurrences.}
+\item{tableIntersect}{A list of arguments that uses addTableIntersect
+function to add covariates and comorbidities.}
 
-\item{covariates}{Named list of windows to check covariates. The name must
-point to a cohortTableName in the cdm.}
+\item{cohortIntersect}{A list of arguments that uses addCohortIntersect
+function to add covariates and comorbidities.}
 
 \item{minCellCount}{minimum counts due to obscure}
 }
@@ -45,10 +47,18 @@ library(PatientProfiles)
 cdm <- mockPatientProfiles()
 
 summariseCharacteristics(
-  cdm$cohort1,
-  cdm,
+  cohort = cdm$cohort1,
   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
-  windowVisitOcurrence = c(-180, 0)
+  tableIntersect = list(
+    "Visits" = list(
+      tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+     )
+  ),
+  cohortIntersect = list(
+    "Medications" = list(
+      targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
+    )
+  )
 )
 }
 }

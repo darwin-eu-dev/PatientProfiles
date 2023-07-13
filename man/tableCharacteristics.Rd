@@ -21,7 +21,9 @@ library(PatientProfiles)
 
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
-  summariseCharacteristics(cdm = cdm, minCellCount = 1) \%>\%
+  summariseCharacteristics(
+    cdm = cdm, minCellCount = 1, covariates = list(cohort2 = c(-Inf, -1))
+  ) \%>\%
   tableCharacteristics()
 }
 
