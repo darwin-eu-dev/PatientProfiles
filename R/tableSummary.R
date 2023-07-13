@@ -14,10 +14,22 @@
 #' library(PatientProfiles)
 #'
 #' cdm <- mockPatientProfiles()
-#' cdm$cohort1 %>%
-#'   summariseCharacteristics(cdm = cdm, minCellCount = 1) %>%
+#'
+#' summariseCharacteristics(
+#'   cohort = cdm$cohort1,
+#'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+#'   tableIntersect = list(
+#'     "Visits" = list(
+#'       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+#'      )
+#'   ),
+#'   cohortIntersect = list(
+#'     "Medications" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
+#'     )
+#'   )
+#' ) %>%
 #'   tableSummary()
-#' }
 #'
 tableSummary <- function(table,
                          filterRow = NULL,
@@ -44,7 +56,9 @@ tableSummary <- function(table,
       dplyr::select(dplyr::all_of(pivotWider)) %>%
       dplyr::distinct() %>%
       dplyr::arrange(dplyr::across(dplyr::all_of(pivotWider))) %>%
-      dplyr::mutate(names_columns = paste0("estimate_", dplyr::row_number()))
+      dplyr::mutate(names_columns = paste0(
+        .env$estimateColumn, "_", dplyr::row_number()
+      ))
     newNamesColumns <- namesColumns %>%
       tidyr::pivot_longer(
         dplyr::all_of(pivotWider), names_to = "old_name", values_to = "value"
@@ -90,12 +104,23 @@ tableSummary <- function(table,
 #' library(PatientProfiles)
 #'
 #' cdm <- mockPatientProfiles()
-#' cdm$cohort1 %>%
-#'   summariseCharacteristics(
-#'     cdm = cdm, minCellCount = 1, covariates = list(cohort2 = c(-Inf, -1))
-#'   ) %>%
+#'
+#' summariseCharacteristics(
+#'   cohort = cdm$cohort1,
+#'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+#'   tableIntersect = list(
+#'     "Visits" = list(
+#'       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+#'      )
+#'   ),
+#'   cohortIntersect = list(
+#'     "Medications" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
+#'     )
+#'   ),
+#'   minCellCount = 1
+#' ) %>%
 #'   tableCharacteristics()
-#' }
 #'
 tableCharacteristics <- function(table) {
   table %>%
@@ -108,8 +133,6 @@ tableCharacteristics <- function(table) {
         "CDM name" = "cdm_name", "Group" = "group_level",
         "Strata" = "strata_level"
       ),
-      hideColumn = c(
-        "group_name", "strata_name", "variable_type", "generated_by"
-      )
+      hideColumn = c("group_name", "strata_name", "results_type")
     )
 }
