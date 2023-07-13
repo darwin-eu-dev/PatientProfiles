@@ -761,9 +761,11 @@ test_that("censorDate functionality", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result1 %>% dplyr::filter(subject_id != 4) == result2 %>% dplyr::filter(subject_id != 4)))
+  expect_true(all(result1 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("subject_id") ==
+                    result2 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("subject_id")))
   expect_true(all(compareNA(result2 %>% dplyr::filter(subject_id == 4) %>%
-                              dplyr::select(dplyr::ends_with("inf")) %>% unlist(use.names = F),
+                              dplyr::select(dplyr::ends_with("inf")) %>% dplyr::arrange("subject_id") %>%
+                              unlist(use.names = F),
                             c(0,0,NA,NA))))
 
 })
