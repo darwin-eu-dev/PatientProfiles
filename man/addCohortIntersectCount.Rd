@@ -15,6 +15,7 @@ addCohortIntersectCount(
   targetEndDate = "cohort_end_date",
   window = list(c(0, Inf)),
   nameStyle = "{cohort_name}_{window_name}",
+  censorDate = NULL,
   tablePrefix = NULL
 )
 }
@@ -41,6 +42,9 @@ intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
+
+\item{censorDate}{whether to censor overlap events at a specific date
+or a column date of x}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}

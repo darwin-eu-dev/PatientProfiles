@@ -37,6 +37,8 @@
 #' @param order last or first date to use for date/time calculations
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -69,6 +71,7 @@ addIntersect <- function(x,
                          targetEndDate = getEndName(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}",
+                         censorDate = NULL,
                          tablePrefix = NULL) {
   # initial checks
   personVariable <- checkX(x)
@@ -84,6 +87,10 @@ addIntersect <- function(x,
   checkmate::assertChoice(order, c("first", "last"))
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  checkVariableInX(censorDate, x, TRUE, "censorDate")
+  if(!is.null(censorDate)) {
+    checkCensorDate(x, censorDate)
+  }
   if (!is.null(idName)) {
     idName <- checkSnakeCase(idName)
   }
@@ -121,13 +128,24 @@ addIntersect <- function(x,
       )
   }
 
-  result <- x %>%
-    dplyr::select(
-      dplyr::all_of(personVariable),
-      "index_date" = dplyr::all_of(indexDate)
-    ) %>%
-    dplyr::distinct() %>%
-    dplyr::inner_join(overlapTable, by = personVariable)
+  if(!is.null(censorDate)) {
+    result <- x %>%
+      dplyr::select(
+        dplyr::all_of(personVariable),
+        "index_date" = dplyr::all_of(indexDate),
+        dplyr::all_of(censorDate)
+      ) %>%
+      dplyr::distinct() %>%
+      dplyr::inner_join(overlapTable, by = personVariable)
+  } else {
+    result <- x %>%
+      dplyr::select(
+        dplyr::all_of(personVariable),
+        "index_date" = dplyr::all_of(indexDate)
+      ) %>%
+      dplyr::distinct() %>%
+      dplyr::inner_join(overlapTable, by = personVariable)
+  }
 
   if (is.null(tablePrefix)) {
     result <- CDMConnector::computeQuery(result)
@@ -150,6 +168,13 @@ addIntersect <- function(x,
         )), 1, 0))
     } else {
       resultW <- resultW %>% dplyr::mutate(indicator = 1)
+    }
+
+    if(!is.null(censorDate)) {
+      resultW <- resultW %>%
+        dplyr::mutate(indicator = dplyr::if_else(.data$overlap_start_date > .data[[censorDate]],
+                                                 0, .data$indicator)
+        )
     }
 
     if (!is.infinite(windowTbl$lower[i])) {
@@ -343,7 +368,7 @@ addIntersect <- function(x,
       x <- x %>%
         dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
         dplyr::left_join(resultDateTimeOtherX,
-          by = c(personVariable, indexDate)
+                         by = c(personVariable, indexDate)
         )
     }
 
@@ -360,9 +385,9 @@ addIntersect <- function(x,
   colnames <- expand.grid(value = value, id_name = filterTbl$id_name, window_name = windowTbl$window_name) %>%
     dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
     dplyr::mutate(val = ifelse(value %in% c("flag", "count"), 0,
-      ifelse(value %in% "date", as.Date(NA),
-        ifelse(value %in% "days", as.numeric(NA), as.character(NA))
-      )
+                               ifelse(value %in% "date", as.Date(NA),
+                                      ifelse(value %in% "days", as.numeric(NA), as.character(NA))
+                               )
     )) %>%
     dplyr::select(.data$column, .data$val) %>%
     dplyr::mutate(column = checkSnakeCase(.data$column, verbose = F)) %>%
