@@ -50,7 +50,7 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   result <- cdm$cohort1 %>%
     addIntersect(cdm = cdm, tableName = "cohort2", value = "date", nameStyle = "xx") %>%
@@ -241,7 +241,7 @@ test_that("working examples with cohort_end_date", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   result <- cdm$cohort1 %>%
     addIntersect(
@@ -306,7 +306,7 @@ test_that("working examples with extra column", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   cdm$cohort2 <- cdm$cohort2 %>%
     dbplyr::window_order(
@@ -355,7 +355,7 @@ test_that("working examples with extra column", {
 
 
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   cdm$cohort2 <- cdm$cohort2 %>%
     dbplyr::window_order(
@@ -438,7 +438,7 @@ test_that("working examples with multiple cohort Ids", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -608,7 +608,7 @@ test_that("working examples with more than one window", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -692,7 +692,7 @@ test_that("working examples with tables, not cohorts", {
   cdm <- mockPatientProfiles(connectionDetails,
                              cohort1 = cohort1,
                              condition_occurrence = conditionOccurrence,
-                             drug_exposure = drugExposure)
+                             drug_exposure = drugExposure, patient_size = 2)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -819,7 +819,7 @@ test_that("check input length and type for each of the arguments", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   expect_error(addIntersect("cdm$cohort1", cdm))
 
@@ -909,7 +909,7 @@ test_that("test if column exist, overwrite", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   result <- cdm$cohort1 %>%
     addIntersect(
@@ -996,7 +996,7 @@ test_that("overlapTable is empty, check return columns", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
 
   result <- cdm$cohort1 %>%
@@ -1076,7 +1076,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 3)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))

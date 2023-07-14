@@ -30,9 +30,21 @@ test_that("test summariseCharacteristics", {
     ))
   )
 
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1,2,3),
+    person_id = c(1,2,3),
+    observation_period_start_date = as.Date(c(
+      "1985-01-01", "1989-04-29", "1974-12-03"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2011-03-04", "2022-03-14", "2023-07-10"
+    ))
+  )
+
   cdm <- mockPatientProfiles(
     connectionDetails, dus_cohort = dus_cohort,
-    comorbidities = comorbidities, medication = medication
+    comorbidities = comorbidities, medication = medication,
+    observation_period = observation_period
   )
 
   attr(cdm$dus_cohort, "cohort_set") <- dplyr::tibble(

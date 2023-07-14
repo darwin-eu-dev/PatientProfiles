@@ -37,8 +37,7 @@
 #' @param order last or first date to use for date/time calculations
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
+#' @param censorDate whether to censor overlap events at a date column of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -133,15 +132,19 @@ addIntersect <- function(x,
       dplyr::select(
         dplyr::all_of(personVariable),
         "index_date" = dplyr::all_of(indexDate),
-        dplyr::all_of(censorDate)
+        "censor_date" = dplyr::all_of(censorDate)
       ) %>%
       dplyr::distinct() %>%
       dplyr::inner_join(overlapTable, by = personVariable)
   } else {
     result <- x %>%
+      PatientProfiles::addFutureObservation(cdm, indexDate = dplyr::all_of(indexDate)) %>%
+      dplyr::mutate(censor_date = CDMConnector::dateadd(dplyr::all_of(indexDate),
+                                          "future_observation")) %>%
       dplyr::select(
         dplyr::all_of(personVariable),
-        "index_date" = dplyr::all_of(indexDate)
+        "index_date" = dplyr::all_of(indexDate),
+        "censor_date"
       ) %>%
       dplyr::distinct() %>%
       dplyr::inner_join(overlapTable, by = personVariable)
@@ -170,12 +173,10 @@ addIntersect <- function(x,
       resultW <- resultW %>% dplyr::mutate(indicator = 1)
     }
 
-    if(!is.null(censorDate)) {
-      resultW <- resultW %>%
-        dplyr::mutate(indicator = dplyr::if_else(.data$overlap_start_date > .data[[censorDate]],
-                                                 0, .data$indicator)
-        )
-    }
+    resultW <- resultW %>%
+      dplyr::mutate(indicator = dplyr::if_else(.data$overlap_start_date > .data$censor_date,
+                                               0, .data$indicator)
+      )
 
     if (!is.infinite(windowTbl$lower[i])) {
       resultW <- resultW %>%

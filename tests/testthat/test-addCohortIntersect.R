@@ -105,7 +105,8 @@ test_that("first vs last event - cohort table", {
   cdm <- mockPatientProfiles(
     connectionDetails,
     cohort1 = cohort1,
-    cohort2 = cohort2
+    cohort2 = cohort2,
+    patient_size = 2
   )
 
   # first
@@ -228,7 +229,8 @@ test_that("multiple cohort entries per person", {
   cdm <- mockPatientProfiles(
     connectionDetails,
     cohort1 = cohort1,
-    cohort2 = cohort2
+    cohort2 = cohort2,
+    patient_size = 2
   )
 
   # 100 days from index
@@ -483,7 +485,10 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails,
+                             cohort1 = cohort1,
+                             cohort2 = cohort2,
+                             patient_size = 2)
 
   result0 <- cdm$cohort1 %>%
     addCohortIntersectCount(cdm = cdm, targetCohortTable = "cohort2") %>%
@@ -585,7 +590,10 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails,
+                             cohort1 = cohort1,
+                             cohort2 = cohort2,
+                             patient_size = 2)
 
   result0 <- cdm$cohort1 %>%
     addCohortIntersectFlag(cdm = cdm, targetCohortTable = "cohort2") %>%
@@ -668,7 +676,10 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails,
+                             cohort1 = cohort1,
+                             cohort2 = cohort2,
+                             patient_size = 2)
 
   result1 <- cdm$cohort1 %>%
     addCohortIntersect(cdm = cdm, targetCohortTable = "cohort2") %>%
@@ -743,7 +754,10 @@ test_that("censorDate functionality", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(connectionDetails,
+                             cohort1 = cohort1,
+                             cohort2 = cohort2,
+                             patient_size = 5)
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -761,8 +775,8 @@ test_that("censorDate functionality", {
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
-  expect_true(all(result1 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("subject_id") ==
-                    result2 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("subject_id")))
+  expect_true(all(result1 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("cohort_start_date") %>% dplyr::select(order(colnames(result1))) ==
+                    result2 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("cohort_start_date") %>% dplyr::select(order(colnames(result2)))))
   expect_true(all(compareNA(result2 %>% dplyr::filter(subject_id == 4) %>%
                               dplyr::select(dplyr::ends_with("inf")) %>% dplyr::arrange("subject_id") %>%
                               unlist(use.names = F),
