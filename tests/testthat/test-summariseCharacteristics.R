@@ -1,4 +1,17 @@
 test_that("test summariseCharacteristics", {
+  person <- dplyr::tibble(
+    person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
+    year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
+    day_of_birth = c(30, 10, 24)
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3), person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(
+      c("1990-01-01", "2005-12-30", "1990-05-12")
+    ), observation_period_end_date = as.Date(
+      c("2022-01-01", "2022-12-30", "2022-05-12")
+    )
+  )
   dus_cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -31,8 +44,9 @@ test_that("test summariseCharacteristics", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails, dus_cohort = dus_cohort,
-    comorbidities = comorbidities, medication = medication
+    connectionDetails, dus_cohort = dus_cohort, person = person,
+    comorbidities = comorbidities, medication = medication,
+    observation_period = observation_period
   )
 
   attr(cdm$dus_cohort, "cohort_set") <- dplyr::tibble(
@@ -47,14 +61,23 @@ test_that("test summariseCharacteristics", {
   )
 
   expect_no_error(result <- summariseCharacteristics(
-    cdm$dus_cohort, cdm, covariates = list(
-      "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
+    cdm$dus_cohort, cohortIntersect = list(
+      "Medications" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      ), "Comorbidities" = list(
+        targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+      )
     ), minCellCount = 1
+  ))
+  expect_identical(colnames(result), c(
+    "cdm_name", "result_type", "group_name", "group_level", "strata_name",
+    "strata_level", "variable", "variable_level", "variable_type",
+    "estimate_type", "estimate"
   ))
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "covid_minf_to_0") %>%
+      dplyr::filter(variable_level == "Covid") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),

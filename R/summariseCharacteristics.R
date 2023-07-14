@@ -57,7 +57,7 @@ summariseCharacteristics <- function(cohort,
                                      strata = list(),
                                      ageGroup = NULL,
                                      tableIntersect = list(
-                                       "Visits" = list(
+                                       "Visit" = list(
                                          tableName = "visit_occurrence",
                                          value = "count", window = c(-365, 0)
                                        )
@@ -156,6 +156,7 @@ summariseCharacteristics <- function(cohort,
       ))
   }
 
+  # set variables
   variablesToSummary <- list()
   keys <- variables %>% dplyr::pull("variable_type") %>% unique()
   for (k in seq_along(keys)) {
@@ -166,8 +167,8 @@ summariseCharacteristics <- function(cohort,
 
   # set functions
   functionsToSummary <- list(
-    date = c("median", "q25", "q75"),
-    numeric = c("median", "q25", "q75"),
+    date = c("median", "min", "q25", "q75", "max"),
+    numeric = c("median", "min", "q25", "q75", "max"),
     categorical = c("count", "%"),
     binary = c("count", "%")
   )
@@ -184,7 +185,7 @@ summariseCharacteristics <- function(cohort,
       minCellCount = minCellCount
     ) %>%
     addCdmName(cdm = cdm) %>%
-    dplyr::mutate(results_type = "summary characteristics")
+    dplyr::mutate(result_type = "summary characteristics")
 
   # style intersects
   results <- tidyResults(results, variables, c(tableIntersect, cohortIntersect))
@@ -192,8 +193,9 @@ summariseCharacteristics <- function(cohort,
   # select variables
   results <- results %>%
     dplyr::select(
-      "cdm_name", "results_type", "group_name", "group_level", "strata_name",
-      "strata_level", "variable", "variable_level", "estimate_type", "estimate"
+      "cdm_name", "result_type", "group_name", "group_level", "strata_name",
+      "strata_level", "variable", "variable_level", "variable_type",
+      "estimate_type", "estimate"
     )
 
   return(results)
@@ -208,13 +210,18 @@ tidyResults <- function(results, variables, intersect) {
       dplyr::mutate(variable_group = .env$x)
   }) %>%
     dplyr::bind_rows() %>%
+    dplyr::rowwise() %>%
+    tidyr::separate(
+      col = "window_name", into = "window_first", sep = "_", remove = FALSE,
+      extra = "drop"
+    ) %>%
     dplyr::mutate(
       pattern = paste0("_", .data$value, "_", .data$window_name),
       variable_new = gsub("_", " ", paste(
         .data$variable_group, .data$value, "in", dplyr::if_else(
-          substr(.data$window_name, 1, 1) == "m" &
+          substr(.data$window_first, 1, 1) == "m" &
             suppressWarnings(!is.na(as.numeric(substr(
-              .data$window_name, 2, 2)
+              .data$window_first, 2, nchar(.data$window_first))
             ))),
           gsub("m", "-", paste(.data$window_name, "days")), .data$window_name
         )))
@@ -236,10 +243,13 @@ tidyResults <- function(results, variables, intersect) {
     ) %>%
     dplyr::mutate(
       variable = dplyr::if_else(
-        is.na(.data$variable_new), .data$variable, .data$variable_new
+        is.na(.data$variable_new),
+        stringr::str_to_sentence(gsub("_", " ", .data$variable)),
+        .data$variable_new
       ),
       variable_level = dplyr::if_else(
-        is.na(.data$variable_level_new), .data$variable_level,
+        is.na(.data$variable_level_new),
+        stringr::str_to_sentence(gsub("_", " ", .data$variable_level)),
         .data$variable_level_new
       )
     )
