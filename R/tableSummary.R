@@ -8,29 +8,6 @@
 #' @return New table in gt format
 #'
 #' @export
-#'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#'
-#' cdm <- mockPatientProfiles()
-#'
-#' summariseCharacteristics(
-#'   cohort = cdm$cohort1,
-#'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
-#'   tableIntersect = list(
-#'     "Visits" = list(
-#'       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
-#'      )
-#'   ),
-#'   cohortIntersect = list(
-#'     "Medications" = list(
-#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
-#'     )
-#'   )
-#' ) %>%
-#'   tableSummary()
-#'
 tableSummary <- function(table,
                          filterRow = NULL,
                          pivotWider = NULL,
@@ -121,7 +98,7 @@ tableSummary <- function(table,
 #'   minCellCount = 1
 #' ) %>%
 #'   tableCharacteristics()
-#'
+#'}
 tableCharacteristics <- function(table) {
   table %>%
     dplyr::mutate(
@@ -133,6 +110,6 @@ tableCharacteristics <- function(table) {
         "CDM name" = "cdm_name", "Group" = "group_level",
         "Strata" = "strata_level"
       ),
-      hideColumn = c("group_name", "strata_name", "results_type")
+      hideColumn = c("group_name", "strata_name", "result_type")
     )
 }

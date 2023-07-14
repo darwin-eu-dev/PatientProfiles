@@ -10,7 +10,7 @@ summariseCharacteristics(
   cdm = attr(cohort, "cdm_reference"),
   strata = list(),
   ageGroup = NULL,
-  tableIntersect = list(Visits = list(tableName = "visit_occurrence", value = "count",
+  tableIntersect = list(Visit = list(tableName = "visit_occurrence", value = "count",
     window = c(-365, 0))),
   cohortIntersect = list(),
   minCellCount = 5

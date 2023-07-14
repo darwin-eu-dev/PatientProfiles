@@ -20,11 +20,22 @@ Create a gt table from a summary characteristics object
 library(PatientProfiles)
 
 cdm <- mockPatientProfiles()
-cdm$cohort1 \%>\%
-  summariseCharacteristics(
-    cdm = cdm, minCellCount = 1, covariates = list(cohort2 = c(-Inf, -1))
-  ) \%>\%
+
+summariseCharacteristics(
+  cohort = cdm$cohort1,
+  ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+  tableIntersect = list(
+    "Visits" = list(
+      tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+     )
+  ),
+  cohortIntersect = list(
+    "Medications" = list(
+      targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
+    )
+  ),
+  minCellCount = 1
+) \%>\%
   tableCharacteristics()
 }
-
 }

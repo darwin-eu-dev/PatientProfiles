@@ -27,14 +27,3 @@ New table in gt format
 \description{
 Create a gt table from a summary results objects
 }
-\examples{
-\donttest{
-library(PatientProfiles)
-
-cdm <- mockPatientProfiles()
-cdm$cohort1 \%>\%
-  summariseCharacteristics(cdm = cdm, minCellCount = 1) \%>\%
-  tableSummary()
-}
-
-}

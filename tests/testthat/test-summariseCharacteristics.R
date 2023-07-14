@@ -76,7 +76,7 @@ test_that("test summariseCharacteristics", {
   ))
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
+      dplyr::filter(group_level == "Exposed") %>%
       dplyr::filter(variable_level == "Covid") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
@@ -85,8 +85,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "headache_minf_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Headache") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -94,8 +94,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "acetaminophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Acetaminophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -103,8 +103,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "ibuprophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Ibuprophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -112,8 +112,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "naloxone_m365_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Naloxone") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -121,8 +121,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "covid_minf_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Covid") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -130,8 +130,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "headache_minf_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Headache") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -139,8 +139,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "acetaminophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Acetaminophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -148,8 +148,8 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "ibuprophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Ibuprophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -157,18 +157,61 @@ test_that("test summariseCharacteristics", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "naloxone_m365_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Naloxone") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
     0
   )
 
-  # expect_no_error(result <- summariseCharacteristics(
-  #   cdm$dus_cohort, cdm, windowVisitOcurrence = c(-365, 0), covariates = list(
-  #     "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
-  #   ), minCellCount = 1
-  # ))
+  expect_no_error(result <- summariseCharacteristics(
+    cdm$dus_cohort, cohortIntersect = list(
+      "Medications" = list(
+        targetCohortTable = "medication", value = "flag", window = list(
+          "short" = c(-30, 0), "long" = c(-365, 0)
+        )
+      ), "Comorbidities" = list(
+        targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+      )
+    ), minCellCount = 1
+  ))
+  expect_identical(colnames(result), c(
+    "cdm_name", "result_type", "group_name", "group_level", "strata_name",
+    "strata_level", "variable", "variable_level", "variable_type",
+    "estimate_type", "estimate"
+  ))
+  expect_true(
+    result %>%
+      dplyr::filter(grepl("short", variable)) %>%
+      dplyr::tally() %>%
+      dplyr::pull() ==
+      attr(cdm$medication, "cohort_set") %>%
+      dplyr::tally() * 4 # 2 group_level 2 estimate type
+  )
+  expect_true(
+    result %>%
+      dplyr::filter(grepl("long", variable)) %>%
+      dplyr::tally() %>%
+      dplyr::pull() ==
+      attr(cdm$medication, "cohort_set") %>%
+      dplyr::tally() * 4 # 2 group_level 2 estimate type
+  )
+  expect_true(
+    result %>%
+      dplyr::filter(grepl("Medications", variable)) %>%
+      dplyr::tally() %>%
+      dplyr::pull() ==
+      attr(cdm$medication, "cohort_set") %>%
+      dplyr::tally() * 8 # 2 group_level 2 estimate type 2 window
+  )
+  expect_true(
+    result %>%
+      dplyr::filter(grepl("Comorbidities", variable)) %>%
+      dplyr::tally() %>%
+      dplyr::pull() ==
+      attr(cdm$comorbidities, "cohort_set") %>%
+      dplyr::tally() * 4 # 2 group_level 2 estimate type
+  )
 
 })
