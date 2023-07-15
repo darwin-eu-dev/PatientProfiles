@@ -7,7 +7,7 @@
 #'
 #' @return New table in gt format
 #'
-#' @export
+#' @noRd
 tableSummary <- function(table,
                          filterRow = NULL,
                          pivotWider = NULL,
@@ -75,7 +75,7 @@ tableSummary <- function(table,
 #'
 #' @return New table in gt format
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' \donttest{
