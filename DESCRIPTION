@@ -32,7 +32,6 @@ Suggests:
     CodelistGenerator,
     rmarkdown,
     glue,
-    stringr,
     odbc,
     ggplot2,
     spelling,
@@ -48,7 +47,8 @@ Imports:
     DBI,
     rlang,
     cli,
-    pillar
+    pillar,
+    stringr
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 Language: en-US
