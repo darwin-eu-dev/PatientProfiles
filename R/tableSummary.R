@@ -1,9 +1,9 @@
 #' Create a gt table from a summary results objects
 #'
 #' @param table Long table.
-#' @param filter Filter variables.
+#' @param filterRow Filter variables.
 #' @param pivotWider List of columns to compare.
-#' @param hide Columns to hide.
+#' @param hideColumn Columns to hide.
 #'
 #' @return New table in gt format
 #'
@@ -11,7 +11,6 @@
 tableSummary <- function(table,
                          filterRow = NULL,
                          pivotWider = NULL,
-                         estimateColumn = "estimate",
                          hideColumn = NULL) {
   # initial checks
 
@@ -34,7 +33,7 @@ tableSummary <- function(table,
       dplyr::distinct() %>%
       dplyr::arrange(dplyr::across(dplyr::all_of(pivotWider))) %>%
       dplyr::mutate(names_columns = paste0(
-        .env$estimateColumn, "_", dplyr::row_number()
+        "estimate_", dplyr::row_number()
       ))
     newNamesColumns <- namesColumns %>%
       tidyr::pivot_longer(
@@ -47,16 +46,18 @@ tableSummary <- function(table,
         dplyr::tibble(old_name = pivotWider, variable = namesPivotWider),
         by = "old_name"
       ) %>%
-      dplyr::select(-"old_name")
+      dplyr::select(-"old_name") %>%
+      dplyr::mutate(estimate_type = as.character(NA)) %>%
+      dplyr::relocate("estimate_type")
     table <- table %>%
       dplyr::inner_join(namesColumns, by = dplyr::all_of(pivotWider)) %>%
       dplyr::select(-dplyr::all_of(pivotWider)) %>%
-      tidyr::pivot_wider(
-        names_from = "names_columns",
-        values_from = dplyr::all_of(estimateColumn)
-      )
+      tidyr::pivot_wider(names_from = "names_columns", values_from = "estimate")
     table <- newNamesColumns %>%
-      dplyr::bind_rows(table)
+      dplyr::bind_rows(table) %>%
+      dplyr::relocate(
+        dplyr::starts_with("estimate"), .after = dplyr::last_col()
+      )
   }
 
   # hide columns
@@ -110,6 +111,8 @@ tableCharacteristics <- function(table) {
         "CDM name" = "cdm_name", "Group" = "group_level",
         "Strata" = "strata_level"
       ),
-      hideColumn = c("group_name", "strata_name", "result_type")
+      hideColumn = c(
+        "group_name", "strata_name", "result_type", "variable_type"
+      )
     )
 }

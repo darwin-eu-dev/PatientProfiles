@@ -4,22 +4,16 @@
 \alias{tableSummary}
 \title{Create a gt table from a summary results objects}
 \usage{
-tableSummary(
-  table,
-  filterRow = NULL,
-  pivotWider = NULL,
-  estimateColumn = "estimate",
-  hideColumn = NULL
-)
+tableSummary(table, filterRow = NULL, pivotWider = NULL, hideColumn = NULL)
 }
 \arguments{
 \item{table}{Long table.}
 
+\item{filterRow}{Filter variables.}
+
 \item{pivotWider}{List of columns to compare.}
 
-\item{filter}{Filter variables.}
-
-\item{hide}{Columns to hide.}
+\item{hideColumn}{Columns to hide.}
 }
 \value{
 New table in gt format
