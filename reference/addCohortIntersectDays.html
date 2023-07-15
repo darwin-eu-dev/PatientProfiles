@@ -66,6 +66,7 @@ and a target cohort</p>
 <span>  order <span class="op">=</span> <span class="st">"first"</span>,</span>
 <span>  window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  nameStyle <span class="op">=</span> <span class="st">"{cohort_name}_{window_name}"</span>,</span>
+<span>  censorDate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tablePrefix <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -114,6 +115,11 @@ Records outside of this time period will be ignored.</p></dd>
 <dt>nameStyle</dt>
 <dd><p>naming of the added column or columns, should include
 required parameters</p></dd>
+
+
+<dt>censorDate</dt>
+<dd><p>whether to censor overlap events at a specific date
+or a column date of x</p></dd>
 
 
 <dt>tablePrefix</dt>
