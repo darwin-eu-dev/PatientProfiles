@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' This function is used to summarise the dose and/or indication over multiple
-#' cohorts.
+#' Summarise characteristics of individuals
 #'
 #' @param cohort A cohort in the cdm
 #' @param cdm A cdm reference.
