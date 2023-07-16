@@ -288,10 +288,12 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
   )
   if (!all(changed %in% contained)) {
     variablesNotContained <- changed[!(changed %in% contained)]
+    variablesNotContained <- gsub("[{}]","",variablesNotContained)
+    variablesNotContained <- gsub("id_name","cohort_name",variablesNotContained)
     cli::cli_abort(paste0(
       "Variables: ",
       paste0(variablesNotContained, collapse = ", "),
-      "have multiple possibilities and should be cotained in nameStyle"
+      " have multiple possibilities and should be cotained in nameStyle"
     ))
   }
 }
@@ -392,7 +394,7 @@ checkSnakeCase <- function(name, verbose = TRUE) {
 checkVariableType <- function(variableType) {
   errorMessage <- "variableType must be a choice between numeric, date, binary and categorical."
   if (!is.character(variableType) |
-    length(variableType) != 1) {
+      length(variableType) != 1) {
     cli::cli_abort(errorMessage)
   }
   if (!(variableType %in% c("numeric", "date", "binary", "categorical"))) {
@@ -556,4 +558,13 @@ checkCohortIntersect <- function(cohortIntersect, cdm) {
     checkWindow(x[["window"]])
   })
   invisible(NULL)
+}
+
+#' @noRd
+checkCensorDate <- function(x, censorDate) {
+  check <- x %>% dplyr::select(dplyr::all_of(censorDate)) %>%
+    utils::head(1) %>% dplyr::pull() %>% inherits('Date')
+  if(!check) {
+    cli::cli_abort("{censorDate} is not a date variable")
+  }
 }
