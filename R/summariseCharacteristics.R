@@ -64,11 +64,13 @@ summariseCharacteristics <- function(cohort,
                                      cohortIntersect = list(),
                                      minCellCount = 5) {
   # check initial tables
-  # checkInputs(
-  #   cohort = cohort, cdm = cdm, strata = strata, ageGroup = ageGroup,
-  #   windowVisitOcurrence = windowVisitOcurrence, covariates = covariates,
-  #   minCellCount = minCellCount
-  # )
+  checkX(cohort)
+  checkCdm(cdm)
+  checkStrata(strata, cohort)
+  checkAgeGroup(ageGroup)
+  checkmate::assertIntegerish(minCellCount, lower = 1)
+  checkTableIntersect(tableIntersect, cdm)
+  checkCohortIntersect(cohortIntersect, cdm)
 
   # add names
   ageGroup <- checkAgeGroup(ageGroup)
