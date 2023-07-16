@@ -2,8 +2,7 @@
 % Please edit documentation in R/summariseCharacteristics.R
 \name{summariseCharacteristics}
 \alias{summariseCharacteristics}
-\title{This function is used to summarise the dose and/or indication over multiple
-cohorts.}
+\title{Summarise characteristics of individuals}
 \usage{
 summariseCharacteristics(
   cohort,
@@ -37,8 +36,7 @@ function to add covariates and comorbidities.}
 A summary of the characteristics of the individuals
 }
 \description{
-This function is used to summarise the dose and/or indication over multiple
-cohorts.
+Summarise characteristics of individuals
 }
 \examples{
 \donttest{
