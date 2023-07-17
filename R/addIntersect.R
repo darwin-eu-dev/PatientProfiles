@@ -120,16 +120,17 @@ addIntersect <- function(x,
       dplyr::all_of(extraValue)
     )
 
-  if (is.null(censorDate)) {
-    result <- x %>%
-      addFutureObservation(cdm, indexDate = dplyr::all_of(indexDate)) %>%
-      dplyr::mutate("censor_date" = !!CDMConnector::dateadd(
-        dplyr::all_of(indexDate), "future_observation"
-      ))
-  } else {
-    result <- x %>%
-      dplyr::rename("censor_date" = dplyr::all_of(censorDate))
-  }
+  result <- x %>%
+    addFutureObservation(
+      cdm = cdm, indexDate = dplyr::all_of(indexDate),
+      futureObservationName = "days_to_add"
+    ) %>%
+    dplyr::mutate("censor_date" = !!CDMConnector::dateadd(
+      dplyr::all_of(indexDate), "days_to_add"
+    )) %>%
+    dplyr::mutate("censor_date" = .data[[
+      !!ifelse(is.null(censorDate), "censor_date", censorDate)
+    ]])
 
   result <- result %>%
     dplyr::select(

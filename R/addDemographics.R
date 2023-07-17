@@ -397,7 +397,10 @@ addAge <- function(x,
       sex = FALSE,
       priorObservation = FALSE,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      sexName = NULL,
+      priorObservationName = NULL,
+      futureObservationName = NULL
     )
 
   return(x)
@@ -482,7 +485,10 @@ addFutureObservation <- function(x,
       priorObservation = FALSE,
       futureObservation = TRUE,
       futureObservationName = futureObservationName,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      ageName = NULL,
+      sexName = NULL,
+      priorObservationName = NULL
     )
 
   return(x)
@@ -567,7 +573,10 @@ addPriorObservation <- function(x,
       priorObservation = TRUE,
       priorObservationName = priorObservationName,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      ageName = NULL,
+      sexName = NULL,
+      futureObservationName = NULL
     )
 
   return(x)
@@ -683,7 +692,10 @@ addSex <- function(x,
       sexName = sexName,
       priorObservation = FALSE,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      ageName = NULL,
+      priorObservationName = NULL,
+      futureObservationName = NULL
     )
 
   return(x)
