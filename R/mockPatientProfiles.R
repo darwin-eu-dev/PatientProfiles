@@ -588,12 +588,13 @@ mockPatientProfiles <- function(connectionDetails = list(
 
   # create the cdm object
   cdm <- CDMConnector::cdm_from_con(
-    db,
+    con = db,
     cdm_schema =  c(schema = writeSchema,
                     prefix = connectionDetails$mock_prefix),
     write_schema =  c(schema = writeSchema,
                       prefix = connectionDetails$mock_prefix),
-    cohort_tables = cohorts
+    cohort_tables = cohorts,
+    cdm_name = "PP_MOCK"
   )
 
   return(cdm)
