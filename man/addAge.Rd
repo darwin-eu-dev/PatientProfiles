@@ -6,7 +6,7 @@
 \usage{
 addAge(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   indexDate = "cohort_start_date",
   ageName = "age",
   ageGroup = NULL,

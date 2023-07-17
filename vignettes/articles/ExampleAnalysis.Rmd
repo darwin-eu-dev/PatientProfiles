@@ -225,14 +225,12 @@ We can also see whether individuals had GI bleeding in some time period relative
 ```{r}
 cdm$exposure_cohort <- cdm$exposure_cohort %>%
   addCohortIntersectFlag(
-    cdm = cdm,
     targetCohortTable = "gi_bleed",
     indexDate = "cohort_start_date",
     window = c(-Inf, -1),
     nameStyle = "gi_bleed_history"
   ) %>%
   addCohortIntersectFlag(
-    cdm = cdm,
     targetCohortTable = "gi_bleed",
     indexDate = "cohort_start_date",
     window = c(0, Inf),
@@ -251,7 +249,6 @@ We can also see time to GI bleeding using the `timeToCohort`
 ```{r}
 cdm$exposure_cohort %>%
   addCohortIntersectDays(
-    cdm = cdm,
     targetCohortTable = "gi_bleed",
     window = c(0, Inf),
     nameStyle = "time_to_event"

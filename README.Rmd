@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 ## Package overview
 
-PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition occurrence, drug exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age, and days of prior history. Time varying characteristics, such as age, can be estimated relative to any date in the corresponding table. In addition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables. 
+PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition occurrence, drug exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age, and days of prior observation Time varying characteristics, such as age, can be estimated relative to any date in the corresponding table. In addition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables. 
 
 ## Package installation
 
@@ -74,8 +74,8 @@ cdm$condition_occurrence %>%
   glimpse()
 
 cdm$condition_occurrence <- cdm$condition_occurrence %>%
-  addAge(cdm = cdm, indexDate = "condition_start_date") %>%
-  addSex(cdm)
+  addAge(indexDate = "condition_start_date") %>%
+  addSex()
 
 cdm$condition_occurrence %>%
   glimpse()
@@ -96,25 +96,24 @@ cdm$cohort1 %>%
   glimpse()
 ```
 
-We can add age, age groups, sex, and days of prior history to a cohort like so
+We can add age, age groups, sex, and days of prior observation to a cohort like so
 ```{r}
 cdm$cohort1 <- cdm$cohort1 %>%
   addAge(
-    cdm = cdm,
     indexDate = "cohort_start_date",
     ageGroup = list(c(0, 18), c(19, 65), c(66, 100))
   ) %>%
-  addSex(cdm = cdm) %>%
-  addPriorHistory(cdm = cdm)
+  addSex() %>%
+  addPriorObservation()
 
 cdm$cohort1 %>%
   glimpse()
 ```
 
-We could use this information to subset the cohort. For example limiting to those with at least 365 days of prior history available before their cohort start date like so
+We could use this information to subset the cohort. For example limiting to those with at least 365 days of prior observation available before their cohort start date like so
 ```{r}
 cdm$cohort1 %>%
-  filter(prior_history >= 365)
+  filter(prior_observation >= 365)
 ```
 
 ### Cohort intersections
@@ -131,7 +130,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectFlag(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     window = c(-Inf, -1)
   )
@@ -152,7 +150,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectCount(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     window = list("short_term" = c(1, 30), "mid_term" = c(31, 180))
@@ -175,7 +172,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "first",
@@ -196,7 +192,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
@@ -219,7 +214,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDays(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
@@ -242,14 +236,12 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
     window = c(-Inf, Inf)
   ) %>%
   addCohortIntersectCount(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     window = c(-Inf, Inf)
@@ -269,7 +261,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersect(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     count = TRUE,

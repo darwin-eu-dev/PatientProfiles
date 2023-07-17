@@ -35,22 +35,19 @@
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
-#'   addDateOfBirth(cdm)
+#'   addDateOfBirth()
 #' }
 addDateOfBirth <- function(x,
-                           cdm,
+                           cdm = attr(x, "cdm_reference"),
                            name = "date_of_birth",
                            missingDay = 1,
                            missingMonth = 1,
                            imposeDay = FALSE,
                            imposeMonth = FALSE) {
   # initial checks
-  # parameters <- checkInputs(
+  # checkInputs(
   #   x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
   # )
-  # get parameters
-  # personIdentifier <- parameters$person_identifier
-  # impose day
 
   personVariable <- checkX(x)
 

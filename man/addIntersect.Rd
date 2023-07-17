@@ -6,7 +6,7 @@
 \usage{
 addIntersect(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   tableName,
   value,
   filterVariable = NULL,
@@ -14,11 +14,11 @@ addIntersect(
   idName = NULL,
   window = list(c(0, Inf)),
   indexDate = "cohort_start_date",
+  censorDate = NULL,
   targetStartDate = getStartName(tableName),
   targetEndDate = getEndName(tableName),
   order = "first",
   nameStyle = "{value}_{id_name}_{window_name}",
-  censorDate = NULL,
   tablePrefix = NULL
 )
 }
@@ -46,6 +46,8 @@ filterId}
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
 
+\item{censorDate}{whether to censor overlap events at a date column of x}
+
 \item{targetStartDate}{date of reference in cohort table, either for start
 (in overlap) or on its own (for incidence)}
 
@@ -56,8 +58,6 @@ intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
-
-\item{censorDate}{whether to censor overlap events at a date column of x}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
@@ -74,9 +74,7 @@ library(PatientProfiles)
 
 cdm <- mockPatientProfiles()
 result <- cdm$cohort1 \%>\%
-  addIntersect(
-    cdm = cdm, tableName = "cohort2", value = "date"
-  ) \%>\%
+  addIntersect(tableName = "cohort2", value = "date") \%>\%
   dplyr::collect()
 }
 

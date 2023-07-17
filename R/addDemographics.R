@@ -56,7 +56,7 @@
 #' }
 #'
 addDemographics <- function(x,
-                            cdm,
+                            cdm = attr(x, "cdm_reference"),
                             indexDate = "cohort_start_date",
                             age = TRUE,
                             ageName = "age",
@@ -174,7 +174,7 @@ addDemographics <- function(x,
   if (age) {
     personDetails <- personDetails %>%
       dplyr::filter(!is.na(.data$year_of_birth)) %>%
-      addDateOfBirth(cdm,
+      addDateOfBirth(
         name = "date_of_birth",
         missingDay = ageDefaultDay,
         missingMonth = ageDefaultMonth,
@@ -273,8 +273,8 @@ addDemographics <- function(x,
   }
 
   if (!is.null(ageGroup)) {
-    x <- addCategories(x,
-      cdm = cdm,
+    x <- addCategories(
+      x = x,
       variable = ageName,
       categories = ageGroup,
       missingCategoryValue = "None",
@@ -374,7 +374,7 @@ futureObservationQuery <- function(indexDate, name) {
 #' addAge(x = cdm[["cohort1"]], cdm = cdm)
 #' }
 addAge <- function(x,
-                   cdm,
+                   cdm = attr(x, "cdm_reference"),
                    indexDate = "cohort_start_date",
                    ageName = "age",
                    ageGroup = NULL,
@@ -397,7 +397,10 @@ addAge <- function(x,
       sex = FALSE,
       priorObservation = FALSE,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      sexName = NULL,
+      priorObservationName = NULL,
+      futureObservationName = NULL
     )
 
   return(x)
@@ -464,7 +467,7 @@ addAge <- function(x,
 #' result <- cdm$cohort1 %>% addFutureObservation(cdm)
 #' }
 addFutureObservation <- function(x,
-                                 cdm,
+                                 cdm = attr(x, "cdm_reference"),
                                  indexDate = "cohort_start_date",
                                  futureObservationName = "future_observation",
                                  tablePrefix = NULL) {
@@ -482,7 +485,10 @@ addFutureObservation <- function(x,
       priorObservation = FALSE,
       futureObservation = TRUE,
       futureObservationName = futureObservationName,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      ageName = NULL,
+      sexName = NULL,
+      priorObservationName = NULL
     )
 
   return(x)
@@ -549,7 +555,7 @@ addFutureObservation <- function(x,
 #' result <- cdm$cohort1 %>% addPriorObservation(cdm)
 #' }
 addPriorObservation <- function(x,
-                            cdm,
+                            cdm = attr(x, "cdm_reference"),
                             indexDate = "cohort_start_date",
                             priorObservationName = "prior_observation",
                             tablePrefix = NULL) {
@@ -567,7 +573,10 @@ addPriorObservation <- function(x,
       priorObservation = TRUE,
       priorObservationName = priorObservationName,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      ageName = NULL,
+      sexName = NULL,
+      futureObservationName = NULL
     )
 
   return(x)
@@ -596,7 +605,7 @@ addPriorObservation <- function(x,
 #' }
 #'
 addInObservation <- function(x,
-                             cdm,
+                             cdm = attr(x, "cdm_reference"),
                              indexDate = "cohort_start_date",
                              name = "in_observation",
                              tablePrefix = NULL) {
@@ -612,7 +621,8 @@ addInObservation <- function(x,
   name <- rlang::enquo(name)
 
   x <- x %>%
-    addDemographics(cdm,
+    addDemographics(
+      cdm = cdm,
       indexDate = indexDate,
       age = FALSE,
       sex = FALSE,
@@ -665,7 +675,7 @@ addInObservation <- function(x,
 #' }
 #'
 addSex <- function(x,
-                   cdm,
+                   cdm = attr(x, "cdm_reference"),
                    sexName = "sex",
                    tablePrefix = NULL) {
   x <- x %>%
@@ -673,7 +683,6 @@ addSex <- function(x,
       cdm = cdm,
       indexDate = NULL,
       age = FALSE,
-      ageName = FALSE,
       ageGroup = NULL,
       ageDefaultDay = NULL,
       ageDefaultMonth = NULL,
@@ -683,7 +692,10 @@ addSex <- function(x,
       sexName = sexName,
       priorObservation = FALSE,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix
+      tablePrefix = tablePrefix,
+      ageName = NULL,
+      priorObservationName = NULL,
+      futureObservationName = NULL
     )
 
   return(x)

@@ -6,7 +6,7 @@
 \usage{
 addCategories(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   variable,
   categories,
   missingCategoryValue = "None",

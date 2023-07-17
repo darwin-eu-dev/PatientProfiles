@@ -2,8 +2,8 @@
 test_that("addCategories, functionality", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
   agegroup <- cdm$cohort1 %>%
-    addAge(cdm) %>%
-    addCategories(cdm,
+    addAge() %>%
+    addCategories(
       variable = "age",
       categories = list("age_group" = list(c(0, 40), c(41, 120)))
     ) %>%
@@ -11,7 +11,7 @@ test_that("addCategories, functionality", {
 
   agegroupOverlap <- cdm$cohort1 %>%
     addAge(cdm) %>%
-    addCategories(cdm,
+    addCategories(
       variable = "age",
       categories = list("age_group" = list(c(0, 55), c(50, 120))),
       overlap = TRUE
