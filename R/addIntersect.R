@@ -30,6 +30,7 @@
 #' @param window window to consider events of
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
+#' @param censorDate whether to censor overlap events at a date column of x
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
@@ -37,7 +38,6 @@
 #' @param order last or first date to use for date/time calculations
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param censorDate whether to censor overlap events at a date column of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -66,11 +66,11 @@ addIntersect <- function(x,
                          idName = NULL,
                          window = list(c(0, Inf)), # list
                          indexDate = "cohort_start_date",
+                         censorDate = NULL,
                          targetStartDate = getStartName(tableName),
                          targetEndDate = getEndName(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}",
-                         censorDate = NULL,
                          tablePrefix = NULL) {
   # initial checks
   personVariable <- checkX(x)
@@ -107,56 +107,38 @@ addIntersect <- function(x,
     filterTbl <- dplyr::tibble("id" = 1, "id_name" = "all")
     overlapTable <- dplyr::mutate(overlapTable, "id" = 1)
   }
-  if (is.null(targetEndDate)) {
-    overlapTable <- overlapTable %>%
-      dplyr::select(
-        !!personVariable := dplyr::all_of(personVariableTable),
-        "id" = dplyr::all_of(filterVariable),
-        "overlap_start_date" = dplyr::all_of(targetStartDate),
-        "overlap_end_date" = dplyr::all_of(targetStartDate),
-        dplyr::all_of(extraValue)
-      )
-  } else {
-    overlapTable <- overlapTable %>%
-      dplyr::select(
-        !!personVariable := dplyr::all_of(personVariableTable),
-        "id" = dplyr::all_of(filterVariable),
-        "overlap_start_date" = dplyr::all_of(targetStartDate),
-        "overlap_end_date" = dplyr::all_of(targetEndDate),
-        dplyr::all_of(extraValue)
-      )
-  }
 
-  if(!is.null(censorDate)) {
-    result <- x %>%
-      dplyr::select(
-        dplyr::all_of(personVariable),
-        "index_date" = dplyr::all_of(indexDate),
-        "censor_date" = dplyr::all_of(censorDate)
-      ) %>%
-      dplyr::distinct() %>%
-      dplyr::inner_join(overlapTable, by = personVariable)
-  } else {
-    result <- x %>%
-      PatientProfiles::addFutureObservation(cdm, indexDate = dplyr::all_of(indexDate)) %>%
-      dplyr::mutate(censor_date = CDMConnector::dateadd(dplyr::all_of(indexDate),
-                                          "future_observation")) %>%
-      dplyr::select(
-        dplyr::all_of(personVariable),
-        "index_date" = dplyr::all_of(indexDate),
-        "censor_date"
-      ) %>%
-      dplyr::distinct() %>%
-      dplyr::inner_join(overlapTable, by = personVariable)
-  }
-
-  if (is.null(tablePrefix)) {
-    result <- CDMConnector::computeQuery(result)
-  } else {
-    result <- CDMConnector::computeQuery(
-      result, paste0(tablePrefix, "_join"), FALSE, attr(cdm, "write_schema"), TRUE
+  overlapTable <- overlapTable %>%
+    dplyr::select(
+      !!personVariable := dplyr::all_of(personVariableTable),
+      "id" = dplyr::all_of(filterVariable),
+      "overlap_start_date" = dplyr::all_of(targetStartDate),
+      "overlap_end_date" = !!ifelse(
+        !is.null(targetEndDate), dplyr::all_of(targetEndDate),
+        dplyr::all_of(targetStartDate)
+      ),
+      dplyr::all_of(extraValue)
     )
+
+  if (is.null(censorDate)) {
+    result <- x %>%
+      addFutureObservation(cdm, indexDate = dplyr::all_of(indexDate)) %>%
+      dplyr::mutate("censor_date" = !!CDMConnector::dateadd(
+        dplyr::all_of(indexDate), "future_observation"
+      ))
+  } else {
+    result <- x %>%
+      dplyr::rename("censor_date" = dplyr::all_of(censorDate))
   }
+
+  result <- result %>%
+    dplyr::select(
+      dplyr::all_of(personVariable), "index_date" = dplyr::all_of(indexDate),
+      "censor_date"
+    ) %>%
+    dplyr::distinct() %>%
+    dplyr::inner_join(overlapTable, by = personVariable) %>%
+    CDMConnector::computeQuery()
 
   resultCountFlag <- NULL
   resultDateTimeOther <- NULL

@@ -24,6 +24,8 @@
 #' @param targetCohortId vector of cohort definition ids to include
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
@@ -40,8 +42,6 @@
 #' calculated for this intersection
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -115,6 +115,7 @@ addCohortIntersect <- function(x,
                                targetCohortTable,
                                targetCohortId = NULL,
                                indexDate = "cohort_start_date",
+                               censorDate = NULL,
                                targetStartDate = "cohort_start_date",
                                targetEndDate = "cohort_end_date",
                                window = list(c(0, Inf)),
@@ -124,7 +125,6 @@ addCohortIntersect <- function(x,
                                date = TRUE,
                                days = TRUE,
                                nameStyle = "{value}_{cohort_name}_{window_name}",
-                               censorDate = NULL,
                                tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
@@ -167,6 +167,8 @@ addCohortIntersect <- function(x,
 #' @param targetCohortId vector of cohort definition ids to include
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
@@ -174,8 +176,6 @@ addCohortIntersect <- function(x,
 #' @param window window to consider events of
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -249,11 +249,11 @@ addCohortIntersectFlag <- function(x,
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
+                                   censorDate = NULL,
                                    targetStartDate = "cohort_start_date",
                                    targetEndDate = "cohort_end_date",
                                    window = list(c(0, Inf)),
                                    nameStyle = "{cohort_name}_{window_name}",
-                                   censorDate = NULL,
                                    tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
@@ -290,6 +290,8 @@ addCohortIntersectFlag <- function(x,
 #' @param targetCohortId vector of cohort definition ids to include
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
@@ -297,8 +299,6 @@ addCohortIntersectFlag <- function(x,
 #' @param window window to consider events of
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -375,11 +375,11 @@ addCohortIntersectCount <- function(x,
                                     targetCohortTable,
                                     targetCohortId = NULL,
                                     indexDate = "cohort_start_date",
+                                    censorDate = NULL,
                                     targetStartDate = "cohort_start_date",
                                     targetEndDate = "cohort_end_date",
                                     window = list(c(0, Inf)),
                                     nameStyle = "{cohort_name}_{window_name}",
-                                    censorDate = NULL,
                                     tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
@@ -418,6 +418,8 @@ addCohortIntersectCount <- function(x,
 #' cohort of interest
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param targetDate Date of interest in the other cohort table. Either
 #' cohort_start_date or cohort_end_date
 #' @param order date to use if there are multiple records for an
@@ -426,8 +428,6 @@ addCohortIntersectCount <- function(x,
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -504,11 +504,11 @@ addCohortIntersectDays <- function(x,
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
+                                   censorDate = NULL,
                                    targetDate = "cohort_start_date",
                                    order = "first",
                                    window = c(0, Inf),
                                    nameStyle = "{cohort_name}_{window_name}",
-                                   censorDate = NULL,
                                    tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
@@ -548,6 +548,8 @@ addCohortIntersectDays <- function(x,
 #' cohort of interest
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param targetDate Date of interest in the other cohort table. Either
 #' cohort_start_date or cohort_end_date
 #' @param order date to use if there are multiple records for an
@@ -556,8 +558,6 @@ addCohortIntersectDays <- function(x,
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
@@ -634,11 +634,11 @@ addCohortIntersectDate <- function(x,
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
+                                   censorDate = NULL,
                                    targetDate = "cohort_start_date",
                                    order = "first",
                                    window = c(0, Inf),
                                    nameStyle = "{cohort_name}_{window_name}",
-                                   censorDate = NULL,
                                    tablePrefix = NULL) {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
