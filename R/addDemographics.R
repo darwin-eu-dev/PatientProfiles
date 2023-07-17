@@ -174,7 +174,7 @@ addDemographics <- function(x,
   if (age) {
     personDetails <- personDetails %>%
       dplyr::filter(!is.na(.data$year_of_birth)) %>%
-      addDateOfBirth(cdm,
+      addDateOfBirth(
         name = "date_of_birth",
         missingDay = ageDefaultDay,
         missingMonth = ageDefaultMonth,
@@ -273,8 +273,8 @@ addDemographics <- function(x,
   }
 
   if (!is.null(ageGroup)) {
-    x <- addCategories(x,
-      cdm = cdm,
+    x <- addCategories(
+      x = x,
       variable = ageName,
       categories = ageGroup,
       missingCategoryValue = "None",
@@ -621,7 +621,8 @@ addInObservation <- function(x,
   name <- rlang::enquo(name)
 
   x <- x %>%
-    addDemographics(cdm,
+    addDemographics(
+      cdm = cdm,
       indexDate = indexDate,
       age = FALSE,
       sex = FALSE,

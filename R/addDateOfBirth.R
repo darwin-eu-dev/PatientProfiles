@@ -45,12 +45,9 @@ addDateOfBirth <- function(x,
                            imposeDay = FALSE,
                            imposeMonth = FALSE) {
   # initial checks
-  # parameters <- checkInputs(
+  # checkInputs(
   #   x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
   # )
-  # get parameters
-  # personIdentifier <- parameters$person_identifier
-  # impose day
 
   personVariable <- checkX(x)
 
