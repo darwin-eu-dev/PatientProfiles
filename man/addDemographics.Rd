@@ -6,7 +6,7 @@
 \usage{
 addDemographics(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   indexDate = "cohort_start_date",
   age = TRUE,
   ageName = "age",

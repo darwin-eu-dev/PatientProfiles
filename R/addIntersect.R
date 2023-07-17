@@ -51,14 +51,12 @@
 #'
 #' cdm <- mockPatientProfiles()
 #' result <- cdm$cohort1 %>%
-#'   addIntersect(
-#'     cdm = cdm, tableName = "cohort2", value = "date"
-#'   ) %>%
+#'   addIntersect(tableName = "cohort2", value = "date") %>%
 #'   dplyr::collect()
 #' }
 #'
 addIntersect <- function(x,
-                         cdm,
+                         cdm = attr(x, "cdm_reference"),
                          tableName,
                          value,
                          filterVariable = NULL,
@@ -122,7 +120,7 @@ addIntersect <- function(x,
 
   result <- x %>%
     addFutureObservation(
-      cdm = cdm, indexDate = dplyr::all_of(indexDate),
+      indexDate = dplyr::all_of(indexDate),
       futureObservationName = "days_to_add"
     ) %>%
     dplyr::mutate("censor_date" = !!CDMConnector::dateadd(

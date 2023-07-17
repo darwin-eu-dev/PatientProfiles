@@ -6,7 +6,7 @@
 \usage{
 addCohortIntersectFlag(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   targetCohortTable,
   targetCohortId = NULL,
   indexDate = "cohort_start_date",
@@ -110,7 +110,6 @@ cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
 result <- cdm$cohort1 \%>\%
   addCohortIntersectFlag(
-    cdm = cdm,
     targetCohortTable = "cohort2"
   ) \%>\%
   dplyr::collect()

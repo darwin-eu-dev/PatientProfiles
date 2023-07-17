@@ -56,7 +56,7 @@
 #' }
 #'
 addDemographics <- function(x,
-                            cdm,
+                            cdm = attr(x, "cdm_reference"),
                             indexDate = "cohort_start_date",
                             age = TRUE,
                             ageName = "age",
@@ -374,7 +374,7 @@ futureObservationQuery <- function(indexDate, name) {
 #' addAge(x = cdm[["cohort1"]], cdm = cdm)
 #' }
 addAge <- function(x,
-                   cdm,
+                   cdm = attr(x, "cdm_reference"),
                    indexDate = "cohort_start_date",
                    ageName = "age",
                    ageGroup = NULL,
@@ -467,7 +467,7 @@ addAge <- function(x,
 #' result <- cdm$cohort1 %>% addFutureObservation(cdm)
 #' }
 addFutureObservation <- function(x,
-                                 cdm,
+                                 cdm = attr(x, "cdm_reference"),
                                  indexDate = "cohort_start_date",
                                  futureObservationName = "future_observation",
                                  tablePrefix = NULL) {
@@ -555,7 +555,7 @@ addFutureObservation <- function(x,
 #' result <- cdm$cohort1 %>% addPriorObservation(cdm)
 #' }
 addPriorObservation <- function(x,
-                            cdm,
+                            cdm = attr(x, "cdm_reference"),
                             indexDate = "cohort_start_date",
                             priorObservationName = "prior_observation",
                             tablePrefix = NULL) {
@@ -605,7 +605,7 @@ addPriorObservation <- function(x,
 #' }
 #'
 addInObservation <- function(x,
-                             cdm,
+                             cdm = attr(x, "cdm_reference"),
                              indexDate = "cohort_start_date",
                              name = "in_observation",
                              tablePrefix = NULL) {
@@ -674,7 +674,7 @@ addInObservation <- function(x,
 #' }
 #'
 addSex <- function(x,
-                   cdm,
+                   cdm = attr(x, "cdm_reference"),
                    sexName = "sex",
                    tablePrefix = NULL) {
   x <- x %>%

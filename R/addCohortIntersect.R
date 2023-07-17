@@ -104,14 +104,13 @@
 #'
 #' result <- cdm$cohort1 %>%
 #'   addCohortIntersect(
-#'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
 addCohortIntersect <- function(x,
-                               cdm,
+                               cdm = attr(x, "cdm_reference"),
                                targetCohortTable,
                                targetCohortId = NULL,
                                indexDate = "cohort_start_date",
@@ -238,14 +237,13 @@ addCohortIntersect <- function(x,
 #'
 #' result <- cdm$cohort1 %>%
 #'   addCohortIntersectFlag(
-#'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
 addCohortIntersectFlag <- function(x,
-                                   cdm,
+                                   cdm = attr(x, "cdm_reference"),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -364,14 +362,13 @@ addCohortIntersectFlag <- function(x,
 #'
 #' result <- cdm$cohort1 %>%
 #'   addCohortIntersectCount(
-#'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
 addCohortIntersectCount <- function(x,
-                                    cdm,
+                                    cdm = attr(x, "cdm_reference"),
                                     targetCohortTable,
                                     targetCohortId = NULL,
                                     indexDate = "cohort_start_date",
@@ -493,14 +490,13 @@ addCohortIntersectCount <- function(x,
 #'
 #' result <- cdm$cohort1 %>%
 #'   addCohortIntersectDays(
-#'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
 addCohortIntersectDays <- function(x,
-                                   cdm,
+                                   cdm = attr(x, "cdm_reference"),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -623,14 +619,13 @@ addCohortIntersectDays <- function(x,
 #'
 #' result <- cdm$cohort1 %>%
 #'   addCohortIntersectDate(
-#'     cdm = cdm,
 #'     targetCohortTable = "cohort2"
 #'   ) %>%
 #'   dplyr::collect()
 #' }
 #'
 addCohortIntersectDate <- function(x,
-                                   cdm,
+                                   cdm = attr(x, "cdm_reference"),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",

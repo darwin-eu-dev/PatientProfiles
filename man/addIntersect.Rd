@@ -6,7 +6,7 @@
 \usage{
 addIntersect(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   tableName,
   value,
   filterVariable = NULL,
@@ -74,9 +74,7 @@ library(PatientProfiles)
 
 cdm <- mockPatientProfiles()
 result <- cdm$cohort1 \%>\%
-  addIntersect(
-    cdm = cdm, tableName = "cohort2", value = "date"
-  ) \%>\%
+  addIntersect(tableName = "cohort2", value = "date") \%>\%
   dplyr::collect()
 }
 

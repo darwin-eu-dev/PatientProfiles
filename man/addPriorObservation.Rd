@@ -7,7 +7,7 @@ at a certain date}
 \usage{
 addPriorObservation(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   indexDate = "cohort_start_date",
   priorObservationName = "prior_observation",
   tablePrefix = NULL

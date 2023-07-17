@@ -13,7 +13,7 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addFutureObservation(cdm$cohort1, "cdm"))
 
-  expect_error(addFutureObservation(cdm$cohort1, cdm, indexDate = "end_date"))
+  expect_error(addFutureObservation(cdm$cohort1, indexDate = "end_date"))
 })
 
 test_that("check condition_occurrence and cohort1 work", {

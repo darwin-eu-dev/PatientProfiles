@@ -100,7 +100,6 @@ We can add age, age groups, sex, and days of prior history to a cohort like so
 ```{r}
 cdm$cohort1 <- cdm$cohort1 %>%
   addAge(
-    cdm = cdm,
     indexDate = "cohort_start_date",
     ageGroup = list(c(0, 18), c(19, 65), c(66, 100))
   ) %>%
@@ -131,7 +130,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectFlag(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     window = c(-Inf, -1)
   )
@@ -152,7 +150,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectCount(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     window = list("short_term" = c(1, 30), "mid_term" = c(31, 180))
@@ -175,7 +172,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "first",
@@ -196,7 +192,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
@@ -219,7 +214,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDays(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
@@ -242,14 +236,12 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "last",
     window = c(-Inf, Inf)
   ) %>%
   addCohortIntersectCount(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     window = c(-Inf, Inf)
@@ -269,7 +261,6 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersect(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     count = TRUE,

@@ -35,10 +35,10 @@
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
-#'   addDateOfBirth(cdm)
+#'   addDateOfBirth()
 #' }
 addDateOfBirth <- function(x,
-                           cdm,
+                           cdm = attr(x, "cdm_reference"),
                            name = "date_of_birth",
                            missingDay = 1,
                            missingMonth = 1,

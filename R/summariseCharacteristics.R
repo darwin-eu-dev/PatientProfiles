@@ -95,7 +95,7 @@ summariseCharacteristics <- function(cohort,
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
     ) %>%
-    addDemographics(cdm, ageGroup = ageGroup)
+    addDemographics(ageGroup = ageGroup)
 
   variables <- dplyr::tibble(
     variable = c("cohort_start_date", "cohort_end_date"),
