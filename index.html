@@ -65,7 +65,7 @@
 <div class="section level2">
 <h2 id="package-overview">Package overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
 </h2>
-<p>PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition occurrence, drug exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age, and days of prior history. Time varying characteristics, such as age, can be estimated relative to any date in the corresponding table. In addition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables.</p>
+<p>PatientProfiles contains functions for adding characteristics to OMOP CDM tables containing patient level data (e.g. condition occurrence, drug exposure, and so on) and OMOP CDM cohort tables. The characteristics that can be added include an individual´s sex, age, and days of prior observation Time varying characteristics, such as age, can be estimated relative to any date in the corresponding table. In addition, PatientProfiles also provides functionality for identifying intersections between a cohort table and OMOP CDM tables containing patient level data or other cohort tables.</p>
 </div>
 <div class="section level2">
 <h2 id="package-installation">Package installation<a class="anchor" aria-label="anchor" href="#package-installation"></a>
@@ -117,7 +117,7 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ condition_occurrence_id &lt;int&gt; 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…</span></span>
 <span><span class="co">#&gt; $ person_id               &lt;int&gt; 314, 970, 349, 234, 193, 919, 113, 277, 491, 9…</span></span>
 <span><span class="co">#&gt; $ condition_concept_id    &lt;int&gt; 4, 5, 1, 2, 3, 4, 3, 2, 1, 2, 1, 5, 3, 4, 4, 1…</span></span>
@@ -125,14 +125,14 @@
 <span><span class="co">#&gt; $ condition_end_date      &lt;date&gt; 2006-06-14, 2007-06-05, 2011-06-24, 2009-01-0…</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/addAge.html">addAge</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, indexDate <span class="op">=</span> <span class="st">"condition_start_date"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/addSex.html">addSex</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/addAge.html">addAge</a></span><span class="op">(</span>indexDate <span class="op">=</span> <span class="st">"condition_start_date"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/addSex.html">addSex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 7</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ condition_occurrence_id &lt;int&gt; 314, 234, 277, 26, 276, 656, 275, 249, 150, 9,…</span></span>
 <span><span class="co">#&gt; $ person_id               &lt;int&gt; 314, 234, 277, 26, 276, 656, 275, 249, 150, 9,…</span></span>
 <span><span class="co">#&gt; $ condition_concept_id    &lt;int&gt; 4, 2, 2, 1, 5, 3, 4, 2, 4, 5, 2, 2, 2, 3, 1, 1…</span></span>
@@ -146,7 +146,7 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">age</span> <span class="op">&gt;=</span> <span class="fl">18</span> <span class="op">&amp;</span> <span class="va">age</span> <span class="op">&lt;=</span> <span class="fl">65</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"Male"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # Source:   SQL [?? x 7]</span></span>
-<span><span class="co">#&gt; # Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; # Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt;    condition_occurrence_id person_id condition_concept_id condition_start_date</span></span>
 <span><span class="co">#&gt;                      &lt;int&gt;     &lt;int&gt;                &lt;int&gt; &lt;date&gt;              </span></span>
 <span><span class="co">#&gt;  1                     314       314                    4 2005-08-25          </span></span>
@@ -171,27 +171,26 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span></code></pre></div>
-<p>We can add age, age groups, sex, and days of prior history to a cohort like so</p>
+<p>We can add age, age groups, sex, and days of prior observation to a cohort like so</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addAge.html">addAge</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>    ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">18</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">19</span>, <span class="fl">65</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">66</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/addSex.html">addSex</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">addPriorHistory</span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/addSex.html">addSex</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 8</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 2, 1, 1, 1</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 3, 1, 2, 1</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -199,20 +198,20 @@
 <span><span class="co">#&gt; $ age                  &lt;dbl&gt; 42, 41, 50, 40</span></span>
 <span><span class="co">#&gt; $ age_group            &lt;chr&gt; "19 to 65", "19 to 65", "19 to 65", "19 to 65"</span></span>
 <span><span class="co">#&gt; $ sex                  &lt;chr&gt; "Female", "Male", "Male", "Male"</span></span>
-<span><span class="co">#&gt; $ prior_history        &lt;dbl&gt; 4635, 5350, 4168, 5198</span></span></code></pre></div>
-<p>We could use this information to subset the cohort. For example limiting to those with at least 365 days of prior history available before their cohort start date like so</p>
+<span><span class="co">#&gt; $ prior_observation    &lt;dbl&gt; 4635, 5350, 4168, 5198</span></span></code></pre></div>
+<p>We could use this information to subset the cohort. For example limiting to those with at least 365 days of prior observation available before their cohort start date like so</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">prior_history</span> <span class="op">&gt;=</span> <span class="fl">365</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">prior_observation</span> <span class="op">&gt;=</span> <span class="fl">365</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # Source:   SQL [4 x 8]</span></span>
-<span><span class="co">#&gt; # Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; # Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date   age</span></span>
 <span><span class="co">#&gt;                  &lt;dbl&gt;      &lt;dbl&gt; &lt;date&gt;            &lt;date&gt;          &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1                    2          3 2020-01-01        2020-03-01         42</span></span>
 <span><span class="co">#&gt; 2                    1          1 2020-06-01        2020-08-01         41</span></span>
 <span><span class="co">#&gt; 3                    1          2 2020-01-02        2020-02-02         50</span></span>
 <span><span class="co">#&gt; 4                    1          1 2020-01-01        2020-04-01         40</span></span>
-<span><span class="co">#&gt; # ℹ 3 more variables: age_group &lt;chr&gt;, sex &lt;chr&gt;, prior_history &lt;dbl&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; # ℹ 3 more variables: age_group &lt;chr&gt;, sex &lt;chr&gt;, prior_observation &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -227,7 +226,7 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -235,7 +234,6 @@
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -244,14 +242,14 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 7</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
 <span><span class="co">#&gt; $ cohort_1_minf_to_m1  &lt;dbl&gt; 1, 1, 0, 0</span></span>
 <span><span class="co">#&gt; $ cohort_2_minf_to_m1  &lt;dbl&gt; 0, 1, 0, 0</span></span>
-<span><span class="co">#&gt; $ cohort_3_minf_to_m1  &lt;dbl&gt; 0, 0, 1, 0</span></span></code></pre></div>
+<span><span class="co">#&gt; $ cohort_3_minf_to_m1  &lt;dbl&gt; 0, 0, 0, 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="count-appearances-of-a-certain-cohort-in-a-certain-window">Count appearances of a certain cohort in a certain window<a class="anchor" aria-label="anchor" href="#count-appearances-of-a-certain-cohort-in-a-certain-window"></a>
@@ -262,7 +260,7 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -270,7 +268,6 @@
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"short_term"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">30</span><span class="op">)</span>, <span class="st">"mid_term"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">180</span><span class="op">)</span><span class="op">)</span></span>
@@ -280,13 +277,13 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 6</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 2, 1</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ cohort_1_short_term  &lt;dbl&gt; 0, 0, 0, 0</span></span>
-<span><span class="co">#&gt; $ cohort_1_mid_term    &lt;dbl&gt; 1, 0, 0, 0</span></span></code></pre></div>
+<span><span class="co">#&gt; $ cohort_1_mid_term    &lt;dbl&gt; 1, 0, 0, 0</span></span>
+<span><span class="co">#&gt; $ cohort_1_short_term  &lt;dbl&gt; 0, 0, 0, 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="add-a-column-with-the-firstlast-event-in-a-certain-window">Add a column with the first/last event in a certain window<a class="anchor" aria-label="anchor" href="#add-a-column-with-the-firstlast-event-in-a-certain-window"></a>
@@ -298,7 +295,7 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -306,7 +303,6 @@
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"first"</span>,</span>
@@ -317,19 +313,19 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 2, 1</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;date&gt; 2019-12-30, 2019-12-30, 2020-01-01, NA</span></span></code></pre></div>
+<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;date&gt; 2019-12-30, 2019-12-30, NA, NA</span></span></code></pre></div>
 <p>Last occurrence:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -337,7 +333,6 @@
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"last"</span>,</span>
@@ -348,12 +343,12 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 2, 1</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;date&gt; 2020-05-25, 2020-05-25, 2020-01-01, NA</span></span></code></pre></div>
+<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;date&gt; 2020-05-25, 2020-05-25, NA, NA</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="add-the-number-of-days-instead-of-the-date">Add the number of days instead of the date<a class="anchor" aria-label="anchor" href="#add-the-number-of-days-instead-of-the-date"></a>
@@ -364,7 +359,7 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -372,7 +367,6 @@
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersectDays.html">addCohortIntersectDays</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"last"</span>,</span>
@@ -383,12 +377,12 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 2, 1</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;dbl&gt; 145, -7, 0, NA</span></span></code></pre></div>
+<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;dbl&gt; 145, -7, NA, NA</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="combine-multiple-cohort-intersects">Combine multiple cohort intersects<a class="anchor" aria-label="anchor" href="#combine-multiple-cohort-intersects"></a>
@@ -399,7 +393,7 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -407,14 +401,12 @@
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"last"</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span></span>
@@ -424,19 +416,19 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 2, 1</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date      &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;dbl&gt; 2, 2, 1, NA</span></span></code></pre></div>
+<span><span class="co">#&gt; $ cohort_1_minf_to_inf &lt;dbl&gt; 2, 2, NA, NA</span></span></code></pre></div>
 <p>A more efficient implementation for getting multiple types of intersection results is provided by <code>addCohortIntersectTime</code></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 4</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;dbl&gt; 1, 1, 1, 2</span></span>
 <span><span class="co">#&gt; $ subject_id           &lt;dbl&gt; 1, 1, 2, 3</span></span>
 <span><span class="co">#&gt; $ cohort_start_date    &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
@@ -444,7 +436,6 @@
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/addCohortIntersect.html">addCohortIntersect</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -458,15 +449,15 @@
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 8</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [eburn@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id    &lt;dbl&gt; 1, 1, 2, 1</span></span>
 <span><span class="co">#&gt; $ subject_id              &lt;dbl&gt; 1, 1, 3, 2</span></span>
 <span><span class="co">#&gt; $ cohort_start_date       &lt;date&gt; 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">#&gt; $ cohort_end_date         &lt;date&gt; 2020-04-01, 2020-08-01, 2020-03-01, 2020-02-02</span></span>
-<span><span class="co">#&gt; $ count_cohort_1_any_time &lt;dbl&gt; 2, 2, 1, 0</span></span>
-<span><span class="co">#&gt; $ flag_cohort_1_any_time  &lt;dbl&gt; 1, 1, 1, 0</span></span>
-<span><span class="co">#&gt; $ date_cohort_1_any_time  &lt;date&gt; 2019-12-30, 2019-12-30, 2020-01-01, NA</span></span>
-<span><span class="co">#&gt; $ days_cohort_1_any_time  &lt;dbl&gt; -2, -154, 0, NA</span></span></code></pre></div>
+<span><span class="co">#&gt; $ count_cohort_1_any_time &lt;dbl&gt; 2, 2, 0, 0</span></span>
+<span><span class="co">#&gt; $ flag_cohort_1_any_time  &lt;dbl&gt; 1, 1, 0, 0</span></span>
+<span><span class="co">#&gt; $ date_cohort_1_any_time  &lt;date&gt; 2019-12-30, 2019-12-30, NA, NA</span></span>
+<span><span class="co">#&gt; $ days_cohort_1_any_time  &lt;dbl&gt; -2, -154, NA, NA</span></span></code></pre></div>
 </div>
 </div>
 </div>

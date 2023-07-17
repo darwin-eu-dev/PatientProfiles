@@ -68,7 +68,7 @@
 Mike Du, Yuchen Guo, Kim López-Güell, Xintong Li, Núria Mercadé-Besora,
 and Edward Burn</h4>
             
-            <h4 data-toc-skip class="date">2023-07-16</h4>
+            <h4 data-toc-skip class="date">2023-07-17</h4>
       
       
       <div class="d-none name"><code>addPatientCharacteristics.rmd</code></div>
@@ -144,7 +144,6 @@ patients in 20-year age band and if they are 60 years old or more.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence_mod</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addAge.html">addAge</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    ageDefaultMonth <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    ageDefaultDay <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>    indexDate <span class="op">=</span> <span class="st">"condition_start_date"</span>,</span>
@@ -188,9 +187,7 @@ stratify the number of events by age, grouping patients into 20-year age
 bands.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence_mod</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence_mod</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addSex.html">addSex</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span></span>
-<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/addSex.html">addSex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence_mod</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -262,18 +259,12 @@ future observation days. Notice that we are not using the argument
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addInObservation.html">addInObservation</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/addInObservation.html">addInObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">in_observation</span> <span class="op">==</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addFutureObservation.html">addFutureObservation</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span></span>
-<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/addFutureObservation.html">addFutureObservation</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -316,7 +307,6 @@ the day they enter a cohort, we can use the function
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addDemographics.html">addDemographics</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>    age <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    ageName <span class="op">=</span> <span class="st">"age"</span>,</span>
 <span>    ageGroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
