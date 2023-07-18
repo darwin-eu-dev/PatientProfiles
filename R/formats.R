@@ -64,7 +64,10 @@ assertClassification <- function(x, tib) {
     } else if (x[i] == "drtn") {
       return("numeric")
     } else if (x[i] %in% c("int", "dbl", "int64")) {
-      lab <- unique(tib[[i]])
+      lab <- tib %>%
+        dplyr::select(dplyr::all_of(colnames(tib)[i])) %>%
+        dplyr::distinct() %>%
+        dplyr::pull()
       if (length(lab) <= 2 && all(lab %in% c(0, 1))) {
         return("binary")
       } else {

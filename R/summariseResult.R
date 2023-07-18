@@ -386,7 +386,7 @@ summaryValues <- function(x, variables, functions) {
   }
   requiredFunctions <- requiredFunctions %>%
     dplyr::left_join(
-      variableTypes(x) %>% dplyr::select(-"type_sum"),
+      x %>% dplyr::ungroup() %>% variableTypes() %>% dplyr::select(-"type_sum"),
       by = "variable"
     )
 
@@ -494,7 +494,8 @@ countSubjects <- function(x) {
 }
 
 #' @noRd
-summaryValuesStrata <- function(x, strata,
+summaryValuesStrata <- function(x,
+                                strata,
                                 variables,
                                 functions,
                                 includeOverall) {
