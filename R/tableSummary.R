@@ -116,3 +116,125 @@ tableCharacteristics <- function(table) {
       )
     )
 }
+
+#' Give format to a summary object.
+#'
+#' @param summaryResult A SummarisedResult object.
+#' @param format A list of formats of teh estimate_type.
+#' @param decimals Number of decimals to round each estimate_type.
+#' @param keepNotFromatted Whether to keep non formatted lines.
+#'
+#' @return A formatted summarisedResult.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#'
+#' cdm <- mockPatientProfiles()
+#'
+#' cdm$cohort1 %>%
+#'   summariseCharacteristics(
+#'     ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+#'     minCellCount = 1
+#'   ) %>%
+#'   formatEstimates(
+#'     format = c(
+#'       "N (%)" = "count (percentage%)",
+#'       "N" = "count",
+#'       "median [Q25-Q75]" = "median [q25-q75]"
+#'     ),
+#'     decimals = c(count = 0),
+#'     keepNotFromatted = FALSE
+#'   )
+#' }
+#'
+formatEstimates <- function(summaryResult,
+                           format = c(),
+                           keepNotFromatted = FALSE,
+                           decimals = c(count = 0),
+                           defaultDecimal = 2,
+                           decimalMark = ".",
+                           bigMark = ",") {
+  # initial checks
+  #checkInput(
+  #  summaryResult = summaryResult, format = format, decimals = decimals,
+  #  keepNotFormatted = keepNotFormatted
+  #)
+
+  # format decimals
+  for (k in seq_along(decimals)) {
+    summaryResult <- formatDecimals(summaryResult, decimals[k])
+  }
+
+  # tidy estimates
+  summaryResult <- tidyEstimates(summaryResult, format, keepNotFromatted)
+
+  return(summaryResult)
+}
+
+tidyEstimates <- function(summaryResult, format, keepNotFromatted) {
+  # tidy by groups
+  label <- names(format)
+  if (is.null(label)) {
+    label <- format
+  } else {
+    label <- ifelse(label == "", format, label)
+  }
+  toGroup <- names(summaryResult)
+  toGroup <- toGroup[!(toGroup %in% c("estimate", "estimate_type"))]
+  summaryResult <- summaryResult %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(toGroup))) %>%
+    dplyr::mutate(formats = paste0(.data$estimate_type, collapse = " ")) %>%
+    dplyr::ungroup()
+  formattedResult <- NULL
+  allEstimates <- unique(summaryResult$estimate_type)
+  for (k in seq_along(format)) {
+    estimates <- allEstimates[sapply(allEstimates, grepl, format[k])]
+    toEvaluate <- getEvaluate(format[k], estimates)
+    toFotmat <- summaryResult %>%
+      dplyr::rowwise() %>%
+      dplyr::filter(sum(.data$estimate_type == .env$estimates) == 1) %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(toGroup))) %>%
+      dplyr::filter(dplyr::n() == length(.env$estimates)) %>%
+      dplyr::ungroup()
+    summaryResult <- summaryResult %>%
+      dplyr::anti_join(toFotmat, by = names(summaryResult))
+    formattedResult <- formattedResult %>%
+      dplyr::union_all(
+        toFotmat %>%
+          tidyr::pivot_wider(
+            names_from = "estimate_type", values_from = "estimate"
+          ) %>%
+          dplyr::mutate(
+            format = .env$label[k],
+            estimate = !!rlang::parse_expr(toEvaluate)
+          ) %>%
+          dplyr::select(-dplyr::all_of(estimates))
+      )
+  }
+
+  # keep formatted?
+  if (keepNotFromatted == TRUE) {
+    formattedResult <- formattedResult %>%
+      dplyr::union_all(
+        summaryResult %>% dplyr::rename("format" = "estimate_type")
+      )
+  }
+  formattedResult <- formattedResult %>%
+    dplyr::select(-"formats")
+
+  return(formattedResult)
+}
+
+getEvaluate <- function(format, estimates) {
+  toEvaluate <- format[k]
+  for (j in seq_along(estimates)) {
+    toEvaluate <- gsub(
+      estimates[j], paste0("', .data$", estimates[j], ", '"), toEvaluate
+    )
+  }
+  toEvaluate <- paste0("paste0('", toEvaluate, "')")
+  return(toEvaluate)
+}
