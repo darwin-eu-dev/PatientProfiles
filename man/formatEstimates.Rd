@@ -22,6 +22,12 @@ formatEstimates(
 \item{keepNotFromatted}{Whether to keep non formatted lines.}
 
 \item{decimals}{Number of decimals to round each estimate_type.}
+
+\item{defaultDecimal}{Number of decimals by default.}
+
+\item{decimalMark}{Decimal mark.}
+
+\item{bigMark}{Big mark.}
 }
 \value{
 A formatted summarisedResult.

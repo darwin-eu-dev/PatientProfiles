@@ -121,8 +121,11 @@ tableCharacteristics <- function(table) {
 #'
 #' @param summaryResult A SummarisedResult object.
 #' @param format A list of formats of teh estimate_type.
-#' @param decimals Number of decimals to round each estimate_type.
 #' @param keepNotFromatted Whether to keep non formatted lines.
+#' @param decimals Number of decimals to round each estimate_type.
+#' @param defaultDecimal Number of decimals by default.
+#' @param decimalMark Decimal mark.
+#' @param bigMark Big mark.
 #'
 #' @return A formatted summarisedResult.
 #'

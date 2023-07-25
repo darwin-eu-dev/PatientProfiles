@@ -1,8 +1,8 @@
 test_that("test all functions", {
   x <- dplyr::tibble(
-    s = c("g1", "g1", "g2", "g1&&g2", "g2", "g1&&g2"),
+    s = c("g1", "g1", "g2", "g1 and g2", "g2", "g1 and g2"),
     v1 = c(1, 2, 3, 4, 6, 3),
-    v2 = c("a", "b", "a&&b", "b", "0", "0&&ab"),
+    v2 = c("a", "b", "a and b", "b", "0", "0 and ab"),
     v3 = c(0, 1, 0, 1, 1, 0),
     v4 = as.Date(c(
       "2021-05-12", "2012-05-15", "2023-11-30", "2015-12-10", "2014-01-12",
@@ -53,7 +53,7 @@ test_that("test all functions", {
   )
   functions <- list(
     numeric = c("median", "q25", "q75"),
-    categorical = c("count", "%")
+    categorical = c("count", "percentage")
   )
   expect_no_error(
     result <- summariseResult(

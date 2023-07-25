@@ -59,8 +59,8 @@ summariseResult <- function(table,
                             functions = list(
                               numericVariables = c("median", "q25", "q75"),
                               dateVariables = c("median", "q25", "q75"),
-                              binaryVariables = c("count", "%"),
-                              categoricalVariables = c("count", "%")
+                              binaryVariables = c("count", "percentage"),
+                              categoricalVariables = c("count", "percentage")
                             ),
                             minCellCount = 5) {
 
@@ -225,7 +225,7 @@ getDateValues <- function(x, variablesDate) {
 getBinaryValues <- function(x, variablesBinary) {
   result <- NULL
   variablesFunction <- variablesBinary %>%
-    dplyr::filter(.data$estimate_type %in% c("count", "%")) %>%
+    dplyr::filter(.data$estimate_type %in% c("count", "percentage")) %>%
     dplyr::pull("variable") %>%
     unique()
   if (length(variablesFunction) > 0) {
@@ -245,9 +245,9 @@ getBinaryValues <- function(x, variablesBinary) {
             names_to = "variable",
             values_to = "count"
           ) %>%
-          dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
+          dplyr::mutate("percentage" = 100 * .data$count / .data$denominator) %>%
           dplyr::select(-"denominator") %>%
-          tidyr::pivot_longer(c("count", "%"),
+          tidyr::pivot_longer(c("count", "percentage"),
             names_to = "estimate_type",
             values_to = "estimate"
           ) %>%
@@ -264,7 +264,7 @@ getBinaryValues <- function(x, variablesBinary) {
       dplyr::mutate(estimate = as.character(.data$estimate))
   }
   variablesBinary <- variablesBinary %>%
-    dplyr::filter(!(.data$estimate_type %in% c("count", "%")))
+    dplyr::filter(!(.data$estimate_type %in% c("count", "percentage")))
   if (nrow(variablesBinary) > 0) {
     result <- result %>%
       dplyr::union_all(
@@ -314,13 +314,13 @@ getCategoricalValues <- function(x, variablesCategorical) {
           is.na(.data$count), 0, .data$count
         ))
     }
-    if ("count" %in% functions | "%" %in% functions) {
+    if ("count" %in% functions | "percentage" %in% functions) {
       result <- result %>%
         dplyr::union_all(
           summaryX %>%
-            dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
+            dplyr::mutate("percentage" = 100 * .data$count / .data$denominator) %>%
             dplyr::select(-"denominator") %>%
-            tidyr::pivot_longer(c("count", "%"),
+            tidyr::pivot_longer(c("count", "percentage"),
               names_to = "estimate_type",
               values_to = "estimate"
             ) %>%
@@ -348,7 +348,7 @@ getCategoricalValues <- function(x, variablesCategorical) {
             )
         )
     }
-    functions <- functions[!(functions %in% c("count", "%", "distinct"))]
+    functions <- functions[!(functions %in% c("count", "percentage", "distinct"))]
     if (length(functions) > 0) {
       result <- result %>%
         dplyr::union_all(
