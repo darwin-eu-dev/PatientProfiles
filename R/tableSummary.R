@@ -154,6 +154,12 @@ tableCharacteristics <- function(table) {
 #' }
 #'
 formatEstimates <- function(summaryResult,
+                            settings = c(
+                              "cdm_name", "group_name" = "group_level",
+                              "strata_name" = "strata_level",
+                              "variable" = "variable_level"
+                            ),
+                            hideColumns = "result_type",
                             format = c(),
                             keepNotFromatted = TRUE,
                             decimals = c(count = 0),
@@ -278,9 +284,9 @@ formatNumbers <- function(summaryResult,
 
 formatEst <- function(condition, x, dec, bm, dm) {
   xnew <- x
-  xnew[condition] <- base::format(
+  xnew[condition] <- gsub(" ", "", base::format(
     round(as.numeric(x[condition]), dec), nsmall = dec, big.mak = bm,
     decimal.mark = dm
-  )
+  ))
   return(xnew)
 }
