@@ -151,12 +151,12 @@ tableCharacteristics <- function(table) {
 #' }
 #'
 formatEstimates <- function(summaryResult,
-                           format = c(),
-                           keepNotFromatted = FALSE,
-                           decimals = c(count = 0),
-                           defaultDecimal = 2,
-                           decimalMark = ".",
-                           bigMark = ",") {
+                            format = c(),
+                            keepNotFromatted = TRUE,
+                            decimals = c(count = 0),
+                            defaultDecimal = 2,
+                            decimalMark = ".",
+                            bigMark = ",") {
   # initial checks
   #checkInput(
   #  summaryResult = summaryResult, format = format, decimals = decimals,
@@ -164,9 +164,9 @@ formatEstimates <- function(summaryResult,
   #)
 
   # format decimals
-  for (k in seq_along(decimals)) {
-    summaryResult <- formatDecimals(summaryResult, decimals[k])
-  }
+  summaryResult <- formatNumbers(
+    summaryResult, decimals, defaultDecimal, decimalMark, bigMark
+  )
 
   # tidy estimates
   summaryResult <- tidyEstimates(summaryResult, format, keepNotFromatted)
@@ -229,7 +229,7 @@ tidyEstimates <- function(summaryResult, format, keepNotFromatted) {
 }
 
 getEvaluate <- function(format, estimates) {
-  toEvaluate <- format[k]
+  toEvaluate <- format
   for (j in seq_along(estimates)) {
     toEvaluate <- gsub(
       estimates[j], paste0("', .data$", estimates[j], ", '"), toEvaluate
@@ -237,4 +237,47 @@ getEvaluate <- function(format, estimates) {
   }
   toEvaluate <- paste0("paste0('", toEvaluate, "')")
   return(toEvaluate)
+}
+
+formatNumbers <- function(summaryResult,
+                          decimals,
+                          defaultDecimal,
+                          decimalMark,
+                          bigMark) {
+  summaryResult <- summaryResult %>%
+    dplyr::mutate(
+      is_numeric = !is.na(suppressWarnings(as.numeric(.data$estimate))),
+      formatted = FALSE
+    )
+  for (k in seq_along(decimals)) {
+    summaryResult <- summaryResult %>%
+      dplyr::mutate(estimate = formatEst(
+        .data$estimate_type == names(decimals)[k] & .data$is_numeric &
+          .data$formatted == FALSE,
+        .data$estimate, decimals[k], bigMark, decimalMark
+      )) %>%
+      dplyr::mutate(formatted = dplyr::if_else(
+        .data$estimate_type == names(decimals)[k] & .data$is_numeric &
+          .data$formatted == FALSE,
+        TRUE,
+        .data$formatted
+      ))
+  }
+  summaryResult <- summaryResult %>%
+    dplyr::mutate(estimate = formatEst(
+      .data$is_numeric & .data$formatted == FALSE, .data$estimate, decimals[k],
+      bigMark, decimalMark
+    )) %>%
+    dplyr::select(-"is_numeric", -"formatted")
+
+  return(summaryResult)
+}
+
+formatEst <- function(condition, x, dec, bm, dm) {
+  xnew <- x
+  xnew[condition] <- base::format(
+    round(as.numeric(x[condition]), dec), nsmall = dec, big.mak = bm,
+    decimal.mark = dm
+  )
+  return(xnew)
 }
