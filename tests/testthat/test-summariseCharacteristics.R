@@ -225,4 +225,12 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() * 4 # 2 group_level 2 estimate type
   )
 
+  result_notables <- summariseCharacteristics(
+    cdm$dus_cohort, cohortIntersect = list(), tableIntersect = list(), minCellCount = 1
+  )
+  expect_true(
+    all(c("cdm_name", "result_type", "group_name", "group_level", "strata_name", "strata_level", "variable", "variable_level", "variable_type", "estimate_type", "estimate") %in%
+          colnames(result_notables))
+  )
+
 })
