@@ -206,38 +206,40 @@ summariseCharacteristics <- function(cohort,
 }
 
 tidyResults <- function(results, variables, intersect) {
-  patternNames <- lapply(names(intersect), function(x) {
-    tidyr::expand_grid(
-      value = intersect[[x]][["value"]],
-      window_name = names(intersect[[x]][["window"]]),
-      table_name = c(
-        intersect[[x]][["targetCohortTable"]],
-        intersect[[x]][["tableName"]]
-      )
-    ) %>%
-      dplyr::mutate(variable_group = .env$x)
-  }) %>%
-    dplyr::bind_rows() %>%
-    dplyr::rowwise() %>%
-    tidyr::separate(
-      col = "window_name", into = "window_first", sep = "_", remove = FALSE,
-      extra = "drop"
-    ) %>%
-    dplyr::mutate(
-      pattern = paste0("_", .data$value, "_", .data$window_name),
-      variable_new = paste(
-        .data$variable_group, .data$value, dplyr::if_else(
-          substr(.data$window_first, 1, 1) == "m" &
-            suppressWarnings(!is.na(as.numeric(substr(
-              .data$window_first, 2, nchar(.data$window_first))
-            ))),
-          gsub("m", "-", paste(.data$window_name, "days")), .data$window_name
-        ))
-    ) %>%
-    dplyr::select("pattern", "table_name", "variable_group", "variable_new")
   tidyColumn <- function(col) {
     stringr::str_to_sentence(gsub("_", " ", col))
   }
+  if(length(intersect) != 0) {
+    patternNames <- lapply(names(intersect), function(x) {
+      tidyr::expand_grid(
+        value = intersect[[x]][["value"]],
+        window_name = names(intersect[[x]][["window"]]),
+        table_name = c(
+          intersect[[x]][["targetCohortTable"]],
+          intersect[[x]][["tableName"]]
+        )
+      ) %>%
+        dplyr::mutate(variable_group = .env$x)
+    }) %>%
+      dplyr::bind_rows() %>%
+      dplyr::rowwise() %>%
+      tidyr::separate(
+        col = "window_name", into = "window_first", sep = "_", remove = FALSE,
+        extra = "drop"
+      ) %>%
+      dplyr::mutate(
+        pattern = paste0("_", .data$value, "_", .data$window_name),
+        variable_new = paste(
+          .data$variable_group, .data$value, dplyr::if_else(
+            substr(.data$window_first, 1, 1) == "m" &
+              suppressWarnings(!is.na(as.numeric(substr(
+                .data$window_first, 2, nchar(.data$window_first))
+              ))),
+            gsub("m", "-", paste(.data$window_name, "days")), .data$window_name
+          ))
+      ) %>%
+      dplyr::select("pattern", "table_name", "variable_group", "variable_new")
+
   results %>%
     dplyr::left_join(
       variables %>%
@@ -272,4 +274,11 @@ tidyResults <- function(results, variables, intersect) {
       c("group_level", "strata_level", "variable", "variable_level"),
       tidyColumn
     ))
+  } else {
+    results %>%
+      dplyr::mutate(dplyr::across(
+        c("group_level", "strata_level", "variable", "variable_level"),
+        tidyColumn
+      ))
+  }
 }
