@@ -22,8 +22,16 @@ library(PaRe)
 library(dplyr)
 ```
 
-```{r, echo=FALSE}
-repo <- PaRe::Repository$new(here::here())
+```{r, echo=FALSE, results="hide"}
+tempDir <- tempdir()
+pathToRepo <- file.path(tempDir, "PatientProfiles")
+
+git2r::clone(
+  url = "https://github.com/darwin-eu-dev/PatientProfiles.git",
+  local_path = pathToRepo
+)
+
+repo <- PaRe::Repository$new(pathToRepo)
 ```
 
 ## Package overview
@@ -170,7 +178,7 @@ DT::datatable(
 
 ## Dependency review
 ### Check dependencies against whitelist
-```{r checkDependencies, warning=FALSE, echo=FALSE}
+```{r checkDependencies, warning=FALSE, echo=FALSE, eval=FALSE}
 DT::datatable(PaRe::checkDependencies(repo = repo, verbose = FALSE))
 ```
 

@@ -45,7 +45,8 @@ Suggests:
     plotly,
     ggraph,
     DT,
-    cowplot
+    cowplot,
+    DiagrammeRsvg
 Imports: 
     magrittr,
     CDMConnector (>= 1.0.0),
