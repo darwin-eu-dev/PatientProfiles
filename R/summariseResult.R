@@ -553,9 +553,21 @@ supressCounts <- function(result, minCellCount) {
     estimate <- suppressWarnings(as.numeric(result$estimate))
     id <- unlist(lapply(strsplit(result$estimate_type, ": "), utils::tail, n = 1)) ==
       "count" & estimate < minCellCount & estimate > 0
+    id_percent <- unlist(lapply(strsplit(result$estimate_type, ": "), utils::tail, n = 1)) == "%"
+
+    for (i in 2:length(id_percent))
+    {
+      if (!id[i - 1]) {
+        id_percent[i] <- FALSE
+      }
+    }
+
     result <- result %>%
       dplyr::mutate(estimate = dplyr::if_else(
         .env$id, paste0("<", .env$minCellCount), .data$estimate
+      )) %>%
+      dplyr::mutate(estimate = dplyr::if_else(
+        .env$id_percent, "NA", .data$estimate
       ))
   }
   return(result)
