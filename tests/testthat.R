@@ -4,10 +4,6 @@ library(PatientProfiles)
 availableConnections <- list(list(
   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
   write_schema = "main"
-  # ,
-  # mock_prefix = paste0("mock_",
-  #        paste(sample(letters, 5), collapse = ""),
-  #        "_")
 ))
 
 # if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
@@ -25,7 +21,7 @@ availableConnections <- list(list(
 #       write_schema = Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA")
 #     )))
 # }
-
+#
 # if (Sys.getenv("CDM5_SQL_SERVER_USER") != "") {
 #   availableConnections <- availableConnections %>%
 #     append(value = list(list(

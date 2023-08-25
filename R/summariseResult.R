@@ -290,7 +290,7 @@ getCategoricalValues <- function(x, variablesCategorical) {
   for (v in variables) {
     xx <- x %>%
       dplyr::select("strata_level", "variable_level" = dplyr::all_of(v)) %>%
-      tidyr::separate_rows("variable_level", sep = "&&", convert = TRUE)
+      dplyr::mutate(variable_level = as.character(.data$variable_level))
     functions <- variablesCategorical %>%
       dplyr::filter(.data$variable == .env$v) %>%
       dplyr::pull("estimate_type") %>%
@@ -389,7 +389,7 @@ summaryValues <- function(x, variables, functions) {
   }
   requiredFunctions <- requiredFunctions %>%
     dplyr::left_join(
-      variableTypes(x) %>% dplyr::select(-"type_sum"),
+      x %>% dplyr::ungroup() %>% variableTypes() %>% dplyr::select(-"type_sum"),
       by = "variable"
     )
 
@@ -497,7 +497,8 @@ countSubjects <- function(x) {
 }
 
 #' @noRd
-summaryValuesStrata <- function(x, strata,
+summaryValuesStrata <- function(x,
+                                strata,
                                 variables,
                                 functions,
                                 includeOverall) {
@@ -514,7 +515,6 @@ summaryValuesStrata <- function(x, strata,
   for (strat in names(strata)) {
     xx <- x %>%
       uniteStrata(strata[[strat]]) %>%
-      tidyr::separate_rows("strata_level", sep = "&&", convert = FALSE) %>%
       dplyr::group_by(.data$strata_level)
     result <- result %>%
       dplyr::bind_rows(

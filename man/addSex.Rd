@@ -4,7 +4,7 @@
 \alias{addSex}
 \title{Compute the sex of the individuals}
 \usage{
-addSex(x, cdm, sexName = "sex", tablePrefix = NULL)
+addSex(x, cdm = attr(x, "cdm_reference"), sexName = "sex", tablePrefix = NULL)
 }
 \arguments{
 \item{x}{Table with individuals in the cdm}

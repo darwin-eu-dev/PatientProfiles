@@ -34,7 +34,7 @@ checkX <- function(x) {
   personVariable <- dplyr::if_else(
     "person_id" %in% colnames(x), "person_id", "subject_id"
   )
-  return(personVariable)
+  invisible(personVariable)
 }
 
 #' @noRd
@@ -48,7 +48,7 @@ checkCdm <- function(cdm, tables = NULL) {
       cli::cli_abort(paste0(
         "tables: ",
         paste0(tables, collapse = ", "),
-        "are nor present in the cdm object"
+        "are not present in the cdm object"
       ))
     }
   }
@@ -92,7 +92,7 @@ checkCategory <- function(category, overlap = FALSE) {
         call. = FALSE
       )
     }
-    return(x)
+    invisible(x)
   })
 
   # check lower bound is smaller than upper bound
@@ -127,7 +127,7 @@ checkCategory <- function(category, overlap = FALSE) {
     }
   }
 
-  return(result)
+  invisible(result)
 }
 
 #' @noRd
@@ -148,7 +148,7 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
       names(ageGroup)[id] <- paste0("age_group_", id)
     }
   }
-  return(ageGroup)
+  invisible(ageGroup)
 }
 
 #' @noRd
@@ -203,7 +203,7 @@ checkWindow <- function(window) {
     cli::cli_abort("Not both elements in the window can be -Inf")
   }
 
-  return(windowTbl)
+  invisible(windowTbl)
 }
 
 #' @noRd
@@ -222,7 +222,7 @@ checkNewName <- function(name, x) {
       name[k] <- newName
     }
   }
-  return(name)
+  invisible(name)
 }
 
 #' @noRd
@@ -230,7 +230,7 @@ getWindowNames <- function(window) {
   getname <- function(element) {
     element <- tolower(as.character(element))
     element <- gsub("-", "m", element)
-    return(paste0(element[1], "_to_", element[2]))
+    invisible(paste0(element[1], "_to_", element[2]))
   }
   windowNames <- names(window)
   if (is.null(windowNames)) {
@@ -238,7 +238,7 @@ getWindowNames <- function(window) {
   } else {
     windowNames[windowNames == ""] <- lapply(window[windowNames == ""], getname)
   }
-  return(windowNames)
+  invisible(windowNames)
 }
 
 #' @noRd
@@ -264,7 +264,7 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
       id_name = idName
     )
   }
-  return(filterTbl)
+  invisible(filterTbl)
 }
 
 #' @noRd
@@ -288,10 +288,12 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
   )
   if (!all(changed %in% contained)) {
     variablesNotContained <- changed[!(changed %in% contained)]
+    variablesNotContained <- gsub("[{}]","",variablesNotContained)
+    variablesNotContained <- gsub("id_name","cohort_name",variablesNotContained)
     cli::cli_abort(paste0(
       "Variables: ",
       paste0(variablesNotContained, collapse = ", "),
-      "have multiple possibilities and should be cotained in nameStyle"
+      " have multiple possibilities and should be cotained in nameStyle"
     ))
   }
 }
@@ -314,7 +316,7 @@ checkValue <- function(value, x, name) {
       obtain that column please rename and run again."
     ))
   }
-  return(value[!(value %in% c("flag", "count", "date", "days"))])
+  invisible(value[!(value %in% c("flag", "count", "date", "days"))])
 }
 
 #' @noRd
@@ -358,11 +360,11 @@ checkCohortNames <- function(x, targetCohortId, name) {
     "filter_id" = targetCohortId,
     "id_name" = idName
   )
-  return(parameters)
+  invisible(parameters)
 }
 
 #' @noRd
-checkSnakeCase <- function(name) {
+checkSnakeCase <- function(name, verbose = TRUE) {
   wrong <- FALSE
   for (i in seq_along(name)) {
     n <- name[i]
@@ -374,23 +376,25 @@ checkSnakeCase <- function(name) {
       name[i] <- gsub("([[:upper:]])", "\\L\\1", perl = TRUE, name[i])
       name[i] <- gsub("[^a-z,0-9.-]", "_", name[i])
       name[i] <- gsub("-", "_", name[i])
-      cli::cli_alert(paste0(oldname, " has been changed to ", name[i]))
+      if(verbose) {
+        cli::cli_alert(paste0(oldname, " has been changed to ", name[i]))
+      }
       wrong <- TRUE
     }
   }
-  if (wrong) {
+  if (wrong && verbose) {
     cli::cli_alert("some provided names were not in snake_case")
     cli::cli_alert("names have been changed to lower case")
     cli::cli_alert("special symbols in names have been changed to '_'")
   }
-  return(name)
+  invisible(name)
 }
 
 #' @noRd
 checkVariableType <- function(variableType) {
   errorMessage <- "variableType must be a choice between numeric, date, binary and categorical."
   if (!is.character(variableType) |
-    length(variableType) != 1) {
+      length(variableType) != 1) {
     cli::cli_abort(errorMessage)
   }
   if (!(variableType %in% c("numeric", "date", "binary", "categorical"))) {
@@ -526,4 +530,41 @@ checkSignificantDecimals <- function(significantDecimals) {
     significantDecimals,
     lower = 0, len = 1, any.missing = F
   )
+}
+
+#' @noRd
+checkTableIntersect <- function(tableIntersect, cdm) {
+  checkmate::assertList(tableIntersect, names = "named")
+  lapply(tableIntersect, function(x) {
+    checkmate::assertList(x, names = "named", len = 3)
+    checkmate::assertTRUE(all(names(x) %in% c("tableName", "value", "window")))
+    checkmate::assertCharacter(x[["tableName"]], len = 1)
+    checkmate::assertTRUE(x[["tableName"]] %in% names(cdm))
+    checkValue(x[["value"]], cdm[x[["tableName"]]])
+    checkWindow(x[["window"]])
+  })
+  invisible(NULL)
+}
+
+#' @noRd
+checkCohortIntersect <- function(cohortIntersect, cdm) {
+  checkmate::assertList(cohortIntersect, names = "named")
+  lapply(cohortIntersect, function(x) {
+    checkmate::assertList(x, names = "named", len = 3)
+    checkmate::assertTRUE(all(names(x) %in% c("targetCohortTable", "value", "window")))
+    checkmate::assertCharacter(x[["targetCohortTable"]], len = 1)
+    checkmate::assertTRUE(x[["targetCohortTable"]] %in% names(cdm))
+    checkValue(x[["value"]], cdm[x[["targetCohortTable"]]])
+    checkWindow(x[["window"]])
+  })
+  invisible(NULL)
+}
+
+#' @noRd
+checkCensorDate <- function(x, censorDate) {
+  check <- x %>% dplyr::select(dplyr::all_of(censorDate)) %>%
+    utils::head(1) %>% dplyr::pull() %>% inherits('Date')
+  if(!check) {
+    cli::cli_abort("{censorDate} is not a date variable")
+  }
 }
