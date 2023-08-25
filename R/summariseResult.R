@@ -559,20 +559,18 @@ supressCounts <- function(result, minCellCount) {
       result$estimate_type == "count" & estimate < minCellCount &
       estimate > 0 & !is.na(estimate)
     )
-    for (k in id) {
-      x <- result[k,] %>%
-        dplyr::select(-"estimate") %>%
-        dplyr::mutate(estimate_type = "%")
-      result <- result %>%
-        dplyr::left_join(
-          x %>% dplyr::mutate(obscure_estimate = 1),
-          by = colnames(x)
-        ) %>%
-        dplyr::mutate(estimate = dplyr::if_else(
-          !is.na(.data$obscure_estimate), as.character(NA), .data$estimate
-        )) %>%
-        dplyr::select(-"obscure_estimate")
-    }
+    x <- result[id,] %>%
+      dplyr::select(-"estimate") %>%
+      dplyr::mutate(estimate_type = "%")
+    result <- result %>%
+      dplyr::left_join(
+        x %>% dplyr::mutate(obscure_estimate = 1),
+        by = colnames(x)
+      ) %>%
+      dplyr::mutate(estimate = dplyr::if_else(
+        !is.na(.data$obscure_estimate), as.character(NA), .data$estimate
+      )) %>%
+      dplyr::select(-"obscure_estimate")
     result$estimate[id] <- paste0("<", minCellCount)
   }
   return(result)
