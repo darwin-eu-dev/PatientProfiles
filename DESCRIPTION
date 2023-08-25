@@ -40,7 +40,6 @@ Suggests:
     PaRe,
     here,
     magick,
-    ggplot2,
     plotly,
     ggraph,
     DT,
