@@ -120,6 +120,9 @@ tableCharacteristics <- function(table) {
 #' Give format to a summary object.
 #'
 #' @param summaryResult A SummarisedResult object.
+#' @param settings Columns that contain the setting, the name point to the
+#' label.
+#' @param variable Name of the clumn that contains the variable name and level.
 #' @param format A list of formats of teh estimate_type.
 #' @param keepNotFromatted Whether to keep non formatted lines.
 #' @param decimals Number of decimals to round each estimate_type.
@@ -154,16 +157,17 @@ tableCharacteristics <- function(table) {
 #' }
 #'
 formatEstimates <- function(summaryResult,
+                            wide = "variable", # "settings"
                             settings = c(
                               "cdm_name", "group_name" = "group_level",
-                              "strata_name" = "strata_level",
-                              "variable" = "variable_level"
+                              "strata_name" = "strata_level"
                             ),
-                            hideColumns = "result_type",
-                            format = c(),
+                            format = c(
+                              "N (%)" = "count (percentage%)", "mean (sd)",
+                              "median [q25 - q75]", "N" = "count"
+                            ),
                             keepNotFromatted = TRUE,
-                            decimals = c(count = 0),
-                            defaultDecimal = 2,
+                            decimals = c(default = 0),
                             decimalMark = ".",
                             bigMark = ",") {
   # initial checks
@@ -172,13 +176,20 @@ formatEstimates <- function(summaryResult,
   #  keepNotFormatted = keepNotFormatted
   #)
 
+  # variableColumn <- "variable"
+  # variableLevel <- "variable_level"
+  # estimateType <- "estimate_type"
+  # estimateColumn <- "estimate"
+
   # format decimals
-  summaryResult <- formatNumbers(
-    summaryResult, decimals, defaultDecimal, decimalMark, bigMark
-  )
+  summaryResult <- formatNumbers(summaryResult, decimals, decimalMark, bigMark)
 
   # tidy estimates
   summaryResult <- tidyEstimates(summaryResult, format, keepNotFromatted)
+
+  variables = c("variable" = "variable_level", "format")
+  # pivot variables
+  # pivot settings
 
   return(summaryResult)
 }
@@ -248,16 +259,14 @@ getEvaluate <- function(format, estimates) {
   return(toEvaluate)
 }
 
-formatNumbers <- function(summaryResult,
-                          decimals,
-                          defaultDecimal,
-                          decimalMark,
-                          bigMark) {
+formatNumbers <- function(summaryResult, decimals, decimalMark, bigMark) {
   summaryResult <- summaryResult %>%
     dplyr::mutate(
       is_numeric = !is.na(suppressWarnings(as.numeric(.data$estimate))),
       formatted = FALSE
     )
+  defaultDecimal <- decimals["default"]
+  decimals["default"] <- NULL
   for (k in seq_along(decimals)) {
     summaryResult <- summaryResult %>%
       dplyr::mutate(estimate = formatEst(
@@ -274,8 +283,8 @@ formatNumbers <- function(summaryResult,
   }
   summaryResult <- summaryResult %>%
     dplyr::mutate(estimate = formatEst(
-      .data$is_numeric & .data$formatted == FALSE, .data$estimate, decimals[k],
-      bigMark, decimalMark
+      .data$is_numeric & .data$formatted == FALSE, .data$estimate,
+      defaultDecimal, bigMark, decimalMark
     )) %>%
     dplyr::select(-"is_numeric", -"formatted")
 
