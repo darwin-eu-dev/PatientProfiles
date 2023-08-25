@@ -6,7 +6,7 @@
 \usage{
 addDateOfBirth(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   name = "date_of_birth",
   missingDay = 1,
   missingMonth = 1,
@@ -42,6 +42,6 @@ Add a column with the individual birth date
 library(PatientProfiles)
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
-  addDateOfBirth(cdm)
+  addDateOfBirth()
 }
 }

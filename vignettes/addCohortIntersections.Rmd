@@ -70,7 +70,6 @@ Suppose cohort2 with definition_id = 1 contains stroke occurrences. If we want t
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1WashOut <- cdm$cohort1 %>%
   addCohortIntersectFlag(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     window = list(c(-180, -1)),
     targetCohortId = 1,
@@ -88,7 +87,6 @@ We can use the function to count the number of occurrences of an event of intere
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1StrokeCounts <- cdm$cohort1 %>%
   addCohortIntersectCount(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     window = list(c(-Inf, -366), c(-365, -181), c(-180, -1)),
     targetCohortId = 1
@@ -176,7 +174,6 @@ The function can be utilized to calculate the time to the event of interest, suc
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1TimeTo <- cdm$cohort1 %>%
   addCohortIntersectDays(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "first"
@@ -196,7 +193,6 @@ This function can be handy in obtaining the date of the next occurrence of a spe
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1NextEvent <- cdm$cohort1 %>%
   addCohortIntersectDate(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     order = "first",
     targetCohortId = 1,
@@ -219,7 +215,6 @@ We can use the function to compute all the intersect information with a target c
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
   addCohortIntersect(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     order = "first",
     targetCohortId = 1,
@@ -234,7 +229,6 @@ We can also control which columns to append to your data by using the flag, coun
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
   addCohortIntersect(
-    cdm = cdm,
     targetCohortTable = "cohort2",
     order = "first",
     targetCohortId = 1,

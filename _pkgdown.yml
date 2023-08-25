@@ -6,7 +6,7 @@ reference:
 - subtitle: Add individual patient characteristics
   desc: Add patient characteristics to a table in the OMOP Common Data Model
 - contents:
-  - matches("addAge|addSex|addPriorHistory|addFutureObservation|addInObservation|addDateOfBirth")
+  - matches("addAge|addSex|addPriorObservation|addFutureObservation|addInObservation|addDateOfBirth")
 - subtitle: Add multiple individual patient characteristics
   desc: Add a set of patient characteristics to a table in the OMOP Common Data Model
 - contents:
@@ -33,4 +33,4 @@ reference:
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addAttributes|addCategories|getStartName|getEndName|getConceptName|mockPatientProfiles")
+  - matches("addCohortName|addCdmName|addAttributes|addCategories|getStartName|getEndName|getConceptName|mockPatientProfiles")

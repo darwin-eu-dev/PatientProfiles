@@ -1,21 +1,21 @@
 test_that("addDemographics, input length, type, tableprefix", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
-  expect_error(addDemographics(2, cdm))
+  expect_error(addDemographics(2))
   expect_error(addDemographics(cdm$cohort1, cdm$concept_ancestor))
-  expect_error(addDemographics(cdm$cohort1, cdm, indexDate = "condition_start_date"))
-  expect_error(addDemographics(cdm$cohort1, cdm, indexDate = c("cohort_start_date", "cohort_end_date")))
-  expect_error(addDemographics(cdm$cohort1, cdm, ageGroup = 10))
-  expect_error(addDemographics(cdm$cohort1, cdm, tablePrefix = 1))
-  expect_error(addDemographics(cdm$cohort1, cdm, age = FALSE, sex = FALSE, priorHistory = FALSE, futureObservation = FALSE))
+  expect_error(addDemographics(cdm$cohort1, indexDate = "condition_start_date"))
+  expect_error(addDemographics(cdm$cohort1, indexDate = c("cohort_start_date", "cohort_end_date")))
+  expect_error(addDemographics(cdm$cohort1, ageGroup = 10))
+  expect_error(addDemographics(cdm$cohort1, tablePrefix = 1))
+  expect_error(addDemographics(cdm$cohort1, age = FALSE, sex = FALSE, priorObservation = FALSE, futureObservation = FALSE))
 })
 
 test_that("addDemographics, cohort and condition_occurrence", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
   oldcohort <- cdm$cohort1
-  cdm$cohort1 <- cdm$cohort1 %>% addDemographics(cdm, ageImposeMonth = TRUE, ageImposeDay = TRUE)
-  cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(cdm, indexDate = "condition_start_date", ageImposeMonth = TRUE, ageImposeDay = TRUE)
+  cdm$cohort1 <- cdm$cohort1 %>% addDemographics(ageImposeMonth = TRUE, ageImposeDay = TRUE)
+  cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(indexDate = "condition_start_date", ageImposeMonth = TRUE, ageImposeDay = TRUE)
 
   expect_true(length(attributes(cdm$cohort1)) == length(attributes(oldcohort)))
   for (i in names(attributes(cdm$cohort1))) {
@@ -24,7 +24,7 @@ test_that("addDemographics, cohort and condition_occurrence", {
     }
   }
 
-  expect_true(all(c("age", "sex", "prior_history") %in% colnames(cdm$cohort1)))
+  expect_true(all(c("age", "sex", "prior_observation") %in% colnames(cdm$cohort1)))
   s <- cdm$cohort1 %>%
     dplyr::filter(
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")
@@ -32,7 +32,7 @@ test_that("addDemographics, cohort and condition_occurrence", {
     dplyr::collect()
   expect_true(s$age == 53)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_history == 5295)
+  expect_true(s$prior_observation == 5295)
   s <- cdm$cohort1 %>%
     dplyr::filter(
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
@@ -40,27 +40,27 @@ test_that("addDemographics, cohort and condition_occurrence", {
     dplyr::collect()
   expect_true(s$age == 53)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_history == 5447)
+  expect_true(s$prior_observation == 5447)
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 2) %>%
     dplyr::collect()
   expect_true(s$age == 60)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_history == 5221)
+  expect_true(s$prior_observation == 5221)
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 3) %>%
     dplyr::collect()
   expect_true(s$age == 58)
   expect_true(s$sex == "Male")
-  expect_true(s$prior_history == 4562)
+  expect_true(s$prior_observation == 4562)
 
-  expect_true(all(c("age", "sex", "prior_history") %in% colnames(cdm$condition_occurrence)))
+  expect_true(all(c("age", "sex", "prior_observation") %in% colnames(cdm$condition_occurrence)))
   expectedAge <- c(43, 58, 54, 39, 53, 39, 31, 97, 40, 78)
   expectedSex <- c(
     "Female", "Female", "Male", "Female", "Female", "Female", "Female", "Male",
     "Male", "Male"
   )
-  expectedPriorHistory <- c(
+  expectedpriorObservation <- c(
     1711, 4714, 3160, 2304, NA, 3553, 2763, 5145, 697, 3209
   )
   for (k in 1:length(expectedAge)) {
@@ -75,14 +75,14 @@ test_that("addDemographics, cohort and condition_occurrence", {
         dplyr::pull("sex") == expectedSex[k]
     )
     expect_true(
-      if (!is.na(expectedPriorHistory[k])) {
+      if (!is.na(expectedpriorObservation[k])) {
         cdm$condition_occurrence %>%
           dplyr::filter(.data$person_id == k) %>%
-          dplyr::pull("prior_history") == expectedPriorHistory[k]
+          dplyr::pull("prior_observation") == expectedpriorObservation[k]
       } else {
         is.na(cdm$condition_occurrence %>%
           dplyr::filter(.data$person_id == k) %>%
-          dplyr::pull("prior_history"))
+          dplyr::pull("prior_observation"))
       }
     )
   }
@@ -91,14 +91,14 @@ test_that("addDemographics, cohort and condition_occurrence", {
 test_that("addDemographics, parameters", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
   cdm$cohort1 <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       ageGroup = list("age_group" = list(c(0, 40), c(41, 120))),
       ageImposeMonth = TRUE,
       ageImposeDay = TRUE
     )
 
-  expect_true(all(c("age", "sex", "prior_history", "age_group") %in% colnames(cdm$cohort1)))
+  expect_true(all(c("age", "sex", "prior_observation", "age_group") %in% colnames(cdm$cohort1)))
   s <- cdm$cohort1 %>%
     dplyr::filter(
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")
@@ -106,7 +106,7 @@ test_that("addDemographics, parameters", {
     dplyr::collect()
   expect_true(s$age == 53)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_history == 5386)
+  expect_true(s$prior_observation == 5386)
   expect_true(s$age_group == "41 to 120")
   s <- cdm$cohort1 %>%
     dplyr::filter(
@@ -115,21 +115,21 @@ test_that("addDemographics, parameters", {
     dplyr::collect()
   expect_true(s$age == 53)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_history == 5508)
+  expect_true(s$prior_observation == 5508)
   expect_true(s$age_group == "41 to 120")
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 2) %>%
     dplyr::collect()
   expect_true(s$age == 60)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_history == 5252)
+  expect_true(s$prior_observation == 5252)
   expect_true(s$age_group == "41 to 120")
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 3) %>%
     dplyr::collect()
   expect_true(s$age == 58)
   expect_true(s$sex == "Male")
-  expect_true(s$prior_history == 4622)
+  expect_true(s$prior_observation == 4622)
   expect_true(s$age_group == "41 to 120")
 })
 
@@ -138,17 +138,17 @@ test_that("partial demographics - cohorts", {
 
   # only age
   cdm$cohort1a <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       age = TRUE,
       ageGroup = NULL,
       sex = FALSE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = FALSE
     )
   # age and age group
   expect_equal(
-    names(cdm$cohort1a),
+    colnames(cdm$cohort1a),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -158,16 +158,16 @@ test_that("partial demographics - cohorts", {
 
   # only sex
   cdm$cohort1b <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       age = FALSE,
       ageGroup = NULL,
       sex = TRUE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = FALSE
     )
   expect_equal(
-    names(cdm$cohort1b),
+    colnames(cdm$cohort1b),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -177,35 +177,35 @@ test_that("partial demographics - cohorts", {
 
   # only prior history
   cdm$cohort1c <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       age = FALSE,
       ageGroup = NULL,
       sex = FALSE,
-      priorHistory = TRUE,
+      priorObservation = TRUE,
       futureObservation = FALSE
     )
   expect_equal(
-    names(cdm$cohort1c),
+    colnames(cdm$cohort1c),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
-      "prior_history"
+      "prior_observation"
     )
   )
 
   # only future observation
   cdm$cohort1d <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       age = FALSE,
       ageGroup = NULL,
       sex = FALSE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = TRUE
     )
   expect_equal(
-    names(cdm$cohort1d),
+    colnames(cdm$cohort1d),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
@@ -216,21 +216,21 @@ test_that("partial demographics - cohorts", {
 
   # all
   cdm$cohort1e <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       age = TRUE,
       ageGroup = list(c(0, 100)),
       sex = TRUE,
-      priorHistory = TRUE,
+      priorObservation = TRUE,
       futureObservation = TRUE
     )
   # age and age group
   expect_equal(
-    names(cdm$cohort1e),
+    colnames(cdm$cohort1e),
     c(
       "cohort_definition_id", "subject_id",
       "cohort_start_date", "cohort_end_date",
-      "age", "sex", "prior_history",
+      "age", "sex", "prior_observation",
       "future_observation", "age_group"
     )
   )
@@ -241,60 +241,60 @@ test_that("partial demographics - omop tables", {
 
   # only age
   cdm$condition_occurrence1a <- cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       age = TRUE,
       ageGroup = NULL,
       sex = FALSE,
-      priorHistory = FALSE
+      priorObservation = FALSE
     )
   # age and age group
-  expect_true(c("age") %in% names(cdm$condition_occurrence1a))
-  expect_true(all(!c("sex", "age_group", "prior_history") %in%
-    names(cdm$condition_occurrence1a)))
+  expect_true(c("age") %in% colnames(cdm$condition_occurrence1a))
+  expect_true(all(!c("sex", "age_group", "prior_observation") %in%
+    colnames(cdm$condition_occurrence1a)))
 
   # only sex
   cdm$cohort1b <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       age = FALSE,
       ageGroup = NULL,
       sex = TRUE,
-      priorHistory = FALSE
+      priorObservation = FALSE
     )
   expect_true(c("sex") %in% names(cdm$cohort1b))
-  expect_true(all(!c("age", "age_group", "prior_history") %in%
-    names(cdm$cohort1b)))
+  expect_true(all(!c("age", "age_group", "prior_observation") %in%
+    colnames(cdm$cohort1b)))
 
   # only prior history
   cdm$cohort1c <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_end_date",
       age = FALSE,
       ageGroup = NULL,
       sex = FALSE,
-      priorHistory = TRUE
+      priorObservation = TRUE
     )
-  expect_true(c("prior_history") %in% names(cdm$cohort1c))
+  expect_true(c("prior_observation") %in% colnames(cdm$cohort1c))
   expect_true(all(!c("age", "age_group", "sex") %in%
-    names(cdm$cohort1c)))
+    colnames(cdm$cohort1c)))
 
   # all
   cdm$condition_occurrence1d <- cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       age = TRUE,
       ageGroup = list(c(0, 100)),
       sex = TRUE,
-      priorHistory = TRUE
+      priorObservation = TRUE
     )
   # age and age group
-  expect_true(all(c("age", "sex", "prior_history")
-  %in% names(cdm$condition_occurrence1d)))
+  expect_true(all(c("age", "sex", "prior_observation")
+  %in% colnames(cdm$condition_occurrence1d)))
 })
 
-test_that("priorHistory and future_observation - outside of observation period", {
-  # priorHistory should be NA if index date is outside of an observation period
+test_that("priorObservation and future_observation - outside of observation period", {
+  # priorObservation should be NA if index date is outside of an observation period
 
   person <- dplyr::tibble(
     person_id = c(1, 2),
@@ -330,20 +330,20 @@ test_that("priorHistory and future_observation - outside of observation period",
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_start_date",
       age = FALSE,
       ageGroup = NULL,
       sex = FALSE,
-      priorHistory = TRUE,
+      priorObservation = TRUE,
       futureObservation = TRUE
     )
   # both should be missing
-  expect_true(is.na(all(cdm$cohort1a %>% dplyr::pull(prior_history))))
+  expect_true(is.na(all(cdm$cohort1a %>% dplyr::pull(prior_observation))))
   expect_true(is.na(all(cdm$cohort1a %>% dplyr::pull(future_observation))))
 })
 
-test_that("priorHistory - multiple observation periods", {
+test_that("priorObservation - multiple observation periods", {
   # with multiple observation periods,
   # prior history should relate to the most recent observation start date
 
@@ -383,16 +383,16 @@ test_that("priorHistory - multiple observation periods", {
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_start_date",
       age = FALSE,
       ageGroup = NULL,
       sex = FALSE,
-      priorHistory = TRUE,
+      priorObservation = TRUE,
       futureObservation = TRUE
     )
   expect_true(nrow(cdm$cohort1a %>% dplyr::collect()) == 2)
-  expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_history) ==
+  expect_true(all(cdm$cohort1a %>% dplyr::pull(prior_observation) ==
     as.numeric(difftime(as.Date("2012-02-01"),
       as.Date("2010-01-01"),
       units = "days"
@@ -423,12 +423,12 @@ test_that("check that no extra rows are added", {
   )
   # using temp
   cdm$cohort1_new <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_start_date",
       age = TRUE,
       ageGroup = list(c(10, 100)),
       sex = FALSE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = FALSE
     )
 
@@ -442,11 +442,11 @@ test_that("check that no extra rows are added", {
 
   # using temp
   cdm$cohort1_new <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_start_date",
       age = FALSE,
       sex = TRUE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = FALSE
     )
 
@@ -460,11 +460,11 @@ test_that("check that no extra rows are added", {
 
   # using temp
   cdm$cohort1_new <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_start_date",
       age = FALSE,
       sex = FALSE,
-      priorHistory = TRUE,
+      priorObservation = TRUE,
       futureObservation = FALSE
     )
 
@@ -478,11 +478,11 @@ test_that("check that no extra rows are added", {
 
   # using temp
   cdm$cohort1_new <- cdm$cohort1 %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "cohort_start_date",
       age = FALSE,
       sex = FALSE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = TRUE
     )
 
@@ -533,7 +533,7 @@ test_that("age at cohort end, no missing, check age computation", {
                 dplyr::pull("age") == 1)
 
   result <- addDemographics(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     ageImposeMonth = FALSE,
     ageImposeDay = FALSE
   ) %>%
@@ -569,7 +569,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
   cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
   result <- addAge(
-    x = cdm$cohort1, cdm = cdm, ageImposeMonth = FALSE, ageImposeDay = FALSE,
+    x = cdm$cohort1, ageImposeMonth = FALSE, ageImposeDay = FALSE,
     ageDefaultMonth = 4, ageDefaultDay = 4
   ) %>% dplyr::collect()
 
@@ -578,10 +578,10 @@ test_that("age at cohort entry, missing year/month/day of birth", {
   expect_true(all(c(9, NA) %in% result$age))
 
   resultB <- addDemographics(
-    x = cdm$cohort1, cdm = cdm, ageImposeMonth = FALSE, ageImposeDay = FALSE,
+    x = cdm$cohort1, ageImposeMonth = FALSE, ageImposeDay = FALSE,
     ageDefaultMonth = 4, ageDefaultDay = 4,
     sex = FALSE,
-    priorHistory = FALSE, futureObservation = FALSE,
+    priorObservation = FALSE, futureObservation = FALSE,
   ) %>% dplyr::collect()
 
   expect_equivalent(result, resultB)
@@ -609,7 +609,7 @@ test_that("multiple cohortIds, check age at cohort end", {
   cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
   result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     indexDate = "cohort_end_date"
   ) %>%
     dplyr::collect()
@@ -619,9 +619,9 @@ test_that("multiple cohortIds, check age at cohort end", {
   expect_true(all(c(15, 13, NA) %in% result$age))
 
   resultB <- addDemographics(
-    x = cdm$cohort1, cdm = cdm, indexDate = "cohort_end_date",
+    x = cdm$cohort1, indexDate = "cohort_end_date",
     sex = FALSE,
-    priorHistory = FALSE, futureObservation = FALSE,
+    priorObservation = FALSE, futureObservation = FALSE,
   ) %>% dplyr::collect()
 
   expect_equivalent(result, resultB)
@@ -652,16 +652,18 @@ test_that("age group checks", {
   x <- cdm$cohort1 %>%
     addAge(cdm)
 
-  result1a <- addCategories(
-    x, cdm, "age", list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
+  result1a <- x %>%
+    addCategories(
+    variable = "age",
+    categories = list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
   result1b <- addDemographics(
-    x, cdm,
+    x,
     ageGroup = list("age_group" = list(c(1, 20), c(21, 30), c(31, 40))),
     sex = FALSE,
-    priorHistory = FALSE, futureObservation = FALSE
+    priorObservation = FALSE, futureObservation = FALSE
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -669,8 +671,10 @@ test_that("age group checks", {
   expect_equivalent(result1a, result1b)
 
   # change the order of ageGroup provided, result should be the same
-  result2a <- addCategories(
-    x, cdm, "age", list("age_group" = list(c(21, 30), c(1, 20), c(31, 40)))
+  result2a <- x %>%
+  addCategories(
+    variable = "age",
+    categories = list("age_group" = list(c(21, 30), c(1, 20), c(31, 40)))
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -681,11 +685,11 @@ test_that("age group checks", {
   expect_true(identical(result1a, result2a))
   expect_true(identical(result1a, result3a))
 
-  result2b <- addDemographics(
-    x, cdm,
+  result2b <- x %>%
+    addDemographics(
     ageGroup = list("age_group" = list(c(21, 30), c(1, 20), c(31, 40))),
     sex = FALSE,
-    priorHistory = FALSE, futureObservation = FALSE
+    priorObservation = FALSE, futureObservation = FALSE
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -693,7 +697,7 @@ test_that("age group checks", {
     x, cdm,
     ageGroup = list("age_group" = list(c(1, 20), c(21, 30), c(31, 40))),
     sex = FALSE,
-    priorHistory = FALSE, futureObservation = FALSE
+    priorObservation = FALSE, futureObservation = FALSE
   ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -711,7 +715,7 @@ test_that("age group checks", {
 
   cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
   result1 <- cdm$cohort1 %>%
-    addAge(cdm) %>%
+    addAge() %>%
     addCategories(
       cdm, "age", list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
     ) %>%
@@ -724,7 +728,7 @@ test_that("age group checks", {
 
   # not all ages in age group
   result2 <- cdm$cohort1 %>%
-    addAge(cdm) %>%
+    addAge() %>%
     addCategories(
       cdm, "age", list("age_group" = list(c(35, 45)))
     ) %>%
@@ -739,14 +743,14 @@ test_that("age variable names", {
   cdm <- mockPatientProfiles(connectionDetails)
 
   result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     ageName = "current_age",
     indexDate = "cohort_end_date"
   ) %>%
-    addDemographics(cdm,
+    addDemographics(
       ageName = "working_age",
       sex = FALSE,
-      priorHistory = FALSE, futureObservation = FALSE
+      priorObservation = FALSE, futureObservation = FALSE
     ) %>%
     dplyr::collect()
   expect_true(all(c("current_age", "working_age") %in% colnames(result)))
@@ -791,23 +795,23 @@ test_that("expected errors", {
 
   expect_error(result <- addAge(cdm = "a"))
   expect_error(result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     ageImposeDay = 1
   ))
   expect_error(result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     ageImposeMonth = 1
   ))
   expect_error(result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     indexDate = "date"
   ))
   expect_error(result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     ageDefaultMonth = 1.1
   ))
   expect_error(result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
+    x = cdm[["cohort1"]],
     ageDefaultDay = 1.1
   ))
 
@@ -833,7 +837,7 @@ test_that("expected errors", {
 
   cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
 
-  cdm$cohort1 <- cdm$cohort1 %>% addAge(cdm)
+  cdm$cohort1 <- cdm$cohort1 %>% addAge()
 
   # error if overlapping ageGroups
   expect_error(addCategories(
@@ -862,34 +866,34 @@ test_that("addCategories input", {
 
   # overwrite when categories named same as variable, throw warning
   expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
-    addCategories(cdm,
+    addCategories(
       variable = "age",
       categories = list("age" = list(c(1, 30), c(31, 99)))
     ))
 
   expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
-    addDemographics(cdm,
+    addDemographics(
       sex = FALSE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = FALSE,
       ageGroup = list("age" = list(c(1, 30), c(31, 40)))
     ))
 
   # default group name when no input
   expect_true("category_1" %in% colnames(cdm$cohort1 %>% addAge(cdm) %>%
-    addCategories(cdm,
+    addCategories(
       variable = "age",
       categories = list(list(c(1, 30), c(31, 40)))
     )))
   # Error when x is not a tibble
-  expect_error(c(1, 2, 3, 4) %>% addCategories(cdm,
+  expect_error(c(1, 2, 3, 4) %>% addCategories(
     variable = "age",
     categories = list(list(c(1, 30), c(31, 40)))
   ))
 
   result <- cdm$cohort1 %>%
     addAge(cdm) %>%
-    addCategories(cdm,
+    addCategories(
       variable = "age",
       categories = list(
         list(c(1, 30), c(31, 40)),
@@ -910,9 +914,9 @@ test_that("addCategories input", {
     ))
 
   expect_error(cdm$cohort1 %>% addAge(cdm) %>%
-    addDemographics(cdm,
+    addDemographics(
       sex = FALSE,
-      priorHistory = FALSE,
+      priorObservation = FALSE,
       futureObservation = FALSE,
       ageGroup = list(
         "age_A" = list(c(0, 30), c(31, 120)),
@@ -947,7 +951,7 @@ test_that("test if column exist, overwrite", {
     ),
     "age" = c(1, 1, 1, 1, 1),
     sex = c(1, 1, 1, 1, 1),
-    prior_history = c(1, 1, 1, 1, 1),
+    prior_observation = c(1, 1, 1, 1, 1),
     future_observation = c(1, 1, 1, 1, 1)
   )
 
@@ -981,12 +985,12 @@ test_that("test if column exist, overwrite", {
   cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
 
   result <- cdm$cohort1 %>%
-    addDemographics(cdm) %>%
+    addDemographics() %>%
     dplyr::collect()
 
   expect_true(sum(colnames(result) == "age") == 1)
   expect_true(sum(colnames(result) == "sex") == 1)
-  expect_true(sum(colnames(result) == "prior_history") == 1)
+  expect_true(sum(colnames(result) == "prior_observation") == 1)
   expect_true(sum(colnames(result) == "future_observation") == 1)
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
@@ -1002,10 +1006,10 @@ test_that("test if column exist, overwrite", {
       dplyr::select(sex), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
-    dplyr::select(prior_history) !=
+    dplyr::select(prior_observation) !=
     cohort1 %>%
       dplyr::arrange(cohort_start_date, subject_id) %>%
-      dplyr::select(prior_history), na.rm = TRUE))
+      dplyr::select(prior_observation), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
     dplyr::select(future_observation) !=
@@ -1090,23 +1094,23 @@ test_that("missing levels - report as none", {
   cdm <- mockPatientProfiles(connectionDetails)
 
   result <- cdm[["cohort1"]] %>%
-    addDemographics(cdm,
+    addDemographics(
       ageGroup = list(c(0, 25)),
       sex = FALSE,
-      priorHistory = FALSE, futureObservation = FALSE
+      priorObservation = FALSE, futureObservation = FALSE
     ) %>%
     dplyr::collect()
   expect_true(all(!is.na(result$age_group)))
 
 
   result <- cdm$cohort1 %>%
-    addSex(cdm) %>%
+    addSex() %>%
     dplyr::collect()
   expect_true(all(!is.na(result$sex)))
 
   result <- cdm$person %>%
     dplyr::mutate(gender_concept_id = "111") %>%
-    addSex(cdm) %>%
+    addSex() %>%
     dplyr::collect()
   expect_true(all(!is.na(result$sex)))
 })

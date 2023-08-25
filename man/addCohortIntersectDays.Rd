@@ -7,10 +7,11 @@ and a target cohort}
 \usage{
 addCohortIntersectDays(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   targetCohortTable,
   targetCohortId = NULL,
   indexDate = "cohort_start_date",
+  censorDate = NULL,
   targetDate = "cohort_start_date",
   order = "first",
   window = c(0, Inf),
@@ -32,6 +33,9 @@ cohort of interest}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
+
+\item{censorDate}{whether to censor overlap events at a specific date
+or a column date of x}
 
 \item{targetDate}{Date of interest in the other cohort table. Either
 cohort_start_date or cohort_end_date}
@@ -114,7 +118,6 @@ cdm <- mockPatientProfiles(cohort1 = cohort1, cohort2 = cohort2)
 
 result <- cdm$cohort1 \%>\%
   addCohortIntersectDays(
-    cdm = cdm,
     targetCohortTable = "cohort2"
   ) \%>\%
   dplyr::collect()

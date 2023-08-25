@@ -30,6 +30,7 @@
 #' @param window window to consider events of
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
+#' @param censorDate whether to censor overlap events at a date column of x
 #' @param targetStartDate date of reference in cohort table, either for start
 #' (in overlap) or on its own (for incidence)
 #' @param targetEndDate date of reference in cohort table, either for end
@@ -50,14 +51,12 @@
 #'
 #' cdm <- mockPatientProfiles()
 #' result <- cdm$cohort1 %>%
-#'   addIntersect(
-#'     cdm = cdm, tableName = "cohort2", value = "date"
-#'   ) %>%
+#'   addIntersect(tableName = "cohort2", value = "date") %>%
 #'   dplyr::collect()
 #' }
 #'
 addIntersect <- function(x,
-                         cdm,
+                         cdm = attr(x, "cdm_reference"),
                          tableName,
                          value,
                          filterVariable = NULL,
@@ -65,6 +64,7 @@ addIntersect <- function(x,
                          idName = NULL,
                          window = list(c(0, Inf)), # list
                          indexDate = "cohort_start_date",
+                         censorDate = NULL,
                          targetStartDate = getStartName(tableName),
                          targetEndDate = getEndName(tableName),
                          order = "first",
@@ -84,6 +84,10 @@ addIntersect <- function(x,
   checkmate::assertChoice(order, c("first", "last"))
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
+  checkVariableInX(censorDate, x, TRUE, "censorDate")
+  if(!is.null(censorDate)) {
+    checkCensorDate(x, censorDate)
+  }
   if (!is.null(idName)) {
     idName <- checkSnakeCase(idName)
   }
@@ -101,41 +105,40 @@ addIntersect <- function(x,
     filterTbl <- dplyr::tibble("id" = 1, "id_name" = "all")
     overlapTable <- dplyr::mutate(overlapTable, "id" = 1)
   }
-  if (is.null(targetEndDate)) {
-    overlapTable <- overlapTable %>%
-      dplyr::select(
-        !!personVariable := dplyr::all_of(personVariableTable),
-        "id" = dplyr::all_of(filterVariable),
-        "overlap_start_date" = dplyr::all_of(targetStartDate),
-        "overlap_end_date" = dplyr::all_of(targetStartDate),
-        dplyr::all_of(extraValue)
-      )
-  } else {
-    overlapTable <- overlapTable %>%
-      dplyr::select(
-        !!personVariable := dplyr::all_of(personVariableTable),
-        "id" = dplyr::all_of(filterVariable),
-        "overlap_start_date" = dplyr::all_of(targetStartDate),
-        "overlap_end_date" = dplyr::all_of(targetEndDate),
-        dplyr::all_of(extraValue)
-      )
-  }
+
+  overlapTable <- overlapTable %>%
+    dplyr::select(
+      !!personVariable := dplyr::all_of(personVariableTable),
+      "id" = dplyr::all_of(filterVariable),
+      "overlap_start_date" = dplyr::all_of(targetStartDate),
+      "overlap_end_date" = !!ifelse(
+        !is.null(targetEndDate), dplyr::all_of(targetEndDate),
+        dplyr::all_of(targetStartDate)
+      ),
+      dplyr::all_of(extraValue)
+    )
 
   result <- x %>%
+    addFutureObservation(
+      cdm = cdm,
+      indexDate = dplyr::all_of(indexDate),
+      futureObservationName = "days_to_add"
+    ) %>%
+    dplyr::mutate("censor_date" = !!CDMConnector::dateadd(
+      dplyr::all_of(indexDate), "days_to_add"
+    )) %>%
+    dplyr::mutate("censor_date" = .data[[
+      !!ifelse(is.null(censorDate), "censor_date", censorDate)
+    ]])
+
+  result <- result %>%
     dplyr::select(
-      dplyr::all_of(personVariable),
-      "index_date" = dplyr::all_of(indexDate)
+      dplyr::all_of(personVariable), "index_date" = dplyr::all_of(indexDate),
+      "censor_date"
     ) %>%
     dplyr::distinct() %>%
-    dplyr::inner_join(overlapTable, by = personVariable)
-
-  if (is.null(tablePrefix)) {
-    result <- CDMConnector::computeQuery(result)
-  } else {
-    result <- CDMConnector::computeQuery(
-      result, paste0(tablePrefix, "_join"), FALSE, attr(cdm, "write_schema"), TRUE
-    )
-  }
+    dplyr::inner_join(overlapTable, by = personVariable) %>%
+    CDMConnector::computeQuery()
 
   resultCountFlag <- NULL
   resultDateTimeOther <- NULL
@@ -151,6 +154,11 @@ addIntersect <- function(x,
     } else {
       resultW <- resultW %>% dplyr::mutate(indicator = 1)
     }
+
+    resultW <- resultW %>%
+      dplyr::mutate(indicator = dplyr::if_else(.data$overlap_start_date > .data$censor_date,
+                                               0, .data$indicator)
+      )
 
     if (!is.infinite(windowTbl$lower[i])) {
       resultW <- resultW %>%
@@ -288,7 +296,7 @@ addIntersect <- function(x,
       dplyr::rename(!!indexDate := "index_date") %>%
       dplyr::rename_all(tolower)
 
-    namesToEliminate <- intersect(names(x), names(resultCountFlag))
+    namesToEliminate <- intersect(colnames(x), colnames(resultCountFlag))
     namesToEliminate <- namesToEliminate[
       !(namesToEliminate %in% c(personVariable, indexDate))
     ]
@@ -335,7 +343,7 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
-      namesToEliminate <- intersect(names(x), names(resultDateTimeOtherX))
+      namesToEliminate <- intersect(colnames(x), colnames(resultDateTimeOtherX))
       namesToEliminate <- namesToEliminate[
         !(namesToEliminate %in% c(personVariable, indexDate))
       ]
@@ -343,7 +351,7 @@ addIntersect <- function(x,
       x <- x %>%
         dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
         dplyr::left_join(resultDateTimeOtherX,
-          by = c(personVariable, indexDate)
+                         by = c(personVariable, indexDate)
         )
     }
 
@@ -360,11 +368,12 @@ addIntersect <- function(x,
   colnames <- expand.grid(value = value, id_name = filterTbl$id_name, window_name = windowTbl$window_name) %>%
     dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
     dplyr::mutate(val = ifelse(value %in% c("flag", "count"), 0,
-      ifelse(value %in% "date", as.Date(NA),
-        ifelse(value %in% "days", as.numeric(NA), as.character(NA))
-      )
+                               ifelse(value %in% "date", as.Date(NA),
+                                      ifelse(value %in% "days", as.numeric(NA), as.character(NA))
+                               )
     )) %>%
     dplyr::select(.data$column, .data$val) %>%
+    dplyr::mutate(column = checkSnakeCase(.data$column, verbose = F)) %>%
     dplyr::anti_join(dplyr::tibble(column = colnames(x)), by = "column")
 
   if (colnames %>% dplyr::tally() %>% dplyr::pull() != 0) {

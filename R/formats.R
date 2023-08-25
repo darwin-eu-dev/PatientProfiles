@@ -38,7 +38,13 @@ variableTypes <- function(table) {
   checkTable(table)
   x <- dplyr::tibble(
     variable = colnames(table),
-    type_sum = lapply(table, pillar::type_sum) %>% unlist()
+    type_sum = lapply(colnames(table), function(x) {
+      table %>%
+        dplyr::select(dplyr::all_of(x)) %>%
+        utils::head(1) %>%
+        dplyr::pull() %>%
+        pillar::type_sum()
+    }) %>% unlist()
   ) %>%
     dplyr::mutate(variable_type = assertClassification(
       .data$type_sum, .env$table
@@ -58,7 +64,10 @@ assertClassification <- function(x, tib) {
     } else if (x[i] == "drtn") {
       return("numeric")
     } else if (x[i] %in% c("int", "dbl", "int64")) {
-      lab <- unique(tib[[i]])
+      lab <- tib %>%
+        dplyr::select(dplyr::all_of(colnames(tib)[i])) %>%
+        dplyr::distinct() %>%
+        dplyr::pull()
       if (length(lab) <= 2 && all(lab %in% c(0, 1))) {
         return("binary")
       } else {

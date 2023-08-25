@@ -13,7 +13,7 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addFutureObservation(cdm$cohort1, "cdm"))
 
-  expect_error(addFutureObservation(cdm$cohort1, cdm, indexDate = "end_date"))
+  expect_error(addFutureObservation(cdm$cohort1, indexDate = "end_date"))
 })
 
 test_that("check condition_occurrence and cohort1 work", {
@@ -216,7 +216,7 @@ test_that("different name", {
       indexDate = "condition_start_date",
       futureObservationName = "fh"
     )
-  expect_true("fh" %in% names(cdm$condition_occurrence))
+  expect_true("fh" %in% colnames(cdm$condition_occurrence))
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {

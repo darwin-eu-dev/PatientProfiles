@@ -7,7 +7,7 @@ certain date}
 \usage{
 addFutureObservation(
   x,
-  cdm,
+  cdm = attr(x, "cdm_reference"),
   indexDate = "cohort_start_date",
   futureObservationName = "future_observation",
   tablePrefix = NULL
