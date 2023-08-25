@@ -36,7 +36,16 @@ Suggests:
     ggplot2,
     spelling,
     RPostgres,
-    dbplyr
+    dbplyr,
+    PaRe,
+    here,
+    magick,
+    ggplot2,
+    plotly,
+    ggraph,
+    DT,
+    cowplot,
+    DiagrammeRsvg
 Imports: 
     magrittr,
     CDMConnector (>= 1.0.0),
