@@ -95,7 +95,7 @@ cdm$exposure_cohort <- union_all(
   cdm$celecoxib,
   cdm$diclofenac
 ) %>%
-  compute()
+  computeQuery(name = "exposure_cohort")
 ```
 
 ```{r, echo = FALSE}
@@ -146,15 +146,15 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
     "cohort_definition_id", "subject_id",
     "cohort_start_date", "cohort_end_date"
   ) %>%
-  compute()
+  computeQuery(name = "gi_bleed")
 ```
 
 ```{r, echo = FALSE}
 
-DBI::dbWriteTable(con, "gi_bleed_cohort_set", 
+DBI::dbWriteTable(con, "gi_bleed_set", 
                   dplyr::tibble(cohort_definition_id = c(1),
                                 cohort_name = c("gi_bleed")))
-DBI::dbWriteTable(con, "gi_bleed_cohort_count", 
+DBI::dbWriteTable(con, "gi_bleed_count", 
                   cdm$gi_bleed %>% 
   group_by(cohort_definition_id) %>% 
   tally(name = "number_records") %>% 
@@ -168,9 +168,9 @@ DBI::dbWriteTable(con, "gi_bleed_cohort_count",
   by = "cohort_definition_id"))
 
 cdm$gi_bleed_cohort_set <- con %>% dplyr::tbl(in_schema("main", 
-                                                   "gi_bleed_cohort_set"))
+                                                   "gi_bleed_set"))
 cdm$gi_bleed_cohort_count <- con %>% dplyr::tbl(in_schema("main", 
-                                                   "gi_bleed_cohort_count"))
+                                                   "gi_bleed_count"))
 cdm$gi_bleed <- newGeneratedCohortSet(cdm$gi_bleed, 
                                              cohortSetRef = cdm$gi_bleed_cohort_set, 
                                              cohortCountRef = cdm$gi_bleed_cohort_count)
