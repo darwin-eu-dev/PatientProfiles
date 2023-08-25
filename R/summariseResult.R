@@ -137,10 +137,6 @@ summariseResult <- function(table,
     }
   }
 
-
-
-
-
   # obscure counts
   result <- supressCounts(result, minCellCount)
 
@@ -542,13 +538,12 @@ supressCounts <- function(result, minCellCount) {
     } else {
       personCount <- "number records"
     }
-
     toObscure <- result %>%
       dplyr::filter(.data$variable == .env$personCount) %>%
-      dplyr::mutate(estimate = as.numeric(.data$estimate)) %>%
+      dplyr::mutate(estimate = suppressWarnings(as.numeric(.data$estimate))) %>%
       dplyr::filter(.data$estimate > 0 & .data$estimate < .env$minCellCount) %>%
       dplyr::select("group_name", "group_level", "strata_name", "strata_level")
-    for (k in seq_along(toObscure)) {
+    for (k in seq_len(nrow(toObscure))) {
       ik <- result$group_name == toObscure$group_name[k] &
         result$group_level == toObscure$group_level[k] &
         result$strata_name == toObscure$strata_name[k] &
@@ -557,32 +552,31 @@ supressCounts <- function(result, minCellCount) {
       if (sum((ik & is) | is.na(ik & is)) > 0 ) {
         result$estimate[ik & is] <- paste0("<", minCellCount)
         result$estimate[ik & !is] <- as.character(NA)
-      } else {
-        estimate <- suppressWarnings(as.numeric(result$estimate))
-        id <- unlist(lapply(strsplit(result$estimate_type, ": "), utils::tail, n = 1)) ==
-          "count" & estimate < minCellCount & estimate > 0
-        id_percent <- unlist(lapply(strsplit(result$estimate_type, ": "), utils::tail, n = 1)) == "%"
-
-        for (i in 2:length(id_percent))
-        {
-          if (!id[i - 1] & !is.na(id[i - 1])) {
-            id_percent[i] <- FALSE
-          }
-        }
-
-        result <- result %>%
-          dplyr::mutate(estimate = dplyr::if_else(
-            .env$id | is.na(.env$id), paste0("<", .env$minCellCount), .data$estimate
-          )) %>%
-          dplyr::mutate(estimate = dplyr::if_else(
-            .env$id_percent, NA, .data$estimate
-          ))
       }
     }
+    estimate <- suppressWarnings(as.numeric(result$estimate))
+    id <- which(
+      result$estimate_type == "count" & estimate < minCellCount &
+      estimate > 0 & !is.na(estimate)
+    )
+    for (k in id) {
+      x <- result[k,] %>%
+        dplyr::select(-"estimate") %>%
+        dplyr::mutate(estimate_type = "%")
+      result <- result %>%
+        dplyr::left_join(
+          x %>% dplyr::mutate(obscure_estimate = 1),
+          by = colnames(x)
+        ) %>%
+        dplyr::mutate(estimate = dplyr::if_else(
+          !is.na(.data$obscure_estimate), as.character(NA), .data$estimate
+        )) %>%
+        dplyr::select(-"obscure_estimate")
+    }
+    result$estimate[id] <- paste0("<", minCellCount)
   }
   return(result)
 }
-
 
 uniteStrata <- function(x,
                         columns,
