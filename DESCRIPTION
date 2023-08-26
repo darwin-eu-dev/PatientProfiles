@@ -1,7 +1,7 @@
 Package: PatientProfiles
 Type: Package
 Title: Identify Characteristics of Patients in the OMOP Common Data Model
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
@@ -36,7 +36,15 @@ Suggests:
     ggplot2,
     spelling,
     RPostgres,
-    dbplyr
+    dbplyr,
+    PaRe,
+    here,
+    magick,
+    plotly,
+    ggraph,
+    DT,
+    cowplot,
+    DiagrammeRsvg
 Imports: 
     magrittr,
     CDMConnector (>= 1.0.0),

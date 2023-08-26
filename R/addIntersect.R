@@ -120,6 +120,7 @@ addIntersect <- function(x,
 
   result <- x %>%
     addFutureObservation(
+      cdm = cdm,
       indexDate = dplyr::all_of(indexDate),
       futureObservationName = "days_to_add"
     ) %>%
