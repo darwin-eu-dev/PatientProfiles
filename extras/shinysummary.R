@@ -1,5 +1,4 @@
 # load packages ----
-library(PatientProfiles)
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
@@ -8,9 +7,12 @@ library(gt)
 library(dplyr)
 
 # read results from data folder ----
+devtools::load_all()
 cdm <- mockPatientProfiles()
+cdm$cohort1 <- cdm$cohort1 %>% addSex()
 summaryCharacteristics <- summariseCharacteristics(
   cohort = cdm$cohort1,
+  strata = list("sex" = "sex"),
   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
   tableIntersect = list(
     "Visits" = list(
@@ -24,6 +26,92 @@ summaryCharacteristics <- summariseCharacteristics(
   ),
   minCellCount = 1
 )
+
+getSettingsTibble <- function(columns, settings) {
+  oldColumns <- columns
+  oldSettings <- settings
+
+  names <- names(settings)
+  names(settings) <- NULL
+  set <- lapply(seq_along(settings), function(x) {
+    nam <- names[x]
+    if (nam != "") {
+      unique(columns[[nam]])
+    } else {
+      settings[x]
+    }
+  })
+  names(set) <- names
+  for (k in seq_along(settings)) {
+    if (names[k] != "") {
+      columns <- columns %>%
+        tidyr::pivot_wider(
+          names_from = dplyr::all_of(names[k]),
+          values_from = dplyr::all_of(settings[k])
+        )
+    }
+  }
+  for (nam in names[names != ""]) {
+    columns <- columns %>%
+      dplyr::mutate(!!nam := as.character(NA))
+  }
+
+  attr(columns, "settings") <- set
+
+}
+
+pivotSettings <- function(summaryResult) {
+  order <- summaryResult %>%
+    dplyr::select("variable") %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(order = dplyr::row_number())
+  summaryResult <- formatNumbers(
+    summaryResult, decimals = c(default = 0), decimalMark = ".", bigMark = ","
+  )
+  summaryResult <- tidyEstimates(
+    summaryResult,
+    format = c(
+      "N (%)" = "count (percentage%)", "mean (sd)",
+      "median [min; q25 - q75; max]", "median [q25 - q75]", "[min - max]",
+      "N" = "count"
+    ),
+    keepNotFromatted = TRUE
+  )
+  settings <- c(
+    "cdm_name", "group_name" = "group_level", "strata_name" = "strata_level"
+  )
+  join <- c(settings, names(settings))
+  names(join) <- NULL
+  join <- join[join != ""]
+  columns <- summaryResult %>%
+    dplyr::select(dplyr::all_of(join)) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(name = paste0("cohort", dplyr::row_number()))
+  columns
+  summaryResult <- summaryResult %>%
+    dplyr::left_join(columns, by = join) %>%
+    dplyr::select(
+      "name", "variable", "variable_level", "format", "estimate"
+    ) %>%
+    tidyr::pivot_wider(names_from = "name", values_from = "estimate") %>%
+    dplyr::left_join(order, by = "variable") %>%
+    dplyr::arrange(.data$order, .data$variable_level) %>%
+    dplyr::select(-"order") %>%
+    dplyr::rename(
+      "Variable" = "variable", "Level" = "variable_level", "Format" = "format"
+    )
+  summaryResult <- cleanResult(summaryResult)
+  gtTable <- summaryResult %>%
+    gt() %>%
+    tab_style(
+      style = list(cell_borders(
+        sides = "right", color = "#000000", weight = px(1)
+      )),
+      locations = list(cells_body(columns = "Format"))
+    )
+  gtTable <- cleanBorders(gtTable, summaryResult)
+  gtTable
+}
 
 # ui shiny ----
 ui <- dashboardPage(
@@ -96,12 +184,32 @@ server <- function(input, output, session) {
     summaryCharacteristics %>%
       filter(variable %in% input$summary_characteristics_variable)
   })
-  ### pivot settings ----
+  ### get pivot settings table ----
   output$summary_characteristics_table_settings <- render_gt({
-    data <- get_summary_characteristics_data()
-    validate(need(nrow(data) > 0, "No results for selected inputs"))
-    gt(data)
+    summaryResult <- get_summary_characteristics_data()
+    validate(need(nrow(summaryResult) > 0, "No results for selected inputs"))
+    pivotSettings(summaryResult)
   })
+  ### download pivot settings as html ----
+  output$summary_characteristics_download_settings_html <- downloadHandler(
+    filename = function() {
+      "summaryCharacteristicsTable.html"
+    },
+    content = function(file) {
+      x <- pivotSettings(get_summary_characteristics_data())
+      gtsave(x, file)
+    }
+  )
+  ### download pivot settings as word ----
+  output$summary_characteristics_download_settings_word <- downloadHandler(
+    filename = function() {
+      "summaryCharacteristicsTable.docx"
+    },
+    content = function(file) {
+      x <- pivotSettings(get_summary_characteristics_data())
+      gtsave(x, file)
+    }
+  )
 }
 
 # run shiny ----

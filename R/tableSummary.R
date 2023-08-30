@@ -163,8 +163,11 @@ formatEstimates <- function(summaryResult,
                               "strata_name" = "strata_level"
                             ),
                             format = c(
-                              "N (%)" = "count (percentage%)", "mean (sd)",
-                              "median [q25 - q75]", "N" = "count"
+                              "N (%)" = "count (percentage%)",
+                              "median [min; q25 - q75; mx]",
+                              "mean (sd)",
+                              "median [q25 - q75]",
+                              "N" = "count"
                             ),
                             keepNotFromatted = TRUE,
                             decimals = c(default = 0),
@@ -187,7 +190,7 @@ formatEstimates <- function(summaryResult,
   # tidy estimates
   summaryResult <- tidyEstimates(summaryResult, format, keepNotFromatted)
 
-  variables = c("variable" = "variable_level", "format")
+  #variables = c("variable" = "variable_level", "format")
   # pivot variables
   # pivot settings
 
@@ -213,26 +216,28 @@ tidyEstimates <- function(summaryResult, format, keepNotFromatted) {
   for (k in seq_along(format)) {
     estimates <- allEstimates[sapply(allEstimates, grepl, format[k])]
     toEvaluate <- getEvaluate(format[k], estimates)
-    toFotmat <- summaryResult %>%
+    toFormat <- summaryResult %>%
       dplyr::rowwise() %>%
       dplyr::filter(sum(.data$estimate_type == .env$estimates) == 1) %>%
       dplyr::group_by(dplyr::across(dplyr::all_of(toGroup))) %>%
       dplyr::filter(dplyr::n() == length(.env$estimates)) %>%
       dplyr::ungroup()
-    summaryResult <- summaryResult %>%
-      dplyr::anti_join(toFotmat, by = names(summaryResult))
-    formattedResult <- formattedResult %>%
-      dplyr::union_all(
-        toFotmat %>%
-          tidyr::pivot_wider(
-            names_from = "estimate_type", values_from = "estimate"
-          ) %>%
-          dplyr::mutate(
-            format = .env$label[k],
-            estimate = !!rlang::parse_expr(toEvaluate)
-          ) %>%
-          dplyr::select(-dplyr::all_of(estimates))
-      )
+    if (nrow(toFormat) > 0) {
+      summaryResult <- summaryResult %>%
+        dplyr::anti_join(toFormat, by = names(summaryResult))
+      formattedResult <- formattedResult %>%
+        dplyr::union_all(
+          toFormat %>%
+            tidyr::pivot_wider(
+              names_from = "estimate_type", values_from = "estimate"
+            ) %>%
+            dplyr::mutate(
+              format = .env$label[k],
+              estimate = !!rlang::parse_expr(toEvaluate)
+            ) %>%
+            dplyr::select(-dplyr::all_of(estimates))
+        )
+    }
   }
 
   # keep formatted?
@@ -266,7 +271,7 @@ formatNumbers <- function(summaryResult, decimals, decimalMark, bigMark) {
       formatted = FALSE
     )
   defaultDecimal <- decimals["default"]
-  decimals["default"] <- NULL
+  decimals <- decimals[names(decimals) != "default"]
   for (k in seq_along(decimals)) {
     summaryResult <- summaryResult %>%
       dplyr::mutate(estimate = formatEst(
@@ -294,8 +299,25 @@ formatNumbers <- function(summaryResult, decimals, decimalMark, bigMark) {
 formatEst <- function(condition, x, dec, bm, dm) {
   xnew <- x
   xnew[condition] <- gsub(" ", "", base::format(
-    round(as.numeric(x[condition]), dec), nsmall = dec, big.mak = bm,
+    round(as.numeric(x[condition]), dec), nsmall = dec, big.mark = bm,
     decimal.mark = dm
   ))
   return(xnew)
+}
+
+cleanResult <- function(summaryResult) {
+  summaryResult[is.na(summaryResult)] <- ""
+  summaryResult$Variable[
+    summaryResult$Variable == dplyr::lag(summaryResult$Variable)
+  ] <- ""
+  return(summaryResult)
+}
+
+cleanBorders <- function(gtTable, summaryResult) {
+  id <- which(summaryResult$Variable == "")
+  gtTable <- gtTable %>%
+    tab_style(
+      style = list(cell_borders(style = "hidden", sides = "top")),
+      locations = list(cells_body(columns = "Variable", rows = id))
+    )
 }

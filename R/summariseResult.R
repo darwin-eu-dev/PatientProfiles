@@ -561,7 +561,7 @@ supressCounts <- function(result, minCellCount) {
     )
     x <- result[id,] %>%
       dplyr::select(-"estimate") %>%
-      dplyr::mutate(estimate_type = "%")
+      dplyr::mutate(estimate_type = "percentage")
     result <- result %>%
       dplyr::left_join(
         x %>% dplyr::mutate(obscure_estimate = 1),
