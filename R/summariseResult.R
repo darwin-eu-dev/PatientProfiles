@@ -568,7 +568,7 @@ supressCounts <- function(result, minCellCount) {
         by = colnames(x)
       ) %>%
       dplyr::mutate(estimate = dplyr::if_else(
-        !is.na(.data$obscure_estimate), as.character(NA), .data$estimate
+        !is.na(.data$obscure_estimate), as.character(NA), as.charecter(.data$estimate)
       )) %>%
       dplyr::select(-"obscure_estimate")
     result$estimate[id] <- paste0("<", minCellCount)
