@@ -157,8 +157,8 @@ tableCharacteristics <- function(table) {
 #' }
 #'
 formatEstimates <- function(summaryResult,
-                            wide = "variable", # "settings"
-                            settings = c(
+                            long = c("variable" = "variable_level", "format"),
+                            wide = c(
                               "cdm_name", "group_name" = "group_level",
                               "strata_name" = "strata_level"
                             ),
@@ -305,11 +305,13 @@ formatEst <- function(condition, x, dec, bm, dm) {
   return(xnew)
 }
 
-cleanResult <- function(summaryResult) {
-  summaryResult[is.na(summaryResult)] <- ""
-  summaryResult$Variable[
-    summaryResult$Variable == dplyr::lag(summaryResult$Variable)
-  ] <- ""
+cleanResult <- function(summaryResult, cols) {
+  for (col in cols) {
+    x <- summaryResult[[col]]
+    x[is.na(x)] <- ""
+    x[x == dplyr::lag(x)] <- ""
+    summaryResult[[col]] <- x
+  }
   return(summaryResult)
 }
 
