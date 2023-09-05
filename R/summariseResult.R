@@ -138,7 +138,7 @@ summariseResult <- function(table,
   }
 
   # obscure counts
-  result <- supressCounts(result, minCellCount)
+  result <- suppressCounts(result, minCellCount)
 
   return(result)
 }
@@ -530,8 +530,32 @@ summaryValuesStrata <- function(x,
   return(result)
 }
 
-#' @noRd
-supressCounts <- function(result, minCellCount) {
+#' Function to suppress count
+#' @param result Table including counts, mean, etc, to be suppressed,
+#' with a column varible, to indicate whether it's count/mean/percentage/..
+#' and a column estimate, to show what is the corresponding number.
+#' Default of column names set to the same as variable names, user can self define too.
+#' @param minCellCount Minimum count of records to report results.
+#'
+#' @return Table with suppressed counts
+#'
+#' @export
+
+suppressCounts <- function(result,
+                           variable = "variable",
+                           estimate = "estimate",
+                           group_name = "group_name",
+                           group_level = "group_level",
+                           strata_name = "strata_name",
+                           strata_level = "strata_level",
+                           minCellCount = 5) {
+
+  checkmate::assertTRUE(all(c(variable, estimate, group_name,
+                              group_level, strata_name, strata_level) %in%
+                              colnames(result)))
+
+  checkSuppressCellCount(minCellCount)
+
   if (minCellCount > 1) {
     if ("number subjects" %in% result$variable) {
       personCount <- "number subjects"
