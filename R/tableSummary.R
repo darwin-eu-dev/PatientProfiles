@@ -212,7 +212,7 @@ tidyEstimates <- function(summaryResult, format, keepNotFromatted) {
     dplyr::mutate(formats = paste0(.data$estimate_type, collapse = " ")) %>%
     dplyr::ungroup()
   formattedResult <- NULL
-  allEstimates <- unique(summaryResult$estimate_type)
+  allEstimates <- formats$format_key %>% unique()
   for (k in seq_along(format)) {
     estimates <- allEstimates[sapply(allEstimates, grepl, format[k])]
     toEvaluate <- getEvaluate(format[k], estimates)
@@ -247,6 +247,7 @@ tidyEstimates <- function(summaryResult, format, keepNotFromatted) {
         summaryResult %>% dplyr::rename("format" = "estimate_type")
       )
   }
+
   formattedResult <- formattedResult %>%
     dplyr::select(-"formats")
 

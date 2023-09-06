@@ -5,6 +5,7 @@ library(shinyWidgets)
 library(shinycssloaders)
 library(gt)
 library(dplyr)
+library(DT)
 
 # read results from data folder ----
 devtools::load_all()
@@ -25,7 +26,11 @@ summaryCharacteristics <- summariseCharacteristics(
     )
   ),
   minCellCount = 1
-)
+) %>%
+  mutate(group = paste0(.data$group_name, ": ", .data$group_level)) %>%
+  mutate(strata = paste0(.data$strata_name, ": ", .data$strata_level)) %>%
+  select(-c("group_name", "group_level", "strata_name", "strata_level")) %>%
+  relocate("cdm_name", "group", "strata")
 
 getWideTibble <- function(columns, wide) {
   tib <- columns %>% dplyr::select("name")
@@ -154,7 +159,7 @@ addWideLabels <- function(gtTable, wideTibble) {
     if (type == "sep") {
       gtTable <- gtTable %>%
         gt::tab_style(
-          style = list(gt::cell_fill(color = "#969696"), gt::cell_text(weight = "bold")),
+          style = list(gt::cell_fill(color = "#c8c8c8"), gt::cell_text(weight = "bold")),
           locations = gt::cells_column_spanners(spanners = spannerIds)
         )
     } else if (type == "cat") {
@@ -179,8 +184,7 @@ bwlabel <- function(x) {
   }
   return(labels)
 }
-
-pivotSettings <- function(summaryResult) {
+pivotSettings <- function(summaryResult, toWide) {
   order <- summaryResult %>%
     dplyr::select("variable") %>%
     dplyr::distinct() %>%
@@ -206,8 +210,8 @@ pivotSettings <- function(summaryResult) {
   )
   wide = list(
     "CDM name" = c(level = "cdm_name"),
-    "Group" = c(name = "group_name", level = "group_level"),
-    "Strata" = c(name = "strata_name", level = "strata_level")
+    "Group" = c(level = "group"),
+    "Strata" = c(level = "strata")
   )
   getColumns <- function(elements) {
     lapply(elements, unname) %>%
@@ -239,7 +243,16 @@ pivotSettings <- function(summaryResult) {
       locations = list(cells_body(columns = "Format"))
     ) %>%
     addWideLabels(wideTibble)
-  gtTable <- cleanBorders(gtTable, summaryResult)
+  gtTable <- cleanBorders(gtTable, summaryResult) %>%
+    cols_width(
+      # num ~ px(150),
+      # ends_with("r") ~ px(100),
+      # starts_with("cohort") ~ px(200),
+      Variable ~ px(250),
+      Level ~ px(100),
+      Format ~ px(250),
+      everything() ~ px(200)
+    )
   gtTable
 }
 
@@ -266,6 +279,39 @@ ui <- dashboardPage(
         div(
           style = "display: inline-block;vertical-align:top; width: 150px;",
           pickerInput(
+            inputId = "summary_characteristics_cdm_name",
+            label = "CDM name",
+            choices = unique(summaryCharacteristics$cdm_name),
+            selected = unique(summaryCharacteristics$cdm_name),
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3"),
+            multiple = TRUE
+          )
+        ),
+        div(
+          style = "display: inline-block;vertical-align:top; width: 150px;",
+          pickerInput(
+            inputId = "summary_characteristics_group",
+            label = "Group",
+            choices = unique(summaryCharacteristics$group),
+            selected = unique(summaryCharacteristics$group),
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3"),
+            multiple = TRUE
+          )
+        ),
+        div(
+          style = "display: inline-block;vertical-align:top; width: 150px;",
+          pickerInput(
+            inputId = "summary_characteristics_strata",
+            label = "Strata",
+            choices = unique(summaryCharacteristics$strata),
+            selected = unique(summaryCharacteristics$strata),
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3"),
+            multiple = TRUE
+          )
+        ),
+        div(
+          style = "display: inline-block;vertical-align:top; width: 150px;",
+          pickerInput(
             inputId = "summary_characteristics_variable",
             label = "Variables",
             choices = unique(summaryCharacteristics$variable),
@@ -274,31 +320,34 @@ ui <- dashboardPage(
             multiple = TRUE
           )
         ),
+        div(
+          style = "display: inline-block;vertical-align:top; width: 150px;",
+          pickerInput(
+            inputId = "summary_characteristics_estimate_type",
+            label = "Estimate type",
+            choices = unique(summaryCharacteristics$estimate_type),
+            selected = unique(summaryCharacteristics$estimate_type),
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3"),
+            multiple = TRUE
+          )
+        ),
         tabsetPanel(
           type = "tabs",
           tabPanel(
-            "Pivot estimates",
+            "Raw data",
             downloadButton(
-              outputId = "summary_characteristics_download_estimates_word",
-              label = "Download table as word"
+              outputId = "summary_characteristics_download_raw_filtered",
+              label = "Download table as csv"
             ),
-            downloadButton(
-              outputId = "summary_characteristics_download_estimates_html",
-              label = "Download table as html"
-            ),
-            gt_output("summary_characteristics_table_estimates") %>% withSpinner()
+            DTOutput("summary_characteristics_table_raw") %>% withSpinner()
           ),
           tabPanel(
-            "Pivot settings",
+            "Tidy table",
             downloadButton(
-              outputId = "summary_characteristics_download_settings_word",
+              outputId = "summary_characteristics_download_tidy_word",
               label = "Download table as word"
             ),
-            downloadButton(
-              outputId = "summary_characteristics_download_settings_html",
-              label = "Download table as html"
-            ),
-            gt_output("summary_characteristics_table_settings") %>% withSpinner()
+            gt_output("summary_characteristics_table_tidy") %>% withSpinner()
           )
         )
       )
@@ -312,26 +361,50 @@ server <- function(input, output, session) {
   ### get data ----
   get_summary_characteristics_data <- reactive({
     summaryCharacteristics %>%
-      filter(variable %in% input$summary_characteristics_variable)
+      filter(variable %in% input$summary_characteristics_variable) %>%
+      filter(cdm_name %in% input$summary_characteristics_cdm_name) %>%
+      filter(estimate_type %in% input$summary_characteristics_estimate_type) %>%
+      filter(group %in% input$summary_characteristics_group) %>%
+      filter(strata %in% input$summary_characteristics_strata)
   })
-  ### get pivot settings table ----
-  output$summary_characteristics_table_settings <- render_gt({
+  ### get raw table ----
+  output$summary_characteristics_table_raw <- renderDataTable({
     summaryResult <- get_summary_characteristics_data()
     validate(need(nrow(summaryResult) > 0, "No results for selected inputs"))
+    datatable(
+      summaryResult %>% select(-"result_type"),
+      rownames = FALSE,
+      extensions = "Buttons",
+      options = list(scrollX = TRUE, scrollCollapse = TRUE)
+    )
+  })
+  ### get tidy table ----
+  output$summary_characteristics_table_tidy <- render_gt({
+    summaryResult <- get_summary_characteristics_data()
+    validate(need(nrow(summaryResult) > 0, "No results for selected inputs"))
+    print(summaryResult)
     pivotSettings(summaryResult)
   })
-  ### download pivot settings as html ----
-  output$summary_characteristics_download_settings_html <- downloadHandler(
+  ### download raw data ----
+  output$summary_characteristics_download_raw <- downloadHandler(
     filename = function() {
-      "summaryCharacteristicsTable.html"
+      "summaryCharacteristicsTable.csv"
     },
     content = function(file) {
-      x <- pivotSettings(get_summary_characteristics_data())
-      gtsave(x, file)
+      write.csv(summaryCharacteristics, file, row.names = FALSE)
     }
   )
-  ### download pivot settings as word ----
-  output$summary_characteristics_download_settings_word <- downloadHandler(
+  ### download raw data filtered ----
+  output$summary_characteristics_download_raw_filtered <- downloadHandler(
+    filename = function() {
+      "summaryCharacteristicsTableFiltered.csv"
+    },
+    content = function(file) {
+      write.csv(get_summary_characteristics_data(), file, row.names = FALSE)
+    }
+  )
+  ### download tidy table as word ----
+  output$summary_characteristics_download_tidy_word <- downloadHandler(
     filename = function() {
       "summaryCharacteristicsTable.docx"
     },
