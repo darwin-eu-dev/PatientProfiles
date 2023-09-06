@@ -254,6 +254,7 @@ getBinaryValues <- function(x, variablesBinary) {
             names_to = "estimate_type",
             values_to = "estimate"
           ) %>%
+          dplyr::collect() %>%
           dplyr::inner_join(
             variablesBinary %>%
               dplyr::select("variable", "variable_type", "estimate_type"),
