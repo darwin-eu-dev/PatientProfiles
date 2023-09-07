@@ -178,7 +178,7 @@ formatEstimates <- function(summaryResult,
                             decimals = c(default = 0),
                             decimalMark = ".",
                             bigMark = ",",
-                            style = c()) {
+                            style = c(defaultWidth = "200", separator = c("Format"))) {
   # initial checks
   #checkInput(
   #  summaryResult = summaryResult, long = long, wide = wide, format = format,
@@ -387,25 +387,36 @@ collapse <- function(level) {
     "paste0(", paste0(".data$`", level, "`", collapse = ", \": \", "), ")"
   )
 }
-styleTable <- function(summaryTable, long, wide, style, columnLabels) {
-  summaryTable <- cleanLongResult(summaryTable, long)
-  tab_style(
-    style = list(cell_borders(
-      sides = "right", color = "#000000", weight = px(1)
-    )),
-    locations = list(cells_body(columns = "Format"))
-  ) %>%
-    addWideLabels(wideTibble)
-  gtTable <- cleanBorders(gtTable, summaryResult) %>%
-    cols_width(
-      # num ~ px(150),
-      # ends_with("r") ~ px(100),
-      # starts_with("cohort") ~ px(200),
-      Variable ~ px(250),
-      Level ~ px(100),
-      Format ~ px(250),
-      everything() ~ px(200)
-    )
+styleTable <- function(summaryTable, long, columnLabels, style) {
+  # clean long data
+  summaryTable <- cleanLongResult(summaryTable, long, style)
+#   summaryTable <- cleanBorders(summaryTable)
+#   summaryTable <- summaryTable %>%
+#     tab_style(
+#       style = list(cell_borders(
+#         sides = "right", color = "#000000", weight = px(1)
+#       )),
+#       locations = list(cells_body(columns = "Format"))
+#     )
+
+  # clean wide data
+  summaryTable <- summaryTable %>%
+    addWideLabels(columnLabels, style)
+
+  # fix columns widths
+  summaryTable <- summaryTable %>%
+    editWidth(wide, long)
+    # cols_width(
+    #   # num ~ px(150),
+    #   # ends_with("r") ~ px(100),
+    #   # starts_with("cohort") ~ px(200),
+    #   Variable ~ px(250),
+    #   Level ~ px(100),
+    #   Format ~ px(250),
+    #   everything() ~ px(200)
+    # )
+
+  return(summaryTable)
 }
 
 cleanResult <- function(summaryResult, cols) {
