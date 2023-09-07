@@ -68,60 +68,33 @@ summariseResult <- function(table,
 
   # initial checks
   checkTable(table)
-  checkStrata(group, table)
-  checkStrata(strata, table)
-  checkVariablesFunctions(variables, functions, table)
-  checkSuppressCellCount(minCellCount)
+
 
   # create the summary for overall
   result <- list()
-  if (isTRUE(includeOverallGroup) || length(group) == 0) {
+  if (table %>%
+    dplyr::count() %>%
+    dplyr::pull() == 0) {
     result <- table %>%
-      summaryValuesStrata(
-        strata, variables, functions,
-        includeOverall = includeOverallStrata
-      ) %>%
+      dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
       dplyr::mutate(
-        group_name = "Overall",
-        group_level = "Overall"
-      ) %>%
-      dplyr::select(dplyr::all_of(
-        c(
-          "group_name", "group_level",
-          "strata_name", "strata_level", "variable",
-          "variable_level", "variable_type",
-          "estimate_type", "estimate"
-        )
-      )) %>%
-      dplyr::arrange(.data$strata_name, .data$strata_level)
-  }
-
-  # add results for each group
-  for (i in seq_along(group)) {
-    workingGroup <- group[[i]]
-    workingGroupName <- names(group)[i]
-    table <- table %>%
-      tidyr::unite("group_var",
-        c(dplyr::all_of(.env$workingGroup)),
-        remove = FALSE, sep = " and "
+        variable = "number records", variable_type = as.character(NA),
+        estimate_type = "count"
       )
-    workingGroupLevels <- table %>%
-      dplyr::select(dplyr::all_of("group_var")) %>%
-      dplyr::distinct() %>%
-      dplyr::pull()
-
-    for (j in seq_along(workingGroupLevels)) {
-      workingResult <- table %>%
-        dplyr::filter(
-          .data[["group_var"]] == workingGroupLevels[[j]]
-        ) %>%
+  } else {
+    checkStrata(group, table)
+    checkStrata(strata, table)
+    checkVariablesFunctions(variables, functions, table)
+    checkSuppressCellCount(minCellCount)
+    if (isTRUE(includeOverallGroup) || length(group) == 0) {
+      result <- table %>%
         summaryValuesStrata(
           strata, variables, functions,
           includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(
-          group_name = workingGroupName,
-          group_level = workingGroupLevels[[j]]
+          group_name = "Overall",
+          group_level = "Overall"
         ) %>%
         dplyr::select(dplyr::all_of(
           c(
@@ -132,13 +105,52 @@ summariseResult <- function(table,
           )
         )) %>%
         dplyr::arrange(.data$strata_name, .data$strata_level)
-
-      result <- dplyr::bind_rows(result, workingResult)
     }
-  }
 
-  # obscure counts
-  result <- suppressCounts(result, minCellCount = minCellCount)
+    # add results for each group
+    for (i in seq_along(group)) {
+      workingGroup <- group[[i]]
+      workingGroupName <- names(group)[i]
+      table <- table %>%
+        tidyr::unite("group_var",
+          c(dplyr::all_of(.env$workingGroup)),
+          remove = FALSE, sep = " and "
+        )
+      workingGroupLevels <- table %>%
+        dplyr::select(dplyr::all_of("group_var")) %>%
+        dplyr::distinct() %>%
+        dplyr::pull()
+
+      for (j in seq_along(workingGroupLevels)) {
+        workingResult <- table %>%
+          dplyr::filter(
+            .data[["group_var"]] == workingGroupLevels[[j]]
+          ) %>%
+          summaryValuesStrata(
+            strata, variables, functions,
+            includeOverall = includeOverallStrata
+          ) %>%
+          dplyr::mutate(
+            group_name = workingGroupName,
+            group_level = workingGroupLevels[[j]]
+          ) %>%
+          dplyr::select(dplyr::all_of(
+            c(
+              "group_name", "group_level",
+              "strata_name", "strata_level", "variable",
+              "variable_level", "variable_type",
+              "estimate_type", "estimate"
+            )
+          )) %>%
+          dplyr::arrange(.data$strata_name, .data$strata_level)
+
+        result <- dplyr::bind_rows(result, workingResult)
+      }
+    }
+
+    # obscure counts
+    result <- suppressCounts(result, minCellCount = minCellCount)
+  }
 
   return(result)
 }
@@ -553,10 +565,11 @@ suppressCounts <- function(result,
                            strata_name = "strata_name",
                            strata_level = "strata_level",
                            minCellCount = 5) {
-
-  checkmate::assertTRUE(all(c(variable, estimate, group_name,
-                              group_level, strata_name, strata_level) %in%
-                              colnames(result)))
+  checkmate::assertTRUE(all(c(
+    variable, estimate, group_name,
+    group_level, strata_name, strata_level
+  ) %in%
+    colnames(result)))
 
   checkSuppressCellCount(minCellCount)
 
@@ -577,7 +590,7 @@ suppressCounts <- function(result,
         result$strata_name == toObscure$strata_name[k] &
         result$strata_level == toObscure$strata_level[k]
       is <- result$variable == personCount
-      if (sum((ik & is) | is.na(ik & is)) > 0 ) {
+      if (sum((ik & is) | is.na(ik & is)) > 0) {
         result$estimate[ik & is] <- paste0("<", minCellCount)
         result$estimate[ik & !is] <- as.character(NA)
       }
@@ -585,9 +598,9 @@ suppressCounts <- function(result,
     estimate <- suppressWarnings(as.numeric(result$estimate))
     id <- which(
       result$estimate_type == "count" & estimate < minCellCount &
-      estimate > 0 & !is.na(estimate)
+        estimate > 0 & !is.na(estimate)
     )
-    x <- result[id,] %>%
+    x <- result[id, ] %>%
       dplyr::select(-"estimate") %>%
       dplyr::mutate(estimate_type = "%")
     result <- result %>%
