@@ -177,7 +177,8 @@ formatEstimates <- function(summaryResult,
                             keepNotFromatted = TRUE,
                             decimals = c(default = 0),
                             decimalMark = ".",
-                            bigMark = ",") {
+                            bigMark = ",",
+                            style = c()) {
   # initial checks
   #checkInput(
   #  summaryResult = summaryResult, long = long, wide = wide, format = format,
@@ -201,11 +202,11 @@ formatEstimates <- function(summaryResult,
   summaryResult <- arrangeLong(summaryResult, long)
 
   # create gt object
-  summaryResult <- summaryResult %>%
+  summaryTable <- summaryResult %>%
     gt::gt() %>%
-    styleTable(long, wide)
+    styleTable(long, wide, style, attr(summaryResult, "column_labels"))
 
-  return(summaryResult)
+  return(summaryTable)
 }
 
 formatNumbers <- function(summaryResult, decimals, decimalMark, bigMark) {
@@ -385,6 +386,26 @@ collapse <- function(level) {
   paste0(
     "paste0(", paste0(".data$`", level, "`", collapse = ", \": \", "), ")"
   )
+}
+styleTable <- function(summaryTable, long, wide, style, columnLabels) {
+  summaryTable <- cleanLongResult(summaryTable, long)
+  tab_style(
+    style = list(cell_borders(
+      sides = "right", color = "#000000", weight = px(1)
+    )),
+    locations = list(cells_body(columns = "Format"))
+  ) %>%
+    addWideLabels(wideTibble)
+  gtTable <- cleanBorders(gtTable, summaryResult) %>%
+    cols_width(
+      # num ~ px(150),
+      # ends_with("r") ~ px(100),
+      # starts_with("cohort") ~ px(200),
+      Variable ~ px(250),
+      Level ~ px(100),
+      Format ~ px(250),
+      everything() ~ px(200)
+    )
 }
 
 cleanResult <- function(summaryResult, cols) {
@@ -605,7 +626,7 @@ pivotSettings <- function(summaryResult, toWide) {
     dplyr::select(-"order")
   summaryResult <- arrangeLong(summaryResult, long, wideTibble)
   summaryResult <- addBreaks(summaryResult)
-  summaryResult <- cleanResult(summaryResult, c("Variable", "Level"))
+
   gtTable <- summaryResult %>%
     gt() %>%
     tab_style(
@@ -627,3 +648,4 @@ pivotSettings <- function(summaryResult, toWide) {
     )
   gtTable
 }
+
