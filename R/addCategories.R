@@ -121,24 +121,28 @@ addCategories <- function(x,
   for (k in seq_along(categories)) {
     categoryTibbleK <- categoryTibble[[k]]
     name <- names(categoryTibble)[k]
-
-    x <- dplyr::mutate(x, variable := .data[[variable]])
-    x <- dplyr::mutate(x, !!name := as.character(NA))
     if (!overlap) {
+      sqlCategories <- "#ELSE#"
       for (i in 1:nrow(categoryTibbleK)) {
         lower <- categoryTibbleK$lower_bound[i]
         upper <- categoryTibbleK$upper_bound[i]
         category <- categoryTibbleK$category_label[i]
-        x <- x %>%
-          dplyr::mutate(!!name := dplyr::if_else(
-            is.na(.data[[name]]) &
-              .data$variable >= .env$lower &
-              .data$variable <= .env$upper,
-            .env$category,
-            .data[[name]]
-          ))
+        newSql <- paste0(
+          "dplyr::if_else(.data[[variable]] >= ", lower,
+          " & .data[[variable]] <= ", upper, ", \"", category, "\" , #ELSE#)"
+        )
+        sqlCategories <- gsub("#ELSE#", newSql, sqlCategories)
       }
+      sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
+        is.null(missingCategoryValue), NA, missingCategoryValue
+      ), "\""), sqlCategories
+      ) %>%
+        rlang::parse_exprs() %>%
+        rlang::set_names(glue::glue(name))
+      x <- x %>%
+        dplyr::mutate(!!!sqlCategories)
     } else {
+      x <- dplyr::mutate(x, !!name := as.character(NA))
       for (i in 1:nrow(categoryTibbleK)) {
         lower <- categoryTibbleK$lower_bound[i]
         upper <- categoryTibbleK$upper_bound[i]
@@ -146,29 +150,26 @@ addCategories <- function(x,
         x <- x %>%
           dplyr::mutate(!!name := dplyr::if_else(
             is.na(.data[[name]]) &
-              .data$variable >= .env$lower &
-              .data$variable <= .env$upper,
+              .data[[variable]] >= .env$lower &
+              .data[[variable]] <= .env$upper,
             .env$category,
             dplyr::if_else(
               !is.na(.data[[name]]) &
-                .data$variable >= .env$lower &
-                .data$variable <= .env$upper,
+                .data[[variable]] >= .env$lower &
+                .data[[variable]] <= .env$upper,
               paste0(.data[[name]], " and ", .env$category),
               .data[[name]]
             )
           ))
       }
-    }
-
-    x <- dplyr::select(x, -"variable")
-
-    # add missing as category
-    if (!is.null(missingCategoryValue) && !is.na(missingCategoryValue)) {
-      x <- x %>%
-        dplyr::mutate(!!name := dplyr::if_else(!is.na(.data[[name]]),
-          .data[[name]],
-          .env$missingCategoryValue
-        ))
+      # add missing as category
+      if (!is.null(missingCategoryValue) && !is.na(missingCategoryValue)) {
+        x <- x %>%
+          dplyr::mutate(!!name := dplyr::if_else(!is.na(.data[[name]]),
+                                                 .data[[name]],
+                                                 .env$missingCategoryValue
+          ))
+      }
     }
 
     if (!is.null(tablePrefix)) {
