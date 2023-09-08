@@ -179,7 +179,7 @@ getNumericValues <- function(x, variablesNumeric) {
             "strata_level", "variable", "variable_type", "estimate_type",
             "estimate"
           ) %>%
-          dplyr::mutate(variable = stringr::str_replace(variable,  "_[^_]+$", ""))
+          dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
             %>%
           dplyr::collect()
       )
@@ -221,7 +221,7 @@ getDateValues <- function(x, variablesDate) {
         "strata_level", "variable", "variable_type", "estimate_type",
         "estimate"
       ) %>%
-      dplyr::mutate(variable = stringr::str_replace(variable,  "_[^_]+$", ""))
+      dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
         %>%
       dplyr::collect()
     )
