@@ -1,10 +1,10 @@
 #' Create a gt table from a summary characteristics object
 #'
-#' @param table Summary characteristics long table.
+#' @param summarisedResults Summary characteristics long table.
 #'
 #' @return New table in gt format
 #'
-#' @noRd
+#' @export
 #'
 #' @examples
 #' \donttest{
@@ -27,23 +27,10 @@
 #'   ),
 #'   minCellCount = 1
 #' ) %>%
-#'   tableCharacteristics()
+#'   gtCharacteristics()
 #'}
-tableCharacteristics <- function(table) {
-  table %>%
-    dplyr::mutate(
-      group_level = paste0(.data$group_name, ": ", .data$group_level),
-      strata_level = paste0(.data$strata_name, ": ", .data$strata_level)
-    ) %>%
-    tableSummary(
-      pivotWider = c(
-        "CDM name" = "cdm_name", "Group" = "group_level",
-        "Strata" = "strata_level"
-      ),
-      hideColumn = c(
-        "group_name", "strata_name", "result_type", "variable_type"
-      )
-    )
+gtCharacteristics <- function(summarisedResults) {
+  gtResults(summarisedResults)
 }
 
 #' Give format to a summary object.
@@ -61,7 +48,7 @@ tableCharacteristics <- function(table) {
 #'
 #' @return A formatted summarisedResult.
 #'
-#' @noRd
+#' @export
 #'
 #' @examples
 #' \donttest{
@@ -74,7 +61,7 @@ tableCharacteristics <- function(table) {
 #'     ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
 #'     minCellCount = 1
 #'   ) %>%
-#'   formatSummarisedResults(
+#'   gtResult(
 #'     format = c(
 #'       "N (%)" = "count (percentage%)",
 #'       "N" = "count",
@@ -85,29 +72,30 @@ tableCharacteristics <- function(table) {
 #'   )
 #' }
 #'
-formatSummarisedResults <- function(summaryResult,
-                            long = list(
-                              "Variable" = c(level = "variable"),
-                              "Level" = c(level = "variable_level"),
-                              "Format" = c(level = "format")
-                            ),
-                            wide = list(
-                              "CDM Name" = c(level = "cdm_name"),
-                              "Group" = c(level = c("group_name", "group_level")),
-                              "Strata" = c(level = c("strata_name", "strata_level"))
-                            ),
-                            format = c(
-                              "N (%)" = "count (percentage%)",
-                              "median [min; q25 - q75; mx]",
-                              "mean (sd)",
-                              "median [q25 - q75]",
-                              "N" = "count"
-                            ),
-                            keepNotFromatted = TRUE,
-                            decimals = c(default = 0),
-                            decimalMark = ".",
-                            bigMark = ",",
-                            style = c(defaultWidth = "200", separator = c("Format"))) {
+gtResult <- function(summaryResult,
+                     long = list(
+                       "Variable" = c(level = "variable"),
+                       "Level" = c(level = "variable_level"),
+                       "Format" = c(level = "format")
+                     ),
+                     wide = list(
+                       "CDM Name" = c(level = "cdm_name"),
+                       "Group" = c(level = c("group_name", "group_level")),
+                       "Strata" = c(level = c("strata_name", "strata_level"))
+                     ),
+                     format = c(
+                       "N (%)" = "count (percentage%)",
+                       "median [min; q25 - q75; max]",
+                       "mean (sd)",
+                       "median [q25 - q75]",
+                       "N" = "count"
+                     ),
+                     keepNotFromatted = TRUE,
+                     eliminateUniqueLabels = TRUE,
+                     decimals = c(default = 0),
+                     decimalMark = ".",
+                     bigMark = ",",
+                     style = list(defaultWidth = "200px", separator = c("Format"))) {
   # initial checks
   #checkInput(
   #  summaryResult = summaryResult, long = long, wide = wide, format = format,
@@ -116,24 +104,29 @@ formatSummarisedResults <- function(summaryResult,
   #)
 
   # format decimals
-  summaryResult <- formatNumbers(summaryResult, decimals, decimalMark, bigMark)
+  summaryTable <- formatNumbers(summaryResult, decimals, decimalMark, bigMark)
 
   # tidy estimates
-  summaryResult <- tidyEstimates(summaryResult, format, keepNotFromatted)
+  summaryTable <- tidyEstimates(summaryTable, format, keepNotFromatted)
 
   # select only needed columns
-  summaryResult <- selectVariables(summaryResult, wide, long)
+  summaryTable <- selectVariables(summaryTable, wide, long)
 
   # pivot wide
-  summaryResult <- pivotWide(summaryResult, wide)
+  summaryTable <- pivotWide(summaryTable, wide)
+  columnLabels <- attr(summaryTable, "column_labels")
+  attr(summaryTable, "column_labels") <- NULL
+
+  # order data
+  summaryTable <- orderData(summaryTable, summaryResult, columnLabels)
 
   # arrange long
-  summaryResult <- arrangeLong(summaryResult, long)
+  summaryTable <- arrangeLong(summaryTable, long, columnLabels)
 
   # create gt object
-  summaryTable <- summaryResult %>%
+  summaryTable <- summaryTable %>%
     gt::gt() %>%
-    styleTable(long, wide, style, attr(summaryResult, "column_labels"))
+    styleTable(long, wide, style, columnLabels)
 
   return(summaryTable)
 }
@@ -261,7 +254,7 @@ pivotWide <- function(summaryResult, wide) {
     name <- x[substr(names(x), 1, 4) == "name"] %>% unname()
     summaryResult <- summaryResult %>%
       dplyr::mutate(
-        !!paste0("level", k) := rlang::parse_expr(collapse(level))
+        !!paste0("level", k) := !!rlang::parse_expr(collapse(level))
       ) %>%
       dplyr::select(-dplyr::all_of(level))
     if (length(name) > 0) {
@@ -273,25 +266,35 @@ pivotWide <- function(summaryResult, wide) {
     }
   }
   join <- c(paste0("level", seq_along(wide)), paste0("name", seq_along(wide)))
+  join <- join[join %in% colnames(summaryResult)]
   columnLabels <- summaryResult %>%
-    dplyr::select(dplyr::any_of(join)) %>%
+    dplyr::select(dplyr::all_of(join)) %>%
     dplyr::distinct() %>%
     dplyr::mutate(column_name = paste0("cohort", dplyr::row_number()))
   summaryResult <- summaryResult %>%
     dplyr::inner_join(columnLabels, by = join) %>%
-    dplyr::select(-dplyr::any_of(join)) %>%
+    dplyr::select(-dplyr::all_of(join)) %>%
     tidyr::pivot_wider(names_from = "column_name", values_from = "estimate")
   attr(summaryResult, "column_labels") <- columnLabels
   return(summaryResult)
 }
-arrangeLong <- function(summaryResult, long) {
+orderData <- function(summaryTable, summaryResult, columnLabels) {
+  join <- colnames(summaryTable)[!(
+    colnames(summaryTable) %in% c(columnLabels$column_name, "format")
+  )]
+  summaryResult %>%
+    dplyr::select(dplyr::all_of(join)) %>%
+    dplyr::distinct() %>%
+    dplyr::left_join(summaryTable, by = join)
+}
+arrangeLong <- function(summaryResult, long, columnLabels) {
   for (k in seq_along(long)) {
     x <- long[[k]]
     level <- x[substr(names(x), 1, 5) == "level"] %>% unname()
     name <- x[substr(names(x), 1, 4) == "name"] %>% unname()
     summaryResult <- summaryResult %>%
       dplyr::mutate(
-        !!paste0("level", k) := rlang::parse_expr(collapse(level))
+        !!paste0("level", k) := !!rlang::parse_expr(collapse(level))
       ) %>%
       dplyr::select(-dplyr::all_of(level))
     if (length(name) > 0) {
@@ -300,16 +303,15 @@ arrangeLong <- function(summaryResult, long) {
         #   !!paste0("name", k) := rlang::parse_expr(collapse(name))
         # ) %>%
         dplyr::select(-dplyr::all_of(name))
-      # to be continued, not supported by the moment
+      # to be continued, not supported for the moment
     } else {
       summaryResult <- summaryResult %>%
         dplyr::rename(!!names(long)[k] := paste0("level", k))
     }
   }
   summaryResult <- summaryResult %>%
-    dplyr::select(dplyr::all_of(c(
-      names(long), attr(summaryResult, "column_labels")$column_name
-    )))
+    dplyr::select(dplyr::all_of(c(names(long), columnLabels$column_name)))
+  return(summaryResult)
 }
 collapse <- function(level) {
   paste0(
@@ -319,14 +321,14 @@ collapse <- function(level) {
 styleTable <- function(summaryTable, long, columnLabels, style) {
   # clean long data
   summaryTable <- cleanLongResult(summaryTable, long, style)
-#   summaryTable <- cleanBorders(summaryTable)
-#   summaryTable <- summaryTable %>%
-#     tab_style(
-#       style = list(cell_borders(
-#         sides = "right", color = "#000000", weight = px(1)
-#       )),
-#       locations = list(cells_body(columns = "Format"))
-#     )
+  #   summaryTable <- cleanBorders(summaryTable)
+  #   summaryTable <- summaryTable %>%
+  #     tab_style(
+  #       style = list(cell_borders(
+  #         sides = "right", color = "#000000", weight = px(1)
+  #       )),
+  #       locations = list(cells_body(columns = "Format"))
+  #     )
 
   # clean wide data
   summaryTable <- summaryTable %>%
@@ -335,131 +337,19 @@ styleTable <- function(summaryTable, long, columnLabels, style) {
   # fix columns widths
   summaryTable <- summaryTable %>%
     editWidth(wide, long)
-    # cols_width(
-    #   # num ~ px(150),
-    #   # ends_with("r") ~ px(100),
-    #   # starts_with("cohort") ~ px(200),
-    #   Variable ~ px(250),
-    #   Level ~ px(100),
-    #   Format ~ px(250),
-    #   everything() ~ px(200)
-    # )
+  # cols_width(
+  #   # num ~ px(150),
+  #   # ends_with("r") ~ px(100),
+  #   # starts_with("cohort") ~ px(200),
+  #   Variable ~ px(250),
+  #   Level ~ px(100),
+  #   Format ~ px(250),
+  #   everything() ~ px(200)
+  # )
 
   return(summaryTable)
 }
 
-cleanResult <- function(summaryResult, cols) {
-  for (col in cols) {
-    x <- summaryResult[[col]]
-    x[is.na(x)] <- ""
-    x[x == dplyr::lag(x)] <- ""
-    summaryResult[[col]] <- x
-  }
-  return(summaryResult)
-}
-cleanBorders <- function(gtTable, summaryResult) {
-  id <- which(summaryResult$Variable == "")
-  gtTable <- gtTable %>%
-    tab_style(
-      style = list(cell_borders(style = "hidden", sides = "top")),
-      locations = list(cells_body(columns = "Variable", rows = id))
-    )
-}
-getWideTibble <- function(columns, wide) {
-  tib <- columns %>% dplyr::select("name")
-  count <- 1
-  for (k in seq_along(wide)) {
-    tib <- tib %>%
-      dplyr::mutate(!!paste0("sep_", k) := names(wide)[k])
-    cols <- wide[[k]]
-    if ("name" %in% names(cols)) {
-      cols <- columns %>%
-        dplyr::select("name", dplyr::all_of(unname(cols))) %>%
-        tidyr::pivot_wider(
-          names_from = unname(cols["name"]), values_from = unname(cols["level"])
-        )
-      for (i in 2:length(cols)) {
-        tib <- tib %>%
-          dplyr::mutate(!!paste0("cat_", count) := colnames(cols)[i]) %>%
-          dplyr::left_join(
-            cols %>%
-              dplyr::select(
-                "name", !!paste0("lab_", count) := colnames(cols)[i]
-              ),
-            by = "name"
-          )
-        count <- count + 1
-      }
-    } else {
-      tib <- tib %>%
-        dplyr::left_join(
-          columns %>%
-            dplyr::select(
-              "name", !!paste0("lab_", count) := unname(cols["level"])
-            ),
-          by = "name"
-        )
-      count <- count + 1
-    }
-  }
-  return(tib)
-}
-arrangeLong <- function(summaryResult, long, wideTibble) {
-  for (k in seq_along(long)) {
-    x <- long[[k]]
-    if ("name" %in% names(x)) {
-      newCol <- names(long)[k]
-      name <- unname(x["name"])
-      level <- unname(x["level"])
-      newName <- summaryResult %>%
-        dplyr::select(dplyr::all_of(unname(x))) %>%
-        dplyr::distinct() %>%
-        dplyr::mutate(!!paste0("break_", newCol) := dplyr::if_else(
-          is.na(.data[[level]]), as.character(NA), .data[[name]]
-        )) %>%
-        dplyr::mutate(!!newCol := dplyr::if_else(
-          is.na(.data[[level]]), .data[[name]],
-          paste0("     ", .data[[level]])
-        ))
-      summaryResult <- summaryResult %>%
-        dplyr::left_join(newName, by = unname(x)) %>%
-        dplyr::select(-dplyr::all_of(unname(x)))
-    } else {
-      summaryResult <- summaryResult %>%
-        dplyr::rename(!!names(long)[k] := unname(x["level"]))
-    }
-  }
-  summaryResult <- summaryResult %>%
-    dplyr::select(
-      dplyr::starts_with("break_"),
-      dplyr::all_of(c(names(long), wideTibble$name))
-    )
-  return(summaryResult)
-}
-addBreaks <- function(summaryResult) {
-  findOrderId <- function(summaryResult, lab, colNew) {
-    min(summaryResult$order_id[summaryResult[[colNew]] == lab]) - 0.5
-  }
-  x <- colnames(summaryResult)
-  x <- x[substr(x, 1, 6) == "break_"]
-  for (col in x) {
-    colNew <- substr(col, 7, nchar(col))
-    labels <- summaryResult[[col]] %>% unique()
-    labels <- labels[!is.na(labels)]
-    summaryResult <- summaryResult %>%
-      dplyr::mutate(order_id = dplyr::row_number())
-    breakTibble <- dplyr::tibble(!!colNew := labels) %>%
-      dplyr::rowwise() %>%
-      dplyr::mutate(
-        order_id = findOrderId(summaryResult, .data[[colNew]], colNew)
-      )
-    summaryResult <- summaryResult %>%
-      dplyr::union_all(breakTibble) %>%
-      dplyr::arrange(.data$order_id) %>%
-      dplyr::select(-"order_id")
-  }
-  return(summaryResult)
-}
 addWideLabels <- function(gtTable, wideTibble) {
   wideTibble[is.na(wideTibble)] <- "-"
   # style <- list(
