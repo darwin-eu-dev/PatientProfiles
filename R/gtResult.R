@@ -1,6 +1,13 @@
 #' Create a gt table from a summary characteristics object
 #'
 #' @param summarisedResults Summary characteristics long table.
+#' @param pivotWide
+#' @param format
+#' @param keepNotFormatted
+#' @param decimals
+#' @param decimalMark
+#' @param bigMark
+#' @param style
 #'
 #' @return New table in gt format
 #'
@@ -29,24 +36,55 @@
 #' ) %>%
 #'   gtCharacteristics()
 #'}
-gtCharacteristics <- function(summarisedResults) {
-  gtResults(summarisedResults)
+gtCharacteristics <- function(summarisedResults,
+                              pivotWide = c("CDM Name", "Group", "Strata"),
+                              format = c(
+                                "N (%)" = "count (percentage%)",
+                                "median [min; q25 - q75; max]",
+                                "mean (sd)",
+                                "median [q25 - q75]",
+                                "N" = "count"
+                              ),
+                              keepNotFormatted = TRUE,
+                              decimals = c(default = 0),
+                              decimalMark = ".",
+                              bigMark = ",",
+                              style = list(defaultWidth = "200px", separator = c("Format"))) {
+  gtResults(
+    summarisedResults,
+    long = list(
+      "Variable" = c(level = "variable"),
+      "Level" = c(level = "variable_level"),
+      "Format" = c(level = "format")
+    ),
+    wide = list(
+      "CDM Name" = c(level = "cdm_name"),
+      "Group" = c(level = c("group_name", "group_level")),
+      "Strata" = c(level = c("strata_name", "strata_level"))
+    ),
+    format = format,
+    keepNotFormatted = keepNotFormatted,
+    decimals = decimals,
+    decimalMark = decimalMark,
+    bigMark = bigMark,
+    style = style
+  )
 }
 
 #' Give format to a summary object.
 #'
 #' @param summaryResult A SummarisedResult object.
-#' @param settings Columns that contain the setting, the name point to the
-#' label.
-#' @param variable Name of the clumn that contains the variable name and level.
-#' @param format A list of formats of teh estimate_type.
-#' @param keepNotFromatted Whether to keep non formatted lines.
-#' @param decimals Number of decimals to round each estimate_type.
-#' @param defaultDecimal Number of decimals by default.
-#' @param decimalMark Decimal mark.
-#' @param bigMark Big mark.
+#' @param long
+#' @param wide
+#' @param format
+#' @param keepNotFormatted
+#' @param eliminateUniqueLabels
+#' @param decimals
+#' @param decimalMark
+#' @param bigMark
+#' @param style
 #'
-#' @return A formatted summarisedResult.
+#' @return A formatted summarisedResult gt object.
 #'
 #' @export
 #'
@@ -68,15 +106,15 @@ gtCharacteristics <- function(summarisedResults) {
 #'       "median [Q25-Q75]" = "median [q25-q75]"
 #'     ),
 #'     decimals = c(count = 0),
-#'     keepNotFromatted = FALSE
+#'     keepNotFormatted = FALSE
 #'   )
 #' }
 #'
 gtResult <- function(summaryResult,
                      long = list(
-                       "Variable" = c(level = "variable"),
+                       "Variable" = c(level = "variable", "clean"),
                        "Level" = c(level = "variable_level"),
-                       "Format" = c(level = "format")
+                       "Format" = c(level = "format", "separator-right")
                      ),
                      wide = list(
                        "CDM Name" = c(level = "cdm_name"),
@@ -90,12 +128,13 @@ gtResult <- function(summaryResult,
                        "median [q25 - q75]",
                        "N" = "count"
                      ),
-                     keepNotFromatted = TRUE,
-                     eliminateUniqueLabels = TRUE,
+                     keepNotFormatted = TRUE,
                      decimals = c(default = 0),
                      decimalMark = ".",
                      bigMark = ",",
-                     style = list(defaultWidth = "200px", separator = c("Format"))) {
+                     style = list(
+                       defaultWidth = "200px"
+                     )) {
   # initial checks
   #checkInput(
   #  summaryResult = summaryResult, long = long, wide = wide, format = format,
@@ -107,7 +146,7 @@ gtResult <- function(summaryResult,
   summaryTable <- formatNumbers(summaryResult, decimals, decimalMark, bigMark)
 
   # tidy estimates
-  summaryTable <- tidyEstimates(summaryTable, format, keepNotFromatted)
+  summaryTable <- tidyEstimates(summaryTable, format, keepNotFormatted)
 
   # select only needed columns
   summaryTable <- selectVariables(summaryTable, wide, long)
@@ -124,9 +163,8 @@ gtResult <- function(summaryResult,
   summaryTable <- arrangeLong(summaryTable, long, columnLabels)
 
   # create gt object
-  summaryTable <- summaryTable %>%
-    gt::gt() %>%
-    styleTable(long, wide, style, columnLabels)
+  summaryTable <- gt::gt(summaryTable) %>%
+    styleTable(long, columnLabels, style)
 
   return(summaryTable)
 }
@@ -170,7 +208,7 @@ formatEst <- function(condition, x, dec, bm, dm) {
   ))
   return(xnew)
 }
-tidyEstimates <- function(summaryResult, format, keepNotFromatted) {
+tidyEstimates <- function(summaryResult, format, keepNotFormatted) {
   # tidy by groups
   label <- names(format)
   if (is.null(label)) {
@@ -214,7 +252,7 @@ tidyEstimates <- function(summaryResult, format, keepNotFromatted) {
   }
 
   # keep formatted?
-  if (keepNotFromatted == TRUE) {
+  if (keepNotFormatted == TRUE) {
     formattedResult <- formattedResult %>%
       dplyr::union_all(
         summaryResult %>% dplyr::rename("format" = "estimate_type")
@@ -265,16 +303,48 @@ pivotWide <- function(summaryResult, wide) {
         dplyr::select(-dplyr::all_of(name))
     }
   }
+  for (k in seq_along(wide)) {
+    name <- paste0("name", k)
+    level <- paste0("level", k)
+    if (name %in% colnames(summaryResult)) {
+      nl <- summaryResult %>%
+        dplyr::select(dplyr::all_of(c(name, level))) %>%
+        dplyr::distinct()
+      xName <- strsplit(nl[[name]], " and ")
+      xLevel <- strsplit(nl[[level]], " and ")
+      labels <- unique(unlist(xName))
+      for (i in seq_along(labels)) {
+        column <- rep("Overall", length(xName))
+        for (j in seq_along(xName)) {
+          id <- which(xName[[j]] == labels[i])
+          if (length(id) == 1) {
+            column[j] <- xLevel[[j]][id]
+          }
+        }
+        nl <- nl %>%
+          dplyr::mutate(
+            !!paste0("subtitle", k, "_", i) := labels[i],
+            !!paste0("subtitlelevel", k, "_", i) := column
+          )
+      }
+    }
+  }
+
   join <- c(paste0("level", seq_along(wide)), paste0("name", seq_along(wide)))
   join <- join[join %in% colnames(summaryResult)]
   columnLabels <- summaryResult %>%
     dplyr::select(dplyr::all_of(join)) %>%
-    dplyr::distinct() %>%
+    dplyr::distinct()
+
     dplyr::mutate(column_name = paste0("cohort", dplyr::row_number()))
   summaryResult <- summaryResult %>%
     dplyr::inner_join(columnLabels, by = join) %>%
     dplyr::select(-dplyr::all_of(join)) %>%
     tidyr::pivot_wider(names_from = "column_name", values_from = "estimate")
+  for (k in seq_along(wide)) {
+    columnLabels <- columnLabels %>%
+      dplyr::mutate(!!paste0("title", k) := names(wide)[k])
+  }
   attr(summaryResult, "column_labels") <- columnLabels
   return(summaryResult)
 }
@@ -319,24 +389,15 @@ collapse <- function(level) {
   )
 }
 styleTable <- function(summaryTable, long, columnLabels, style) {
-  # clean long data
-  summaryTable <- cleanLongResult(summaryTable, long, style)
-  #   summaryTable <- cleanBorders(summaryTable)
-  #   summaryTable <- summaryTable %>%
-  #     tab_style(
-  #       style = list(cell_borders(
-  #         sides = "right", color = "#000000", weight = px(1)
-  #       )),
-  #       locations = list(cells_body(columns = "Format"))
-  #     )
+  # style long data
+  summaryTable <- styleLongResult(summaryTable, long)
 
-  # clean wide data
-  summaryTable <- summaryTable %>%
-    addWideLabels(columnLabels, style)
+  # style wide data
+  summaryTable <- styleWideResult(summaryTable, columnLabels)
 
   # fix columns widths
-  summaryTable <- summaryTable %>%
-    editWidth(wide, long)
+  # summaryTable <- summaryTable %>%
+  #   editWidth(wide, long)
   # cols_width(
   #   # num ~ px(150),
   #   # ends_with("r") ~ px(100),
@@ -348,6 +409,49 @@ styleTable <- function(summaryTable, long, columnLabels, style) {
   # )
 
   return(summaryTable)
+}
+styleLongResult <- function(summaryTable, long) {
+  for (col in names(long)) {
+    summaryTable$`_data`[[col]][summaryTable$`_data`[[col]] == "NA"] <- ""
+  }
+  for (k in seq_along(long)) {
+    col <- names(long)[k]
+    if ("clean" %in% long[[k]]) {
+      x <- summaryTable$`_data`[[col]]
+      id <- which(x == dplyr::lag(x))
+      summaryTable$`_data`[[col]][id] <- ""
+      summaryTable <- summaryTable %>%
+        gt::tab_style(
+          style = list(gt::cell_borders(style = "hidden", sides = "top")),
+          locations = list(gt::cells_body(columns = col, rows = id))
+        )
+    }
+    if ("separator-right" %in% long[[k]]) {
+      summaryTable <- summaryTable %>%
+        gt::tab_style(
+          style = list(gt::cell_borders(sides = "right")),
+          locations = list(gt::cells_body(columns = col))
+        )
+    }
+    if ("separator-left" %in% long[[k]]) {
+      summaryTable <- summaryTable %>%
+        gt::tab_style(
+          style = list(gt::cell_borders(sides = "left")),
+          locations = list(gt::cells_body(columns = col))
+        )
+    }
+  }
+  return(summaryTable)
+}
+styleWideResult <- function(summaryTable, columnLabels) {
+  num <- gsub("title|name|level|column_name", "", colnames(columnLabels)) %>%
+    as.numeric() %>%
+    unique() %>%
+    sort(decreasing = TRUE)
+  for (id in num) {
+    columnLabels
+  }
+  columnLabels[is.na(columnLabels)] <- "Overall"
 }
 
 addWideLabels <- function(gtTable, wideTibble) {
@@ -423,7 +527,7 @@ pivotSettings <- function(summaryResult, toWide) {
       "median [q25 - q75]", "[min - max]",
       "N" = "count"
     ),
-    keepNotFromatted = TRUE
+    keepNotFormatted = TRUE
   )
   long = list(
     #"Variable" = c(name = "variable", level = "variable_level"),

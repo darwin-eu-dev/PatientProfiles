@@ -26,10 +26,12 @@ reference:
 - subtitle: Summarise patient characteristics
   desc: Set of functions that allow the user to summarise patient characteristics
 - contents:
-  - matches("variableTypes|availableFunctions|detectVariables|summariseResult|formatEstimates")
+  - matches("variableTypes|availableFunctions|detectVariables|summariseResult")
   desc: Standard table one preliminary function
 - contents:
   - matches("summariseCharacteristics")
+- subtitle: gt tables from summarisedResults objects
+  - contains("gt")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
