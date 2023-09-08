@@ -33,4 +33,4 @@ reference:
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCohortName|addCdmName|addAttributes|addCategories|getStartName|getEndName|getConceptName|mockPatientProfiles")
+  - matches("addCohortName|addCdmName|addAttributes|addCategories|getStartName|getEndName|getConceptName|mockPatientProfiles|suppressCounts")

@@ -64,127 +64,154 @@ test_that("test all functions", {
 })
 
 test_that("groups and strata", {
- cdm <- PatientProfiles::mockPatientProfiles(patient_size = 1000,
-                                       drug_exposure_size = 1000 )
+  cdm <- PatientProfiles::mockPatientProfiles(
+    patient_size = 1000,
+    drug_exposure_size = 1000
+  )
 
-result<- cdm$condition_occurrence %>%
-   addDemographics(cdm, indexDate = "condition_start_date",
-                   ageGroup = list(c(0,30), c(31,60))) %>%
-   dplyr::collect() %>%
-   summariseResult(strata = list("sex" = "sex"))
+  result <- cdm$condition_occurrence %>%
+    addDemographics(cdm,
+      indexDate = "condition_start_date",
+      ageGroup = list(c(0, 30), c(31, 60))
+    ) %>%
+    dplyr::collect() %>%
+    summariseResult(strata = list("sex" = "sex"))
 
-expect_true(result %>%
-  dplyr::filter(group_name == "Overall" &
-                  group_level == "Overall" &
-                  strata_name == "Overall" &
-                  strata_level == "Overall" &
-                  variable == "number subjects") %>%
-  dplyr::pull("estimate") == "1000")
+  expect_true(result %>%
+    dplyr::filter(group_name == "Overall" &
+      group_level == "Overall" &
+      strata_name == "Overall" &
+      strata_level == "Overall" &
+      variable == "number subjects") %>%
+    dplyr::pull("estimate") == "1000")
 
 
-result<- cdm$condition_occurrence %>%
-  addDemographics(cdm, indexDate = "condition_start_date",
-                  ageGroup = list(c(0,30), c(31,60))) %>%
-  dplyr::collect() %>%
-  summariseResult(strata = list("Age and sex" = c("age_group","sex")))
+  result <- cdm$condition_occurrence %>%
+    addDemographics(cdm,
+      indexDate = "condition_start_date",
+      ageGroup = list(c(0, 30), c(31, 60))
+    ) %>%
+    dplyr::collect() %>%
+    summariseResult(strata = list("Age and sex" = c("age_group", "sex")))
 
-expect_true(all(result %>%
-  dplyr::select("strata_name") %>%
-  dplyr::distinct() %>%
-  dplyr::pull()  %in%
-c("Overall", "Age and sex")))
-expect_true(all(result %>%
-                  dplyr::select("strata_level") %>%
-                  dplyr::distinct() %>%
-                  dplyr::pull()  %in%
-                  c("Overall",
-                    "0 to 30 and Female",
-                    "0 to 30 and Male",
-                    "31 to 60 and Female",
-                    "31 to 60 and Male",
-                    "None and Female",
-                    "None and Male")))
+  expect_true(all(result %>%
+    dplyr::select("strata_name") %>%
+    dplyr::distinct() %>%
+    dplyr::pull() %in%
+    c("Overall", "Age and sex")))
+  expect_true(all(result %>%
+    dplyr::select("strata_level") %>%
+    dplyr::distinct() %>%
+    dplyr::pull() %in%
+    c(
+      "Overall",
+      "0 to 30 and Female",
+      "0 to 30 and Male",
+      "31 to 60 and Female",
+      "31 to 60 and Male",
+      "None and Female",
+      "None and Male"
+    )))
 
-result <- cdm$condition_occurrence %>%
-  addDemographics(cdm, indexDate = "condition_start_date",
-                  ageGroup = list(c(0,30), c(31,60))) %>%
-  dplyr::collect() %>%
-  summariseResult(group = list("Age and sex" = c("age_group","sex")))
-expect_true(all(result %>%
-                  dplyr::select("group_name") %>%
-                  dplyr::distinct() %>%
-                  dplyr::pull()  %in%
-                  c("Overall", "Age and sex")))
-expect_true(all(result %>%
-                  dplyr::select("group_level") %>%
-                  dplyr::distinct() %>%
-                  dplyr::pull()  %in%
-                  c("Overall",
-                    "0 to 30 and Female",
-                    "0 to 30 and Male",
-                    "31 to 60 and Female",
-                    "31 to 60 and Male",
-                    "None and Female",
-                    "None and Male")))
+  result <- cdm$condition_occurrence %>%
+    addDemographics(cdm,
+      indexDate = "condition_start_date",
+      ageGroup = list(c(0, 30), c(31, 60))
+    ) %>%
+    dplyr::collect() %>%
+    summariseResult(group = list("Age and sex" = c("age_group", "sex")))
+  expect_true(all(result %>%
+    dplyr::select("group_name") %>%
+    dplyr::distinct() %>%
+    dplyr::pull() %in%
+    c("Overall", "Age and sex")))
+  expect_true(all(result %>%
+    dplyr::select("group_level") %>%
+    dplyr::distinct() %>%
+    dplyr::pull() %in%
+    c(
+      "Overall",
+      "0 to 30 and Female",
+      "0 to 30 and Male",
+      "31 to 60 and Female",
+      "31 to 60 and Male",
+      "None and Female",
+      "None and Male"
+    )))
 
-CDMConnector::cdm_disconnect(cdm)
-
-  })
+  CDMConnector::cdm_disconnect(cdm)
+})
 
 test_that("table in db or local", {
-  cdm <- PatientProfiles::mockPatientProfiles(patient_size = 1000,
-                                              drug_exposure_size = 1000 )
+  cdm <- PatientProfiles::mockPatientProfiles(
+    patient_size = 1000,
+    drug_exposure_size = 1000
+  )
 
   # in db
   expect_no_error(cdm$condition_occurrence %>%
-    addDemographics(cdm, indexDate = "condition_start_date",
-                    ageGroup = list(c(0,30), c(31,60))) %>%
+    addDemographics(cdm,
+      indexDate = "condition_start_date",
+      ageGroup = list(c(0, 30), c(31, 60))
+    ) %>%
     summariseResult(strata = list("sex" = "sex")))
 
   # already collected
   expect_no_error(cdm$condition_occurrence %>%
-                    addDemographics(cdm, indexDate = "condition_start_date",
-                                    ageGroup = list(c(0,30), c(31,60))) %>%
-                    dplyr::collect() %>%
-                    summariseResult(strata = list("sex" = "sex")))
+    addDemographics(cdm,
+      indexDate = "condition_start_date",
+      ageGroup = list(c(0, 30), c(31, 60))
+    ) %>%
+    dplyr::collect() %>%
+    summariseResult(strata = list("sex" = "sex")))
 
   CDMConnector::cdm_disconnect(cdm)
-
 })
 
 test_that("with and with overall groups and strata", {
-  cdm <- PatientProfiles::mockPatientProfiles(patient_size = 1000,
-                                              drug_exposure_size = 1000 )
+  cdm <- PatientProfiles::mockPatientProfiles(
+    patient_size = 1000,
+    drug_exposure_size = 1000
+  )
 
   test_data <- cdm$condition_occurrence %>%
-    addDemographics(cdm, indexDate = "condition_start_date",
-                    ageGroup = list(c(0,30), c(31,60))) %>%
+    addDemographics(cdm,
+      indexDate = "condition_start_date",
+      ageGroup = list(c(0, 30), c(31, 60))
+    ) %>%
     dplyr::collect()
 
   expect_false(any(test_data %>%
-    summariseResult(strata = list("sex" = "sex"),
-                    includeOverallStrata = FALSE) %>%
+    summariseResult(
+      strata = list("sex" = "sex"),
+      includeOverallStrata = FALSE
+    ) %>%
     dplyr::pull("strata_name") %in%
     c("Overall")))
   expect_true(any(test_data %>%
-                     summariseResult(strata = list("sex" = "sex"),
-                                     includeOverallStrata = TRUE) %>%
-                     dplyr::pull("strata_name") %in%
-                     c("Overall")))
+    summariseResult(
+      strata = list("sex" = "sex"),
+      includeOverallStrata = TRUE
+    ) %>%
+    dplyr::pull("strata_name") %in%
+    c("Overall")))
 
   expect_false(any(test_data %>%
-                     summariseResult(group = list("sex" = "sex"),
-                                     includeOverallGroup = FALSE) %>%
-                     dplyr::pull("group_name") %in%
-                     c("Overall")))
+    summariseResult(
+      group = list("sex" = "sex"),
+      includeOverallGroup = FALSE
+    ) %>%
+    dplyr::pull("group_name") %in%
+    c("Overall")))
   expect_true(any(test_data %>%
-                     summariseResult(group = list("sex" = "sex"),
-                                     includeOverallGroup = TRUE) %>%
-                     dplyr::pull("group_name") %in%
-                     c("Overall")))
+    summariseResult(
+      group = list("sex" = "sex"),
+      includeOverallGroup = TRUE
+    ) %>%
+    dplyr::pull("group_name") %in%
+    c("Overall")))
 
   CDMConnector::cdm_disconnect(cdm)
-
 })
 
 test_that("obscure", {
@@ -240,4 +267,63 @@ test_that("obscure", {
   expect_true(nrow(s) == 25)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<7") == 1)
   expect_true(sum(is.na(s$estimate)) == 24)
+})
+
+
+
+
+test_that("test empty cohort", {
+  dus_cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    ))
+  )
+
+
+  cdm <- mockPatientProfiles(
+    connectionDetails,
+    dus_cohort = dus_cohort
+  )
+
+  expect_no_error(
+    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+      summariseResult(
+        group = list("Cohort name" = "cohort_name"),
+        includeOverallGroup = FALSE,
+        includeOverallStrata = TRUE
+      )
+  )
+
+  expect_no_error(
+    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+      summariseResult(
+        group = list("Cohort name" = "cohort_name"),
+        includeOverallGroup = TRUE,
+        includeOverallStrata = TRUE
+      )
+  )
+
+
+  expect_no_error(
+    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+      summariseResult(
+        group = list("Cohort name" = "cohort_name"),
+        includeOverallGroup = FALSE,
+        includeOverallStrata = FALSE
+      )
+  )
+
+  expect_no_error(
+    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+      summariseResult(
+        group = list("Cohort name" = "cohort_name"),
+        includeOverallGroup = TRUE,
+        includeOverallStrata = FALSE
+      )
+  )
 })
