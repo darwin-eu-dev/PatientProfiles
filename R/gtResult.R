@@ -48,8 +48,7 @@ gtCharacteristics <- function(summarisedResults,
                               keepNotFormatted = TRUE,
                               decimals = c(default = 0),
                               decimalMark = ".",
-                              bigMark = ",",
-                              style = list(defaultWidth = "200px", separator = c("Format"))) {
+                              bigMark = ",") {
   gtResults(
     summarisedResults,
     long = list(
@@ -66,8 +65,7 @@ gtCharacteristics <- function(summarisedResults,
     keepNotFormatted = keepNotFormatted,
     decimals = decimals,
     decimalMark = decimalMark,
-    bigMark = bigMark,
-    style = style
+    bigMark = bigMark
   )
 }
 
@@ -131,10 +129,7 @@ gtResult <- function(summaryResult,
                      keepNotFormatted = TRUE,
                      decimals = c(default = 0),
                      decimalMark = ".",
-                     bigMark = ",",
-                     style = list(
-                       defaultWidth = "200px"
-                     )) {
+                     bigMark = ",") {
   # initial checks
   #checkInput(
   #  summaryResult = summaryResult, long = long, wide = wide, format = format,
@@ -164,7 +159,7 @@ gtResult <- function(summaryResult,
 
   # create gt object
   summaryTable <- gt::gt(summaryTable) %>%
-    styleTable(long, columnLabels, style)
+    styleTable(long, columnLabels)
 
   return(summaryTable)
 }
@@ -285,31 +280,37 @@ selectVariables <- function(summaryResult, wide, long) {
     dplyr::select(dplyr::all_of(c(longColumns, wideColumns, "estimate")))
   return(summaryResult)
 }
-pivotWide <- function(summaryResult, wide) {
+pivotWide <- function(summaryTable, wide) {
   for (k in seq_along(wide)) {
     x <- wide[[k]]
     level <- x[substr(names(x), 1, 5) == "level"] %>% unname()
     name <- x[substr(names(x), 1, 4) == "name"] %>% unname()
-    summaryResult <- summaryResult %>%
+    summaryTable <- summaryTable %>%
       dplyr::mutate(
         !!paste0("level", k) := !!rlang::parse_expr(collapse(level))
       ) %>%
       dplyr::select(-dplyr::all_of(level))
     if (length(name) > 0) {
-      summaryResult <- summaryResult %>%
+      summaryTable <- summaryTable %>%
         dplyr::mutate(
-          !!paste0("name", k) := rlang::parse_expr(collapse(name))
+          !!paste0("name", k) := !!rlang::parse_expr(collapse(name))
         ) %>%
         dplyr::select(-dplyr::all_of(name))
     }
   }
+  cols <- colnames(summaryTable)
+  cols <- cols[substr(cols, 1, 5) == "level" | substr(cols, 1, 4) == "name"]
+  columnLabels <- summaryTable %>%
+    dplyr::select(dplyr::all_of(cols)) %>%
+    dplyr::distinct()
   for (k in seq_along(wide)) {
     name <- paste0("name", k)
     level <- paste0("level", k)
-    if (name %in% colnames(summaryResult)) {
-      nl <- summaryResult %>%
+    if (name %in% colnames(summaryTable)) {
+      nl <- columnLabels %>%
         dplyr::select(dplyr::all_of(c(name, level))) %>%
-        dplyr::distinct()
+        dplyr::distinct() %>%
+        dplyr::mutate(!!paste0("title_", k) := names(wide)[k])
       xName <- strsplit(nl[[name]], " and ")
       xLevel <- strsplit(nl[[level]], " and ")
       labels <- unique(unlist(xName))
@@ -323,30 +324,35 @@ pivotWide <- function(summaryResult, wide) {
         }
         nl <- nl %>%
           dplyr::mutate(
-            !!paste0("subtitle", k, "_", i) := labels[i],
-            !!paste0("subtitlelevel", k, "_", i) := column
+            !!paste0("subtitle_", k, "_", i) := labels[i],
+            !!paste0("subtitlelevels_", k, "_", i) := column
           )
       }
+      columnLabels <- columnLabels %>%
+        dplyr::inner_join(nl, by = c(name, level))
+    } else {
+      columnLabels <- columnLabels %>%
+        dplyr::mutate(
+          !!paste0("title_", k) := names(wide)[k],
+          !!paste0("titlelevels_", k) := .data[[level]]
+        )
     }
+
   }
-
-  join <- c(paste0("level", seq_along(wide)), paste0("name", seq_along(wide)))
-  join <- join[join %in% colnames(summaryResult)]
-  columnLabels <- summaryResult %>%
-    dplyr::select(dplyr::all_of(join)) %>%
-    dplyr::distinct()
-
+  columnLabels  <- columnLabels %>%
     dplyr::mutate(column_name = paste0("cohort", dplyr::row_number()))
-  summaryResult <- summaryResult %>%
-    dplyr::inner_join(columnLabels, by = join) %>%
-    dplyr::select(-dplyr::all_of(join)) %>%
+  summaryTable <- summaryTable %>%
+    dplyr::inner_join(
+      columnLabels %>%
+        dplyr::select(dplyr::all_of(cols), "column_name"),
+      by = cols
+    ) %>%
+    dplyr::select(-dplyr::all_of(cols)) %>%
     tidyr::pivot_wider(names_from = "column_name", values_from = "estimate")
-  for (k in seq_along(wide)) {
-    columnLabels <- columnLabels %>%
-      dplyr::mutate(!!paste0("title", k) := names(wide)[k])
-  }
-  attr(summaryResult, "column_labels") <- columnLabels
-  return(summaryResult)
+  columnLabels <- columnLabels %>%
+    dplyr::select(-dplyr::all_of(cols))
+  attr(summaryTable, "column_labels") <- columnLabels
+  return(summaryTable)
 }
 orderData <- function(summaryTable, summaryResult, columnLabels) {
   join <- colnames(summaryTable)[!(
@@ -388,25 +394,15 @@ collapse <- function(level) {
     "paste0(", paste0(".data$`", level, "`", collapse = ", \": \", "), ")"
   )
 }
-styleTable <- function(summaryTable, long, columnLabels, style) {
+styleTable <- function(summaryTable, long, columnLabels) {
   # style long data
   summaryTable <- styleLongResult(summaryTable, long)
 
   # style wide data
-  summaryTable <- styleWideResult(summaryTable, columnLabels)
+  summaryTable <- styleWideResult(summaryTable, columnLabels, long)
 
-  # fix columns widths
-  # summaryTable <- summaryTable %>%
-  #   editWidth(wide, long)
-  # cols_width(
-  #   # num ~ px(150),
-  #   # ends_with("r") ~ px(100),
-  #   # starts_with("cohort") ~ px(200),
-  #   Variable ~ px(250),
-  #   Level ~ px(100),
-  #   Format ~ px(250),
-  #   everything() ~ px(200)
-  # )
+  # edit columns widths
+  summaryTable <- editWidth(summaryTable, long)
 
   return(summaryTable)
 }
@@ -443,61 +439,76 @@ styleLongResult <- function(summaryTable, long) {
   }
   return(summaryTable)
 }
-styleWideResult <- function(summaryTable, columnLabels) {
-  num <- gsub("title|name|level|column_name", "", colnames(columnLabels)) %>%
-    as.numeric() %>%
-    unique() %>%
-    sort(decreasing = TRUE)
-  for (id in num) {
-    columnLabels
-  }
-  columnLabels[is.na(columnLabels)] <- "Overall"
-}
-
-addWideLabels <- function(gtTable, wideTibble) {
-  wideTibble[is.na(wideTibble)] <- "-"
-  # style <- list(
-  #   sep = list(gt::cell_fill(color = "#969696"), gt::cell_text(weight = "bold"))#c(background = "gray", join = TRUE),
-  #   cat = c(background = "none", join = TRUE),
-  #   lab = c(background = "none", join = TRUE)
-  # )
-  for (k in length(wideTibble):2) {
-    x <- wideTibble[[k]]
-    type <- substr(names(wideTibble)[k], 1, 3)
+styleWideResult <- function(summaryTable, columnLabels, long) {
+  columns <- colnames(columnLabels)
+  columns <- columns[seq_len(length(columns) - 1)]
+  # create spanners
+  for (col in rev(columns)) {
+    x <- columnLabels[[col]]
     ii <- 1
-    spannerIds <- NULL
     for (i in unique(x)) {
-      id <- bwlabel(as.numeric(x == i))
-      for (j in seq_len(max(id))) {
-        spannerId <- paste0(names(wideTibble)[k], "_", ii, "_", j)
-        gtTable <- gtTable %>%
-          gt::tab_spanner(
-            label = i, columns = dplyr::all_of(wideTibble$name[id == j]),
-            id = spannerId
-          )
-        spannerIds <- c(spannerIds, spannerId)
-      }
+      # id <- bwlabel(as.numeric(x == i))
+      # for (j in seq_len(max(id))) {
+      #   spannerId <- paste0(col, "_", ii)
+      #   summaryTable <- summaryTable %>%
+      #     gt::tab_spanner(
+      #       label = i,
+      #       columns = dplyr::all_of(columnLabels$column_name[id == j]),
+      #       id = spannerId
+      #     )
+      # }
+      summaryTable <- summaryTable %>%
+        gt::tab_spanner(
+          label = i,
+          columns = dplyr::all_of(columnLabels$column_name[x == i]),
+          id = paste0(col, "_", ii)
+        )
       ii <- ii + 1
     }
-    # if (type == "sep") {
-    # } else if (type == "cat") {
-    # } else if (type == "lab") {
-    # }
-    if (type == "sep") {
-      gtTable <- gtTable %>%
-        gt::tab_style(
-          style = list(gt::cell_fill(color = "#c8c8c8"), gt::cell_text(weight = "bold")),
-          locations = gt::cells_column_spanners(spanners = spannerIds)
-        )
-    } else if (type == "cat") {
-      gtTable <- gtTable %>%
-        gt::tab_style(
-          style = gt::cell_fill(color = "#c8c8c8"),
-          locations = gt::cells_column_spanners(spanners = spannerIds)
-        )
-    }
+    #summaryTable <- summaryTable %>%
+      # gt::tab_spanner(
+      #   label = "", columns = dplyr::all_of(names(long)),
+      #   id = paste0(col, "_0")
+      # ) %>%
+      # gt::tab_style(
+      #   style = style[[type]],
+      #   locations = gt::cells_column_spanners(spanners = spannerIds)
+      # ) #%>%
+      # gt::tab_style(
+      #   style = gt::cell_fill(color = "#ffffff"),
+      #   locations = gt::cells_column_spanners(spanners = paste0(col, "_0"))
+      # )
   }
-  return(gtTable)
+  summaryTable <- summaryTable %>%
+    gt::tab_spanner(
+      label = "",
+      columns = dplyr::all_of(columnLabels$column_name),
+      id = "empty_spanner"
+    )
+  # style spanners
+  style <- list(
+    "title" = list(
+      gt::cell_fill(color = "#c8c8c8"), gt::cell_text(weight = "bold")
+    ),
+    "titlelevels" = list(
+      gt::cell_fill(color = "#ffffff")
+    ),
+    "subtitle" = list(
+      gt::cell_fill(color = "#e1e1e1")
+    ),
+    "subtitlelevels" = list(
+      gt::cell_fill(color = "#ffffff")
+    )
+  )
+  for (spanner in summaryTable$`_spanners`$spanner_id) {
+    type <- strsplit(spanner, "_")[[1]][1]
+    summaryTable <- summaryTable %>%
+      gt::tab_style(
+        style = style[[type]],
+        locations = gt::cells_column_spanners(spanners = spanner)
+      )
+  }
+  return(summaryTable)
 }
 bwlabel <- function(x) {
   runs <- rle(x)
@@ -511,75 +522,17 @@ bwlabel <- function(x) {
   }
   return(labels)
 }
-pivotSettings <- function(summaryResult, toWide) {
-  order <- summaryResult %>%
-    dplyr::select("variable") %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(order = dplyr::row_number())
-  summaryResult <- formatNumbers(
-    summaryResult, decimals = c(default = 0), decimalMark = ".", bigMark = ","
-  )
-  summaryResult <- tidyEstimates(
-    summaryResult,
-    format = c(
-      "N (%)" = "count (percentage%)", "mean (sd)",
-      "median [min; q25 - q75; max]",
-      "median [q25 - q75]", "[min - max]",
-      "N" = "count"
-    ),
-    keepNotFormatted = TRUE
-  )
-  long = list(
-    #"Variable" = c(name = "variable", level = "variable_level"),
-    "Variable" = c(level = "variable"),
-    "Level" = c(level = "variable_level"),
-    "Format" = c(level = "format")
-  )
-  wide = list(
-    "CDM name" = c(level = "cdm_name"),
-    "Group" = c(level = "group"),
-    "Strata" = c(level = "strata")
-  )
-  getColumns <- function(elements) {
-    lapply(elements, unname) %>%
-      unlist() %>%
-      unname()
+editWidth <- function(summaryTable, long) {
+  default <- "200px"
+  widths <- as.list(rep(default, length(colnames(summaryTable))))
+  names(widths) <- colnames(summaryTable)
+  for (l in names(long)) {
+    x <- long[[l]]
+    if ("width" %in% names(x)) {
+      widths[[l]] <- unname(x["width"])
+    }
   }
-  join <- getColumns(wide)
-  columns <- summaryResult %>%
-    dplyr::select(dplyr::all_of(join)) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(name = paste0("cohort", dplyr::row_number()))
-  wideTibble <- getWideTibble(columns, wide)
-  summaryResult <- summaryResult %>%
-    dplyr::left_join(columns, by = join) %>%
-    dplyr::select("name", dplyr::all_of(getColumns(long)), "estimate") %>%
-    tidyr::pivot_wider(names_from = "name", values_from = "estimate") %>%
-    dplyr::left_join(order, by = "variable") %>%
-    dplyr::arrange(.data$order, .data$variable_level) %>%
-    dplyr::select(-"order")
-  summaryResult <- arrangeLong(summaryResult, long, wideTibble)
-  summaryResult <- addBreaks(summaryResult)
-
-  gtTable <- summaryResult %>%
-    gt() %>%
-    tab_style(
-      style = list(cell_borders(
-        sides = "right", color = "#000000", weight = px(1)
-      )),
-      locations = list(cells_body(columns = "Format"))
-    ) %>%
-    addWideLabels(wideTibble)
-  gtTable <- cleanBorders(gtTable, summaryResult) %>%
-    cols_width(
-      # num ~ px(150),
-      # ends_with("r") ~ px(100),
-      # starts_with("cohort") ~ px(200),
-      Variable ~ px(250),
-      Level ~ px(100),
-      Format ~ px(250),
-      everything() ~ px(200)
-    )
-  gtTable
+  summaryTable <- summaryTable %>%
+    gt::cols_width(.list = widths)
+  return(summaryTable)
 }
-
