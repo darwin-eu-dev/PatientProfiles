@@ -171,7 +171,7 @@ formatNumbers <- function(summaryResult, decimals, decimalMark, bigMark) {
       is_numeric = !is.na(suppressWarnings(as.numeric(.data$estimate))),
       formatted = FALSE
     )
-  defaultDecimal <- decimals["default"]
+  defaultDecimal <- decimals["default"] %>% unname()
   decimals <- decimals[names(decimals) != "default"]
   for (k in seq_along(decimals)) {
     summaryResult <- summaryResult %>%
@@ -186,6 +186,9 @@ formatNumbers <- function(summaryResult, decimals, decimalMark, bigMark) {
         TRUE,
         .data$formatted
       ))
+  }
+  if (is.na(defaultDecimal)) {
+    defaultDecimal <- 0
   }
   summaryResult <- summaryResult %>%
     dplyr::mutate(estimate = formatEst(
