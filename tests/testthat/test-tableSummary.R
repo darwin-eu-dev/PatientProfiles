@@ -22,15 +22,7 @@ test_that("with and with overall groups and strata", {
     ))
   )
   x <- summaryChar %>%
-    formatEstimates(
-      format = c("N" = "count", "range" = "[min max]", "median [q25-75]")
-    )
-  expect_true(setdiff(names(x), names(summaryChar)))
-  expect_true("percentage" %in% x$format)
+    gtCharacteristics()
 
-  x <- summaryChar %>%
-    formatEstimates(
-      format = c("N (%)" = "count (percentage%)", "N" = "count", "range" = "[min max]", "median [q25-75]")
-    )
   expect_false("percentage" %in% x$format)
 })

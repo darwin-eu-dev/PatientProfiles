@@ -61,7 +61,7 @@ gtCharacteristics <- function(summarisedCharacteristics,
   wide <- all[names(all) %in% pivotWide]
   long <- all[!names(all) %in% pivotWide]
   long[[length(long)]] <- c(long[[length(long)]], "separator-right")
-  gtResults(
+  gtResult(
     summarisedResult = summarisedCharacteristics, long = long, wide = wide,
     format = format, keepNotFormatted = keepNotFormatted, decimals = decimals,
     decimalMark = decimalMark, bigMark = bigMark
@@ -97,6 +97,16 @@ gtCharacteristics <- function(summarisedCharacteristics,
 #'     minCellCount = 1
 #'   ) %>%
 #'   gtResult(
+#'     long = list(
+#'       "Variable" = c(level = "variable", "clean"),
+#'       "Level" = c(level = "variable_level"),
+#'       "Format" = c(level = "format", "separator-right")
+#'     ),
+#'     wide = list(
+#'       "CDM Name" = c(level = "cdm_name"),
+#'       "Group" = c(level = c("group_name", "group_level")),
+#'       "Strata" = c(level = c("strata_name", "strata_level"))
+#'     ),
 #'     format = c(
 #'       "N (%)" = "count (percentage%)",
 #'       "N" = "count",
@@ -104,20 +114,12 @@ gtCharacteristics <- function(summarisedCharacteristics,
 #'     ),
 #'     decimals = c(count = 0),
 #'     keepNotFormatted = FALSE
-#'   )
+#'    )
 #' }
 #'
 gtResult <- function(summarisedResult,
-                     long = list(
-                       "Variable" = c(level = "variable", "clean"),
-                       "Level" = c(level = "variable_level"),
-                       "Format" = c(level = "format", "separator-right")
-                     ),
-                     wide = list(
-                       "CDM Name" = c(level = "cdm_name"),
-                       "Group" = c(level = c("group_name", "group_level")),
-                       "Strata" = c(level = c("strata_name", "strata_level"))
-                     ),
+                     long,
+                     wide,
                      format = c(
                        "N (%)" = "count (percentage%)",
                        "median [min; q25 - q75; max]",
@@ -131,13 +133,13 @@ gtResult <- function(summarisedResult,
                      bigMark = ",") {
   # initial checks
   #checkInput(
-  #  summaryResult = summaryResult, long = long, wide = wide, format = format,
-  #  keepNotFormatted = keepNotFormatted, decimals = decimals,
+  #  summarisedResult = summarisedResult, long = long, wide = wide,
+  #  format = format, keepNotFormatted = keepNotFormatted, decimals = decimals,
   #  decimalMark = decimalMark, bigMark = bigMark
   #)
 
   # format decimals
-  summaryTable <- formatNumbers(summaryResult, decimals, decimalMark, bigMark)
+  summaryTable <- formatNumbers(summarisedResult, decimals, decimalMark, bigMark)
 
   # tidy estimates
   summaryTable <- tidyEstimates(summaryTable, format, keepNotFormatted)
@@ -151,7 +153,7 @@ gtResult <- function(summarisedResult,
   attr(summaryTable, "column_labels") <- NULL
 
   # order data
-  summaryTable <- orderData(summaryTable, summaryResult, columnLabels)
+  summaryTable <- orderData(summaryTable, summarisedResult, columnLabels)
 
   # arrange long
   summaryTable <- arrangeLong(summaryTable, long, columnLabels)
@@ -514,7 +516,7 @@ editWidth <- function(summaryTable, long) {
   }
   for (col in names(widths)) {
     summaryTable <- summaryTable %>%
-      gt::cols_width(as.formula(paste0(col, " ~ '", widths[[col]], "'")))
+      gt::cols_width(stats::as.formula(paste0(col, " ~ '", widths[[col]], "'")))
   }
   return(summaryTable)
 }

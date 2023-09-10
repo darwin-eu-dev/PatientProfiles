@@ -6,10 +6,8 @@
 \usage{
 gtResult(
   summarisedResult,
-  long = list(Variable = c(level = "variable", "clean"), Level = c(level =
-    "variable_level"), Format = c(level = "format", "separator-right")),
-  wide = list(`CDM Name` = c(level = "cdm_name"), Group = c(level = c("group_name",
-    "group_level")), Strata = c(level = c("strata_name", "strata_level"))),
+  long,
+  wide,
   format = c(`N (\%)` = "count (percentage\%)", "median [min; q25 - q75; max]",
     "mean (sd)", "median [q25 - q75]", N = "count"),
   keepNotFormatted = TRUE,
@@ -53,6 +51,16 @@ cdm$cohort1 \%>\%
     minCellCount = 1
   ) \%>\%
   gtResult(
+    long = list(
+      "Variable" = c(level = "variable", "clean"),
+      "Level" = c(level = "variable_level"),
+      "Format" = c(level = "format", "separator-right")
+    ),
+    wide = list(
+      "CDM Name" = c(level = "cdm_name"),
+      "Group" = c(level = c("group_name", "group_level")),
+      "Strata" = c(level = c("strata_name", "strata_level"))
+    ),
     format = c(
       "N (\%)" = "count (percentage\%)",
       "N" = "count",
@@ -60,7 +68,7 @@ cdm$cohort1 \%>\%
     ),
     decimals = c(count = 0),
     keepNotFormatted = FALSE
-  )
+   )
 }
 
 }
