@@ -31,7 +31,9 @@ reference:
 - contents:
   - matches("summariseCharacteristics")
 - subtitle: gt tables from summarisedResults objects
-  - contains("gt")
+  desc: Set of functions to create pretty gt tables
+- contents:
+  - matches("gt")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
