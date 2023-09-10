@@ -2,34 +2,44 @@
 % Please edit documentation in R/gtResult.R
 \name{gtResult}
 \alias{gtResult}
-\title{Give format to a summary object.}
+\title{Create a gt table from a summary object.}
 \usage{
 gtResult(
-  summaryResult,
-  long = list(Variable = c(level = "variable"), Level = c(level = "variable_level"),
-    Format = c(level = "format")),
+  summarisedResult,
+  long = list(Variable = c(level = "variable", "clean"), Level = c(level =
+    "variable_level"), Format = c(level = "format", "separator-right")),
   wide = list(`CDM Name` = c(level = "cdm_name"), Group = c(level = c("group_name",
     "group_level")), Strata = c(level = c("strata_name", "strata_level"))),
   format = c(`N (\%)` = "count (percentage\%)", "median [min; q25 - q75; max]",
     "mean (sd)", "median [q25 - q75]", N = "count"),
   keepNotFormatted = TRUE,
-  eliminateUniqueLabels = TRUE,
   decimals = c(default = 0),
   decimalMark = ".",
-  bigMark = ",",
-  style = list(defaultWidth = "200px", separator = c("Format"))
+  bigMark = ","
 )
 }
 \arguments{
-\item{summaryResult}{A SummarisedResult object.}
+\item{summarisedResult}{A SummarisedResult object.}
 
-\item{style}{}
+\item{long}{List of variables and specification to long}
+
+\item{wide}{List of variables and specification to wide}
+
+\item{format}{formats and labels to use}
+
+\item{keepNotFormatted}{Wheather to keep not formated estimate types}
+
+\item{decimals}{Decimals per estimate_type}
+
+\item{decimalMark}{decimal mark}
+
+\item{bigMark}{big mark}
 }
 \value{
 A formatted summarisedResult gt object.
 }
 \description{
-Give format to a summary object.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{

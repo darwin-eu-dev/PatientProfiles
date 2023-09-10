@@ -1,13 +1,14 @@
-#' Create a gt table from a summary characteristics object
+#' Create a gt table from a summarisedCharacteristics object.
 #'
-#' @param summarisedResults Summary characteristics long table.
-#' @param pivotWide
-#' @param format
-#' @param keepNotFormatted
-#' @param decimals
-#' @param decimalMark
-#' @param bigMark
-#' @param style
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param summarisedCharacteristics Summary characteristics long table.
+#' @param pivotWide variables to pivot wide
+#' @param format formats and labels to use
+#' @param keepNotFormatted Wheather to keep not formated estimate types
+#' @param decimals Decimals per estimate_type
+#' @param decimalMark decimal mark
+#' @param bigMark big mark
 #'
 #' @return New table in gt format
 #'
@@ -36,7 +37,7 @@
 #' ) %>%
 #'   gtCharacteristics()
 #'}
-gtCharacteristics <- function(summarisedResults,
+gtCharacteristics <- function(summarisedCharacteristics,
                               pivotWide = c("CDM Name", "Group", "Strata"),
                               format = c(
                                 "N (%)" = "count (percentage%)",
@@ -49,38 +50,36 @@ gtCharacteristics <- function(summarisedResults,
                               decimals = c(default = 0),
                               decimalMark = ".",
                               bigMark = ",") {
+  all <- list(
+    "Variable" = c(level = "variable", "clean"),
+    "Level" = c(level = "variable_level"),
+    "Format" = c(level = "format"),
+    "CDM Name" = c(level = "cdm_name"),
+    "Group" = c(level = c("group_name", "group_level")),
+    "Strata" = c(level = c("strata_name", "strata_level"))
+  )
+  wide <- all[names(all) %in% pivotWide]
+  long <- all[!names(all) %in% pivotWide]
+  long[[length(long)]] <- c(long[[length(long)]], "separator-right")
   gtResults(
-    summarisedResults,
-    long = list(
-      "Variable" = c(level = "variable"),
-      "Level" = c(level = "variable_level"),
-      "Format" = c(level = "format")
-    ),
-    wide = list(
-      "CDM Name" = c(level = "cdm_name"),
-      "Group" = c(level = c("group_name", "group_level")),
-      "Strata" = c(level = c("strata_name", "strata_level"))
-    ),
-    format = format,
-    keepNotFormatted = keepNotFormatted,
-    decimals = decimals,
-    decimalMark = decimalMark,
-    bigMark = bigMark
+    summarisedResult = summarisedCharacteristics, long = long, wide = wide,
+    format = format, keepNotFormatted = keepNotFormatted, decimals = decimals,
+    decimalMark = decimalMark, bigMark = bigMark
   )
 }
 
-#' Give format to a summary object.
+#' Create a gt table from a summary object.
 #'
-#' @param summaryResult A SummarisedResult object.
-#' @param long
-#' @param wide
-#' @param format
-#' @param keepNotFormatted
-#' @param eliminateUniqueLabels
-#' @param decimals
-#' @param decimalMark
-#' @param bigMark
-#' @param style
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param summarisedResult A SummarisedResult object.
+#' @param long List of variables and specification to long
+#' @param wide List of variables and specification to wide
+#' @param format formats and labels to use
+#' @param keepNotFormatted Wheather to keep not formated estimate types
+#' @param decimals Decimals per estimate_type
+#' @param decimalMark decimal mark
+#' @param bigMark big mark
 #'
 #' @return A formatted summarisedResult gt object.
 #'
@@ -108,7 +107,7 @@ gtCharacteristics <- function(summarisedResults,
 #'   )
 #' }
 #'
-gtResult <- function(summaryResult,
+gtResult <- function(summarisedResult,
                      long = list(
                        "Variable" = c(level = "variable", "clean"),
                        "Level" = c(level = "variable_level"),
@@ -133,8 +132,8 @@ gtResult <- function(summaryResult,
   # initial checks
   #checkInput(
   #  summaryResult = summaryResult, long = long, wide = wide, format = format,
-  #  estimateColumn = estimateColumn, keepNotFormatted = keepNotFormatted,
-  #  decimals = decimals, decimalMark = decimalMark, bigMark = bigMark
+  #  keepNotFormatted = keepNotFormatted, decimals = decimals,
+  #  decimalMark = decimalMark, bigMark = bigMark
   #)
 
   # format decimals
@@ -465,26 +464,7 @@ styleWideResult <- function(summaryTable, columnLabels, long) {
         )
       ii <- ii + 1
     }
-    #summaryTable <- summaryTable %>%
-      # gt::tab_spanner(
-      #   label = "", columns = dplyr::all_of(names(long)),
-      #   id = paste0(col, "_0")
-      # ) %>%
-      # gt::tab_style(
-      #   style = style[[type]],
-      #   locations = gt::cells_column_spanners(spanners = spannerIds)
-      # ) #%>%
-      # gt::tab_style(
-      #   style = gt::cell_fill(color = "#ffffff"),
-      #   locations = gt::cells_column_spanners(spanners = paste0(col, "_0"))
-      # )
   }
-  summaryTable <- summaryTable %>%
-    gt::tab_spanner(
-      label = "",
-      columns = dplyr::all_of(columnLabels$column_name),
-      id = "empty_spanner"
-    )
   # style spanners
   style <- list(
     "title" = list(
@@ -524,15 +504,17 @@ bwlabel <- function(x) {
 }
 editWidth <- function(summaryTable, long) {
   default <- "200px"
-  widths <- as.list(rep(default, length(colnames(summaryTable))))
-  names(widths) <- colnames(summaryTable)
+  widths <- as.list(rep(default, ncol(summaryTable$`_data`)))
+  names(widths) <- colnames(summaryTable$`_data`)
   for (l in names(long)) {
     x <- long[[l]]
     if ("width" %in% names(x)) {
       widths[[l]] <- unname(x["width"])
     }
   }
-  summaryTable <- summaryTable %>%
-    gt::cols_width(.list = widths)
+  for (col in names(widths)) {
+    summaryTable <- summaryTable %>%
+      gt::cols_width(as.formula(paste0(col, " ~ '", widths[[col]], "'")))
+  }
   return(summaryTable)
 }
