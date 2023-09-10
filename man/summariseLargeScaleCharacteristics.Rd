@@ -14,7 +14,6 @@ summariseLargeScaleCharacteristics(
   overlapStandard = NULL,
   incidentSource = NULL,
   overlapSource = NULL,
-  concepSetList = NULL,
   incidentAtc = NULL,
   overlapAtc = NULL,
   incidentIcd10 = NULL,
@@ -66,9 +65,9 @@ cohort table
 }
 \examples{
 \donttest{
-library(DrugUtilisation)
+library(PatientProfiles)
 
-cdm <- mockDrugUtilisation()
+cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   summariseLargeScaleCharacteristics(
