@@ -30,6 +30,9 @@ reference:
   desc: Standard table one preliminary function
 - contents:
   - matches("summariseCharacteristics")
+  desc: Summarise large scale characteristics
+- contents:
+  - matches("summariseLargeScaleCharacteristics")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
