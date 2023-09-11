@@ -18,8 +18,6 @@ summariseLargeScaleCharacteristics(
   overlapAtc = NULL,
   incidentIcd10 = NULL,
   overlapIcd10 = NULL,
-  incidentConceptSet = NULL,
-  overlapConceptSet = NULL,
   minCellCount = 5,
   cdm = attr(cohort, "cdm_reference")
 )
@@ -46,10 +44,6 @@ summariseLargeScaleCharacteristics(
 \item{incidentIcd10}{ICD10 levels to characterise.}
 
 \item{overlapIcd10}{ICD10 levels to characterise.}
-
-\item{incidentConceptSet}{Concept sets to characterise.}
-
-\item{overlapConceptSet}{Concept sets to characterise.}
 
 \item{minCellCount}{All counts lower than minCellCount will be obscured.}
 
