@@ -168,7 +168,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
   }
 
   # suppress counts
-  lsc <- suppressCounts(lsc)
+  lsc <- suppressCounts(result = lsc, minCellCount = minCellCount)
 
   # return
   return(lsc)
