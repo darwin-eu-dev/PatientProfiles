@@ -542,32 +542,19 @@ summaryValuesStrata <- function(x,
   return(result)
 }
 
-#' Function to suppress count
-#' @param result Table including counts, mean, etc, to be suppressed,
-#' Default of column names set to the same as variable names, user can self define too.
-#' @param variable the column name with variable, eg count/mean/percentage/.. Default as "variable".
-#' @param estimate the column name with estimate, to show what is the corresponding number. Default as "estimate".
-#' @param group_name the column name with group name, default as "group_name".
-#' @param group_level the column name with group level, default as "group_level".
-#' @param strata_name the column name with strata name, default as "strata_name".
-#' @param strata_level the column name with level of strata, default as "strata_level".
+#' Function to suppress counts in summarised objects
+#'
+#' @param result SummarisedResult object
 #' @param minCellCount Minimum count of records to report results.
 #'
 #' @return Table with suppressed counts
 #'
 #' @export
-
 suppressCounts <- function(result,
-                           variable = "variable",
-                           estimate = "estimate",
-                           group_name = "group_name",
-                           group_level = "group_level",
-                           strata_name = "strata_name",
-                           strata_level = "strata_level",
                            minCellCount = 5) {
   checkmate::assertTRUE(all(c(
-    variable, estimate, group_name,
-    group_level, strata_name, strata_level
+    "variable", "estimate", "estimate_type", "group_name", "group_level",
+    "strata_name", "strata_level"
   ) %in%
     colnames(result)))
 
