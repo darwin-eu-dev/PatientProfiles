@@ -269,9 +269,6 @@ test_that("obscure", {
   expect_true(sum(is.na(s$estimate)) == 24)
 })
 
-
-
-
 test_that("test empty cohort", {
   dus_cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
