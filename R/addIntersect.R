@@ -468,3 +468,25 @@ getConceptName <- function(tableName) {
     return("cohort_definition_id")
   }
 }
+
+#' Get the name of the source_concept_id column for a certain table in the cdm
+#'
+#' @param tableName Name of the table
+#'
+#' @return Name of the source_concept_id column in that table
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' getSourceConceptName("condition_occurrence")
+#' }
+#'
+getSourceConceptName <- function(tableName) {
+  if (tableName %in% namesTable$table_name) {
+    return(namesTable$source_concept_id_name[namesTable$table_name == tableName])
+  } else {
+    return(as.character(NA))
+  }
+}
