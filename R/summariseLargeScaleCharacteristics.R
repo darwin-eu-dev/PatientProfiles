@@ -37,12 +37,12 @@
 #'
 #' cdm <- mockPatientProfiles()
 #'
-#' cdm$cohort1 %>%
-#'   summariseLargeScaleCharacteristics(
-#'     window = list(c(-180, -1), c(0, 0), c(1, 180)),
-#'     incidentStandard = "condition_occurrence",
-#'     overlapStandard = "drug_expoure"
-#'   )
+#' #cdm$cohort1 %>%
+#' #   summariseLargeScaleCharacteristics(
+#' #    window = list(c(-180, -1), c(0, 0), c(1, 180)),
+#' #     eventInWindow = "condition_occurrence",
+#' #    episodeInWindow = "drug_exposure"
+#' #   )
 #' }
 #'
 summariseLargeScaleCharacteristics <- function(cohort,
@@ -125,6 +125,9 @@ summariseLargeScaleCharacteristics <- function(cohort,
       "standard" = getConceptName(tab),
       "source" = getSourceConceptName(tab)
     )
+    if (includeSource == FALSE) {
+      toSelect <- toSelect["source" != names(toSelect)]
+    }
     table <- cdm[[tab]] %>%
       dplyr::select(dplyr::all_of(toSelect)) %>%
       dplyr::inner_join(x, by = "subject_id") %>%
@@ -364,7 +367,11 @@ getLscGroup <- function(cohort, table, strata, window, analysis, writeSchema, cd
         by = "concept_id"
       )
   } else {
-    codes <- CodelistGenerator::getICD10Codes(cdm = cdm, level = analysis)
+    codes <- cdm[["concept"]] %>%
+      dplyr::filter(.data$vocabulary_id == "ICD10") %>%
+      dplyr::filter(.data$concept_class_id == .env$analysis) %>%
+      dplyr::select("concept_new" = "concept_id")
+    ## TO DO ##
   }
   table <- table %>%
     dplyr::inner_join(codes, by = "concept") %>%

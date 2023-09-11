@@ -33,7 +33,10 @@ reference:
   desc: Summarise large scale characteristics
 - contents:
   - matches("summariseLargeScaleCharacteristics")
+- subtitle: Supress counts
+  desc: Function to supress counts smaller than a certain number
+   - matches("suppressCounts")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCohortName|addCdmName|addAttributes|addCategories|getStartName|getEndName|getConceptName|mockPatientProfiles|suppressCounts")
+  - matches("addCohortName|addCdmName|addAttributes|addCategories|getSourceConceptName|getStartName|getEndName|getConceptName|mockPatientProfiles")

@@ -10,14 +10,9 @@ summariseLargeScaleCharacteristics(
   strata = list(),
   window = list(c(-Inf, -366), c(-365, -31), c(-30, -1), c(0, 0), c(1, 30), c(31, 365),
     c(366, Inf)),
-  incidentStandard = NULL,
-  overlapStandard = NULL,
-  incidentSource = NULL,
-  overlapSource = NULL,
-  incidentAtc = NULL,
-  overlapAtc = NULL,
-  incidentIcd10 = NULL,
-  overlapIcd10 = NULL,
+  eventInWindow = "condition_occurrence",
+  episodeInWindow = c("drug_exposure", "ATC 1st"),
+  includeSource = FALSE,
   minCellCount = 5,
   cdm = attr(cohort, "cdm_reference")
 )
@@ -29,21 +24,11 @@ summariseLargeScaleCharacteristics(
 
 \item{window}{Temporal windows that we want to characterize.}
 
-\item{incidentStandard}{Tables to characterise the concept_id.}
+\item{eventInWindow}{Tables to characterise the events in the window.}
 
-\item{overlapStandard}{Tables to characterise the concept_id.}
+\item{episodeInWindow}{Tables to characterise the episodes in the window.}
 
-\item{incidentSource}{Tables to characterise the source_concept_id.}
-
-\item{overlapSource}{Tables to characterise the source_concept_id.}
-
-\item{incidentAtc}{ATC levels to characterise.}
-
-\item{overlapAtc}{ATC levels to characterise.}
-
-\item{incidentIcd10}{ICD10 levels to characterise.}
-
-\item{overlapIcd10}{ICD10 levels to characterise.}
+\item{includeSource}{Whether to include source concepts.}
 
 \item{minCellCount}{All counts lower than minCellCount will be obscured.}
 
@@ -63,12 +48,12 @@ library(PatientProfiles)
 
 cdm <- mockPatientProfiles()
 
-cdm$cohort1 \%>\%
-  summariseLargeScaleCharacteristics(
-    window = list(c(-180, -1), c(0, 0), c(1, 180)),
-    incidentStandard = "condition_occurrence",
-    overlapStandard = "drug_expoure"
-  )
+#cdm$cohort1 \%>\%
+#   summariseLargeScaleCharacteristics(
+#    window = list(c(-180, -1), c(0, 0), c(1, 180)),
+#     eventInWindow = "condition_occurrence",
+#    episodeInWindow = "drug_exposure"
+#   )
 }
 
 }
