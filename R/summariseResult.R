@@ -126,6 +126,7 @@ summariseResult <- function(table,
             includeOverall = includeOverallStrata
           ) %>%
           dplyr::mutate(
+            group_level = !!workingGroupLevels[[j]],
             group_name = !!paste0(group[[i]], collapse = " and ")
           ) %>%
           dplyr::select(
