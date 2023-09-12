@@ -71,8 +71,8 @@ summariseResult <- function(table,
   # create the summary for overall
   result <- list()
   if (table %>%
-    dplyr::count() %>%
-    dplyr::pull() == 0) {
+      dplyr::count() %>%
+      dplyr::pull() == 0) {
     result <- table %>%
       dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
       dplyr::mutate(
@@ -91,43 +91,43 @@ summariseResult <- function(table,
           includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(
-                group_name = "Overall",
-        group_level = "Overall"
-      ) %>%
-      dplyr::select(dplyr::all_of(
-        c(
-          "group_name", "group_level",
-          "strata_name", "strata_level", "variable",
-          "variable_level", "variable_type",
-          "estimate_type", "estimate"
-        )
-      )) %>%
-      dplyr::arrange(.data$strata_name, .data$strata_level)
-  }
-
-  # add results for each group
-  for (i in seq_along(group)) {
-    workingGroup <- group[[i]]
-    workingGroupName <- names(group)[i]
-    numericCols <- table %>% dplyr::select_if(is.double) %>% names() %>% intersect(workingGroup)
-    table <- table %>%
-      dplyr::mutate(dplyr::across(dplyr::all_of(numericCols),as.integer)) %>%
-      dplyr::mutate(group_var = stringr::str_c(!!!rlang::syms(workingGroup), sep = " and ")) %>%
-      dplyr::mutate(dplyr::across(dplyr::all_of(numericCols),as.double))
-
-    workingGroupLevels <- table %>%
-      dplyr::select(dplyr::all_of("group_var")) %>%
-      dplyr::distinct() %>%
-      dplyr::pull()
-
-    for (j in seq_along(workingGroupLevels)) {
-
-      workingGroupLevelName <- workingGroupLevels[[j]]
-
-      workingResult <- table %>%
-        dplyr::filter(
-          .data[["group_var"]] == workingGroupLevelName
+          group_name = "Overall",
+          group_level = "Overall"
         ) %>%
+        dplyr::select(dplyr::all_of(
+          c(
+            "group_name", "group_level",
+            "strata_name", "strata_level", "variable",
+            "variable_level", "variable_type",
+            "estimate_type", "estimate"
+          )
+        )) %>%
+        dplyr::arrange(.data$strata_name, .data$strata_level)
+    }
+
+    # add results for each group
+    for (i in seq_along(group)) {
+      workingGroup <- group[[i]]
+      workingGroupName <- names(group)[i]
+      numericCols <- table %>% dplyr::select_if(is.double) %>% names() %>% intersect(workingGroup)
+      table <- table %>%
+        dplyr::mutate(dplyr::across(dplyr::all_of(numericCols),as.integer)) %>%
+        dplyr::mutate(group_var = stringr::str_c(!!!rlang::syms(workingGroup), sep = " and ")) %>%
+        dplyr::mutate(dplyr::across(dplyr::all_of(numericCols),as.double))
+
+      workingGroupLevels <- table %>%
+        dplyr::select(dplyr::all_of("group_var")) %>%
+        dplyr::distinct() %>%
+        dplyr::pull()
+
+      for (j in seq_along(workingGroupLevels)) {
+
+        workingGroupLevelName <- workingGroupLevels[[j]]
+
+        workingResult <- table %>%
+          dplyr::filter(
+            .data[["group_var"]] == workingGroupLevelName
+          ) %>%
           summaryValuesStrata(
             strata, variables, functions,
             includeOverall = includeOverallStrata
@@ -192,7 +192,7 @@ getNumericValues <- function(x, variablesNumeric) {
             "estimate"
           ) %>%
           dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
-            %>%
+        %>%
           dplyr::collect()
       )
   }
@@ -214,28 +214,28 @@ getDateValues <- function(x, variablesDate) {
       dplyr::pull("variable")
     result <- result %>% dplyr::union_all(
       x %>%
-      dplyr::summarise(dplyr::across(
-        .cols = dplyr::all_of(variablesFunction),
-        .fns = getFunctions(functionName),
-        .names = "{.col}_{.fn}"
-      )) %>%
-      dplyr::mutate(dplyr::across(dplyr::ends_with(functionName), ~ as_date(.))) %>%
-      tidyr::pivot_longer(
-        dplyr::all_of(variablesFunction %>% paste(functionName, sep="_")),
-        names_to = "variable",
-        values_to = "estimate",
-        values_transform = list(estimate = as.character)
-      ) %>%
-      dplyr::mutate(
-        estimate_type = as.character(functionName), variable_type = "date"
-      ) %>%
-      dplyr::select(
-        "strata_level", "variable", "variable_type", "estimate_type",
-        "estimate"
-      ) %>%
-      dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
-        %>%
-      dplyr::collect()
+        dplyr::summarise(dplyr::across(
+          .cols = dplyr::all_of(variablesFunction),
+          .fns = getFunctions(functionName),
+          .names = "{.col}_{.fn}"
+        )) %>%
+        dplyr::mutate(dplyr::across(dplyr::ends_with(functionName), ~ as_date(.))) %>%
+        tidyr::pivot_longer(
+          dplyr::all_of(variablesFunction %>% paste(functionName, sep="_")),
+          names_to = "variable",
+          values_to = "estimate",
+          values_transform = list(estimate = as.character)
+        ) %>%
+        dplyr::mutate(
+          estimate_type = as.character(functionName), variable_type = "date"
+        ) %>%
+        dplyr::select(
+          "strata_level", "variable", "variable_type", "estimate_type",
+          "estimate"
+        ) %>%
+        dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
+      %>%
+        dplyr::collect()
     )
   }
 
@@ -314,8 +314,8 @@ getBinaryValues <- function(x, variablesBinary) {
           dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
           dplyr::select(-"denominator") %>%
           tidyr::pivot_longer(c("count", "%"),
-            names_to = "estimate_type",
-            values_to = "estimate"
+                              names_to = "estimate_type",
+                              values_to = "estimate"
           ) %>%
           dplyr::collect() %>%
           dplyr::inner_join(
@@ -391,8 +391,8 @@ getCategoricalValues <- function(x, variablesCategorical) {
             dplyr::mutate("%" = 100 * .data$count / .data$denominator) %>%
             dplyr::select(-"denominator") %>%
             tidyr::pivot_longer(c("count", "%"),
-              names_to = "estimate_type",
-              values_to = "estimate"
+                                names_to = "estimate_type",
+                                values_to = "estimate"
             ) %>%
             dplyr::filter(.data$estimate_type %in% .env$functions) %>%
             dplyr::mutate(
@@ -429,8 +429,8 @@ getCategoricalValues <- function(x, variablesCategorical) {
               .names = "{.fn}"
             )) %>%
             tidyr::pivot_longer(!"strata_level",
-              names_to = "estimate_type",
-              values_to = "estimate"
+                                names_to = "estimate_type",
+                                values_to = "estimate"
             ) %>%
             dplyr::mutate(
               variable = .env$v, variable_type = "categorical"
@@ -503,16 +503,16 @@ summaryValues <- function(x, variables, functions) {
       )
     }
   } else {
-  if (nrow(variablesDate) > 0) {
-    result <- dplyr::union_all(
-      result,
-      getDateValues(
-        x, variablesDate
-      ) %>%
-        dplyr::arrange(.data$variable)
-    )
+    if (nrow(variablesDate) > 0) {
+      result <- dplyr::union_all(
+        result,
+        getDateValues(
+          x, variablesDate
+        ) %>%
+          dplyr::arrange(.data$variable)
+      )
+    }
   }
- }
   # binary variables
   variablesBinary <- requiredFunctions %>%
     dplyr::filter(.data$variable_type == "binary")
