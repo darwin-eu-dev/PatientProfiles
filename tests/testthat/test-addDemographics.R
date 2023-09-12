@@ -723,9 +723,12 @@ test_that("age group checks", {
     dplyr::collect() %>%
     dplyr::arrange(age)
 
-  # expect_true(result1 %>%
-  #   dplyr::filter(is.na(age)) %>%
-  #   dplyr::pull("age_group") == "None")
+  expect_true(
+    result1 %>%
+      dplyr::filter(is.na(age)) %>%
+      dplyr::pull("age_group") %>%
+      is.na()
+  )
 
   # not all ages in age group
   result2 <- cdm$cohort1 %>%
@@ -1091,7 +1094,7 @@ test_that("date of birth", {
     "2005-01-01")
 })
 
-test_that("missing levels - report as none", {
+test_that("missing levels", {
   cdm <- mockPatientProfiles(connectionDetails)
 
   result <- cdm[["cohort1"]] %>%
@@ -1101,8 +1104,8 @@ test_that("missing levels - report as none", {
       priorObservation = FALSE, futureObservation = FALSE
     ) %>%
     dplyr::collect()
-  #expect_true(all(!is.na(result$age_group)))
-
+  expect_true("None" %in% result$age_group)
+  expect_true(all(is.na(result$age_group[is.na(result$age)])))
 
   result <- cdm$cohort1 %>%
     addSex() %>%
