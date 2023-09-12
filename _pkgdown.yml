@@ -29,13 +29,13 @@ reference:
   - matches("variableTypes|availableFunctions|detectVariables|summariseResult")
   desc: Standard table one preliminary function
 - contents:
-  - matches("summariseCharacteristics")
+  - '`summariseCharacteristics`'
   desc: Summarise large scale characteristics
 - contents:
-  - matches("summariseLargeScaleCharacteristics")
-- subtitle: Supress counts
+  - '`summariseLargeScaleCharacteristics`'
+- subtitle: Suppress counts
   desc: Function to supress counts smaller than a certain number
-   - matches("suppressCounts")
+   - '`suppressCounts`'
 - subtitle: Other functions
   desc: Helper functions
 - contents:
