@@ -24,6 +24,7 @@
 #' @param episodeInWindow Tables to characterise the episodes in the window.
 #' @param includeSource Whether to include source concepts.
 #' @param minCellCount All counts lower than minCellCount will be obscured.
+#' @param minimumFrequency Minimum frequency covariates to report.
 #' @param cdm A cdm reference.
 #'
 #' @return The output of this function is a `ResultSummary` containing the
@@ -37,12 +38,12 @@
 #'
 #' cdm <- mockPatientProfiles()
 #'
-#' #cdm$cohort1 %>%
-#' #   summariseLargeScaleCharacteristics(
-#' #    window = list(c(-180, -1), c(0, 0), c(1, 180)),
-#' #     eventInWindow = "condition_occurrence",
-#' #    episodeInWindow = "drug_exposure"
-#' #   )
+#' cdm$cohort1 %>%
+#'   summariseLargeScaleCharacteristics(
+#'     window = list(c(-180, -1), c(0, 0), c(1, 180)),
+#'     eventInWindow = "condition_occurrence",
+#'     episodeInWindow = "drug_exposure"
+#'   )
 #' }
 #'
 summariseLargeScaleCharacteristics <- function(cohort,
@@ -52,10 +53,11 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                  c(-30, -1), c(0, 0), c(1, 30),
                                                  c(31, 365), c(366, Inf)
                                                ),
-                                               eventInWindow = "condition_occurrence",
-                                               episodeInWindow = c("drug_exposure", "ATC 1st"),
+                                               eventInWindow = NULL,
+                                               episodeInWindow = NULL,
                                                includeSource = FALSE,
                                                minCellCount = 5,
+                                               minimumFrequency = 0.005,
                                                cdm = attr(cohort, "cdm_reference")) {
   # add names to windows
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
@@ -153,7 +155,6 @@ summariseLargeScaleCharacteristics <- function(cohort,
     }
     table <- table %>%
       dplyr::select(-"start_obs", -"end_obs") %>%
-      dplyr::distinct() %>%
       CDMConnector::computeQuery(
         name = "lsc_table", temporary = FALSE, schema = writeSchema,
         overwrite = TRUE
@@ -181,19 +182,22 @@ summariseLargeScaleCharacteristics <- function(cohort,
 
   # format results
   results <- lsc %>%
-    formatLscResult(den, cdm)
+    formatLscResult(den, cdm, minimumFrequency, minCellCount)
 
   # eliminate permanent tables
-  CDMConnector::dropTable(cdm = cdm, name = c(
+  tablesToEliminate <- c(
     "lsc_individuals", "lsc_table", "lsc_table_window",
-    "lsc_table_window_cohort"
-  ))
-
-  # suppress counts
-  lsc <- suppressCounts(result = lsc, minCellCount = minCellCount)
+    "lsc_table_window_cohort", "lsc_table_group"
+  )
+  tablesToEliminate <- tablesToEliminate[
+    tablesToEliminate %in% CDMConnector::listTables(
+      con = attr(cdm, "dbcon"), schema = attr(cdm, "write_schema")
+    )
+  ]
+  CDMConnector::dropTable(cdm = cdm, name = tablesToEliminate)
 
   # return
-  return(lsc)
+  return(results)
 }
 
 getLsc <- function(cohort, table, strata, window, type, analysis, writeSchema, cdm) {
@@ -205,13 +209,46 @@ getLsc <- function(cohort, table, strata, window, type, analysis, writeSchema, c
     table <- table %>%
       dplyr::rename("concept" = dplyr::all_of(analysis)) %>%
       dplyr::select(-dplyr::any_of(c("standard", "source")))
-    result <- getLscConcept(cohort, table, strata, window, writeSchema)
   } else {
-    result <- getLscGroup(cohort, table, strata, window, analysis, writeSchema, cdm)
+    table <- table %>%
+      dplyr::rename("concept" = "standard") %>%
+      dplyr::select(-dplyr::any_of("source"))
+    table <- getCodesGroup(table, analysis, writeSchema, cdm)
   }
-  result <- result %>%
+  result <- getLscConcept(cohort, table, strata, window, writeSchema) %>%
     dplyr::mutate(type = type, analysis = analysis)
   return(result)
+}
+getCodesGroup <- function(table, analysis, writeSchema, cdm) {
+  if (analysis %in% c("ATC 1st", "ATC 2nd", "ATC 3rd", "ATC 4th", "ATC 5h")) {
+    codes <- cdm[["concept"]] %>%
+      dplyr::filter(.data$vocabulary_id == "ATC") %>%
+      dplyr::filter(.data$concept_class_id == .env$analysis) %>%
+      dplyr::select("concept_new" = "concept_id") %>%
+      dplyr::inner_join(
+        cdm[["concept_ancestor"]] %>%
+          dplyr::select(
+            "concept_new" = "ancestor_concept_id",
+            "concept" = "descendant_concept_id"
+          ),
+        by = "concept_new"
+      )
+  } else {
+    codes <- cdm[["concept"]] %>%
+      dplyr::filter(.data$vocabulary_id == "ICD10") %>%
+      dplyr::filter(.data$concept_class_id == .env$analysis) %>%
+      dplyr::select("concept_new" = "concept_id")
+    ## TO DO ##
+  }
+  table <- table %>%
+    dplyr::inner_join(codes, by = "concept") %>%
+    dplyr::select(-"concept") %>%
+    dplyr::rename("concept" = "concept_new") %>%
+    CDMConnector::computeQuery(
+      name = "lsc_table_group", temporary = FALSE, schema = writeSchema,
+      overwrite = TRUE
+    )
+  return(table)
 }
 getLscConcept <- function(cohort, table, strata, window, writeSchema) {
   result <- NULL
@@ -291,11 +328,10 @@ summariseStrataCounts <- function(tableWindowCohort, strata) {
     result <- result %>%
       dplyr::union_all(
         tableWindowCohort %>%
-          dplyr::select("obs_id", dplyr::all_of(strata[[k]])) %>%
-          dplyr::group_by(dplyr::all_of(c("concept", strata[[k]]))) %>%
+          dplyr::group_by(dplyr::pick(c("concept", strata[[k]]))) %>%
           dplyr::summarise(count = as.numeric(dplyr::n()), .groups = "drop") %>%
           dplyr::collect() %>%
-          tidyr::unite(dplyr::all_of(strata[[k]]), sep = " and ") %>%
+          tidyr::unite(col = "strata_level", dplyr::all_of(strata[[k]]), sep = " and ") %>%
           dplyr::mutate(strata_name = paste0(strata[[k]], collapse = " and "))
       )
   }
@@ -308,11 +344,12 @@ denominatorCounts <- function(cohort, x, strata, window, writeSchema) {
   result <- getLscConcept(cohort, table, strata, window, writeSchema)
 
 }
-formatLscResult <- function(lsc, den, cdm) {
+formatLscResult <- function(lsc, den, cdm, minimumFrequency, minCellCount) {
   lsc %>%
     dplyr::inner_join(
       den %>%
         dplyr::rename("denominator" = "count") %>%
+        dplyr::filter(.data$denominator >= .env$minCellCount) %>%
         dplyr::select(-"concept"),
       by = c(
         "strata_name", "strata_level", "group_name", "group_level",
@@ -321,6 +358,8 @@ formatLscResult <- function(lsc, den, cdm) {
     ) %>%
     dplyr::mutate(percentage = 100 * .data$count / .data$denominator) %>%
     dplyr::select(-"denominator") %>%
+    dplyr::filter(.data$count >= .env$minCellCount) %>%
+    dplyr::filter(.data$percentage >= 100 * .env$minimumFrequency) %>%
     tidyr::pivot_longer(
       cols = c("count", "percentage"), names_to = "estimate_type",
       values_to = "estimate"
@@ -346,42 +385,9 @@ addConceptName <- function(lsc, cdm) {
     dplyr::inner_join(
       concepts %>%
         dplyr::mutate(concept = as.numeric(.data$concept)),
-      by = "concept_id",
+      by = "concept",
       copy = TRUE
     ) %>%
     dplyr::collect()
   return(conceptNames)
-}
-getLscGroup <- function(cohort, table, strata, window, analysis, writeSchema, cdm) {
-  if (analysis %in% c("ATC 1st", "ATC 2nd", "ATC 3rd", "ATC 4th", "ATC 5h")) {
-    codes <- cdm[["concept"]] %>%
-      dplyr::filter(.data$vocabulary_id == "ATC") %>%
-      dplyr::filter(.data$concept_class_id == .env$analysis) %>%
-      dplyr::select("concept_new" = "concept_id") %>%
-      dplyr::inner_join(
-        cdm[["concept_ancestor"]] %>%
-          dplyr::select(
-            "concept_id" = "ancestor_concept_id",
-            "concept_new" = "descendant_concept_id"
-          ),
-        by = "concept_id"
-      )
-  } else {
-    codes <- cdm[["concept"]] %>%
-      dplyr::filter(.data$vocabulary_id == "ICD10") %>%
-      dplyr::filter(.data$concept_class_id == .env$analysis) %>%
-      dplyr::select("concept_new" = "concept_id")
-    ## TO DO ##
-  }
-  table <- table %>%
-    dplyr::inner_join(codes, by = "concept") %>%
-    dplyr::select(-"concept") %>%
-    dplyr::rename("concept" = "concept_new") %>%
-    dplyr::distinct() %>%
-    CDMConnector::computeQuery(
-      name = "lsc_table_group", temporary = FALSE, schema = writeSchema,
-      overwrite = TRUE
-    )
-  result <- getLscConcept(cohort, table, strata, window, writeSchema)
-  return(result)
 }
