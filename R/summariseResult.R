@@ -410,7 +410,8 @@ summaryValues <- function(x, variables, functions) {
     dplyr::mutate(
       variable = "number records", variable_type = as.character(NA),
       estimate_type = "count"
-    )
+    ) %>%
+    dplyr::collect()
 
   # count subjects
   result <- countSubjects(x) %>%
@@ -500,7 +501,8 @@ countSubjects <- function(x) {
       dplyr::mutate(
         variable = "number subjects", variable_type = as.character(NA),
         estimate_type = "count"
-      )
+      ) %>%
+      dplyr::collect()
     return(result)
   } else {
     return(NULL)
