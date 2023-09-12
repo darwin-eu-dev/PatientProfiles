@@ -112,9 +112,8 @@ summariseResult <- function(table,
       workingGroup <- group[[i]]
       workingGroupName <- names(group)[i]
       table <- table %>%
-        tidyr::unite("group_var",
-          c(dplyr::all_of(.env$workingGroup)),
-          remove = FALSE, sep = " and "
+        dplyr::mutate(
+          group_var = !!rlang::parse_expr(uniteStrata(group[[i]]))
         )
       workingGroupLevels <- table %>%
         dplyr::select(dplyr::all_of("group_var")) %>%
@@ -604,45 +603,17 @@ suppressCounts <- function(result,
   return(result)
 }
 
-uniteStrata <- function(x,
-                        columns,
-                        sepStrata = "&&",
+uniteStrata <- function(columns,
                         sepStrataLevel = " and ") {
-  combinations <- x %>%
-    dplyr::select(dplyr::all_of(columns)) %>%
-    dplyr::distinct()
-  multiple <- combinations %>%
-    dplyr::filter(dplyr::if_any(
-      dplyr::all_of(columns), ~ grepl(.env$sepStrata, .)
-    ))
-  single <- combinations %>%
-    dplyr::anti_join(multiple, by = columns) %>%
-    tidyr::unite(
-      "strata_level", dplyr::all_of(columns),
-      sep = sepStrataLevel,
-      remove = FALSE
-    )
-  multiple <- expandStrata(multiple, columns, sepStrata, sepStrataLevel)
-  x <- x %>%
-    dplyr::inner_join(dplyr::union_all(multiple, single), by = columns)
-  return(x)
-}
-
-expandStrata <- function(x, columns, sepStrata, sepStrataLevel) {
-  result <- NULL
-  for (k in 1:nrow(x)) {
-    result <- result %>%
-      dplyr::union_all(dplyr::bind_cols(
-        x[k, ],
-        x[k, ] %>%
-          tidyr::separate_longer_delim(dplyr::everything(), delim = sepStrata) %>%
-          do.call(what = tidyr::expand_grid) %>%
-          dplyr::distinct() %>%
-          tidyr::unite(
-            "strata_level", dplyr::all_of(columns),
-            sep = sepStrataLevel
-          )
-      ))
-  }
-  return(result)
+  pasteStr <- paste0(
+    "paste0(",
+    paste0(
+      "as.character(.data[[\"", columns, "\"]])",
+      collapse = paste0(
+        ", \"", sepStrataLevel, "\", "
+      )
+    ),
+    ")"
+  )
+  return(pasteStr)
 }

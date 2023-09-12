@@ -10,14 +10,14 @@ test_that("test all functions", {
     ))
   )
   s1 <- summariseResult(x)
-  s2 <- summariseResult(x, strata = list("group" = "s"))
+  s2 <- summariseResult(x, strata = list("s"))
   s3 <- summariseResult(
     x,
-    strata = list("group" = "s"), minCellCount = 1
+    strata = list("s"), minCellCount = 1
   )
   s4 <- summariseResult(
     x,
-    strata = list("group1" = c("s", "v2"), group2 = "s"),
+    strata = list(c("s", "v2"), group2 = "s"),
     minCellCount = 1
   )
 
@@ -71,73 +71,73 @@ test_that("groups and strata", {
 
   result <- cdm$condition_occurrence %>%
     addDemographics(cdm,
-      indexDate = "condition_start_date",
-      ageGroup = list(c(0, 30), c(31, 60))
+                    indexDate = "condition_start_date",
+                    ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(strata = list("sex" = "sex"))
+    summariseResult(strata = list("sex"))
 
   expect_true(result %>%
-    dplyr::filter(group_name == "Overall" &
-      group_level == "Overall" &
-      strata_name == "Overall" &
-      strata_level == "Overall" &
-      variable == "number subjects") %>%
-    dplyr::pull("estimate") == "1000")
+                dplyr::filter(group_name == "Overall" &
+                                group_level == "Overall" &
+                                strata_name == "Overall" &
+                                strata_level == "Overall" &
+                                variable == "number subjects") %>%
+                dplyr::pull("estimate") == "1000")
 
 
   result <- cdm$condition_occurrence %>%
     addDemographics(cdm,
-      indexDate = "condition_start_date",
-      ageGroup = list(c(0, 30), c(31, 60))
+                    indexDate = "condition_start_date",
+                    ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(strata = list("Age and sex" = c("age_group", "sex")))
+    summariseResult(strata = list(c("age_group", "sex")))
 
   expect_true(all(result %>%
-    dplyr::select("strata_name") %>%
-    dplyr::distinct() %>%
-    dplyr::pull() %in%
-    c("Overall", "Age and sex")))
+                    dplyr::select("strata_name") %>%
+                    dplyr::distinct() %>%
+                    dplyr::pull() %in%
+                    c("Overall", "age_group and sex")))
   expect_true(all(result %>%
-    dplyr::select("strata_level") %>%
-    dplyr::distinct() %>%
-    dplyr::pull() %in%
-    c(
-      "Overall",
-      "0 to 30 and Female",
-      "0 to 30 and Male",
-      "31 to 60 and Female",
-      "31 to 60 and Male",
-      "None and Female",
-      "None and Male"
-    )))
+                    dplyr::select("strata_level") %>%
+                    dplyr::distinct() %>%
+                    dplyr::pull() %in%
+                    c(
+                      "Overall",
+                      "0 to 30 and Female",
+                      "0 to 30 and Male",
+                      "31 to 60 and Female",
+                      "31 to 60 and Male",
+                      "None and Female",
+                      "None and Male"
+                    )))
 
   result <- cdm$condition_occurrence %>%
     addDemographics(cdm,
-      indexDate = "condition_start_date",
-      ageGroup = list(c(0, 30), c(31, 60))
+                    indexDate = "condition_start_date",
+                    ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(group = list("Age and sex" = c("age_group", "sex")))
+    summariseResult(group = list(c("age_group", "sex")))
   expect_true(all(result %>%
-    dplyr::select("group_name") %>%
-    dplyr::distinct() %>%
-    dplyr::pull() %in%
-    c("Overall", "Age and sex")))
+                    dplyr::select("group_name") %>%
+                    dplyr::distinct() %>%
+                    dplyr::pull() %in%
+                    c("Overall", "age_group and sex")))
   expect_true(all(result %>%
-    dplyr::select("group_level") %>%
-    dplyr::distinct() %>%
-    dplyr::pull() %in%
-    c(
-      "Overall",
-      "0 to 30 and Female",
-      "0 to 30 and Male",
-      "31 to 60 and Female",
-      "31 to 60 and Male",
-      "None and Female",
-      "None and Male"
-    )))
+                    dplyr::select("group_level") %>%
+                    dplyr::distinct() %>%
+                    dplyr::pull() %in%
+                    c(
+                      "Overall",
+                      "0 to 30 and Female",
+                      "0 to 30 and Male",
+                      "31 to 60 and Female",
+                      "31 to 60 and Male",
+                      "None and Female",
+                      "None and Male"
+                    )))
 
   CDMConnector::cdm_disconnect(cdm)
 })
@@ -150,20 +150,20 @@ test_that("table in db or local", {
 
   # in db
   expect_no_error(cdm$condition_occurrence %>%
-    addDemographics(cdm,
-      indexDate = "condition_start_date",
-      ageGroup = list(c(0, 30), c(31, 60))
-    ) %>%
-    summariseResult(strata = list("sex" = "sex")))
+                    addDemographics(cdm,
+                                    indexDate = "condition_start_date",
+                                    ageGroup = list(c(0, 30), c(31, 60))
+                    ) %>%
+                    summariseResult(strata = list("sex")))
 
   # already collected
   expect_no_error(cdm$condition_occurrence %>%
-    addDemographics(cdm,
-      indexDate = "condition_start_date",
-      ageGroup = list(c(0, 30), c(31, 60))
-    ) %>%
-    dplyr::collect() %>%
-    summariseResult(strata = list("sex" = "sex")))
+                    addDemographics(cdm,
+                                    indexDate = "condition_start_date",
+                                    ageGroup = list(c(0, 30), c(31, 60))
+                    ) %>%
+                    dplyr::collect() %>%
+                    summariseResult(strata = list("sex")))
 
   CDMConnector::cdm_disconnect(cdm)
 })
@@ -176,40 +176,40 @@ test_that("with and with overall groups and strata", {
 
   test_data <- cdm$condition_occurrence %>%
     addDemographics(cdm,
-      indexDate = "condition_start_date",
-      ageGroup = list(c(0, 30), c(31, 60))
+                    indexDate = "condition_start_date",
+                    ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect()
 
   expect_false(any(test_data %>%
-    summariseResult(
-      strata = list("sex" = "sex"),
-      includeOverallStrata = FALSE
-    ) %>%
-    dplyr::pull("strata_name") %in%
-    c("Overall")))
+                     summariseResult(
+                       strata = list("sex"),
+                       includeOverallStrata = FALSE
+                     ) %>%
+                     dplyr::pull("strata_name") %in%
+                     c("Overall")))
   expect_true(any(test_data %>%
-    summariseResult(
-      strata = list("sex" = "sex"),
-      includeOverallStrata = TRUE
-    ) %>%
-    dplyr::pull("strata_name") %in%
-    c("Overall")))
+                    summariseResult(
+                      strata = list("sex"),
+                      includeOverallStrata = TRUE
+                    ) %>%
+                    dplyr::pull("strata_name") %in%
+                    c("Overall")))
 
   expect_false(any(test_data %>%
-    summariseResult(
-      group = list("sex" = "sex"),
-      includeOverallGroup = FALSE
-    ) %>%
-    dplyr::pull("group_name") %in%
-    c("Overall")))
+                     summariseResult(
+                       group = list("sex"),
+                       includeOverallGroup = FALSE
+                     ) %>%
+                     dplyr::pull("group_name") %in%
+                     c("Overall")))
   expect_true(any(test_data %>%
-    summariseResult(
-      group = list("sex" = "sex"),
-      includeOverallGroup = TRUE
-    ) %>%
-    dplyr::pull("group_name") %in%
-    c("Overall")))
+                    summariseResult(
+                      group = list("sex"),
+                      includeOverallGroup = TRUE
+                    ) %>%
+                    dplyr::pull("group_name") %in%
+                    c("Overall")))
 
   CDMConnector::cdm_disconnect(cdm)
 })
@@ -290,7 +290,7 @@ test_that("test empty cohort", {
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = FALSE,
         includeOverallStrata = TRUE
       )
@@ -299,7 +299,7 @@ test_that("test empty cohort", {
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = TRUE,
         includeOverallStrata = TRUE
       )
@@ -309,7 +309,7 @@ test_that("test empty cohort", {
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = FALSE,
         includeOverallStrata = FALSE
       )
@@ -318,7 +318,7 @@ test_that("test empty cohort", {
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = TRUE,
         includeOverallStrata = FALSE
       )
