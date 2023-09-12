@@ -63,9 +63,6 @@ summariseResult <- function(table,
                               categoricalVariables = c("count", "%")
                             ),
                             minCellCount = 5) {
-  # collect table
-  table <- table %>% dplyr::collect()
-
   # initial checks
   checkTable(table)
 
@@ -155,6 +152,7 @@ summariseResult <- function(table,
 
 #' @noRd
 getNumericValues <- function(x, variablesNumeric) {
+  x <- x %>% dplyr::collect()
   functions <- variablesNumeric %>%
     dplyr::pull("estimate_type") %>%
     unique()
@@ -191,6 +189,7 @@ getNumericValues <- function(x, variablesNumeric) {
 
 #' @noRd
 getDateValues <- function(x, variablesDate) {
+  x <- x %>% dplyr::collect()
   functions <- variablesDate %>%
     dplyr::pull("estimate_type") %>%
     unique()
@@ -236,6 +235,7 @@ getDateValues <- function(x, variablesDate) {
 
 #' @noRd
 getBinaryValues <- function(x, variablesBinary) {
+  x <- x %>% dplyr::collect()
   result <- NULL
   variablesFunction <- variablesBinary %>%
     dplyr::filter(.data$estimate_type %in% c("count", "%")) %>%
@@ -291,6 +291,7 @@ getBinaryValues <- function(x, variablesBinary) {
 
 #' @noRd
 getCategoricalValues <- function(x, variablesCategorical) {
+  x <- x %>% dplyr::collect()
   variables <- variablesCategorical %>%
     dplyr::pull("variable") %>%
     unique()
