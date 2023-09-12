@@ -45,18 +45,3 @@ relevant information.
 This function is used to summarise the large scale characteristics of a
 cohort table
 }
-\examples{
-\donttest{
-library(PatientProfiles)
-
-cdm <- mockPatientProfiles()
-
-cdm$cohort1 \%>\%
-  summariseLargeScaleCharacteristics(
-    window = list(c(-180, -1), c(0, 0), c(1, 180)),
-    eventInWindow = "condition_occurrence",
-    episodeInWindow = "drug_exposure"
-  )
-}
-
-}
