@@ -110,8 +110,7 @@ summariseResult <- function(table,
     for (i in seq_along(group)) {
       table <- table %>%
         dplyr::mutate(
-          group_level = !!rlang::parse_expr(uniteStrata(group[[i]])),
-          group_name = !!paste0(group[[i]], collapse = " and ")
+          group_level = !!rlang::parse_expr(uniteStrata(group[[i]]))
         )
 
       workingGroupLevels <- table %>%
@@ -125,6 +124,9 @@ summariseResult <- function(table,
           summaryValuesStrata(
             strata, variables, functions,
             includeOverall = includeOverallStrata
+          ) %>%
+          dplyr::mutate(
+            group_name = !!paste0(group[[i]], collapse = " and ")
           ) %>%
           dplyr::select(
             "group_name", "group_level", "strata_name", "strata_level",
