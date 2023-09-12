@@ -110,7 +110,6 @@ summariseResult <- function(table,
     # add results for each group
     for (i in seq_along(group)) {
       workingGroup <- group[[i]]
-      workingGroupName <- names(group)[i]
       table <- table %>%
         dplyr::mutate(
           group_var = !!rlang::parse_expr(uniteStrata(group[[i]]))
@@ -123,15 +122,15 @@ summariseResult <- function(table,
       for (j in seq_along(workingGroupLevels)) {
         workingResult <- table %>%
           dplyr::filter(
-            .data[["group_var"]] == workingGroupLevels[[j]]
+            .data[["group_var"]] == !!workingGroupLevels[j]
           ) %>%
           summaryValuesStrata(
             strata, variables, functions,
             includeOverall = includeOverallStrata
           ) %>%
           dplyr::mutate(
-            group_name = workingGroupName,
-            group_level = workingGroupLevels[[j]]
+            group_name = !!paste0(group[[i]], collapse = " and "),
+            group_level = !!workingGroupLevels[j]
           ) %>%
           dplyr::select(dplyr::all_of(
             c(
@@ -523,9 +522,11 @@ summaryValuesStrata <- function(x,
       ) %>%
       dplyr::mutate(strata_name = "Overall")
   }
-  for (strat in names(strata)) {
+  for (k in seq_along(strata)) {
     xx <- x %>%
-      uniteStrata(strata[[strat]]) %>%
+      dplyr::mutate(strata_level = !!rlang::parse_expr(
+        uniteStrata(strata[[k]])
+      )) %>%
       dplyr::group_by(.data$strata_level)
     result <- result %>%
       dplyr::bind_rows(
@@ -533,7 +534,7 @@ summaryValuesStrata <- function(x,
           summaryValues(
             variables, functions
           ) %>%
-          dplyr::mutate(strata_name = .env$strat)
+          dplyr::mutate(strata_name = paste0(strata[[k]], collapse = " and "))
       )
   }
   result <- result %>%

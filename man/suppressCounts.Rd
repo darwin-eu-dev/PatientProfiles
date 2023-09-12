@@ -2,7 +2,7 @@
 % Please edit documentation in R/summariseResult.R
 \name{suppressCounts}
 \alias{suppressCounts}
-\title{Function to suppress counts}
+\title{Function to suppress counts in summarised objects}
 \usage{
 suppressCounts(result, minCellCount = 5)
 }
@@ -15,5 +15,5 @@ suppressCounts(result, minCellCount = 5)
 Table with suppressed counts
 }
 \description{
-Function to suppress counts
+Function to suppress counts in summarised objects
 }
