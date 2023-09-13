@@ -103,13 +103,13 @@ summariseResult <- function(table,
         by = "variable"
       )
 
-    # collect if necessary
-    # collectFlag <- requiredFunctions %>%
-    #   dplyr::filter(.data$variable_type != "binary") %>%
-    #   nrow() > 0
-    # if (collectFlag) {
-    #   table <- table %>% dplyr::collect()
-    # }
+ #   collect if necessary
+    collectFlag <- requiredFunctions %>%
+      dplyr::filter(!.data$variable_type %in% c("binary","numeric")) %>%
+      nrow() > 0
+    if (collectFlag) {
+      table <- table %>% dplyr::collect()
+    }
 
     if (isTRUE(includeOverallGroup) || length(group) == 0) {
       result <- table %>%
@@ -180,7 +180,7 @@ summariseResult <- function(table,
 
 #' @noRd
 getNumericValues <- function(x, variablesNumeric) {
- x <- x %>% dplyr::collect()
+
   functions <- variablesNumeric %>%
     dplyr::pull("estimate_type") %>%
     unique()
@@ -188,19 +188,20 @@ getNumericValues <- function(x, variablesNumeric) {
   for (k in seq_along(functions)) {
     functionName <- functions[k]
 
+
     variablesFunction <- variablesNumeric %>%
-      dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
+      dplyr::filter(.data$estimate_type == functionName) %>%
       dplyr::pull("variable")
     result <- result %>%
       dplyr::union_all(
         x %>%
           dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(variablesFunction),
-            .fns = getFunctions(functions[k]),
+            .fns = getFunctions(functionName),
             .names = "{.col}_{.fn}"
           )) %>%
           tidyr::pivot_longer(
-            dplyr::all_of(variablesFunction %>% paste(functions[k], sep="_")),
+            dplyr::all_of(variablesFunction %>% paste(functionName, sep="_")),
             names_to = "variable",
             values_to = "estimate",
             values_transform = list(estimate = as.character)
@@ -221,13 +222,14 @@ getNumericValues <- function(x, variablesNumeric) {
 
 #' @noRd
 getDateValues <- function(x, variablesDate) {
-  if ("data.frame" %in% class(x)) {
+
   x <- x %>% dplyr::collect()
   functions <- variablesDate %>%
     dplyr::pull("estimate_type") %>%
     unique()
   result <- NULL
   for (k in seq_along(functions)) {
+
     variablesFunction <- variablesDate %>%
       dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
       dplyr::pull("variable")
@@ -258,45 +260,7 @@ getDateValues <- function(x, variablesDate) {
       )
     result <- dplyr::union_all(result, resultK)
   }
-  } else {
-    functions <- variablesDate %>%
-      dplyr::pull("estimate_type") %>%
-      unique()
-    result <- NULL
-    for (k in seq_along(functions)) {
 
-      functionName <- functions[k]
-
-      variablesFunction <- variablesDate %>%
-        dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
-        dplyr::pull("variable")
-      result <- result %>% dplyr::union_all(
-        x %>%
-          dplyr::summarise(dplyr::across(
-            .cols = dplyr::all_of(variablesFunction),
-            .fns = getFunctions(functionName),
-            .names = "{.col}_{.fn}"
-          )) %>%
-          dplyr::mutate(dplyr::across(dplyr::ends_with(functionName), ~ as_date(.))) %>%
-          tidyr::pivot_longer(
-            dplyr::all_of(variablesFunction %>% paste(functionName, sep="_")),
-            names_to = "variable",
-            values_to = "estimate",
-            values_transform = list(estimate = as.character)
-          ) %>%
-          dplyr::mutate(
-            estimate_type = as.character(functionName), variable_type = "date"
-          ) %>%
-          dplyr::select(
-            "strata_level", "variable", "variable_type", "estimate_type",
-            "estimate"
-          ) %>%
-          dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
-        %>%
-          dplyr::collect()
-      )
-    }
-  }
   result <- result %>%
     dplyr::select(
       "strata_level", "variable", "variable_type", "estimate_type",
@@ -307,7 +271,6 @@ getDateValues <- function(x, variablesDate) {
 
 #' @noRd
 getBinaryValues <- function(x, variablesBinary) {
-  x <- x %>% dplyr::collect()
   result <- NULL
   variablesFunction <- variablesBinary %>%
     dplyr::filter(.data$estimate_type %in% c("count", "percentage")) %>%
@@ -318,17 +281,13 @@ getBinaryValues <- function(x, variablesBinary) {
       dplyr::union_all(
         x %>%
           dplyr::mutate(denominator = 1) %>%
-          dplyr::summarise(
-            dplyr::across(
-              .cols = dplyr::all_of(c(variablesFunction, "denominator")),
-              .fns = list("sum" = function(x) {
-                sum(x, na.rm = TRUE)
-              }),
-              .names = "{.col}"
-            ),
-            .groups = "drop"
-          ) %>%
-          dplyr::collect() %>%
+          dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(c(variablesFunction, "denominator")),
+            .fns = list("sum" = function(x) {
+              sum(x)
+            }),
+            .names = "{.col}"
+          )) %>%
           tidyr::pivot_longer(
             dplyr::all_of(variablesFunction),
             names_to = "variable",
@@ -337,9 +296,10 @@ getBinaryValues <- function(x, variablesBinary) {
           dplyr::mutate("percentage" = 100 * .data$count / .data$denominator) %>%
           dplyr::select(-"denominator") %>%
           tidyr::pivot_longer(c("count", "percentage"),
-            names_to = "estimate_type",
-            values_to = "estimate"
+                              names_to = "estimate_type",
+                              values_to = "estimate"
           ) %>%
+          dplyr::collect() %>%
           dplyr::inner_join(
             variablesBinary %>%
               dplyr::select("variable", "variable_type", "estimate_type"),
@@ -364,6 +324,10 @@ getBinaryValues <- function(x, variablesBinary) {
   }
   return(result)
 }
+
+
+
+
 
 #' @noRd
 getCategoricalValues <- function(x, variablesCategorical) {
