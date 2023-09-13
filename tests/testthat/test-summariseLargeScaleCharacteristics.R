@@ -94,7 +94,7 @@ test_that("basic functionality large scale characteristics", {
     r <- result %>%
       dplyr::filter(
         .data$concept == .env$conceptId[k] &
-          .data$window_name == .env$windowName[k] &
+          .data$variable_level == .env$windowName[k] &
           .data$group_level == .env$cohortName[k]
       )
     if (is.na(count[k])) {
@@ -123,7 +123,7 @@ test_that("basic functionality large scale characteristics", {
     r <- result %>%
       dplyr::filter(
         .data$concept == .env$conceptId[k] &
-          .data$window_name == .env$windowName[k] &
+          .data$variable_level == .env$windowName[k] &
           .data$group_level == .env$cohortName[k]
       )
     if (is.na(count[k])) {
@@ -165,7 +165,7 @@ test_that("basic functionality large scale characteristics", {
     r <- result %>%
       dplyr::filter(
         .data$concept == .env$conceptId[k] &
-          .data$window_name == .env$windowName[k] &
+          .data$variable_level == .env$windowName[k] &
           .data$group_level == .env$cohortName[k]
       )
     if (is.na(count[k])) {
