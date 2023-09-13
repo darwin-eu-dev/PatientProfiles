@@ -104,12 +104,12 @@ summariseResult <- function(table,
       )
 
     # collect if necessary
-    collectFlag <- requiredFunctions %>%
-      dplyr::filter(.data$variable_type != "binary") %>%
-      nrow() > 0
-    if (collectFlag) {
-      table <- table %>% dplyr::collect()
-    }
+    # collectFlag <- requiredFunctions %>%
+    #   dplyr::filter(.data$variable_type != "binary") %>%
+    #   nrow() > 0
+    # if (collectFlag) {
+    #   table <- table %>% dplyr::collect()
+    # }
 
     if (isTRUE(includeOverallGroup) || length(group) == 0) {
       result <- table %>%
@@ -134,7 +134,7 @@ summariseResult <- function(table,
 
     # add results for each group
     for (i in seq_along(group)) {
-      workingGroup <- group[[i]]
+
       table <- table %>%
         dplyr::mutate(
           group_var = !!rlang::parse_expr(uniteStrata(group[[i]]))
@@ -180,12 +180,14 @@ summariseResult <- function(table,
 
 #' @noRd
 getNumericValues <- function(x, variablesNumeric) {
-  x <- x %>% dplyr::collect()
+##  x <- x %>% dplyr::collect()
   functions <- variablesNumeric %>%
     dplyr::pull("estimate_type") %>%
     unique()
   result <- NULL
   for (k in seq_along(functions)) {
+    functionName <- functions[k]
+
     variablesFunction <- variablesNumeric %>%
       dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
       dplyr::pull("variable")
@@ -195,21 +197,23 @@ getNumericValues <- function(x, variablesNumeric) {
           dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(variablesFunction),
             .fns = getFunctions(functions[k]),
-            .names = "{.col}"
+            .names = "{.col}_{.fn}"
           )) %>%
           tidyr::pivot_longer(
-            dplyr::all_of(variablesFunction),
+            dplyr::all_of(variablesFunction %>% paste(functions[k], sep="_")),
             names_to = "variable",
             values_to = "estimate",
             values_transform = list(estimate = as.character)
           ) %>%
           dplyr::mutate(
-            estimate_type = .env$functions[k], variable_type = "numeric"
+            estimate_type = as.character(functionName), variable_type = "numeric"
           ) %>%
           dplyr::select(
             "strata_level", "variable", "variable_type", "estimate_type",
             "estimate"
-          )
+          ) %>%
+          dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
+            %>% dplyr::collect()
       )
   }
   return(result)
