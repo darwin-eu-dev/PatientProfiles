@@ -66,7 +66,6 @@ summariseResult <- function(table,
   # initial checks
   checkTable(table)
 
-
   # create the summary for overall
   result <- list()
   if (table %>%
@@ -83,11 +82,39 @@ summariseResult <- function(table,
     checkStrata(strata, table)
     checkVariablesFunctions(variables, functions, table)
     checkSuppressCellCount(minCellCount)
+
+    # get which are the estimates that are needed
+    requiredFunctions <- NULL
+    for (nam in names(variables)) {
+      requiredFunctions <- requiredFunctions %>%
+        dplyr::union_all(
+          tidyr::expand_grid(
+            variable = variables[[nam]],
+            estimate_type = functions[[nam]]
+          )
+        )
+    }
+    requiredFunctions <- requiredFunctions %>%
+      dplyr::left_join(
+        table %>%
+          dplyr::ungroup() %>%
+          variableTypes() %>%
+          dplyr::select(-"type_sum"),
+        by = "variable"
+      )
+
+    # collect if necessary
+    collectFlag <- requiredFunctions %>%
+      dplyr::filter(.data$variable_type != "binary") %>%
+      nrow() > 0
+    if (collectFlag) {
+      table <- table %>% dplyr::collect()
+    }
+
     if (isTRUE(includeOverallGroup) || length(group) == 0) {
       result <- table %>%
         summaryValuesStrata(
-          strata, variables, functions,
-          includeOverall = includeOverallStrata
+          strata, requiredFunctions, includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(
           group_name = "Overall",
@@ -122,8 +149,7 @@ summariseResult <- function(table,
             .data[["group_var"]] == !!workingGroupLevels[j]
           ) %>%
           summaryValuesStrata(
-            strata, variables, functions,
-            includeOverall = includeOverallStrata
+            strata, requiredFunctions, includeOverall = includeOverallStrata
           ) %>%
           dplyr::mutate(
             group_name = !!paste0(group[[i]], collapse = " and "),
@@ -388,24 +414,7 @@ getCategoricalValues <- function(x, variablesCategorical) {
 }
 
 #' @noRd
-summaryValues <- function(x, variables, functions) {
-  # get which are the estimates that are needed
-  requiredFunctions <- NULL
-  for (nam in names(variables)) {
-    requiredFunctions <- requiredFunctions %>%
-      dplyr::union_all(
-        tidyr::expand_grid(
-          variable = variables[[nam]],
-          estimate_type = functions[[nam]]
-        )
-      )
-  }
-  requiredFunctions <- requiredFunctions %>%
-    dplyr::left_join(
-      x %>% dplyr::ungroup() %>% variableTypes() %>% dplyr::select(-"type_sum"),
-      by = "variable"
-    )
-
+summaryValues <- function(x, requiredFunctions) {
   # results
   result <- x %>%
     dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
@@ -514,17 +523,14 @@ countSubjects <- function(x) {
 #' @noRd
 summaryValuesStrata <- function(x,
                                 strata,
-                                variables,
-                                functions,
+                                requiredFunctions,
                                 includeOverall) {
   result <- list()
   if (isTRUE(includeOverall) || length(strata) == 0) {
     result <- x %>%
       dplyr::mutate(strata_level = "Overall") %>%
       dplyr::group_by(.data$strata_level) %>%
-      summaryValues(
-        variables, functions
-      ) %>%
+      summaryValues(requiredFunctions) %>%
       dplyr::mutate(strata_name = "Overall")
   }
   for (k in seq_along(strata)) {
@@ -536,9 +542,7 @@ summaryValuesStrata <- function(x,
     result <- result %>%
       dplyr::bind_rows(
         xx %>%
-          summaryValues(
-            variables, functions
-          ) %>%
+          summaryValues(requiredFunctions) %>%
           dplyr::mutate(strata_name = paste0(strata[[k]], collapse = " and "))
       )
   }
