@@ -357,8 +357,9 @@ formatLscResult <- function(lsc, den, cdm, minimumFrequency, minCellCount) {
     dplyr::inner_join(addConceptName(lsc, cdm), by = c("concept", "analysis")) %>%
     dplyr::select(
       "result_type", "cdm_name", "group_name", "group_level", "strata_name",
-      "strata_level", "table_name", "type", "analysis", "window_name",
-      "concept", "concept_name", "estimate_type", "estimate"
+      "strata_level", "table_name", "type", "analysis", "concept",
+      "variable" = "concept_name", "variable_level" = "window_name",
+      "estimate_type", "estimate"
     )
 }
 addConceptName <- function(lsc, cdm) {
