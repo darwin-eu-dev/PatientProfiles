@@ -217,6 +217,7 @@ getNumericValues <- function(x, variablesNumeric) {
 
 #' @noRd
 getDateValues <- function(x, variablesDate) {
+  if ("data.frame" %in% class(x)) {
   x <- x %>% dplyr::collect()
   functions <- variablesDate %>%
     dplyr::pull("estimate_type") %>%
@@ -252,6 +253,45 @@ getDateValues <- function(x, variablesDate) {
         estimate_type = .env$functions[k], variable_type = "date"
       )
     result <- dplyr::union_all(result, resultK)
+  }
+  } else {
+    functions <- variablesDate %>%
+      dplyr::pull("estimate_type") %>%
+      unique()
+    result <- NULL
+    for (k in seq_along(functions)) {
+
+      functionName <- functions[k]
+
+      variablesFunction <- variablesDate %>%
+        dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
+        dplyr::pull("variable")
+      result <- result %>% dplyr::union_all(
+        x %>%
+          dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(variablesFunction),
+            .fns = getFunctions(functionName),
+            .names = "{.col}_{.fn}"
+          )) %>%
+          dplyr::mutate(dplyr::across(dplyr::ends_with(functionName), ~ as_date(.))) %>%
+          tidyr::pivot_longer(
+            dplyr::all_of(variablesFunction %>% paste(functionName, sep="_")),
+            names_to = "variable",
+            values_to = "estimate",
+            values_transform = list(estimate = as.character)
+          ) %>%
+          dplyr::mutate(
+            estimate_type = as.character(functionName), variable_type = "date"
+          ) %>%
+          dplyr::select(
+            "strata_level", "variable", "variable_type", "estimate_type",
+            "estimate"
+          ) %>%
+          dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
+        %>%
+          dplyr::collect()
+      )
+    }
   }
   result <- result %>%
     dplyr::select(
