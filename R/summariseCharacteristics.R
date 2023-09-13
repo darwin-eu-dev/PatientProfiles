@@ -184,13 +184,17 @@ summariseCharacteristics <- function(cohort,
   # summarise results
   results <- cohort %>%
     summariseResult(
-      group = list("Cohort name" = "cohort_name"), strata = strata,
+      group = list("cohort_name"), strata = strata,
       variables = variablesToSummary, functions = functionsToSummary,
       minCellCount = minCellCount
     ) %>%
     addCdmName(cdm = cdm) %>%
     dplyr::mutate(result_type = "Summary characteristics")
 
+
+  if (cohort %>%
+      dplyr::count() %>%
+      dplyr::pull() > 0) {
   # style intersects
   results <- tidyResults(results, variables, c(tableIntersect, cohortIntersect))
 
@@ -200,7 +204,7 @@ summariseCharacteristics <- function(cohort,
       "cdm_name", "result_type", "group_name", "group_level", "strata_name",
       "strata_level", "variable", "variable_level", "variable_type",
       "estimate_type", "estimate"
-    )
+    )}
 
   return(results)
 }
