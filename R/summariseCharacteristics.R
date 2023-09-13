@@ -184,7 +184,7 @@ summariseCharacteristics <- function(cohort,
   # summarise results
   results <- cohort %>%
     summariseResult(
-      group = list("Cohort name" = "cohort_name"), strata = strata,
+      group = list("cohort_name"), strata = strata,
       variables = variablesToSummary, functions = functionsToSummary,
       minCellCount = minCellCount
     ) %>%

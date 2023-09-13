@@ -418,11 +418,8 @@ checkTable <- function(table) {
 
 #' @noRd
 checkStrata <- function(strata, table) {
-  errorMessage <- "strata should be a unique named list that point to columns in table"
+  errorMessage <- "strata should be a list that point to columns in table"
   if (!is.list(strata)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (length(names(strata)) != length(strata)) {
     cli::cli_abort(errorMessage)
   }
   if (length(strata) > 0) {
