@@ -45,6 +45,25 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                minCellCount = 5,
                                                minimumFrequency = 0.005,
                                                cdm = attr(cohort, "cdm_reference")) {
+  # initial checks
+  checkX(cohort)
+  checkStrata(strata, cohort)
+  checkWindow(window)
+  tables <- c(
+    namesTable$table_name, paste("ATC", c("1st", "2nd", "3rd", "4th", "5th"))
+  )
+  checkmate::assertSubset(eventInWindow, tables)
+  checkmate::assertSubset(episodeInWindow, tables)
+  if (is.null(eventInWindow) & is.null(episodeInWindow)) {
+    cli::cli_abort("'eventInWindow' or 'episodeInWindow' must be provided")
+  }
+  checkmate::assertLogical(includeSource, any.missing = FALSE, len = 1)
+  checkmate::assertIntegerish(
+    minCellCount, lower = 0, any.missing = FALSE, len = 1
+  )
+  checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
+  checkCdm(cdm)
+
   # add names to windows
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
 
