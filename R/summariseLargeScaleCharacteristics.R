@@ -328,7 +328,6 @@ denominatorCounts <- function(cohort, x, strata, window, writeSchema) {
     dplyr::rename("start_diff" = "start_obs", "end_diff" = "end_obs") %>%
     dplyr::mutate(concept = "denominator")
   result <- getLscConcept(cohort, table, strata, window, writeSchema)
-
 }
 formatLscResult <- function(lsc, den, cdm, minimumFrequency, minCellCount) {
   lsc %>%

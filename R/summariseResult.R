@@ -114,7 +114,8 @@ summariseResult <- function(table,
     if (isTRUE(includeOverallGroup) || length(group) == 0) {
       result <- table %>%
         summaryValuesStrata(
-          strata, requiredFunctions, includeOverall = includeOverallStrata
+          strata, requiredFunctions,
+          includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(
           group_name = "Overall",
@@ -149,7 +150,8 @@ summariseResult <- function(table,
             .data[["group_var"]] == !!workingGroupLevels[j]
           ) %>%
           summaryValuesStrata(
-            strata, requiredFunctions, includeOverall = includeOverallStrata
+            strata, requiredFunctions,
+            includeOverall = includeOverallStrata
           ) %>%
           dplyr::mutate(
             group_name = !!paste0(group[[i]], collapse = " and "),
@@ -275,7 +277,9 @@ getBinaryValues <- function(x, variablesBinary) {
           dplyr::summarise(
             dplyr::across(
               .cols = dplyr::all_of(c(variablesFunction, "denominator")),
-              .fns = list("sum" = function(x) {sum(x, na.rm = TRUE)}),
+              .fns = list("sum" = function(x) {
+                sum(x, na.rm = TRUE)
+              }),
               .names = "{.col}"
             ),
             .groups = "drop"

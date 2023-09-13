@@ -24,7 +24,6 @@
 #'
 addAttributes <- function(newcohort,
                           oldcohort) {
-
   if (!isTRUE(inherits(newcohort, "tbl_dbi"))) {
     cli::cli_abort("{newcohort} is not a valid table")
   }
@@ -32,8 +31,8 @@ addAttributes <- function(newcohort,
     cli::cli_abort("{oldcohort} is not a valid table")
   }
 
-  for(at in names(attributes(oldcohort))) {
-    if(is.null(attr(newcohort, at))) {
+  for (at in names(attributes(oldcohort))) {
+    if (is.null(attr(newcohort, at))) {
       attr(newcohort, at) <- attr(oldcohort, at)
     }
   }

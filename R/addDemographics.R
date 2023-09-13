@@ -127,12 +127,15 @@ addDemographics <- function(x,
   checkNewName(priorObservationName, x)
   checkNewName(futureObservationName, x)
 
-  if (age == TRUE ||  priorObservation == TRUE || futureObservation == TRUE) {
-  checkmate::assert_true(
-    inherits(x %>%
-               utils::head(1) %>%
-               dplyr::pull(indexDate),
-             c("Date", "POSIXt")))
+  if (age == TRUE || priorObservation == TRUE || futureObservation == TRUE) {
+    checkmate::assert_true(
+      inherits(
+        x %>%
+          utils::head(1) %>%
+          dplyr::pull(indexDate),
+        c("Date", "POSIXt")
+      )
+    )
   }
 
   # Start code
@@ -555,10 +558,10 @@ addFutureObservation <- function(x,
 #' result <- cdm$cohort1 %>% addPriorObservation(cdm)
 #' }
 addPriorObservation <- function(x,
-                            cdm = attr(x, "cdm_reference"),
-                            indexDate = "cohort_start_date",
-                            priorObservationName = "prior_observation",
-                            tablePrefix = NULL) {
+                                cdm = attr(x, "cdm_reference"),
+                                indexDate = "cohort_start_date",
+                                priorObservationName = "prior_observation",
+                                tablePrefix = NULL) {
   x <- x %>%
     addDemographics(
       cdm = cdm,

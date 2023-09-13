@@ -1,6 +1,4 @@
-
 test_that("basic functionality large scale characteristics", {
-
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = c(8507, 8532),
@@ -61,7 +59,8 @@ test_that("basic functionality large scale characteristics", {
     condition_type_concept_id = 32020
   )
   cdm <- mockPatientProfiles(
-    connectionDetails, person = person, observation_period = observation_period,
+    connectionDetails,
+    person = person, observation_period = observation_period,
     cohort_interest = cohort_interest, drug_exposure = drug_exposure,
     condition_occurrence = condition_occurrence
   )
@@ -89,7 +88,7 @@ test_that("basic functionality large scale characteristics", {
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(NA, 2, NA, 1, NA, 2)
   den <- c(3, 3, 3, 3, 3, 3)
-  percentage <- as.character(100*count/den)
+  percentage <- as.character(100 * count / den)
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
@@ -118,7 +117,7 @@ test_that("basic functionality large scale characteristics", {
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(1, 2, 1, 1, 2, 2)
   den <- c(3, 3, 3, 3, 3, 3)
-  percentage <- as.character(100*count/den)
+  percentage <- as.character(100 * count / den)
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
@@ -160,7 +159,7 @@ test_that("basic functionality large scale characteristics", {
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(NA, 1, 1, NA, NA, NA)
   den <- c(1, 1, 1, 1, 1, 1)
-  percentage <- as.character(100*count/den)
+  percentage <- as.character(100 * count / den)
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(

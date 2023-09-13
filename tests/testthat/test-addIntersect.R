@@ -367,15 +367,15 @@ test_that("working examples with extra column", {
 
   result2 <- cdm$cohort1 %>%
     addIntersect(cdm, "cohort2", "measurment_result",
-                 nameStyle = "{value}_{window_name}"
+      nameStyle = "{value}_{window_name}"
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
   result3 <- cdm$cohort1 %>%
     addIntersect(cdm, "cohort2", c("flag", "measurment_result"),
-                 nameStyle = "{value}_{window_name}",
-                 window = list(c(-400, -200))
+      nameStyle = "{value}_{window_name}",
+      window = list(c(-400, -200))
     ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
@@ -690,9 +690,10 @@ test_that("working examples with tables, not cohorts", {
   )
 
   cdm <- mockPatientProfiles(connectionDetails,
-                             cohort1 = cohort1,
-                             condition_occurrence = conditionOccurrence,
-                             drug_exposure = drugExposure, patient_size = 2)
+    cohort1 = cohort1,
+    condition_occurrence = conditionOccurrence,
+    drug_exposure = drugExposure, patient_size = 2
+  )
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -844,14 +845,14 @@ test_that("test checkWindow function", {
   cdm <- mockPatientProfiles(connectionDetails)
 
   expect_error(cdm$cohort1 %>%
-                 addIntersect(
-                   cdm = cdm,
-                   value = "days",
-                   filterId = 1,
-                   filterVariable = "cohort_definition_id",
-                   tableName = "cohort2",
-                   window = c(150, -90)
-                 ))
+    addIntersect(
+      cdm = cdm,
+      value = "days",
+      filterId = 1,
+      filterVariable = "cohort_definition_id",
+      tableName = "cohort2",
+      window = c(150, -90)
+    ))
 })
 
 test_that("test if column exist, overwrite", {
@@ -920,28 +921,28 @@ test_that("test if column exist, overwrite", {
 
   expect_true(sum(colnames(result) == "flag_all_0_to_30") == 1)
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(flag_all_0_to_30) !=
-                    cohort1 %>%
-                    dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(flag_all_0_to_30), na.rm = TRUE))
+    dplyr::select(flag_all_0_to_30) !=
+    cohort1 %>%
+      dplyr::arrange(cohort_start_date, subject_id) %>%
+      dplyr::select(flag_all_0_to_30), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(count_all_0_to_30) !=
-                    cohort1 %>%
-                    dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(count_all_0_to_30), na.rm = TRUE))
+    dplyr::select(count_all_0_to_30) !=
+    cohort1 %>%
+      dplyr::arrange(cohort_start_date, subject_id) %>%
+      dplyr::select(count_all_0_to_30), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(days_all_0_to_30) !=
-                    cohort1 %>%
-                    dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(days_all_0_to_30), na.rm = TRUE))
+    dplyr::select(days_all_0_to_30) !=
+    cohort1 %>%
+      dplyr::arrange(cohort_start_date, subject_id) %>%
+      dplyr::select(days_all_0_to_30), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(date_all_0_to_30) !=
-                    cohort1 %>%
-                    dplyr::arrange(cohort_start_date, subject_id) %>%
-                    dplyr::select(date_all_0_to_30), na.rm = TRUE))
+    dplyr::select(date_all_0_to_30) !=
+    cohort1 %>%
+      dplyr::arrange(cohort_start_date, subject_id) %>%
+      dplyr::select(date_all_0_to_30), na.rm = TRUE))
 })
 
 test_that("overlapTable is empty, check return columns", {
@@ -1164,14 +1165,14 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
   expect_true(all(is.na(result$date_num1_m30_to_m1)))
 
   expect_error(cdm$cohort1 %>%
-                 addCohortIntersectDate(
-                   cdm = cdm,
-                   targetCohortTable = "cohort2",
-                   targetCohortId = c(1, 2, 3),
-                   window = list(c(0, Inf), c(-30, -1))
-                 ) %>%
-                 dplyr::arrange(subject_id, cohort_start_date) %>%
-                 dplyr::collect())
+    addCohortIntersectDate(
+      cdm = cdm,
+      targetCohortTable = "cohort2",
+      targetCohortId = c(1, 2, 3),
+      window = list(c(0, Inf), c(-30, -1))
+    ) %>%
+    dplyr::arrange(subject_id, cohort_start_date) %>%
+    dplyr::collect())
 
   result <- cdm$cohort1 %>%
     addCohortIntersectDate(
@@ -1206,5 +1207,4 @@ test_that("non snake columns not repeated in output", {
   expect_true("cohort_2_0_to_inf" %in% colnames(cdm$cohort2))
   expect_false("COHORT_1_0_to_inf" %in% colnames(cdm$cohort2))
   expect_false("COHORT_2_0_to_inf" %in% colnames(cdm$cohort2))
-
 })
