@@ -56,7 +56,8 @@ Imports:
     rlang,
     cli,
     pillar,
-    stringr
+    stringr,
+    gt
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 Language: en-US

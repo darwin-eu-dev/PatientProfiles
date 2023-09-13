@@ -173,8 +173,8 @@ summariseCharacteristics <- function(cohort,
   functionsToSummary <- list(
     date = c("median", "min", "q25", "q75", "max"),
     numeric = c("median", "min", "q25", "q75", "max"),
-    categorical = c("count", "%"),
-    binary = c("count", "%")
+    categorical = c("count", "percentage"),
+    binary = c("count", "percentage")
   )
   functionsToSummary <- functionsToSummary[names(variablesToSummary)]
 

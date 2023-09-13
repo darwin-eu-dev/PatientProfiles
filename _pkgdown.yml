@@ -35,6 +35,10 @@ reference:
   desc: Summarise large scale characteristics
 - contents:
   - '`summariseLargeScaleCharacteristics`'
+- subtitle: gt tables from summarisedResults objects
+  desc: Set of functions to create pretty gt tables from summarisedReuslts objects
+- contents:
+  - matches("gt")
 - subtitle: Suppress counts
   desc: Function to supress counts smaller than a certain number
 - contents:
