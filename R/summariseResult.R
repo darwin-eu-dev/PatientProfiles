@@ -246,13 +246,15 @@ getBinaryValues <- function(x, variablesBinary) {
       dplyr::union_all(
         x %>%
           dplyr::mutate(denominator = 1) %>%
-          dplyr::summarise(dplyr::across(
-            .cols = dplyr::all_of(c(variablesFunction, "denominator")),
-            .fns = list("sum" = function(x) {
-              sum(x)
-            }),
-            .names = "{.col}"
-          )) %>%
+          dplyr::summarise(
+            dplyr::across(
+              .cols = dplyr::all_of(c(variablesFunction, "denominator")),
+              .fns = list("sum" = function(x) {sum(x, na.rm = TRUE)}),
+              .names = "{.col}"
+            ),
+            .groups = "drop"
+          ) %>%
+          dplyr::collect() %>%
           tidyr::pivot_longer(
             dplyr::all_of(variablesFunction),
             names_to = "variable",
