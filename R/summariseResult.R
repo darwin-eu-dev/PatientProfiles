@@ -180,7 +180,7 @@ summariseResult <- function(table,
 
 #' @noRd
 getNumericValues <- function(x, variablesNumeric) {
-##  x <- x %>% dplyr::collect()
+ x <- x %>% dplyr::collect()
   functions <- variablesNumeric %>%
     dplyr::pull("estimate_type") %>%
     unique()
