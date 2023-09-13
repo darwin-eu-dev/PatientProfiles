@@ -10,8 +10,7 @@ addCategories(
   variable,
   categories,
   missingCategoryValue = "None",
-  overlap = FALSE,
-  tablePrefix = NULL
+  overlap = FALSE
 )
 }
 \arguments{
@@ -30,9 +29,6 @@ any named category. If NULL or NA, missing will values will be
 given.}
 
 \item{overlap}{TRUE if the categories given overlap}
-
-\item{tablePrefix}{The stem for the permanent tables that will be created. If
-NULL, temporary tables will be used throughout.}
 }
 \value{
 tibble with the categorical variable added.

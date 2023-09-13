@@ -1,4 +1,4 @@
-test_that("addDemographics, input length, type, tableprefix", {
+test_that("addDemographics, input length, type", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
   expect_error(addDemographics(2))
@@ -6,7 +6,6 @@ test_that("addDemographics, input length, type, tableprefix", {
   expect_error(addDemographics(cdm$cohort1, indexDate = "condition_start_date"))
   expect_error(addDemographics(cdm$cohort1, indexDate = c("cohort_start_date", "cohort_end_date")))
   expect_error(addDemographics(cdm$cohort1, ageGroup = 10))
-  expect_error(addDemographics(cdm$cohort1, tablePrefix = 1))
   expect_error(addDemographics(cdm$cohort1, age = FALSE, sex = FALSE, priorObservation = FALSE, futureObservation = FALSE))
 })
 
@@ -787,10 +786,6 @@ test_that("expected errors", {
   expect_error(addAge(cdm$cohort1, cdm,
     indexDate = "cohort_start_date",
     ageImposeDay = "TRUE"
-  ))
-  expect_error(addAge(cdm$cohort1, cdm,
-    indexDate = "cohort_start_date",
-    tablePrefix = 1
   ))
 
 

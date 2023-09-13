@@ -42,8 +42,6 @@
 #' calculated for this intersection
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
 #' @export
@@ -123,8 +121,7 @@ addCohortIntersect <- function(x,
                                count = TRUE,
                                date = TRUE,
                                days = TRUE,
-                               nameStyle = "{value}_{cohort_name}_{window_name}",
-                               tablePrefix = NULL) {
+                               nameStyle = "{value}_{cohort_name}_{window_name}") {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -150,8 +147,7 @@ addCohortIntersect <- function(x,
       window = window,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate,
-      tablePrefix = tablePrefix
+      censorDate = censorDate
     )
 
   return(x)
@@ -175,8 +171,6 @@ addCohortIntersect <- function(x,
 #' @param window window to consider events of
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
 #' @export
@@ -251,8 +245,7 @@ addCohortIntersectFlag <- function(x,
                                    targetStartDate = "cohort_start_date",
                                    targetEndDate = "cohort_end_date",
                                    window = list(c(0, Inf)),
-                                   nameStyle = "{cohort_name}_{window_name}",
-                                   tablePrefix = NULL) {
+                                   nameStyle = "{cohort_name}_{window_name}") {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -271,8 +264,7 @@ addCohortIntersectFlag <- function(x,
       targetEndDate = targetEndDate,
       window = window,
       nameStyle = nameStyle,
-      censorDate = censorDate,
-      tablePrefix = tablePrefix
+      censorDate = censorDate
     )
 
   return(x)
@@ -297,8 +289,6 @@ addCohortIntersectFlag <- function(x,
 #' @param window window to consider events of
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table with added columns with overlap information
 #' @export
@@ -376,8 +366,7 @@ addCohortIntersectCount <- function(x,
                                     targetStartDate = "cohort_start_date",
                                     targetEndDate = "cohort_end_date",
                                     window = list(c(0, Inf)),
-                                    nameStyle = "{cohort_name}_{window_name}",
-                                    tablePrefix = NULL) {
+                                    nameStyle = "{cohort_name}_{window_name}") {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -396,8 +385,7 @@ addCohortIntersectCount <- function(x,
       targetEndDate = targetEndDate,
       window = window,
       nameStyle = nameStyle,
-      censorDate = censorDate,
-      tablePrefix = tablePrefix
+      censorDate = censorDate
     )
 
   return(x)
@@ -425,8 +413,6 @@ addCohortIntersectCount <- function(x,
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return x along with additional columns for each cohort of interest.
 #' @export
@@ -504,8 +490,7 @@ addCohortIntersectDays <- function(x,
                                    targetDate = "cohort_start_date",
                                    order = "first",
                                    window = c(0, Inf),
-                                   nameStyle = "{cohort_name}_{window_name}",
-                                   tablePrefix = NULL) {
+                                   nameStyle = "{cohort_name}_{window_name}") {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -525,8 +510,7 @@ addCohortIntersectDays <- function(x,
       targetEndDate = NULL,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate,
-      tablePrefix = tablePrefix
+      censorDate = censorDate
     )
 
   return(x)
@@ -554,8 +538,6 @@ addCohortIntersectDays <- function(x,
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return x along with additional columns for each cohort of interest.
 #' @export
@@ -633,8 +615,7 @@ addCohortIntersectDate <- function(x,
                                    targetDate = "cohort_start_date",
                                    order = "first",
                                    window = c(0, Inf),
-                                   nameStyle = "{cohort_name}_{window_name}",
-                                   tablePrefix = NULL) {
+                                   nameStyle = "{cohort_name}_{window_name}") {
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -654,8 +635,7 @@ addCohortIntersectDate <- function(x,
       targetEndDate = NULL,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate,
-      tablePrefix = tablePrefix
+      censorDate = censorDate
     )
 
   return(x)

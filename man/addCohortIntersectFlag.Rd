@@ -14,8 +14,7 @@ addCohortIntersectFlag(
   targetStartDate = "cohort_start_date",
   targetEndDate = "cohort_end_date",
   window = list(c(0, Inf)),
-  nameStyle = "{cohort_name}_{window_name}",
-  tablePrefix = NULL
+  nameStyle = "{cohort_name}_{window_name}"
 )
 }
 \arguments{
@@ -44,9 +43,6 @@ or a column date of x}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 table with added columns with overlap information

@@ -15,8 +15,7 @@ addCohortIntersectDays(
   targetDate = "cohort_start_date",
   order = "first",
   window = c(0, Inf),
-  nameStyle = "{cohort_name}_{window_name}",
-  tablePrefix = NULL
+  nameStyle = "{cohort_name}_{window_name}"
 )
 }
 \arguments{
@@ -48,9 +47,6 @@ Records outside of this time period will be ignored.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 x along with additional columns for each cohort of interest.
