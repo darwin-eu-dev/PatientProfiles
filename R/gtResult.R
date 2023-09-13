@@ -26,7 +26,7 @@
 #'   tableIntersect = list(
 #'     "Visits" = list(
 #'       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
-#'      )
+#'     )
 #'   ),
 #'   cohortIntersect = list(
 #'     "Medications" = list(
@@ -36,7 +36,7 @@
 #'   minCellCount = 1
 #' ) %>%
 #'   gtCharacteristics()
-#'}
+#' }
 gtCharacteristics <- function(summarisedCharacteristics,
                               pivotWide = c("CDM Name", "Group", "Strata"),
                               format = c(
@@ -114,7 +114,7 @@ gtCharacteristics <- function(summarisedCharacteristics,
 #'     ),
 #'     decimals = c(count = 0),
 #'     keepNotFormatted = FALSE
-#'    )
+#'   )
 #' }
 #'
 gtResult <- function(summarisedResult,
@@ -132,11 +132,11 @@ gtResult <- function(summarisedResult,
                      decimalMark = ".",
                      bigMark = ",") {
   # initial checks
-  #checkInput(
+  # checkInput(
   #  summarisedResult = summarisedResult, long = long, wide = wide,
   #  format = format, keepNotFormatted = keepNotFormatted, decimals = decimals,
   #  decimalMark = decimalMark, bigMark = bigMark
-  #)
+  # )
 
   # format decimals
   summaryTable <- formatNumbers(summarisedResult, decimals, decimalMark, bigMark)
@@ -202,7 +202,8 @@ formatNumbers <- function(summaryResult, decimals, decimalMark, bigMark) {
 formatEst <- function(condition, x, dec, bm, dm) {
   xnew <- x
   xnew[condition] <- gsub(" ", "", base::format(
-    round(as.numeric(x[condition]), dec), nsmall = dec, big.mark = bm,
+    round(as.numeric(x[condition]), dec),
+    nsmall = dec, big.mark = bm,
     decimal.mark = dm
   ))
   return(xnew)
@@ -278,8 +279,12 @@ selectVariables <- function(summaryResult, wide, long) {
     x[substr(names(x), 1, 5) == "level" | substr(names(x), 1, 4) == "name"] %>%
       unname()
   }
-  wideColumns <- lapply(wide, extractNames) %>% unlist() %>% unname()
-  longColumns <- lapply(long, extractNames) %>% unlist() %>% unname()
+  wideColumns <- lapply(wide, extractNames) %>%
+    unlist() %>%
+    unname()
+  longColumns <- lapply(long, extractNames) %>%
+    unlist() %>%
+    unname()
   summaryResult <- summaryResult %>%
     dplyr::select(dplyr::all_of(c(longColumns, wideColumns, "estimate")))
   return(summaryResult)
@@ -341,9 +346,8 @@ pivotWide <- function(summaryTable, wide) {
           !!paste0("titlelevels_", k) := .data[[level]]
         )
     }
-
   }
-  columnLabels  <- columnLabels %>%
+  columnLabels <- columnLabels %>%
     dplyr::mutate(column_name = paste0("cohort", dplyr::row_number()))
   summaryTable <- summaryTable %>%
     dplyr::inner_join(

@@ -115,7 +115,8 @@ addCategories <- function(x,
   categoryTibble <- list()
   for (k in seq_along(categories)) {
     categoryTibble[[nam[k]]] <- checkCategory(categories[[k]],
-                                              overlap = overlap)
+      overlap = overlap
+    )
   }
 
   for (k in seq_along(categories)) {
@@ -135,8 +136,7 @@ addCategories <- function(x,
       }
       sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
         is.null(missingCategoryValue), NA, missingCategoryValue
-      ), "\""), sqlCategories
-      ) %>%
+      ), "\""), sqlCategories) %>%
         rlang::parse_exprs() %>%
         rlang::set_names(glue::glue(name))
       x <- x %>%
@@ -166,8 +166,8 @@ addCategories <- function(x,
       if (!is.null(missingCategoryValue) && !is.na(missingCategoryValue)) {
         x <- x %>%
           dplyr::mutate(!!name := dplyr::if_else(!is.na(.data[[name]]),
-                                                 .data[[name]],
-                                                 .env$missingCategoryValue
+            .data[[name]],
+            .env$missingCategoryValue
           ))
       }
     }

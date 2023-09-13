@@ -120,14 +120,20 @@ test_that("attributes for cohort table", {
   cdm <- mockPatientProfiles(connectionDetails, test_table1 = test_table1)
 
   expect_true(all(names(attributes(cdm$cohort1)) %in%
-    c("names", "class", "cdm_reference",
-      "cohort_set", "cohort_attrition", "cohort_count", "tbl_name")))
+    c(
+      "names", "class", "cdm_reference",
+      "cohort_set", "cohort_attrition", "cohort_count", "tbl_name"
+    )))
 
   expect_true(all(names(attributes(cdm$cohort2)) %in%
-    c("names", "class", "cdm_reference",
-      "cohort_set", "cohort_attrition", "cohort_count", "tbl_name")))
+    c(
+      "names", "class", "cdm_reference",
+      "cohort_set", "cohort_attrition", "cohort_count", "tbl_name"
+    )))
 
   expect_true(all(names(attributes(cdm$test_table1)) %in%
-    c("names", "class", "cdm_reference",
-      "cohort_set", "cohort_attrition", "cohort_count", "tbl_name")))
+    c(
+      "names", "class", "cdm_reference",
+      "cohort_set", "cohort_attrition", "cohort_count", "tbl_name"
+    )))
 })

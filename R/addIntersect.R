@@ -85,7 +85,7 @@ addIntersect <- function(x,
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
   checkVariableInX(censorDate, x, TRUE, "censorDate")
-  if(!is.null(censorDate)) {
+  if (!is.null(censorDate)) {
     checkCensorDate(x, censorDate)
   }
   if (!is.null(idName)) {
@@ -133,7 +133,8 @@ addIntersect <- function(x,
 
   result <- result %>%
     dplyr::select(
-      dplyr::all_of(personVariable), "index_date" = dplyr::all_of(indexDate),
+      dplyr::all_of(personVariable),
+      "index_date" = dplyr::all_of(indexDate),
       "censor_date"
     ) %>%
     dplyr::distinct() %>%
@@ -157,8 +158,8 @@ addIntersect <- function(x,
 
     resultW <- resultW %>%
       dplyr::mutate(indicator = dplyr::if_else(.data$overlap_start_date > .data$censor_date,
-                                               0, .data$indicator)
-      )
+        0, .data$indicator
+      ))
 
     if (!is.infinite(windowTbl$lower[i])) {
       resultW <- resultW %>%
@@ -351,7 +352,7 @@ addIntersect <- function(x,
       x <- x %>%
         dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
         dplyr::left_join(resultDateTimeOtherX,
-                         by = c(personVariable, indexDate)
+          by = c(personVariable, indexDate)
         )
     }
 
@@ -368,9 +369,9 @@ addIntersect <- function(x,
   colnames <- expand.grid(value = value, id_name = filterTbl$id_name, window_name = windowTbl$window_name) %>%
     dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
     dplyr::mutate(val = ifelse(value %in% c("flag", "count"), 0,
-                               ifelse(value %in% "date", as.Date(NA),
-                                      ifelse(value %in% "days", as.numeric(NA), as.character(NA))
-                               )
+      ifelse(value %in% "date", as.Date(NA),
+        ifelse(value %in% "days", as.numeric(NA), as.character(NA))
+      )
     )) %>%
     dplyr::select(.data$column, .data$val) %>%
     dplyr::mutate(column = checkSnakeCase(.data$column, verbose = F)) %>%

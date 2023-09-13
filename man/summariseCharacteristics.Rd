@@ -50,7 +50,7 @@ summariseCharacteristics(
   tableIntersect = list(
     "Visits" = list(
       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
-     )
+    )
   ),
   cohortIntersect = list(
     "Medications" = list(
