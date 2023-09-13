@@ -170,7 +170,7 @@ occurrences, a flag of presence, a certain date and/or the time difference</dd>
       </dl></div><div class="section level2">
       
       <h3 id="summarise-patient-characteristics">Summarise patient characteristics<a class="anchor" aria-label="anchor" href="#summarise-patient-characteristics"></a></h3>
-      <p class="section-desc"></p><p>Set of functions that allow the user to summarise patient characteristics</p>
+      <p class="section-desc"></p><p>Function that allow the user to summarise patient characteristics (characteristics must be added priot the use of the function)</p>
 
       
     </div><div id="" class="section level2">
@@ -180,27 +180,16 @@ occurrences, a flag of presence, a certain date and/or the time difference</dd>
 
       <dl><dt>
           
-          <code><a href="availableFunctions.html">availableFunctions()</a></code> 
-        </dt>
-        <dd>Show the available functions for the 4 classifications of data that are
-supported (numeric, date, binary and categorical)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="detectVariables.html">detectVariables()</a></code> 
-        </dt>
-        <dd>Detect automatically variables with a certain classification</dd>
-      </dl><dl><dt>
-          
           <code><a href="summariseResult.html">summariseResult()</a></code> 
         </dt>
         <dd>Summarise the characteristics of different individuals</dd>
-      </dl><dl><dt>
-          
-          <code><a href="variableTypes.html">variableTypes()</a></code> 
-        </dt>
-        <dd>Classify the variables between 5 types: "numeric", "categorical", "binary",
-"date", or NA.</dd>
-      </dl></div><div id="" class="section level2">
+      </dl></div><div class="section level2">
+      
+      <h3 id="summarise-patient-characteristic-standard-function">Summarise patient characteristic standard function<a class="anchor" aria-label="anchor" href="#summarise-patient-characteristic-standard-function"></a></h3>
+      <p class="section-desc"></p><p>Function that allow the user to summarise patient characteristics based on some paramters</p>
+
+      
+    </div><div id="" class="section level2">
       
       
       
@@ -210,6 +199,39 @@ supported (numeric, date, binary and categorical)</dd>
           <code><a href="summariseCharacteristics.html">summariseCharacteristics()</a></code> 
         </dt>
         <dd>Summarise characteristics of individuals</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="summarise-patient-large-scale-characteristics">Summarise patient large scale characteristics<a class="anchor" aria-label="anchor" href="#summarise-patient-large-scale-characteristics"></a></h3>
+      <p class="section-desc"></p><p>Summarise large scale characteristics</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics()</a></code> 
+        </dt>
+        <dd>This function is used to summarise the large scale characteristics of a
+cohort table</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="suppress-counts">Suppress counts<a class="anchor" aria-label="anchor" href="#suppress-counts"></a></h3>
+      <p class="section-desc"></p><p>Function to supress counts smaller than a certain number</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="suppressCounts.html">suppressCounts()</a></code> 
+        </dt>
+        <dd>Function to suppress counts in summarised objects</dd>
       </dl></div><div class="section level2">
       
       <h3 id="other-functions">Other functions<a class="anchor" aria-label="anchor" href="#other-functions"></a></h3>
@@ -243,6 +265,17 @@ supported (numeric, date, binary and categorical)</dd>
         <dd>Add cohort name for each cohort_definition_id</dd>
       </dl><dl><dt>
           
+          <code><a href="availableFunctions.html">availableFunctions()</a></code> 
+        </dt>
+        <dd>Show the available functions for the 4 classifications of data that are
+supported (numeric, date, binary and categorical)</dd>
+      </dl><dl><dt>
+          
+          <code><a href="detectVariables.html">detectVariables()</a></code> 
+        </dt>
+        <dd>Detect automatically variables with a certain classification</dd>
+      </dl><dl><dt>
+          
           <code><a href="getConceptName.html">getConceptName()</a></code> 
         </dt>
         <dd>Get the name of the concept_id column for a certain table in the cdm</dd>
@@ -251,6 +284,11 @@ supported (numeric, date, binary and categorical)</dd>
           <code><a href="getEndName.html">getEndName()</a></code> 
         </dt>
         <dd>Get the name of the end date column for a certain table in the cdm</dd>
+      </dl><dl><dt>
+          
+          <code><a href="getSourceConceptName.html">getSourceConceptName()</a></code> 
+        </dt>
+        <dd>Get the name of the source_concept_id column for a certain table in the cdm</dd>
       </dl><dl><dt>
           
           <code><a href="getStartName.html">getStartName()</a></code> 
@@ -263,9 +301,10 @@ supported (numeric, date, binary and categorical)</dd>
         <dd>It creates a mock database for testing PatientProfiles package</dd>
       </dl><dl><dt>
           
-          <code><a href="suppressCounts.html">suppressCounts()</a></code> 
+          <code><a href="variableTypes.html">variableTypes()</a></code> 
         </dt>
-        <dd>Function to suppress counts in summarised objects</dd>
+        <dd>Classify the variables between 5 types: "numeric", "categorical", "binary",
+"date", or NA.</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

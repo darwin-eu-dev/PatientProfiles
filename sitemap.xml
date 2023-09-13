@@ -97,6 +97,9 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getEndName.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getSourceConceptName.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getStartName.html</loc>
   </url>
   <url>
@@ -110,6 +113,9 @@
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCharacteristics.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseLargeScaleCharacteristics.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseResult.html</loc>
