@@ -18,18 +18,24 @@ suppressCount <- function(result,
                             "group_name", "group_level", "strata_name",
                             "strata_level"
                           ),
-                          groupCount = c("number subjects", "number records")) {
+                          groupCount = c("number subjects", "number records"),
+                          linkEstimates = list("count" = "percentage")) {
+  # initial checks
   checkmate::assertTibble(result)
+  checkSuppressCellCount(minCellCount)
   checkmate::assertCharacter(variable, any.missing = FALSE, min.len = 1)
   checkmate::assertCharacter(estimateType, any.missing = FALSE, null.ok = TRUE)
   checkmate::assertCharacter(group, any.missing = FALSE, null.ok = TRUE)
   checkmate::assertCharacter(groupCount, any.missing = FALSE, null.ok = TRUE)
   checkmate::assertTRUE(all(c(variable, group) %in% colnames(result)))
-  checkSuppressCellCount(minCellCount)
+  checkmate::assertList(linkEstimates, any.missing = FALSE)
+  checkmate::assertTRUE(length(linkEstimates) == length(names(linkEstimates)))
 
   # loop for different columns
   for (col in variable) {
     result <- result %>%
+      # as numeric
+      dplyr::mutate(!!col := suppressWarnings(as.numeric(.data[[col]]))) %>%
       # obscure groups flag
       obscureGroups(minCellCount, col, estimateType, group, groupCount) %>%
       # obscure records
@@ -47,7 +53,9 @@ filterData <- function(result, variable, estimateType, minCellCount) {
       dplyr::filter(.data$estimate_type %in% .env$estimateType)
   }
   result <- result %>%
-    dplyr::filter(.data[[variable]] < .env$minCellCount)
+    dplyr::filter(
+      .data[[variable]] < .env$minCellCount & .data[[variable]] > 0
+    )
   return(result)
 }
 obscureGroups <- function(result, minCellCount, variable, estimateType, group, groupCount) {
@@ -93,7 +101,7 @@ obscureColumn <- function(result, col, minCellCount, groupCount) {
         dplyr::if_else(
           .data$obscure_record == 1,
           .env$minCellCount,
-          as.character(NA)
+          as.character(.data[[col]])
         )
       )
     )
@@ -101,4 +109,4 @@ obscureColumn <- function(result, col, minCellCount, groupCount) {
   return(result)
 }
 
-# percentage and character/numeric behaviour
+# percentage
