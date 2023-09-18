@@ -6,7 +6,6 @@
 \usage{
 addConceptIntersect(
   x,
-  cdm = attr(x, "cdm_reference"),
   conceptSet,
   indexDate = "cohort_start_date",
   censorDate = NULL,
@@ -24,8 +23,7 @@ addConceptIntersect(
 \arguments{
 \item{x}{Table with individuals in the cdm}
 
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
+\item{conceptSet}{Concept set list.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
@@ -56,8 +54,6 @@ calculated for this intersection}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
-
-\item{ConceptSet}{Concept set list.}
 }
 \value{
 table with added columns with overlap information
