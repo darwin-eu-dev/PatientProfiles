@@ -88,6 +88,8 @@ addIntersect <- function(x,
     idName <- checkSnakeCase(idName)
   }
 
+  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+
   startTibble <- x
   originalColnames <- colnames(x)
 
@@ -134,7 +136,7 @@ addIntersect <- function(x,
     dplyr::distinct() %>%
     dplyr::inner_join(overlapTable, by = personVariable) %>%
     CDMConnector::computeQuery(
-      name = "add_intersect_individuals", temporary = FALSE,
+      name = paste0(tablePrefix, "individuals"), temporary = FALSE,
       schema = attr(cdm, "write_schema"), overwrite = TRUE
     )
 
@@ -166,7 +168,7 @@ addIntersect <- function(x,
     }
     resultW <- resultW %>%
       CDMConnector::computeQuery(
-        name = "add_intersect_window", temporary = FALSE,
+        name = paste0(tablePrefix, "window"), temporary = FALSE,
         schema = attr(cdm, "write_schema"), overwrite = TRUE
       )
 
@@ -188,13 +190,13 @@ addIntersect <- function(x,
       if (i == 1) {
         resultCountFlag <- resultCF %>%
           CDMConnector::computeQuery(
-            name = "add_intersect_win_count_flag", temporary = FALSE,
+            name = paste0(tablePrefix, "win_count_flag"), temporary = FALSE,
             schema = attr(cdm, "write_schema"), overwrite = TRUE
           )
       } else {
         resultCountFlag <- appendPermanent(
             x = resultCF,
-            name = "add_intersect_win_count_flag",
+            name = paste0(tablePrefix, "win_count_flag"),
             schema = attr(cdm, "write_schema")
           )
       }
@@ -266,13 +268,13 @@ addIntersect <- function(x,
       if (i == 1) {
         resultDateTimeOther <- resultDTO %>%
           CDMConnector::computeQuery(
-            name = "add_intersect_win_date_days", temporary = FALSE,
+            name = paste0(tablePrefix, "win_date_days"), temporary = FALSE,
             schema = attr(cdm, "write_schema"), overwrite = TRUE
           )
       } else {
         resultDateTimeOther <- appendPermanent(
           x = resultDTO,
-          name = "add_intersect_win_date_days",
+          name = paste0(tablePrefix, "win_date_days"),
           schema = attr(cdm, "write_schema")
         )
       }
@@ -313,7 +315,7 @@ addIntersect <- function(x,
       ))
     x <- x %>%
       CDMConnector::computeQuery(
-        name = "add_intersect_count_flag", temporary = FALSE,
+        name = paste0(tablePrefix, "count_flag"), temporary = FALSE,
         schema = attr(cdm, "write_schema"), overwrite = TRUE
       )
   }
@@ -353,7 +355,7 @@ addIntersect <- function(x,
 
     x <- x %>%
       CDMConnector::computeQuery(
-        name = "add_intersect_date_days", temporary = FALSE,
+        name = paste0(tablePrefix, "date_days"), temporary = FALSE,
         schema = attr(cdm, "write_schema"), overwrite = TRUE
       )
 
@@ -384,7 +386,7 @@ addIntersect <- function(x,
 
   x <- CDMConnector::computeQuery(x)
 
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with("add_intersect_"))
+  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   # put back the initial attributes to the output tibble
   x <- x %>% addAttributes(startTibble)
