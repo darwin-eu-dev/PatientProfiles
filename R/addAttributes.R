@@ -88,11 +88,9 @@ addCohortName <- function(cohort) {
 #' }
 #'
 addCdmName <- function(table, cdm = NULL) {
-  if (is.null(cdm)) {
-    cdm <- attr(table, "cdm_reference")
-  }
   table %>%
-    dplyr::mutate(
-      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA))
-    )
+    dplyr::mutate(cdm_name = dplyr::coalesce(
+      CDMConnector::cdmName(cdm %||% attr(table, "cdm_reference")),
+      as.character(NA)
+    ))
 }

@@ -111,10 +111,7 @@ addIntersect <- function(x,
       !!personVariable := dplyr::all_of(personVariableTable),
       "id" = dplyr::all_of(filterVariable),
       "overlap_start_date" = dplyr::all_of(targetStartDate),
-      "overlap_end_date" = !!ifelse(
-        !is.null(targetEndDate), dplyr::all_of(targetEndDate),
-        dplyr::all_of(targetStartDate)
-      ),
+      "overlap_end_date" = dplyr::all_of(targetEndDate %||% targetStartDate),
       dplyr::all_of(extraValue)
     )
 
@@ -127,9 +124,7 @@ addIntersect <- function(x,
     dplyr::mutate("censor_date" = !!CDMConnector::dateadd(
       dplyr::all_of(indexDate), "days_to_add"
     )) %>%
-    dplyr::mutate("censor_date" = .data[[
-      !!ifelse(is.null(censorDate), "censor_date", censorDate)
-    ]])
+    dplyr::mutate("censor_date" = .data[[censorDate %||% "censor_date"]])
 
   result <- result %>%
     dplyr::select(
