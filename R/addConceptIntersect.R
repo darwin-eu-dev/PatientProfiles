@@ -17,9 +17,7 @@
 #' It creates columns to indicate overlap information between two tables
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
-#' @param ConceptSet Concept set list.
+#' @param conceptSet Concept set list.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a date column of x
@@ -60,7 +58,6 @@
 #'
 
 addConceptIntersect <- function(x,
-                                cdm = attr(x, "cdm_reference"),
                                 conceptSet,
                                 indexDate = "cohort_start_date",
                                 censorDate = NULL,
@@ -73,7 +70,7 @@ addConceptIntersect <- function(x,
                                 date = TRUE,
                                 days = TRUE,
                                 nameStyle = "{value}_{concept_name}_{window_name}") {
-
+  cdm = attr(x, "cdm_reference")
   nameCohort <- "add_intersect_concept_set"
   individuals <- x %>%
     dplyr::select(dplyr::any_of(c("subject_id", "person_id"))) %>%
