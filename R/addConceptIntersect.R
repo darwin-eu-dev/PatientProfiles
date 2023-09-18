@@ -51,11 +51,11 @@
 #' library(CodelistGenerator)
 #'
 #' cdm <- mockPatientProfiles()
-#' result <- cdm$cohort1 %>%
-#'   addConceptIntersect(
-#'     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#'  ) %>%
-#'   dplyr::collect()
+#' #result <- cdm$cohort1 %>%
+#' #   addConceptIntersect(
+#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
+#' #  ) %>%
+#' #   dplyr::collect()
 #' }
 #'
 
