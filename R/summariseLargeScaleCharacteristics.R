@@ -171,16 +171,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
     formatLscResult(den, cdm, minimumFrequency, minCellCount)
 
   # eliminate permanent tables
-  tablesToEliminate <- c(
-    "lsc_individuals", "lsc_table", "lsc_table_window",
-    "lsc_table_window_cohort", "lsc_table_group"
-  )
-  tablesToEliminate <- tablesToEliminate[
-    tablesToEliminate %in% CDMConnector::listTables(
-      con = attr(cdm, "dbcon"), schema = attr(cdm, "write_schema")
-    )
-  ]
-  CDMConnector::dropTable(cdm = cdm, name = tablesToEliminate)
+  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with("lsc_"))
 
   # return
   return(results)
