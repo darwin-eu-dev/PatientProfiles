@@ -283,7 +283,7 @@ test_that("test empty cohort", {
 
 
   cdm <- mockPatientProfiles(
-    connectionDetails,
+   connectionDetails,
     dus_cohort = dus_cohort
   )
 
@@ -323,4 +323,28 @@ test_that("test empty cohort", {
         includeOverallStrata = FALSE
       )
   )
+})
+
+test_that("test summary table naming", {
+
+
+  cdm <- PatientProfiles::mockPatientProfiles(
+    connectionDetails
+  )
+
+  dat <-
+    cdm$cohort1 %>% addDemographics() %>%
+    dplyr::mutate(age_age = age,
+                  age_age_age = age,
+                 age_age_age_age = age) %>%
+    summariseResult()
+
+  expect_true(all(
+    c("age_age", "age", "age_age_age", "age_age_age_age") %in% dat$variable
+  ))
+
+
+
+
+
 })
