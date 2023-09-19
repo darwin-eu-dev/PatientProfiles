@@ -103,7 +103,7 @@ summariseResult <- function(table,
         by = "variable"
       )
 
- #   collect if necessary
+    #collect if necessary
     collectFlag <- requiredFunctions %>%
       dplyr::filter(!.data$variable_type %in% c("binary","numeric")) %>%
       nrow() > 0
@@ -181,6 +181,8 @@ summariseResult <- function(table,
 #' @noRd
 getNumericValues <- function(x, variablesNumeric) {
 
+
+
   functions <- variablesNumeric %>%
     dplyr::pull("estimate_type") %>%
     unique()
@@ -212,9 +214,9 @@ getNumericValues <- function(x, variablesNumeric) {
           dplyr::select(
             "strata_level", "variable", "variable_type", "estimate_type",
             "estimate"
-          ) %>%
+          ) %>% dplyr::collect() %>%
           dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
-            %>% dplyr::collect()
+
       )
   }
   return(result)
