@@ -49,8 +49,13 @@ summariseLargeScaleCharacteristics <- function(cohort,
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
 
   writeSchema <- attr(cdm, "write_schema")
-
   tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  if ("prefix" %in% names(writeSchema)) {
+    writeSchema["prefix"] <- paste0(writeSchema["prefix"], tablePrefix)
+  } else {
+    writeSchema["prefix"] <- tablePrefix
+  }
+
 
   # initial table
   x <- cohort %>%
@@ -65,8 +70,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::mutate(obs_id = dplyr::row_number()) %>%
     dbplyr::window_order() %>%
     CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "individuals"), temporary = FALSE,
-      schema = writeSchema, overwrite = TRUE
+      name = "individuals", temporary = FALSE, schema = writeSchema,
+      overwrite = TRUE
     )
 
   # get analysis table
@@ -144,7 +149,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
     table <- table %>%
       dplyr::select(-"start_obs", -"end_obs") %>%
       CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "table"), temporary = FALSE, schema = writeSchema,
+        name = "table", temporary = FALSE, schema = writeSchema,
         overwrite = TRUE
       )
     for (k in seq_len(nrow(analysesTable))) {
@@ -224,8 +229,8 @@ getCodesGroup <- function(table, analysis, writeSchema, cdm) {
     dplyr::select(-"concept") %>%
     dplyr::rename("concept" = "concept_new") %>%
     CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "table_group"), temporary = FALSE,
-      schema = writeSchema, overwrite = TRUE
+      name = "table_group", temporary = FALSE, schema = writeSchema,
+      overwrite = TRUE
     )
   return(table)
 }
@@ -257,8 +262,8 @@ getLscConcept <- function(cohort, table, strata, window, writeSchema) {
       dplyr::select("subject_id", "cohort_start_date", "obs_id", "concept") %>%
       dplyr::distinct() %>%
       CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "table_window"), temporary = FALSE,
-        schema = writeSchema, overwrite = TRUE
+        name = "table_window", temporary = FALSE, schema = writeSchema,
+        overwrite = TRUE
       )
     result <- result %>%
       dplyr::bind_rows(
@@ -285,8 +290,8 @@ summariseConcept <- function(cohort, tableWindow, strata, writeSchema) {
         "obs_id", "concept", dplyr::all_of(unique(unlist(strata)))
       ) %>%
       CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "table_window_cohort"), temporary = FALSE,
-        schema = writeSchema, overwrite = TRUE
+        name = "table_window_cohort", temporary = FALSE, schema = writeSchema,
+        overwrite = TRUE
       )
     result <- result %>%
       dplyr::bind_rows(
