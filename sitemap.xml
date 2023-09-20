@@ -64,6 +64,21 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortName.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersect.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectCount.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectDate.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectDays.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectFlag.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirth.html</loc>
   </url>
   <url>
