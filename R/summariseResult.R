@@ -653,14 +653,20 @@ correctMissing <- function(result) {
       dplyr::mutate(
         estimate = 100*as.numeric(.data$estimate)/as.numeric(.data$denominator),
         estimate_type = "percentage",
-        variable_level = "misisng",
+        variable_level = "missing",
         order_id = .data$order_id + 0.5
       ) %>%
       dplyr::select(-"denominator")
     result <- result %>%
       dplyr::filter(.data$estimate_type != "missing") %>%
-      dplyr::union_all(xCount) %>%
-      dplyr::union_all(xPercentage) %>%
+      dplyr::union_all(
+        xCount %>%
+          dplyr::mutate(estimate = as.character(.data$estimate))
+      ) %>%
+      dplyr::union_all(
+        xPercentage %>%
+          dplyr::mutate(estimate = as.character(.data$estimate))
+      ) %>%
       dplyr::arrange(.data$order_id) %>%
       dplyr::select(-"order_id")
   }
