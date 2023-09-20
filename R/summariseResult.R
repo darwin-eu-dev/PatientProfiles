@@ -441,8 +441,7 @@ summaryValues <- function(x, requiredFunctions) {
       getNumericValues(
         x, variablesNumeric
       ) %>%
-        dplyr::mutate(estimate = as.character(.data$estimate)) %>%
-        dplyr::arrange(.data$variable)
+        dplyr::mutate(estimate = as.character(.data$estimate))
     )
   }
 
@@ -454,8 +453,7 @@ summaryValues <- function(x, requiredFunctions) {
       result,
       getDateValues(
         x, variablesDate
-      ) %>%
-        dplyr::arrange(.data$variable)
+      )
     )
   }
 
@@ -468,8 +466,7 @@ summaryValues <- function(x, requiredFunctions) {
       getBinaryValues(
         x, variablesBinary
       ) %>%
-        dplyr::mutate(estimate = as.character(.data$estimate)) %>%
-        dplyr::arrange(.data$variable)
+        dplyr::mutate(estimate = as.character(.data$estimate))
     )
   }
 
@@ -485,10 +482,12 @@ summaryValues <- function(x, requiredFunctions) {
       getCategoricalValues(
         x, variablesCategorical
       ) %>%
-        dplyr::mutate(estimate = as.character(.data$estimate)) %>%
-        dplyr::arrange(.data$variable)
+        dplyr::mutate(estimate = as.character(.data$estimate))
     )
   }
+
+  # arrange data
+  result <- arrangeSummary(result, colnames(x), requiredFunctions)
 
   # add percentage to missing values
   result <- correctMissing(result)
@@ -670,5 +669,25 @@ correctMissing <- function(result) {
       dplyr::arrange(.data$order_id) %>%
       dplyr::select(-"order_id")
   }
+  return(result)
+}
+
+arrangeSummary <- function(result, columnNames, functions) {
+  x <- unique(result$variable)
+  orderVariables <- c(x[!(x %in% columnNames)], x[x %in% columnNames])
+  result <- result %>%
+    dplyr::left_join(
+      dplyr::tibble(variable = orderVariables) %>%
+        dplyr::mutate(id1 = dplyr::row_number()),
+      by = "variable"
+    ) %>%
+    dplyr::left_join(
+      functions %>%
+        dplyr::select("estimate_type") %>%
+        dplyr::mutate(id3 = dplyr::row_number()),
+      by = "estimate_type"
+    ) %>%
+    dplyr::arrange(.data$id1, .data$variable_level, .data$id3) %>%
+    dplyr::select(-c("id1", "id3"))
   return(result)
 }
