@@ -9,8 +9,7 @@ addPriorObservation(
   x,
   cdm = attr(x, "cdm_reference"),
   indexDate = "cohort_start_date",
-  priorObservationName = "prior_observation",
-  tablePrefix = NULL
+  priorObservationName = "prior_observation"
 )
 }
 \arguments{
@@ -23,9 +22,6 @@ cdm reference.}
 observation.}
 
 \item{priorObservationName}{name of the new column to be added}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 cohort table with added column containing prior observation of the

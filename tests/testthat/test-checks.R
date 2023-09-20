@@ -10,7 +10,7 @@ test_that("test checkX: subject_id and person_id", {
       c("2020-01-01", "2020-01-15")
     )
   )
-  expect_error(cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1))
+  expect_error(cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort3))
 })
 
 
