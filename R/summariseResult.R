@@ -180,17 +180,12 @@ summariseResult <- function(table,
 
 #' @noRd
 getNumericValues <- function(x, variablesNumeric) {
-
-
-
   functions <- variablesNumeric %>%
     dplyr::pull("estimate_type") %>%
     unique()
   result <- NULL
   for (k in seq_along(functions)) {
     functionName <- functions[k]
-
-
     variablesFunction <- variablesNumeric %>%
       dplyr::filter(.data$estimate_type == functionName) %>%
       dplyr::pull("variable")
@@ -231,7 +226,6 @@ getDateValues <- function(x, variablesDate) {
     unique()
   result <- NULL
   for (k in seq_along(functions)) {
-
     variablesFunction <- variablesDate %>%
       dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
       dplyr::pull("variable")
@@ -326,10 +320,6 @@ getBinaryValues <- function(x, variablesBinary) {
   }
   return(result)
 }
-
-
-
-
 
 #' @noRd
 getCategoricalValues <- function(x, variablesCategorical) {
@@ -500,6 +490,9 @@ summaryValues <- function(x, requiredFunctions) {
     )
   }
 
+  # add percentage to missing values
+  result <- correctMissing(result)
+
   return(result)
 }
 
@@ -640,4 +633,42 @@ uniteStrata <- function(columns,
     ")"
   )
   return(pasteStr)
+}
+
+correctMissing <- function(result) {
+  if ("missing" %in% result$estimate_type) {
+    result <- result %>%
+      dplyr::mutate(order_id = dplyr::row_number())
+    x <- result %>%
+      dplyr::filter(.data$estimate_type == "missing")
+    xCount <- x %>%
+      dplyr::mutate(estimate_type = "count", variable_level = "missing")
+    xPercentage <- x %>%
+      dplyr::left_join(
+        result %>%
+          dplyr::filter(.data$variable == "number records") %>%
+          dplyr::select("strata_level", "denominator" = "estimate"),
+        by = "strata_level"
+      ) %>%
+      dplyr::mutate(
+        estimate = 100*as.numeric(.data$estimate)/as.numeric(.data$denominator),
+        estimate_type = "percentage",
+        variable_level = "missing",
+        order_id = .data$order_id + 0.5
+      ) %>%
+      dplyr::select(-"denominator")
+    result <- result %>%
+      dplyr::filter(.data$estimate_type != "missing") %>%
+      dplyr::union_all(
+        xCount %>%
+          dplyr::mutate(estimate = as.character(.data$estimate))
+      ) %>%
+      dplyr::union_all(
+        xPercentage %>%
+          dplyr::mutate(estimate = as.character(.data$estimate))
+      ) %>%
+      dplyr::arrange(.data$order_id) %>%
+      dplyr::select(-"order_id")
+  }
+  return(result)
 }

@@ -52,7 +52,7 @@ test_that("test all functions", {
     categorical = c("sex")
   )
   functions <- list(
-    numeric = c("median", "q25", "q75"),
+    numeric = c("median", "q25", "q75", "missing"),
     categorical = c("count", "percentage")
   )
   expect_no_error(
@@ -347,4 +347,73 @@ test_that("test summary table naming", {
 
 
 
+})
+
+test_that("misisng counts", {
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    age = c(NA, 40, NA, 7),
+    sex = c("Male", "Male", "Female", "Male"),
+    prior_history = c(365, 25, 14, 48),
+    number_visits = c(NA, 1, 0, 0)
+  )
+  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
+  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
+  cohort <- dplyr::tbl(connectionDetails$con, name)
+  variables <- list(
+    numeric = c(
+      "age", "number_visits", "prior_history"
+    ),
+    categorical = c("sex")
+  )
+  functions <- list(
+    numeric = c("median", "q25", "q75", "missing"),
+    categorical = c("count", "percentage")
+  )
+  expect_no_error(
+    result <- summariseResult(
+      cohort, strata = list("sex"), variables = variables,
+      functions = functions, minCellCount = 1
+    )
+  )
+  expected <- dplyr::tribble(
+    ~strata, ~variable, ~count, ~percentage,
+    "Overall", "age", 2, 50,
+    "Overall", "number_visits", 1, 25,
+    "Overall", "prior_history", 0, 0,
+    "Male", "age", 1, 100/3,
+    "Male", "number_visits", 1, 100/3,
+    "Male", "prior_history", 0, 0,
+    "Female", "age", 1, 100,
+    "Female", "number_visits", 0, 0,
+    "Female", "prior_history", 0, 0,
+  ) %>%
+    dplyr::mutate(
+      count = as.character(.data$count),
+      percentage = as.character(.data$percentage)
+    )
+  for (k in seq_len(nrow(expected))) {
+    x <- result %>%
+      dplyr::filter(
+        .data$strata_level == .env$expected$strata[k],
+        .data$variable == .env$expected$variable[k],
+        .data$variable_level == "missing"
+      )
+    xcount <- x$estimate[x$estimate_type == "count"]
+    xpercentage <- x$estimate[x$estimate_type == "percentage"]
+    expect_true(xcount == expected$count[k])
+    expect_true(xpercentage == expected$percentage[k])
+  }
+  # female age is all na
+  expect_true(
+    result %>%
+      dplyr::filter(
+        .data$variable == "age", .data$strata_level == "Female",
+        is.na(.data$variable_level)
+      ) %>%
+      dplyr::pull("estimate") %>%
+      is.na() %>%
+      all()
+  )
 })
