@@ -25,6 +25,8 @@ numeric,max,maximum of the variable of interest.,numeric
 numeric,sum,sum of all the values for the variable of interest.,numeric
 numeric,iqr,distance between q75 and q25,numeric
 numeric,range,diatance between maximum and minimum,numeric
+numeric,missing_count,number of missing values,numeric
+numeric,missing_percentage,percentage of missing values,numeric
 date,mean,mean of the date of interest.,date
 date,sd,standard deviation of the date of interest. ,numeric
 date,median,median of the date of interest.,date
@@ -50,6 +52,8 @@ date,min,minimum of the date of interest.,date
 date,max,maximum of the date of interest.,date
 date,iqr,days between q75 and q25,numeric
 date,range,days between maximum and minimum,numeric
+date,missing_count,number of missing values,numeric
+date,missing_percentage,percentage of missing values,numeric
 categorical,count,number of times that each category is observed.,numeric
 categorical,percentage,percentage of individuals with that category,numeric
 categorical,distinct,number of distinct categories,numeric
@@ -106,3 +110,5 @@ binary,max,maximum of the variable of interest.,numeric
 binary,sum,sum of all the values for the variable of interest.,numeric
 binary,iqr,distance between q75 and q25,numeric
 binary,range,diatance between maximum and minimum,numeric
+binary,missing_count,number of missing values,numeric
+binary,missing_percentage,percentage of missing values,numeric
