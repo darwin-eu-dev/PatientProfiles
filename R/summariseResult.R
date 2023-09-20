@@ -684,6 +684,7 @@ arrangeSummary <- function(result, columnNames, functions) {
     dplyr::left_join(
       functions %>%
         dplyr::select("estimate_type") %>%
+        dplyr::distinct() %>%
         dplyr::mutate(id3 = dplyr::row_number()),
       by = "estimate_type"
     ) %>%
