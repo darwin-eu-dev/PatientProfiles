@@ -17,8 +17,6 @@
 #' Categorize a numeric variable
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
@@ -68,7 +66,6 @@
 #'   )
 #' }
 addCategories <- function(x,
-                          cdm = attr(x, "cdm_reference"),
                           variable,
                           categories,
                           missingCategoryValue = "None",
@@ -123,10 +120,32 @@ addCategories <- function(x,
         lower <- categoryTibbleK$lower_bound[i]
         upper <- categoryTibbleK$upper_bound[i]
         category <- categoryTibbleK$category_label[i]
-        newSql <- paste0(
-          "dplyr::if_else(.data[[variable]] >= ", lower,
-          " & .data[[variable]] <= ", upper, ", \"", category, "\" , #ELSE#)"
-        )
+        if (is.infinite(lower)) {
+          if (is.infinite(upper)) {
+            sqlCategories <- gsub(
+              "#ELSE#", paste0("\"", category, "\""), sqlCategories
+            )
+            break
+          } else {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] <= ", upper, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          }
+        } else {
+          if (is.infinite(upper)) {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] >= ", lower, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          } else {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] >= ", lower,
+              " & .data[[variable]] <= ", upper, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          }
+        }
         sqlCategories <- gsub("#ELSE#", newSql, sqlCategories)
       }
       sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
