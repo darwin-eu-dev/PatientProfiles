@@ -137,9 +137,10 @@ summariseResult <- function(table,
           group_var = !!rlang::parse_expr(uniteStrata(group[[i]]))
         )
       workingGroupLevels <- table %>%
-        dplyr::select(dplyr::all_of("group_var")) %>%
+        dplyr::select("group_var") %>%
         dplyr::distinct() %>%
-        dplyr::pull()
+        dplyr::pull() %>%
+        sort()
 
       for (j in seq_along(workingGroupLevels)) {
         workingResult <- table %>%
@@ -667,7 +668,7 @@ correctMissing <- function(result) {
 }
 
 arrangeStrata <- function(result, strata) {
-  namesStrata <- lapply(stata, function(x) {
+  namesStrata <- lapply(strata, function(x) {
     paste0(x, collapse = " and ")
   }) %>%
     unlist()
@@ -685,7 +686,7 @@ arrangeStrata <- function(result, strata) {
 
 arrangeSummary <- function(result, columnNames, functions) {
   x <- unique(result$variable)
-  orderVariables <- c(x[!(x %in% columnNames)], x[x %in% columnNames])
+  orderVariables <- c(x[!(x %in% columnNames)], columnNames[columnNames %in% x])
   result <- result %>%
     dplyr::left_join(
       dplyr::tibble(variable = orderVariables) %>%

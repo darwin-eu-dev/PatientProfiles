@@ -416,6 +416,7 @@ test_that("misisng counts", {
       is.na() %>%
       all()
   )
+  DBI::dbRemoveTable(connectionDetails$con, name = name)
 })
 
 test_that("data is ordered", {
@@ -429,7 +430,7 @@ test_that("data is ordered", {
   )
   name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
   DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
-  cohort <- dplyr::tbl(connectionDetails$con, name)
+  testTable <- dplyr::tbl(connectionDetails$con, name)
   variables <- list(
     numeric = c("age", "number_visits", "prior_history"),
     categorical = c("sex")
@@ -440,11 +441,62 @@ test_that("data is ordered", {
   )
   expect_no_error(
     result <- summariseResult(
-      cohort, strata = list("sex"), variables = variables,
+      table = testTable, strata = list("sex"), variables = variables,
       functions = functions, minCellCount = 1
     )
   )
   # check first overall, second sex
+  order <- unique(result$strata_level)
+  expect_identical(order, c("Overall", "Female", "Male"))
   # first numbers, age, sex, prior_history, number_visits
+  variables <- unique(result$variable)
+  expect_identical(variables, c(
+    "number subjects", "number records", "age", "sex", "prior_history",
+    "number_visits"
+  ))
   # variable levels appear by order
+  order <- unique(result$variable_level[result$variable == "sex"])
+  order <- order[!is.na(order)]
+  expect_identical(order, c("Female", "Male"))
+  DBI::dbRemoveTable(connectionDetails$con, name = name)
+
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    age = c(15, 40, 20, 7),
+    sex = c("Male", "Male", "xFemale", "Male"),
+    prior_history = c(365, 25, 14, 48),
+    number_visits = c(5, 1, 0, 0)
+  )
+  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
+  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
+  testTable <- dplyr::tbl(connectionDetails$con, name)
+  variables <- list(
+    numeric = c("age", "number_visits", "prior_history"),
+    categorical = c("sex")
+  )
+  functions <- list(
+    numeric = c("median", "q25", "q75"),
+    categorical = c("count", "percentage", "median")
+  )
+  expect_no_error(
+    result <- summariseResult(
+      table = testTable, strata = list("sex"), variables = variables,
+      functions = functions, minCellCount = 1
+    )
+  )
+  # check first overall, second sex
+  order <- unique(result$strata_level)
+  expect_identical(order, c("Overall", "Male", "xFemale"))
+  # first numbers, age, sex, prior_history, number_visits
+  variables <- unique(result$variable)
+  expect_identical(variables, c(
+    "number subjects", "number records", "age", "sex", "prior_history",
+    "number_visits"
+  ))
+  # variable levels appear by order
+  order <- unique(result$variable_level[result$variable == "sex"])
+  order <- order[!is.na(order)]
+  expect_identical(order, c("Male", "xFemale"))
+  DBI::dbRemoveTable(connectionDetails$con, name = name)
 })
