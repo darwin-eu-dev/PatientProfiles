@@ -717,7 +717,7 @@ test_that("age group checks", {
   result1 <- cdm$cohort1 %>%
     addAge() %>%
     addCategories(
-      cdm, "age", list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
+      "age", list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
     ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -733,7 +733,7 @@ test_that("age group checks", {
   result2 <- cdm$cohort1 %>%
     addAge() %>%
     addCategories(
-      cdm, "age", list("age_group" = list(c(35, 45)))
+      "age", list("age_group" = list(c(35, 45)))
     ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
@@ -841,21 +841,21 @@ test_that("expected errors", {
   # error if overlapping ageGroups
   expect_error(addCategories(
     cdm$cohort1,
-    cdm, "age",
+    "age",
     list("age_group" = list(c(1, 22), c(19, 30), c(31, 40)))
   ))
 
   # throw error if length of vector in agegroup is not 2
   expect_error(addCategories(
     cdm$cohort1,
-    cdm, "age",
+    "age",
     list("age_group" = list(c(1, 2, 3)))
   ))
 
   # if x does not have "age" column, it has to be in cdm
   expect_error(addCategories(
     cdm$cohort2,
-    cdm, "age",
+    "age",
     list("age_group" = list(c(1, 2)))
   ))
 })

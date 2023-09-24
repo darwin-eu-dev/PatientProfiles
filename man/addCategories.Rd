@@ -6,7 +6,6 @@
 \usage{
 addCategories(
   x,
-  cdm = attr(x, "cdm_reference"),
   variable,
   categories,
   missingCategoryValue = "None",
@@ -15,9 +14,6 @@ addCategories(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm}
-
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
 
 \item{variable}{Target variable that we want to categorize.}
 
