@@ -172,7 +172,7 @@ summariseResult <- function(table,
     }
 
     # obscure counts
-    result <- suppressCounts(result, minCellCount = minCellCount)
+    result <- suppressCount(result, minCellCount = minCellCount)
   }
 
   return(result)

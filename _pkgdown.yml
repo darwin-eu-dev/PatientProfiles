@@ -42,7 +42,7 @@ reference:
 - subtitle: Suppress counts
   desc: Function to supress counts smaller than a certain number
 - contents:
-  - '`suppressCounts`'
+  - '`suppressCount`'
 - subtitle: Other functions
   desc: Helper functions
 - contents:

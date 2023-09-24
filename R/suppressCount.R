@@ -40,8 +40,10 @@ suppressCount <- function(result,
       obscureGroups(minCellCount, col, estimateType, group, groupCount) %>%
       # obscure records
       obscureRecords(minCellCount, col, estimateType) %>%
+      # obscure linked
+      obscureLinked(linkEstimates, variable) %>%
       # obscure col
-      obscureColumn(col, minCellCount, groupCount)
+      obscureColumn(col, minCellCount, groupCount, linkEstimates)
   }
 
   return(result)
@@ -87,26 +89,58 @@ obscureRecords <- function(result, minCellCount, variable, estimateType) {
     )
   return(result)
 }
-obscureColumn <- function(result, col, minCellCount, groupCount) {
+obscureLinked <- function(result, linkEstimates, variable) {
+  cols <- colnames(result)
+  cols <- cols[!(cols %in% variable)]
+  result <- result %>%
+    dplyr::mutate(obscure_linked = 0)
+  for (k in seq_alon(linkEstimates)) {
+    result <- result %>%
+      dplyr::left_join(
+        result %>%
+          dplyr::filter(
+            .data$estimate_type == names(linkEstimates)[k],
+            .data$obscure_record == 1,
+            .data$obscure_group != 1
+          ) %>%
+          dplyr::inner_join(dplyr::tibble(
+            estimate_type = names(linkEstimates)[k],
+            new_estimate_type = linkEstimates[[k]]
+          )) %>%
+          dplyr::select(-dplyr::all_of(c("estimate_type", variable))) %>%
+          dplyr::rename("estimate_type" = "new_estimate_type") %>%
+          dplyr::mutate(obscure_linked_k = 1),
+        by = cols
+      ) %>%
+      dplyr::mutate(obscure_linked = dplyr::if_else(
+        .data$obscure_linked_k == 1, 1, .data$obscure_linked
+      )) %>%
+      dplyr::select(-"obscure_linked_k")
+  }
+  return(result)
+}
+obscureColumn <- function(result, col, minCellCount, groupCount, linkEstimates) {
   minCellCount <- paste0("<", minCellCount)
   result <- result %>%
-    dplyr::mutate(
-      !!col := dplyr::if_else(
-        .data$obscure_group == 1,
+  dplyr::mutate(
+    !!col := dplyr::if_else(
+      .data$obscure_group == 1,
+      dplyr::if_else(
+        .data$variable %in% .env$groupCount,
+        .env$minCellCount,
+        as.character(NA)
+      ),
+      dplyr::if_else(
+        .data$obscure_record == 1,
+        .env$minCellCount,
         dplyr::if_else(
-          .data$variable %in% .env$groupCount,
-          .env$minCellCount,
-          as.character(NA)
-        ),
-        dplyr::if_else(
-          .data$obscure_record == 1,
-          .env$minCellCount,
+          .data$obscure_linked == 1,
+          as.character(NA),
           as.character(.data[[col]])
         )
       )
     )
-    dplyr::select(-c("obscure_record", "obscure_group"))
+  ) %>%
+    dplyr::select(-c("obscure_record", "obscure_group", "obscure_linked"))
   return(result)
 }
-
-# percentage
