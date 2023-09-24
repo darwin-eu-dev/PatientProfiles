@@ -417,3 +417,34 @@ test_that("misisng counts", {
       all()
   )
 })
+
+test_that("data is ordered", {
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    age = c(15, 40, 20, 7),
+    sex = c("Male", "Male", "Female", "Male"),
+    prior_history = c(365, 25, 14, 48),
+    number_visits = c(5, 1, 0, 0)
+  )
+  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
+  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
+  cohort <- dplyr::tbl(connectionDetails$con, name)
+  variables <- list(
+    numeric = c("age", "number_visits", "prior_history"),
+    categorical = c("sex")
+  )
+  functions <- list(
+    numeric = c("median", "q25", "q75"),
+    categorical = c("count", "percentage", "median")
+  )
+  expect_no_error(
+    result <- summariseResult(
+      cohort, strata = list("sex"), variables = variables,
+      functions = functions, minCellCount = 1
+    )
+  )
+  # check first overall, second sex
+  # first numbers, age, sex, prior_history, number_visits
+  # variable levels appear by order
+})

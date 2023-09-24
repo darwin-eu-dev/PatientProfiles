@@ -121,15 +121,12 @@ summariseResult <- function(table,
           group_name = "Overall",
           group_level = "Overall"
         ) %>%
-        dplyr::select(dplyr::all_of(
-          c(
-            "group_name", "group_level",
-            "strata_name", "strata_level", "variable",
-            "variable_level", "variable_type",
-            "estimate_type", "estimate"
-          )
-        )) %>%
-        dplyr::arrange(.data$strata_name, .data$strata_level)
+        dplyr::select(
+          "group_name", "group_level", "strata_name", "strata_level",
+          "variable", "variable_level", "variable_type", "estimate_type",
+          "estimate"
+        ) %>%
+        arrangeStrata(strata)
     }
 
     # add results for each group
@@ -157,15 +154,12 @@ summariseResult <- function(table,
             group_name = !!paste0(group[[i]], collapse = " and "),
             group_level = !!workingGroupLevels[j]
           ) %>%
-          dplyr::select(dplyr::all_of(
-            c(
-              "group_name", "group_level",
-              "strata_name", "strata_level", "variable",
-              "variable_level", "variable_type",
-              "estimate_type", "estimate"
-            )
-          )) %>%
-          dplyr::arrange(.data$strata_name, .data$strata_level)
+          dplyr::select(
+            "group_name", "group_level", "strata_name", "strata_level",
+            "variable", "variable_level", "variable_type", "estimate_type",
+            "estimate"
+          ) %>%
+          arrangeStrata(strata)
 
         result <- dplyr::bind_rows(result, workingResult)
       }
@@ -399,6 +393,7 @@ getCategoricalValues <- function(x, variablesCategorical) {
       result <- result %>%
         dplyr::union_all(
           summaryX %>%
+            dplyr::group_by(.data$strata_level) %>%
             dplyr::summarise(dplyr::across(
               .cols = "count",
               .fns = getFunctions(functions),
@@ -409,7 +404,8 @@ getCategoricalValues <- function(x, variablesCategorical) {
               values_to = "estimate"
             ) %>%
             dplyr::mutate(
-              variable = .env$v, variable_type = "categorical"
+              variable = .env$v, variable_type = "categorical",
+              variable_level = as.character(NA)
             )
         )
     }
@@ -479,9 +475,7 @@ summaryValues <- function(x, requiredFunctions) {
   if (nrow(variablesCategorical) > 0) {
     result <- dplyr::union_all(
       result,
-      getCategoricalValues(
-        x, variablesCategorical
-      ) %>%
+      getCategoricalValues(x, variablesCategorical) %>%
         dplyr::mutate(estimate = as.character(.data$estimate))
     )
   }
@@ -672,6 +666,23 @@ correctMissing <- function(result) {
   return(result)
 }
 
+arrangeStrata <- function(result, strata) {
+  namesStrata <- lapply(stata, function(x) {
+    paste0(x, collapse = " and ")
+  }) %>%
+    unlist()
+  namesStrata <- c("Overall", namesStrata)
+  result <- result %>%
+    dplyr::inner_join(
+      dplyr::tibble(strata_name = namesStrata) %>%
+        dplyr::mutate(id = dplyr::row_number()),
+      by = "strata_name"
+    ) %>%
+    dplyr::arrange(.data$id, .data$strata_level) %>%
+    dplyr::select(-"id")
+  return(result)
+}
+
 arrangeSummary <- function(result, columnNames, functions) {
   x <- unique(result$variable)
   orderVariables <- c(x[!(x %in% columnNames)], x[x %in% columnNames])
@@ -681,6 +692,7 @@ arrangeSummary <- function(result, columnNames, functions) {
         dplyr::mutate(id1 = dplyr::row_number()),
       by = "variable"
     ) %>%
+    dplyr::mutate(id2 = .data$variable_level) %>%
     dplyr::left_join(
       functions %>%
         dplyr::select("estimate_type") %>%
@@ -688,7 +700,7 @@ arrangeSummary <- function(result, columnNames, functions) {
         dplyr::mutate(id3 = dplyr::row_number()),
       by = "estimate_type"
     ) %>%
-    dplyr::arrange(.data$id1, .data$variable_level, .data$id3) %>%
-    dplyr::select(-c("id1", "id3"))
+    dplyr::arrange(.data$id1, .data$id2, .data$id3) %>%
+    dplyr::select(-c("id1", "id2", "id3"))
   return(result)
 }
