@@ -78,6 +78,12 @@ summariseResult <- function(table,
         estimate_type = "count"
       )
   } else {
+    if (!is.list(variables)) {
+      variables <- list("all" = variables)
+    }
+    if (!is.list(functions)) {
+      functions <- list("all" = functions)
+    }
     checkStrata(group, table)
     checkStrata(strata, table)
     checkVariablesFunctions(variables, functions, table)
