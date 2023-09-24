@@ -104,11 +104,42 @@ addCategories <- function(x,
     nam <- names(categories)
   }
 
+  if (
+    utils::head(x, 1) %>%
+      dplyr::pull(dplyr::all_of(variable)) %>%
+      inherits("Date")
+  ) {
+    rand1 <- paste0("extra_", sample(letters, 5, TRUE) %>% paste0(collapse = ""))
+    rand2 <- paste0("extra_", sample(letters, 6, TRUE) %>% paste0(collapse = ""))
+    x <- x %>%
+      dplyr::mutate(!!rand1 := as.Date("1970-01-01")) %>%
+      dplyr::mutate(!!rand2 := !!CDMConnector::datediff(rand1, variable)) %>%
+      dplyr::select(-dplyr::all_of(rand1))
+    variable <- rand2
+    categories <- lapply(categories, function(x) {
+      lapply(x, function(y) {
+        y <- as.numeric(y)
+        y[is.na(y)] <- Inf
+        return(y)
+      })
+    })
+    date <- TRUE
+  } else {
+    date <- FALSE
+  }
+
   categoryTibble <- list()
   for (k in seq_along(categories)) {
     categoryTibble[[nam[k]]] <- checkCategory(categories[[k]],
       overlap = overlap
     )
+    if (date) {
+      categoryTibble[[nam[k]]] <- categoryTibble[[nam[k]]] %>%
+        dplyr::mutate(category_label = paste(
+          as.Date(.data$lower_bound, origin = "1970-01-01"), "to",
+          as.Date(.data$lower_bound, origin = "1970-01-01")
+        ))
+    }
   }
 
   for (k in seq_along(categories)) {
@@ -187,6 +218,10 @@ addCategories <- function(x,
     }
 
     x <- x %>% CDMConnector::computeQuery()
+  }
+
+  if (date) {
+    x <- x %>% dplyr::select(-dplyr::all_of(variable))
   }
 
   return(x)

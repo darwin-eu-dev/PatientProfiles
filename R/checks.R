@@ -68,10 +68,10 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 }
 
 #' @noRd
-checkCategory <- function(category, overlap = FALSE) {
+checkCategory <- function(category, overlap = FALSE, type = "numeric") {
   checkmate::assertList(
     category,
-    types = "numeric", any.missing = FALSE, unique = TRUE,
+    types = type, any.missing = FALSE, unique = TRUE,
     min.len = 1
   )
 

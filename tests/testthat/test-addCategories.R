@@ -34,7 +34,7 @@ test_that("addCategories with infinity", {
   table <- dplyr::tibble(
     subject_id = 1:6,
     prior_history = c(1, 8, Inf, -Inf, 20, NA),
-    date = as.Date(c(
+    date_infection = as.Date(c(
       "2020-01-01", NA, "2020-12-21", "2020-08-01", "2025-01-01", "2020-01-18"
     ))
   )
@@ -46,9 +46,29 @@ test_that("addCategories with infinity", {
         "prior_group" = list(c(1, 10), c(11, Inf))
       ), missingCategoryValue = "None", overlap = FALSE
     ) %>%
+    addCategories(
+      variable = "date_infection", categories = list(
+        "period1" = list(
+          as.Date(c("2019-01-01", "2022-12-31")),
+          as.Date(c("2023-01-01", "2028-12-31"))
+        )
+      ), missingCategoryValue = "None", overlap = FALSE
+    ) %>%
     dplyr::collect() %>%
     dplyr::arrange(.data$subject_id)
+  # check inf worked
   expect_true("prior_group" %in% colnames(table))
-  expect_true(all(table$prior_group == c(" 1 to 10", "1 to 10", "11 to Inf", "None", "11 to Inf")))
+  expect_true(is.na(table$prior_group[6]))
+  xx <- table$prior_group[!is.na(table$prior_group)]
+  expect_true(all(xx == c("1 to 10", "1 to 10", "11 to Inf", "None", "11 to Inf")))
+  # check date worked
+  expect_true("period1" %in% colnames(table))
+  expect_true(is.na(table$period1[2]))
+  xx <- table$period1[!is.na(table$period1)]
+  expect_true(all(xx == c(
+    "2019-01-01 to 2019-01-01", "2019-01-01 to 2019-01-01",
+    "2019-01-01 to 2019-01-01", "2023-01-01 to 2023-01-01",
+    "2019-01-01 to 2019-01-01"
+  )))
   DBI::dbRemoveTable(connectionDetails$con, name = name)
 })

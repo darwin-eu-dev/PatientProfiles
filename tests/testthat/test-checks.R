@@ -40,7 +40,7 @@ test_that("test checkCategory with length 1 ", {
 
   a <- cdm$cohort1 %>%
     addAge(cdm, indexDate = "cohort_start_date") %>%
-    addCategories(cdm, "age", categories) %>%
+    addCategories("age", categories) %>%
     dplyr::collect()
   expect_true(a[a$subject_id == 2, ]$age_group == "70 to 70")
 
@@ -49,7 +49,7 @@ test_that("test checkCategory with length 1 ", {
   categories <- list("age_group" = list(c(69, 0), c(70)))
 
   expect_error(cdm$cohort1 %>% addAge(cdm, indexDate = "cohort_start_date") %>%
-    addCategories(cdm, "age", categories))
+    addCategories("age", categories))
 })
 
 test_that(" test checkNewName renames duplicate column names in addInObservation  ", {
