@@ -27,9 +27,12 @@ suppressCount <- function(result,
   checkmate::assertCharacter(estimateType, any.missing = FALSE, null.ok = TRUE)
   checkmate::assertCharacter(group, any.missing = FALSE, null.ok = TRUE)
   checkmate::assertCharacter(groupCount, any.missing = FALSE, null.ok = TRUE)
-  checkmate::assertTRUE(all(c(variable, group) %in% colnames(result)))
+  if (!is.null(estimateType)) {
+    checkmate::assertTRUE("estimate_type" %in% colnames(result))
+  }
   checkmate::assertList(linkEstimates, any.missing = FALSE)
   checkmate::assertTRUE(length(linkEstimates) == length(names(linkEstimates)))
+  linkEstimates <- linkEstimates[names(linkEstimates) %in% estimateType]
 
   # loop for different columns
   for (col in variable) {
@@ -61,9 +64,9 @@ filterData <- function(result, variable, estimateType, minCellCount) {
   return(result)
 }
 obscureGroups <- function(result, minCellCount, variable, estimateType, group, groupCount) {
-  if (!is.null(group)) {
+  if (!is.null(group) & all(group %in% colnames(result))) {
     groupsToObscure <- result %>%
-      dplyr::select(dplyr::all_of(c(group, variable))) %>%
+      dplyr::select(dplyr::all_of(c(group, variable, "variable", "estimate_type"))) %>%
       dplyr::filter(.data$variable %in% .env$groupCount) %>%
       filterData(variable, estimateType, minCellCount) %>%
       dplyr::select(dplyr::all_of(group)) %>%
@@ -72,7 +75,7 @@ obscureGroups <- function(result, minCellCount, variable, estimateType, group, g
     result <- result %>%
       dplyr::left_join(groupsToObscure, by = group) %>%
       dplyr::mutate(
-        obscure_group = dplyr::if_else(is.na(.data$obscure_group, 0, 1))
+        obscure_group = dplyr::if_else(is.na(.data$obscure_group), 0, 1)
       )
   } else {
     result <- result %>% dplyr::mutate(obscure_group = 0)
@@ -80,12 +83,13 @@ obscureGroups <- function(result, minCellCount, variable, estimateType, group, g
   return(result)
 }
 obscureRecords <- function(result, minCellCount, variable, estimateType) {
-  recordsToObscure <- filterData(variable, estimateType, minCellCount) %>%
+  recordsToObscure <- result %>%
+    filterData(variable, estimateType, minCellCount) %>%
     dplyr::mutate(obscure_record = 1)
   result <- result %>%
     dplyr::left_join(recordsToObscure, by = colnames(result)) %>%
     dplyr::mutate(
-      obscure_record = dplyr::if_else(is.na(.data$obscure_record, 0, 1))
+      obscure_record = dplyr::if_else(is.na(.data$obscure_record), 0, 1)
     )
   return(result)
 }
@@ -94,7 +98,7 @@ obscureLinked <- function(result, linkEstimates, variable) {
   cols <- cols[!(cols %in% variable)]
   result <- result %>%
     dplyr::mutate(obscure_linked = 0)
-  for (k in seq_alon(linkEstimates)) {
+  for (k in seq_along(linkEstimates)) {
     result <- result %>%
       dplyr::left_join(
         result %>%
@@ -107,7 +111,7 @@ obscureLinked <- function(result, linkEstimates, variable) {
             estimate_type = names(linkEstimates)[k],
             new_estimate_type = linkEstimates[[k]]
           )) %>%
-          dplyr::select(-dplyr::all_of(c("estimate_type", variable))) %>%
+          dplyr::select(-dplyr::all_of(c("estimate_type", variable, "obscure_linked"))) %>%
           dplyr::rename("estimate_type" = "new_estimate_type") %>%
           dplyr::mutate(obscure_linked_k = 1),
         by = cols
