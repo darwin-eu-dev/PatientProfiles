@@ -4,8 +4,9 @@
 #' @param minCellCount Minimum count of records to report results.
 #' @param variable Columns to suppress counts.
 #' @param estimateType Types to suppress counts.
-#' @param group Columns to group by and supress.
+#' @param group Columns to group by and suppress.
 #' @param groupCount Identifier of the group count.
+#' @param linkEstimates List of estimates to link.
 #'
 #' @return Table with suppressed counts
 #'
