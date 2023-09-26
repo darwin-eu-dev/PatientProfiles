@@ -228,45 +228,45 @@ test_that("obscure", {
 
   # minCellCount = 1
   s <- summariseResult(x, minCellCount = 1)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<1") == 0)
   expect_true(sum(is.na(s$estimate)) == 0)
 
   # minCellCount = 2
   s <- summariseResult(x, minCellCount = 2)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<2") == 4)
   expect_true(sum(is.na(s$estimate)) == 4)
 
   # minCellCount = 3
   s <- summariseResult(x, minCellCount = 3)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<3") == 8)
   expect_true(sum(is.na(s$estimate)) == 8)
 
   # minCellCount = 4
   s <- summariseResult(x, minCellCount = 4)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<4") == 9)
   expect_true(sum(is.na(s$estimate)) == 9)
 
   # minCellCount = 5
   s <- summariseResult(x, minCellCount = 5)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<5") == 9)
   expect_true(sum(is.na(s$estimate)) == 9)
 
   # minCellCount = 6
   s <- summariseResult(x, minCellCount = 6)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<6") == 9)
   expect_true(sum(is.na(s$estimate)) == 9)
 
   # minCellCount = 7
   s <- summariseResult(x, minCellCount = 7)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<7") == 1)
-  expect_true(sum(is.na(s$estimate)) == 24)
+  expect_true(sum(is.na(s$estimate)) == 28)
 })
 
 test_that("test empty cohort", {
