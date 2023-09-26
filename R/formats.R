@@ -178,12 +178,6 @@ getFunctions <- function(f) {
     "sum" = function(x) {
       base::sum(x, na.rm = TRUE)
     },
-    "iqr" = function(x) {
-      stats::IQR(x, na.rm = TRUE)
-    },
-    "range" = function(x) {
-      base::diff(base::range(x, na.rm = TRUE))
-    },
     "sd" = function(x) {
       stats::sd(x, na.rm = TRUE)
     },
