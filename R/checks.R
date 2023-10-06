@@ -568,3 +568,13 @@ checkCensorDate <- function(x, censorDate) {
     cli::cli_abort("{censorDate} is not a date variable")
   }
 }
+
+#' @noRd
+assertWriteSchema <- function(cdm, call = rlang::env_parent()) {
+  if (!("write_schema" %in% names(attributes(cdm)))) {
+    cli::cli_abort(
+      message = "write_schema must be provided in the cdm object to use this function",
+      call = call
+    )
+  }
+}

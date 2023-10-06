@@ -64,6 +64,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
   checkCdm(cdm)
 
+  assertWriteSchema(cdm)
+
   # add names to windows
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
 
