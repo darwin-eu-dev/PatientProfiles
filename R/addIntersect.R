@@ -81,6 +81,9 @@ addIntersect <- function(x,
   checkmate::assertChoice(order, c("first", "last"))
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkVariableInX(censorDate, x, TRUE, "censorDate")
+
+  assertWriteSchema(cdm)
+
   if (!is.null(censorDate)) {
     checkCensorDate(x, censorDate)
   }
