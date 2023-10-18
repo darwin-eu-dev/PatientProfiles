@@ -17,8 +17,6 @@
 #' Categorize a numeric variable
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
@@ -26,8 +24,6 @@
 #' any named category. If NULL or NA, missing will values will be
 #' given.
 #' @param overlap TRUE if the categories given overlap
-#' @param tablePrefix The stem for the permanent tables that will be created. If
-#' NULL, temporary tables will be used throughout.
 #'
 #' @return tibble with the categorical variable added.
 #'
@@ -70,15 +66,13 @@
 #'   )
 #' }
 addCategories <- function(x,
-                          cdm = attr(x, "cdm_reference"),
                           variable,
                           categories,
                           missingCategoryValue = "None",
-                          overlap = FALSE,
-                          tablePrefix = NULL) {
-  if (!isTRUE(inherits(x, "tbl_dbi"))) {
-    cli::cli_abort("x is not a table")
-  }
+                          overlap = FALSE) {
+  # if (!isTRUE(inherits(x, "tbl_dbi"))) {
+  #   cli::cli_abort("x is not a table")
+  # }
 
   checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)
   checkmate::assertTRUE(variable %in% colnames(x))
@@ -87,8 +81,6 @@ addCategories <- function(x,
     categories,
     types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
-  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
-
 
   for (i in seq_along(categories)) {
     if (!is.null(names(categories)) && variable == names(categories)[i]) {
@@ -112,10 +104,42 @@ addCategories <- function(x,
     nam <- names(categories)
   }
 
+  if (
+    utils::head(x, 1) %>%
+      dplyr::pull(dplyr::all_of(variable)) %>%
+      inherits("Date")
+  ) {
+    rand1 <- paste0("extra_", sample(letters, 5, TRUE) %>% paste0(collapse = ""))
+    rand2 <- paste0("extra_", sample(letters, 6, TRUE) %>% paste0(collapse = ""))
+    x <- x %>%
+      dplyr::mutate(!!rand1 := as.Date("1970-01-01")) %>%
+      dplyr::mutate(!!rand2 := !!CDMConnector::datediff(rand1, variable)) %>%
+      dplyr::select(-dplyr::all_of(rand1))
+    variable <- rand2
+    categories <- lapply(categories, function(x) {
+      lapply(x, function(y) {
+        y <- as.numeric(y)
+        y[is.na(y)] <- Inf
+        return(y)
+      })
+    })
+    date <- TRUE
+  } else {
+    date <- FALSE
+  }
+
   categoryTibble <- list()
   for (k in seq_along(categories)) {
     categoryTibble[[nam[k]]] <- checkCategory(categories[[k]],
-                                              overlap = overlap)
+      overlap = overlap
+    )
+    if (date) {
+      categoryTibble[[nam[k]]] <- categoryTibble[[nam[k]]] %>%
+        dplyr::mutate(category_label = paste(
+          as.Date(.data$lower_bound, origin = "1970-01-01"), "to",
+          as.Date(.data$lower_bound, origin = "1970-01-01")
+        ))
+    }
   }
 
   for (k in seq_along(categories)) {
@@ -127,16 +151,37 @@ addCategories <- function(x,
         lower <- categoryTibbleK$lower_bound[i]
         upper <- categoryTibbleK$upper_bound[i]
         category <- categoryTibbleK$category_label[i]
-        newSql <- paste0(
-          "dplyr::if_else(.data[[variable]] >= ", lower,
-          " & .data[[variable]] <= ", upper, ", \"", category, "\" , #ELSE#)"
-        )
+        if (is.infinite(lower)) {
+          if (is.infinite(upper)) {
+            sqlCategories <- gsub(
+              "#ELSE#", paste0("\"", category, "\""), sqlCategories
+            )
+            break
+          } else {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] <= ", upper, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          }
+        } else {
+          if (is.infinite(upper)) {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] >= ", lower, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          } else {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] >= ", lower,
+              " & .data[[variable]] <= ", upper, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          }
+        }
         sqlCategories <- gsub("#ELSE#", newSql, sqlCategories)
       }
       sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
         is.null(missingCategoryValue), NA, missingCategoryValue
-      ), "\""), sqlCategories
-      ) %>%
+      ), "\""), sqlCategories) %>%
         rlang::parse_exprs() %>%
         rlang::set_names(glue::glue(name))
       x <- x %>%
@@ -166,26 +211,17 @@ addCategories <- function(x,
       if (!is.null(missingCategoryValue) && !is.na(missingCategoryValue)) {
         x <- x %>%
           dplyr::mutate(!!name := dplyr::if_else(!is.na(.data[[name]]),
-                                                 .data[[name]],
-                                                 .env$missingCategoryValue
+            .data[[name]],
+            .env$missingCategoryValue
           ))
       }
     }
 
-    if (!is.null(tablePrefix)) {
-      x <- CDMConnector::computeQuery(
-        x,
-        name = paste0(
-          tablePrefix,
-          "_categories_added"
-        ),
-        temporary = FALSE,
-        schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
-      )
-    } else {
-      x <- CDMConnector::computeQuery(x)
-    }
+    x <- x %>% CDMConnector::computeQuery()
+  }
+
+  if (date) {
+    x <- x %>% dplyr::select(-dplyr::all_of(variable))
   }
 
   return(x)

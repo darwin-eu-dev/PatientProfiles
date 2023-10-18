@@ -68,10 +68,10 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 }
 
 #' @noRd
-checkCategory <- function(category, overlap = FALSE) {
+checkCategory <- function(category, overlap = FALSE, type = "numeric") {
   checkmate::assertList(
     category,
-    types = "integerish", any.missing = FALSE, unique = TRUE,
+    types = type, any.missing = FALSE, unique = TRUE,
     min.len = 1
   )
 
@@ -288,8 +288,8 @@ checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
   )
   if (!all(changed %in% contained)) {
     variablesNotContained <- changed[!(changed %in% contained)]
-    variablesNotContained <- gsub("[{}]","",variablesNotContained)
-    variablesNotContained <- gsub("id_name","cohort_name",variablesNotContained)
+    variablesNotContained <- gsub("[{}]", "", variablesNotContained)
+    variablesNotContained <- gsub("id_name", "cohort_name", variablesNotContained)
     cli::cli_abort(paste0(
       "Variables: ",
       paste0(variablesNotContained, collapse = ", "),
@@ -376,7 +376,7 @@ checkSnakeCase <- function(name, verbose = TRUE) {
       name[i] <- gsub("([[:upper:]])", "\\L\\1", perl = TRUE, name[i])
       name[i] <- gsub("[^a-z,0-9.-]", "_", name[i])
       name[i] <- gsub("-", "_", name[i])
-      if(verbose) {
+      if (verbose) {
         cli::cli_alert(paste0(oldname, " has been changed to ", name[i]))
       }
       wrong <- TRUE
@@ -394,7 +394,7 @@ checkSnakeCase <- function(name, verbose = TRUE) {
 checkVariableType <- function(variableType) {
   errorMessage <- "variableType must be a choice between numeric, date, binary and categorical."
   if (!is.character(variableType) |
-      length(variableType) != 1) {
+    length(variableType) != 1) {
     cli::cli_abort(errorMessage)
   }
   if (!(variableType %in% c("numeric", "date", "binary", "categorical"))) {
@@ -418,11 +418,8 @@ checkTable <- function(table) {
 
 #' @noRd
 checkStrata <- function(strata, table) {
-  errorMessage <- "strata should be a unique named list that point to columns in table"
+  errorMessage <- "strata should be a list that point to columns in table"
   if (!is.list(strata)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (length(names(strata)) != length(strata)) {
     cli::cli_abort(errorMessage)
   }
   if (length(strata) > 0) {
@@ -562,9 +559,22 @@ checkCohortIntersect <- function(cohortIntersect, cdm) {
 
 #' @noRd
 checkCensorDate <- function(x, censorDate) {
-  check <- x %>% dplyr::select(dplyr::all_of(censorDate)) %>%
-    utils::head(1) %>% dplyr::pull() %>% inherits('Date')
-  if(!check) {
+  check <- x %>%
+    dplyr::select(dplyr::all_of(censorDate)) %>%
+    utils::head(1) %>%
+    dplyr::pull() %>%
+    inherits("Date")
+  if (!check) {
     cli::cli_abort("{censorDate} is not a date variable")
+  }
+}
+
+#' @noRd
+assertWriteSchema <- function(cdm, call = rlang::env_parent()) {
+  if (!("write_schema" %in% names(attributes(cdm)))) {
+    cli::cli_abort(
+      message = "write_schema must be provided in the cdm object to use this function",
+      call = call
+    )
   }
 }

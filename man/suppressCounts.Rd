@@ -2,34 +2,12 @@
 % Please edit documentation in R/summariseResult.R
 \name{suppressCounts}
 \alias{suppressCounts}
-\title{Function to suppress count}
+\title{Function to suppress counts in summarised objects}
 \usage{
-suppressCounts(
-  result,
-  variable = "variable",
-  estimate = "estimate",
-  group_name = "group_name",
-  group_level = "group_level",
-  strata_name = "strata_name",
-  strata_level = "strata_level",
-  minCellCount = 5
-)
+suppressCounts(result, minCellCount = 5)
 }
 \arguments{
-\item{result}{Table including counts, mean, etc, to be suppressed,
-Default of column names set to the same as variable names, user can self define too.}
-
-\item{variable}{the column name with variable, eg count/mean/percentage/.. Default as "variable".}
-
-\item{estimate}{the column name with estimate, to show what is the corresponding number. Default as "estimate".}
-
-\item{group_name}{the column name with group name, default as "group_name".}
-
-\item{group_level}{the column name with group level, default as "group_level".}
-
-\item{strata_name}{the column name with strata name, default as "strata_name".}
-
-\item{strata_level}{the column name with level of strata, default as "strata_level".}
+\item{result}{SummarisedResult object}
 
 \item{minCellCount}{Minimum count of records to report results.}
 }
@@ -37,5 +15,5 @@ Default of column names set to the same as variable names, user can self define 
 Table with suppressed counts
 }
 \description{
-Function to suppress count
+Function to suppress counts in summarised objects
 }

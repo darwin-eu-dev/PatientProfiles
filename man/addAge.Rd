@@ -13,8 +13,7 @@ addAge(
   ageDefaultMonth = 1,
   ageDefaultDay = 1,
   ageImposeMonth = FALSE,
-  ageImposeDay = FALSE,
-  tablePrefix = NULL
+  ageImposeDay = FALSE
 )
 }
 \arguments{
@@ -40,9 +39,6 @@ considered as missing for all the individuals.}
 
 \item{ageImposeDay}{Whether the day of the date of birth will be considered
 as missing for all the individuals.}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 tibble with the age column added

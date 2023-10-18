@@ -13,9 +13,9 @@ summariseResult(
   variables = list(numericVariables = detectVariables(table, "numeric"), dateVariables =
     detectVariables(table, "date"), binaryVariables = detectVariables(table, "binary"),
     categoricalVariables = detectVariables(table, "categorical")),
-  functions = list(numericVariables = c("median", "q25", "q75"), dateVariables =
-    c("median", "q25", "q75"), binaryVariables = c("count", "\%"), categoricalVariables =
-    c("count", "\%")),
+  functions = list(numericVariables = c("median", "min", "q25", "q75", "max"),
+    dateVariables = c("median", "min", "q25", "q75", "max"), binaryVariables = c("count",
+    "percentage"), categoricalVariables = c("count", "percentage")),
   minCellCount = 5
 )
 }

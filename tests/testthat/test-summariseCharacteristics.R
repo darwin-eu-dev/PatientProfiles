@@ -238,7 +238,6 @@ test_that("test summariseCharacteristics", {
   )
 })
 
-
 test_that("test empty cohort", {
   dus_cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),

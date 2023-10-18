@@ -18,8 +18,7 @@ addIntersect(
   targetStartDate = getStartName(tableName),
   targetEndDate = getEndName(tableName),
   order = "first",
-  nameStyle = "{value}_{id_name}_{window_name}",
-  tablePrefix = NULL
+  nameStyle = "{value}_{id_name}_{window_name}"
 )
 }
 \arguments{
@@ -58,9 +57,6 @@ intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 table with added columns with overlap information

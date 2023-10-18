@@ -1,4 +1,3 @@
-
 test_that("test methods against sql test server", {
   testthat::skip_on_ci()
 

@@ -42,8 +42,6 @@
 #' indexDate and the end of the current observation period will be
 #' calculated
 #' @param futureObservationName Future observation variable name
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return cohort table with the added demographic information columns
 #' @export
@@ -70,8 +68,7 @@ addDemographics <- function(x,
                             priorObservation = TRUE,
                             priorObservationName = "prior_observation",
                             futureObservation = TRUE,
-                            futureObservationName = "future_observation",
-                            tablePrefix = NULL) {
+                            futureObservationName = "future_observation") {
   ## change ageDefaultMonth, ageDefaultDay to integer
 
   if (typeof(ageDefaultMonth) == "character") {
@@ -102,7 +99,6 @@ addDemographics <- function(x,
   checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
   checkmate::assertLogical(priorObservation, any.missing = FALSE, len = 1)
   checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
-  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
   checkVariableInX(indexDate, x, !(age | priorObservation | futureObservation))
   if (!(age | sex | priorObservation | futureObservation)) {
     cli::cli_abort("age, sex, priorObservation, futureObservation can not be FALSE")
@@ -127,12 +123,15 @@ addDemographics <- function(x,
   checkNewName(priorObservationName, x)
   checkNewName(futureObservationName, x)
 
-  if (age == TRUE ||  priorObservation == TRUE || futureObservation == TRUE) {
-  checkmate::assert_true(
-    inherits(x %>%
-               utils::head(1) %>%
-               dplyr::pull(indexDate),
-             c("Date", "POSIXt")))
+  if (age == TRUE || priorObservation == TRUE || futureObservation == TRUE) {
+    checkmate::assert_true(
+      inherits(
+        x %>%
+          utils::head(1) %>%
+          dplyr::pull(indexDate),
+        c("Date", "POSIXt")
+      )
+    )
   }
 
   # Start code
@@ -256,29 +255,15 @@ addDemographics <- function(x,
       ))
   }
 
-  if (is.null(tablePrefix)) {
-    x <- x %>%
-      CDMConnector::computeQuery()
-  } else {
-    x <- x %>%
-      CDMConnector::computeQuery(
-        name = paste0(
-          tablePrefix,
-          "_demographics_added"
-        ),
-        temporary = FALSE,
-        schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
-      )
-  }
+  x <- x %>%
+    CDMConnector::computeQuery()
 
   if (!is.null(ageGroup)) {
     x <- addCategories(
       x = x,
       variable = ageName,
       categories = ageGroup,
-      missingCategoryValue = "None",
-      tablePrefix = tablePrefix
+      missingCategoryValue = "None"
     )
   }
 
@@ -341,8 +326,6 @@ futureObservationQuery <- function(indexDate, name) {
 #' considered as missing for all the individuals.
 #' @param ageImposeDay Whether the day of the date of birth will be considered
 #' as missing for all the individuals.
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return tibble with the age column added
 #' @export
@@ -381,8 +364,7 @@ addAge <- function(x,
                    ageDefaultMonth = 1,
                    ageDefaultDay = 1,
                    ageImposeMonth = FALSE,
-                   ageImposeDay = FALSE,
-                   tablePrefix = NULL) {
+                   ageImposeDay = FALSE) {
   x <- x %>%
     addDemographics(
       cdm = cdm,
@@ -397,7 +379,6 @@ addAge <- function(x,
       sex = FALSE,
       priorObservation = FALSE,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix,
       sexName = NULL,
       priorObservationName = NULL,
       futureObservationName = NULL
@@ -415,8 +396,6 @@ addAge <- function(x,
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
 #' @param futureObservationName name of the new column to be added
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return cohort table with added column containing future observation of the
 #' individuals
@@ -469,8 +448,7 @@ addAge <- function(x,
 addFutureObservation <- function(x,
                                  cdm = attr(x, "cdm_reference"),
                                  indexDate = "cohort_start_date",
-                                 futureObservationName = "future_observation",
-                                 tablePrefix = NULL) {
+                                 futureObservationName = "future_observation") {
   x <- x %>%
     addDemographics(
       cdm = cdm,
@@ -485,7 +463,6 @@ addFutureObservation <- function(x,
       priorObservation = FALSE,
       futureObservation = TRUE,
       futureObservationName = futureObservationName,
-      tablePrefix = tablePrefix,
       ageName = NULL,
       sexName = NULL,
       priorObservationName = NULL
@@ -503,8 +480,6 @@ addFutureObservation <- function(x,
 #' @param indexDate Variable in x that contains the date to compute the prior
 #' observation.
 #' @param priorObservationName name of the new column to be added
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return cohort table with added column containing prior observation of the
 #' individuals
@@ -555,10 +530,9 @@ addFutureObservation <- function(x,
 #' result <- cdm$cohort1 %>% addPriorObservation(cdm)
 #' }
 addPriorObservation <- function(x,
-                            cdm = attr(x, "cdm_reference"),
-                            indexDate = "cohort_start_date",
-                            priorObservationName = "prior_observation",
-                            tablePrefix = NULL) {
+                                cdm = attr(x, "cdm_reference"),
+                                indexDate = "cohort_start_date",
+                                priorObservationName = "prior_observation") {
   x <- x %>%
     addDemographics(
       cdm = cdm,
@@ -573,7 +547,6 @@ addPriorObservation <- function(x,
       priorObservation = TRUE,
       priorObservationName = priorObservationName,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix,
       ageName = NULL,
       sexName = NULL,
       futureObservationName = NULL
@@ -591,8 +564,6 @@ addPriorObservation <- function(x,
 #' observation flag.
 #' @param name name of the column to hold the result of the query:
 #' 1 if the individual is in observation, 0 if not
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return cohort table with the added binary column assessing inObservation
 #' @export
@@ -607,15 +578,13 @@ addPriorObservation <- function(x,
 addInObservation <- function(x,
                              cdm = attr(x, "cdm_reference"),
                              indexDate = "cohort_start_date",
-                             name = "in_observation",
-                             tablePrefix = NULL) {
+                             name = "in_observation") {
   ## check for standard types of user error
   personVariable <- checkX(x)
   checkCdm(cdm, c("observation_period"))
   checkVariableInX(indexDate, x)
   checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
   name <- checkNewName(name, x)
-  checkmate::assertCharacter(tablePrefix, len = 1, null.ok = TRUE)
 
   # Start code
   name <- rlang::enquo(name)
@@ -627,8 +596,7 @@ addInObservation <- function(x,
       age = FALSE,
       sex = FALSE,
       priorObservation = TRUE,
-      futureObservation = TRUE,
-      tablePrefix = NULL
+      futureObservation = TRUE
     ) %>%
     dplyr::mutate(
       !!name := as.numeric(dplyr::if_else(
@@ -639,18 +607,8 @@ addInObservation <- function(x,
       -"prior_observation", -"future_observation"
     )
 
-  if (is.null(tablePrefix)) {
-    x <- x %>%
-      CDMConnector::computeQuery()
-  } else {
-    x <- x %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "_with_observation"),
-        temporary = FALSE,
-        schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
-      )
-  }
+  x <- x %>%
+    CDMConnector::computeQuery()
 
   return(x)
 }
@@ -661,8 +619,6 @@ addInObservation <- function(x,
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param sexName name of the new column to be added
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return table x with the added column with sex information
 #' @export
@@ -676,8 +632,7 @@ addInObservation <- function(x,
 #'
 addSex <- function(x,
                    cdm = attr(x, "cdm_reference"),
-                   sexName = "sex",
-                   tablePrefix = NULL) {
+                   sexName = "sex") {
   x <- x %>%
     addDemographics(
       cdm = cdm,
@@ -692,7 +647,6 @@ addSex <- function(x,
       sexName = sexName,
       priorObservation = FALSE,
       futureObservation = FALSE,
-      tablePrefix = tablePrefix,
       ageName = NULL,
       priorObservationName = NULL,
       futureObservationName = NULL

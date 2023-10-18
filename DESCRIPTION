@@ -1,7 +1,7 @@
 Package: PatientProfiles
 Type: Package
 Title: Identify Characteristics of Patients in the OMOP Common Data Model
-Version: 0.3.1
+Version: 0.4.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
@@ -56,9 +56,12 @@ Imports:
     rlang,
     cli,
     pillar,
-    stringr
+    stringr,
+    gt
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 Language: en-US
 Depends: 
     R (>= 2.10)
+Config/testthat/edition: 3
+Config/testthat/parallel: true

@@ -19,18 +19,39 @@ reference:
   desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
   - '`addCohortIntersect`'
+- subtitle: Add a value from a concept intersection
+  desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a concept.
+- contents:
+  - matches("addConceptIntersectFlag|addConceptIntersectCount|addConceptIntersectDays|addConceptIntersectDate")
+- subtitle: Add multiple values from a concept intersection
+  desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a concept.
+- contents:
+  - '`addConceptIntersect`'
 - subtitle: Add multiple values from table intersection
   desc: Add multiple variables indicating the intersection between two tablea in the OMOP Common Data Model.
 - contents:
   - '`addIntersect`'
 - subtitle: Summarise patient characteristics
-  desc: Set of functions that allow the user to summarise patient characteristics
+  desc: Function that allow the user to summarise patient characteristics (characteristics must be added priot the use of the function)
 - contents:
-  - matches("variableTypes|availableFunctions|detectVariables|summariseResult")
-  desc: Standard table one preliminary function
+  - '`summariseResult`'
+- subtitle: Summarise patient characteristic standard function
+  desc: Function that allow the user to summarise patient characteristics based on some paramters
 - contents:
-  - matches("summariseCharacteristics")
+  - '`summariseCharacteristics`'
+- subtitle: Summarise patient large scale characteristics
+  desc: Summarise large scale characteristics
+- contents:
+  - '`summariseLargeScaleCharacteristics`'
+- subtitle: gt tables from summarisedResults objects
+  desc: Set of functions to create pretty gt tables from summarisedReuslts objects
+- contents:
+  - matches("gt")
+- subtitle: Suppress counts
+  desc: Function to supress counts smaller than a certain number
+- contents:
+  - '`suppressCounts`'
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCohortName|addCdmName|addAttributes|addCategories|getStartName|getEndName|getConceptName|mockPatientProfiles|suppressCounts")
+  - matches("addCohortName|addCdmName|addAttributes|addCategories|variableTypes|availableFunctions|detectVariables|getSourceConceptName|getStartName|getEndName|getConceptName|mockPatientProfiles")

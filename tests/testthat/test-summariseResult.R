@@ -1,8 +1,8 @@
 test_that("test all functions", {
   x <- dplyr::tibble(
-    s = c("g1", "g1", "g2", "g1&&g2", "g2", "g1&&g2"),
+    s = c("g1", "g1", "g2", "g1 and g2", "g2", "g1 and g2"),
     v1 = c(1, 2, 3, 4, 6, 3),
-    v2 = c("a", "b", "a&&b", "b", "0", "0&&ab"),
+    v2 = c("a", "b", "a and b", "b", "0", "0 and ab"),
     v3 = c(0, 1, 0, 1, 1, 0),
     v4 = as.Date(c(
       "2021-05-12", "2012-05-15", "2023-11-30", "2015-12-10", "2014-01-12",
@@ -10,14 +10,14 @@ test_that("test all functions", {
     ))
   )
   s1 <- summariseResult(x)
-  s2 <- summariseResult(x, strata = list("group" = "s"))
+  s2 <- summariseResult(x, strata = list("s"))
   s3 <- summariseResult(
     x,
-    strata = list("group" = "s"), minCellCount = 1
+    strata = list("s"), minCellCount = 1
   )
   s4 <- summariseResult(
     x,
-    strata = list("group1" = c("s", "v2"), group2 = "s"),
+    strata = list(c("s", "v2"), group2 = "s"),
     minCellCount = 1
   )
 
@@ -52,8 +52,8 @@ test_that("test all functions", {
     categorical = c("sex")
   )
   functions <- list(
-    numeric = c("median", "q25", "q75"),
-    categorical = c("count", "%")
+    numeric = c("median", "q25", "q75", "missing"),
+    categorical = c("count", "percentage")
   )
   expect_no_error(
     result <- summariseResult(
@@ -75,7 +75,7 @@ test_that("groups and strata", {
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(strata = list("sex" = "sex"))
+    summariseResult(strata = list("sex"))
 
   expect_true(result %>%
     dplyr::filter(group_name == "Overall" &
@@ -92,13 +92,13 @@ test_that("groups and strata", {
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(strata = list("Age and sex" = c("age_group", "sex")))
+    summariseResult(strata = list(c("age_group", "sex")))
 
   expect_true(all(result %>%
     dplyr::select("strata_name") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c("Overall", "Age and sex")))
+    c("Overall", "age_group and sex")))
   expect_true(all(result %>%
     dplyr::select("strata_level") %>%
     dplyr::distinct() %>%
@@ -119,12 +119,12 @@ test_that("groups and strata", {
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(group = list("Age and sex" = c("age_group", "sex")))
+    summariseResult(group = list(c("age_group", "sex")))
   expect_true(all(result %>%
     dplyr::select("group_name") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c("Overall", "Age and sex")))
+    c("Overall", "age_group and sex")))
   expect_true(all(result %>%
     dplyr::select("group_level") %>%
     dplyr::distinct() %>%
@@ -154,7 +154,7 @@ test_that("table in db or local", {
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
-    summariseResult(strata = list("sex" = "sex")))
+    summariseResult(strata = list("sex")))
 
   # already collected
   expect_no_error(cdm$condition_occurrence %>%
@@ -163,7 +163,7 @@ test_that("table in db or local", {
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(strata = list("sex" = "sex")))
+    summariseResult(strata = list("sex")))
 
   CDMConnector::cdm_disconnect(cdm)
 })
@@ -183,14 +183,14 @@ test_that("with and with overall groups and strata", {
 
   expect_false(any(test_data %>%
     summariseResult(
-      strata = list("sex" = "sex"),
+      strata = list("sex"),
       includeOverallStrata = FALSE
     ) %>%
     dplyr::pull("strata_name") %in%
     c("Overall")))
   expect_true(any(test_data %>%
     summariseResult(
-      strata = list("sex" = "sex"),
+      strata = list("sex"),
       includeOverallStrata = TRUE
     ) %>%
     dplyr::pull("strata_name") %in%
@@ -198,14 +198,14 @@ test_that("with and with overall groups and strata", {
 
   expect_false(any(test_data %>%
     summariseResult(
-      group = list("sex" = "sex"),
+      group = list("sex"),
       includeOverallGroup = FALSE
     ) %>%
     dplyr::pull("group_name") %in%
     c("Overall")))
   expect_true(any(test_data %>%
     summariseResult(
-      group = list("sex" = "sex"),
+      group = list("sex"),
       includeOverallGroup = TRUE
     ) %>%
     dplyr::pull("group_name") %in%
@@ -228,49 +228,46 @@ test_that("obscure", {
 
   # minCellCount = 1
   s <- summariseResult(x, minCellCount = 1)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<1") == 0)
   expect_true(sum(is.na(s$estimate)) == 0)
 
   # minCellCount = 2
   s <- summariseResult(x, minCellCount = 2)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<2") == 4)
   expect_true(sum(is.na(s$estimate)) == 4)
 
   # minCellCount = 3
   s <- summariseResult(x, minCellCount = 3)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<3") == 8)
   expect_true(sum(is.na(s$estimate)) == 8)
 
   # minCellCount = 4
   s <- summariseResult(x, minCellCount = 4)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<4") == 9)
   expect_true(sum(is.na(s$estimate)) == 9)
 
   # minCellCount = 5
   s <- summariseResult(x, minCellCount = 5)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<5") == 9)
   expect_true(sum(is.na(s$estimate)) == 9)
 
   # minCellCount = 6
   s <- summariseResult(x, minCellCount = 6)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<6") == 9)
   expect_true(sum(is.na(s$estimate)) == 9)
 
   # minCellCount = 7
   s <- summariseResult(x, minCellCount = 7)
-  expect_true(nrow(s) == 25)
+  expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate[!is.na(s$estimate)] == "<7") == 1)
-  expect_true(sum(is.na(s$estimate)) == 24)
+  expect_true(sum(is.na(s$estimate)) == 28)
 })
-
-
-
 
 test_that("test empty cohort", {
   dus_cohort <- dplyr::tibble(
@@ -286,14 +283,14 @@ test_that("test empty cohort", {
 
 
   cdm <- mockPatientProfiles(
-    connectionDetails,
+   connectionDetails,
     dus_cohort = dus_cohort
   )
 
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = FALSE,
         includeOverallStrata = TRUE
       )
@@ -302,7 +299,7 @@ test_that("test empty cohort", {
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = TRUE,
         includeOverallStrata = TRUE
       )
@@ -312,7 +309,7 @@ test_that("test empty cohort", {
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = FALSE,
         includeOverallStrata = FALSE
       )
@@ -321,9 +318,185 @@ test_that("test empty cohort", {
   expect_no_error(
     cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
-        group = list("Cohort name" = "cohort_name"),
+        group = list("cohort_name"),
         includeOverallGroup = TRUE,
         includeOverallStrata = FALSE
       )
   )
+})
+
+test_that("test summary table naming", {
+
+
+  cdm <- PatientProfiles::mockPatientProfiles(
+    connectionDetails
+  )
+
+  dat <-
+    cdm$cohort1 %>% addDemographics() %>%
+    dplyr::mutate(age_age = age,
+                  age_age_age = age,
+                 age_age_age_age = age) %>%
+    summariseResult()
+
+  expect_true(all(
+    c("age_age", "age", "age_age_age", "age_age_age_age") %in% dat$variable
+  ))
+
+
+
+
+
+})
+
+test_that("misisng counts", {
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    age = c(NA, 40, NA, 7),
+    sex = c("Male", "Male", "Female", "Male"),
+    prior_history = c(365, 25, 14, 48),
+    number_visits = c(NA, 1, 0, 0)
+  )
+  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
+  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
+  cohort <- dplyr::tbl(connectionDetails$con, name)
+  variables <- list(
+    numeric = c(
+      "age", "number_visits", "prior_history"
+    ),
+    categorical = c("sex")
+  )
+  functions <- list(
+    numeric = c("median", "q25", "q75", "missing"),
+    categorical = c("count", "percentage")
+  )
+  expect_no_error(
+    result <- summariseResult(
+      cohort, strata = list("sex"), variables = variables,
+      functions = functions, minCellCount = 1
+    )
+  )
+  expected <- dplyr::tribble(
+    ~strata, ~variable, ~count, ~percentage,
+    "Overall", "age", 2, 50,
+    "Overall", "number_visits", 1, 25,
+    "Overall", "prior_history", 0, 0,
+    "Male", "age", 1, 100/3,
+    "Male", "number_visits", 1, 100/3,
+    "Male", "prior_history", 0, 0,
+    "Female", "age", 1, 100,
+    "Female", "number_visits", 0, 0,
+    "Female", "prior_history", 0, 0,
+  ) %>%
+    dplyr::mutate(
+      count = as.character(.data$count),
+      percentage = as.character(.data$percentage)
+    )
+  for (k in seq_len(nrow(expected))) {
+    x <- result %>%
+      dplyr::filter(
+        .data$strata_level == .env$expected$strata[k],
+        .data$variable == .env$expected$variable[k],
+        .data$variable_level == "missing"
+      )
+    xcount <- x$estimate[x$estimate_type == "count"]
+    xpercentage <- x$estimate[x$estimate_type == "percentage"]
+    expect_true(xcount == expected$count[k])
+    expect_true(xpercentage == expected$percentage[k])
+  }
+  # female age is all na
+  expect_true(
+    result %>%
+      dplyr::filter(
+        .data$variable == "age", .data$strata_level == "Female",
+        is.na(.data$variable_level)
+      ) %>%
+      dplyr::pull("estimate") %>%
+      is.na() %>%
+      all()
+  )
+  DBI::dbRemoveTable(connectionDetails$con, name = name)
+})
+
+test_that("data is ordered", {
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    age = c(15, 40, 20, 7),
+    sex = c("Male", "Male", "Female", "Male"),
+    prior_history = c(365, 25, 14, 48),
+    number_visits = c(5, 1, 0, 0)
+  )
+  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
+  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
+  testTable <- dplyr::tbl(connectionDetails$con, name)
+  variables <- list(
+    numeric = c("age", "number_visits", "prior_history"),
+    categorical = c("sex")
+  )
+  functions <- list(
+    numeric = c("median", "q25", "q75"),
+    categorical = c("count", "percentage", "median")
+  )
+  expect_no_error(
+    result <- summariseResult(
+      table = testTable, strata = list("sex"), variables = variables,
+      functions = functions, minCellCount = 1
+    )
+  )
+  # check first overall, second sex
+  order <- unique(result$strata_level)
+  expect_identical(order, c("Overall", "Female", "Male"))
+  # first numbers, age, sex, prior_history, number_visits
+  variables <- unique(result$variable)
+  expect_identical(variables, c(
+    "number subjects", "number records", "age", "sex", "prior_history",
+    "number_visits"
+  ))
+  # variable levels appear by order
+  order <- unique(result$variable_level[result$variable == "sex"])
+  order <- order[!is.na(order)]
+  expect_identical(order, c("Female", "Male"))
+  DBI::dbRemoveTable(connectionDetails$con, name = name)
+
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    age = c(15, 40, 20, 7),
+    sex = c("Male", "Male", "xFemale", "Male"),
+    prior_history = c(365, 25, 14, 48),
+    number_visits = c(5, 1, 0, 0)
+  )
+  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
+  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
+  testTable <- dplyr::tbl(connectionDetails$con, name)
+  variables <- list(
+    numeric = c("age", "number_visits", "prior_history"),
+    categorical = c("sex")
+  )
+  functions <- list(
+    numeric = c("median", "q25", "q75"),
+    categorical = c("count", "percentage", "median")
+  )
+  expect_no_error(
+    result <- summariseResult(
+      table = testTable, strata = list("sex"), variables = variables,
+      functions = functions, minCellCount = 1
+    )
+  )
+  # check first overall, second sex
+  order <- unique(result$strata_level)
+  expect_identical(order, c("Overall", "Male", "xFemale"))
+  # first numbers, age, sex, prior_history, number_visits
+  variables <- unique(result$variable)
+  expect_identical(variables, c(
+    "number subjects", "number records", "age", "sex", "prior_history",
+    "number_visits"
+  ))
+  # variable levels appear by order
+  order <- unique(result$variable_level[result$variable == "sex"])
+  order <- order[!is.na(order)]
+  expect_identical(order, c("Male", "xFemale"))
+  DBI::dbRemoveTable(connectionDetails$con, name = name)
 })
