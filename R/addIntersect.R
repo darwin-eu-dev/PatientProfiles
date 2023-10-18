@@ -282,32 +282,38 @@ addIntersect <- function(x,
   }
 
   if (any(c("flag", "count") %in% value)) {
-    resultCountFlag <- resultCountFlag %>%
+    resultCountFlagPivot <- resultCountFlag %>%
       tidyr::pivot_longer(
         dplyr::any_of(c("count", "flag")),
         names_to = "value",
         values_to = "values"
-      ) %>%
+      )  %>%
       tidyr::pivot_wider(
         names_from = c("value", "id_name", "window_name"),
         values_from = "values",
         names_glue = nameStyle,
         values_fill = 0
       ) %>%
-      dplyr::rename(!!indexDate := "index_date") %>%
-      dplyr::rename_all(tolower)
+    dplyr::rename(!!indexDate := "index_date") %>%
+    dplyr::rename_all(tolower)
 
-    namesToEliminate <- intersect(colnames(x), colnames(resultCountFlag))
+    namesToEliminate <- intersect(colnames(x), colnames(resultCountFlagPivot))
     namesToEliminate <- namesToEliminate[
       !(namesToEliminate %in% c(personVariable, indexDate))
     ]
+
+
     x <- x %>%
       dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
       dplyr::left_join(
-        resultCountFlag,
+        resultCountFlagPivot,
         by = c(personVariable, indexDate)
-      )
+      ) %>%
+      dplyr::mutate(dplyr::across(dplyr::all_of(namesToEliminate),
+                    ~ dplyr::if_else(is.na(.x), 0, .x)))
+
     currentColnames <- colnames(x)
+
     x <- x %>%
       dplyr::mutate(dplyr::across(
         dplyr::all_of(currentColnames[!(currentColnames %in% originalColnames)]),

@@ -1208,3 +1208,55 @@ test_that("non snake columns not repeated in output", {
   expect_false("COHORT_1_0_to_inf" %in% colnames(cdm$cohort2))
   expect_false("COHORT_2_0_to_inf" %in% colnames(cdm$cohort2))
 })
+
+test_that("no NA when overwrite column", {
+
+  cdm <- mockPatientProfiles(
+    patient_size = 1000,
+    drug_exposure_size = 1000
+    )
+
+  # To get more logical table names and sort the records:
+  cdm$study_cohort <- cdm$cohort1
+  cdm$characteristics_cohort <- cdm$cohort2
+
+  # Presence in characteristis 'cohort 1' in 180 days before cohort start
+  cdm$study_cohort <- cdm$study_cohort %>%
+    addCohortIntersectFlag(
+      targetCohortTable = "characteristics_cohort",
+      window = list(c(-180, -1)),
+      targetCohortId = 1,
+      nameStyle = "{cohort_name}"
+    )
+
+
+  # Trying to overwrite the previous created variable, for example because the characteristics cohort has changed.
+  cdm$study_cohort <- cdm$study_cohort %>%
+    addCohortIntersectFlag(
+      targetCohortTable = "characteristics_cohort",
+      window = list(c(-180, -1)),
+      targetCohortId = 1,
+      nameStyle = "{cohort_name}"
+    )
+
+  expect_true(!any(is.na(cdm$study_cohort %>% dplyr::pull("cohort_1"))))
+
+  # subject 2, who has no record for cohort_definition_id 1 in the characteristics cohort, now gets a "NA"
+
+  # Moving the "cohort_definition_id == 1" records from subject 1 to subject 2:
+  cdm$characteristics_cohort <- cdm$characteristics_cohort %>%
+    dplyr::mutate(subject_id = dplyr::if_else(cohort_definition_id == 1 & subject_id == 1, 2, subject_id))
+
+  cdm$study_cohort <- cdm$study_cohort %>%
+    addCohortIntersectFlag(
+      targetCohortTable = "characteristics_cohort",
+      window = list(c(-180, -1)),
+      targetCohortId = 1,
+      nameStyle = "{cohort_name}"
+    )
+
+  expect_true(!any(is.na(cdm$study_cohort %>% dplyr::pull("cohort_1"))))
+
+})
+
+
