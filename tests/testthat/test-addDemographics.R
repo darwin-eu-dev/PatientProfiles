@@ -261,7 +261,7 @@ test_that("partial demographics - omop tables", {
       sex = TRUE,
       priorObservation = FALSE
     )
-  expect_true(c("sex") %in% names(cdm$cohort1b))
+  expect_true(c("sex") %in% colnames(cdm$cohort1b))
   expect_true(all(!c("age", "age_group", "prior_observation") %in%
     colnames(cdm$cohort1b)))
 

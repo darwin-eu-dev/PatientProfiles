@@ -68,7 +68,7 @@ test_that("working examples", {
   expect_true(colnames(result)[3] == "cohort_start_date")
   expect_true(colnames(result)[4] == "cohort_end_date")
 
-  expect_true(all(result$xx == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+  expect_true(all(result %>% dplyr::pull("xx") == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   result1 <- cdm$cohort1 %>%
     addIntersect(cdm = cdm, tableName = "cohort2", value = "count") %>%
