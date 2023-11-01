@@ -19,6 +19,7 @@
 #' @param cohort A cohort in the cdm
 #' @param cdm A cdm reference.
 #' @param strata Stratification list
+#' @param demographics Whether to summarise demographics data.
 #' @param ageGroup A list of age groups.
 #' @param tableIntersect A list of arguments that uses addTableIntersect
 #' function to add variables to summarise
@@ -56,6 +57,7 @@
 summariseCharacteristics <- function(cohort,
                                      cdm = attr(cohort, "cdm_reference"),
                                      strata = list(),
+                                     demographics = TRUE,
                                      ageGroup = NULL,
                                      tableIntersect = list(),
                                      cohortIntersect = list(),
@@ -63,6 +65,7 @@ summariseCharacteristics <- function(cohort,
                                      minCellCount = 5) {
   # check initial tables
   checkX(cohort)
+  checkmate::assertLogical(demographics, any.missing = FALSE, len = 1)
   checkCdm(cdm)
   checkStrata(strata, cohort)
   checkAgeGroup(ageGroup)
@@ -93,8 +96,13 @@ summariseCharacteristics <- function(cohort,
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
-    ) %>%
-    addDemographics(ageGroup = ageGroup)
+    )
+
+  if (demographics) {
+    summaryDemographics <- cohort %>%
+      addDemographics(ageGroup = ageGroup)
+  }
+
 
   variables <- dplyr::tibble(
     variable = c("cohort_start_date", "cohort_end_date"),

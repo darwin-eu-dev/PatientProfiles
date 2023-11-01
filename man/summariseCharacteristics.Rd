@@ -8,6 +8,7 @@ summariseCharacteristics(
   cohort,
   cdm = attr(cohort, "cdm_reference"),
   strata = list(),
+  demographics = TRUE,
   ageGroup = NULL,
   tableIntersect = list(),
   cohortIntersect = list(),
@@ -21,6 +22,8 @@ summariseCharacteristics(
 \item{cdm}{A cdm reference.}
 
 \item{strata}{Stratification list}
+
+\item{demographics}{Whether to summarise demographics data.}
 
 \item{ageGroup}{A list of age groups.}
 
