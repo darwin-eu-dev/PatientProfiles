@@ -11,6 +11,7 @@ summariseCharacteristics(
   ageGroup = NULL,
   tableIntersect = list(),
   cohortIntersect = list(),
+  conceptIntersect = list(),
   minCellCount = 5
 )
 }
@@ -24,10 +25,13 @@ summariseCharacteristics(
 \item{ageGroup}{A list of age groups.}
 
 \item{tableIntersect}{A list of arguments that uses addTableIntersect
-function to add covariates and comorbidities.}
+function to add variables to summarise}
 
 \item{cohortIntersect}{A list of arguments that uses addCohortIntersect
-function to add covariates and comorbidities.}
+function to add variables to summarise.}
+
+\item{conceptIntersect}{A list of arguments that uses addConceptIntersect
+function to add variables to summarise}
 
 \item{minCellCount}{minimum counts due to obscure}
 }
