@@ -220,7 +220,6 @@ getNumericValues <- function(x, variablesNumeric) {
 
 #' @noRd
 getDateValues <- function(x, variablesDate) {
-
   x <- x %>% dplyr::collect()
   functions <- variablesDate %>%
     dplyr::pull("estimate_type") %>%
@@ -244,6 +243,11 @@ getDateValues <- function(x, variablesDate) {
         dplyr::mutate(dplyr::across(
           dplyr::all_of(variablesFunction),
           ~ as.character(as.Date(round(.x), origin = "1970-01-01"))
+        ))
+    } else {
+      resultK <- resultK %>%
+        dplyr::mutate(dplyr::across(
+          dplyr::all_of(variablesFunction), as.character
         ))
     }
     resultK <- resultK %>%

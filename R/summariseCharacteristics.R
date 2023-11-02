@@ -74,123 +74,210 @@ summariseCharacteristics <- function(cohort,
   checkCohortIntersect(cohortIntersect, cdm)
   checkConceptIntersect(conceptIntersect, cdm)
 
-  # add names
-  ageGroup <- checkAgeGroup(ageGroup)
-  tableIntersect <- lapply(tableIntersect, function(x) {
-    if (!is.list(x[["window"]])) {
-      x[["window"]] <- list(x[["window"]])
-    }
-    names(x[["window"]]) <- getWindowNames(x[["window"]])
-    return(x)
-  })
-  cohortIntersect <- lapply(cohortIntersect, function(x) {
-    if (!is.list(x[["window"]])) {
-      x[["window"]] <- list(x[["window"]])
-    }
-    names(x[["window"]]) <- getWindowNames(x[["window"]])
-    return(x)
-  })
+  # functions
+  functions <- list(
+    date = c("median", "min", "q25", "q75", "max", "missing"),
+    numeric = c(
+      "min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd",
+      "missing"
+    ),
+    categorical = c("count", "percentage"),
+    binary = c("count", "percentage", "missing")
+  )
 
-  # add baseline characteristics
+  # select necessary variables
   cohort <- cohort %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
     )
 
+  dic <- dplyr::tibble(full_name = character(), short_name = character())
+  variables <- list()
+  options(unique_variable_name = 0)
+
+  # demographics
   if (demographics) {
-    summaryDemographics <- cohort %>%
+    if (!is.null(ageGroup)) {
+      # default names
+      ageGroup <- checkAgeGroup(ageGroup)
+
+      # update names
+      newNames <- uniqueVariableName(length(ageGroup))
+      dic <- dic %>%
+        dplyr::union_all(dplyr::tibble(
+          full_name = names(ageGroup), short_name = newNames
+        ))
+      names(ageGroup) <- newNames
+    }
+
+    # add demographics
+    cohort <- cohort %>%
       addDemographics(ageGroup = ageGroup)
+
+    # update summary settings
+    variables <- updateVariables(
+      variables = variables,
+      date = c("cohort_start_date", "cohort_end_date"),
+      numeric = c("prior_observation", "future_observation", "age"),
+      categorical = c("sex", newNames)
+    )
   }
 
-
-  variables <- dplyr::tibble(
-    variable = c("cohort_start_date", "cohort_end_date"),
-    variable_type = "date"
-  ) %>%
-    dplyr::union_all(dplyr::tibble(
-      variable = c("age", "prior_observation", "future_observation"),
-      variable_type = "numeric"
-    )) %>%
-    dplyr::union_all(dplyr::tibble(
-      variable = c("sex", names(ageGroup)),
-      variable_type = "categorical"
-    ))
-
-  # add tableIntersect
+  # tableIntersect
   for (k in seq_along(tableIntersect)) {
-    columTableIntersect <- colnames(cohort)
+    # prepare arguments
+    arguments <- formals(addIntersect)
+    arguments <- updateArguments(arguments, tableIntersect[[k]])
+    shortNames <- uniqueVariableName(length(arguments$window))
+    fullNames <- names(arguments$window)
+    names(arguments$window) <- shortNames
+
+    # update dictionary
+    addDic <- updateDic(tableIntersect[[k]]$value, shortNames, fullNames)
+    dic <- dic %>% dplyr::union_all(addDic)
+
+    # TODO to implement addTableIntersect
+    # add intersect
     cohort <- cohort %>%
       PatientProfiles::addIntersect(
         cdm = cdm,
-        tableName = tableIntersect[[k]][["tableName"]],
-        value = tableIntersect[[k]][["value"]],
-        window = tableIntersect[[k]][["window"]],
-        nameStyle = paste0(
-          tableIntersect[[k]][["tableName"]], "_any_{value}_{window_name}"
-        )
+        tableName = arguments$tableName,
+        value = arguments$value,
+        filterVariable = arguments$filterVariable,
+        filterId = arguments$filterId,
+        idName = arguments$idName,
+        window = arguments$window,
+        indexDate = arguments$indexDate,
+        censorDate = arguments$censorDate,
+        #targetStartDate = arguments$targetStartDate,
+        #targetEndDate = arguments$targetEndDate,
+        order = arguments$order,
+        nameStyle = "{value}_{window_name}"
       )
-    columTableIntersect <- setdiff(colnames(cohort), columTableIntersect)
-    variables <- variables %>%
-      dplyr::bind_rows(dplyr::tibble(
-        variable = columTableIntersect,
-        variable_type = switch(tableIntersect[[k]][["value"]],
-          "flag" = "binary",
-          "date" = "date",
-          "time" = "numeric",
-          "count" = "numeric",
-          "categorical"
-        ),
-        variable_group = names(tableIntersect)[k]
-      ))
+
+    # update summary settings
+    variables <- updateVariables(
+      variables = variables,
+      date = addDic$short_name[grepl("date_", addDic$short_name)],
+      numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
+      binary = addDic$short_name[grepl("flag_", addDic$short_name)]
+    )
   }
 
-  # add cohortIntersect
+  # cohortIntersect
   for (k in seq_along(cohortIntersect)) {
-    columCohortIntersect <- colnames(cohort)
-    cohort <- cohort %>%
-      PatientProfiles::addCohortIntersectFlag(
-        cdm = cdm,
-        targetCohortTable = cohortIntersect[[k]][["targetCohortTable"]],
-        window = cohortIntersect[[k]][["window"]],
-        nameStyle = paste0(
-          cohortIntersect[[k]][["targetCohortTable"]],
-          "_{cohort_name}_{value}_{window_name}"
-        )
-      )
-    columCohortIntersect <- setdiff(colnames(cohort), columCohortIntersect)
-    variables <- variables %>%
-      dplyr::bind_rows(dplyr::tibble(
-        variable = columCohortIntersect,
-        variable_type = switch(cohortIntersect[[k]][["value"]],
-          "flag" = "binary",
-          "date" = "date",
-          "time" = "numeric",
-          "count" = "numeric"
+    # prepare arguments
+    arguments <- formals(addCohortIntersect)
+    arguments <- updateArguments(arguments, cohortIntersect[[k]], TRUE)
+
+    # rename windows
+    fullNamesWindow <- names(arguments$window)
+    shortNamesWindow <- uniqueVariableName(length(arguments$window))
+    names(arguments$window) <- shortNamesWindow
+
+    # rename cohorts
+    fullNamesCohort <- CDMConnector::cohortSet(
+      cdm[[arguments$targetCohortTable]]
+    ) %>%
+      dplyr::pull("cohort_name")
+    shortNamesCohort <- uniqueVariableName(length(fullNamesCohort))
+    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <-
+      attr(cdm[[arguments$targetCohortTable]], "cohort_set") %>%
+      dplyr::rename("old_cohort_name" = "cohort_name") %>%
+      dplyr::inner_join(
+        dplyr::tibble(
+          "old_cohort_name" = fullNamesCohort, "cohort_name" = shortNamesCohort
         ),
-        variable_group = names(cohortIntersect)[k]
-      ))
+        by = "old_cohort_name",
+        copy = TRUE
+      ) %>%
+      CDMConnector::computeQuery()
+
+    # update dictionary
+    addDic <- updateDic(
+      cohortIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
+      shortNamesCohort, fullNamesCohort
+    )
+    dic <- dic %>% dplyr::union_all(addDic)
+
+    # add intersect
+    cohort <- cohort %>%
+      PatientProfiles::addCohortIntersect(
+        cdm = cdm,
+        targetCohortTable = arguments$targetCohortTable,
+        targetCohortId = arguments$targetCohortId,
+        indexDate = arguments$indexDate,
+        censorDate = arguments$censorDate,
+        targetStartDate = arguments$targetStartDate,
+        targetEndDate = arguments$targetEndDate,
+        window = arguments$window,
+        order = arguments$order,
+        flag = arguments$flag,
+        count = arguments$count,
+        date = arguments$date,
+        days = arguments$days,
+        nameStyle = "{value}_{cohort_name}_{window_name}"
+      )
+
+    # update summary settings
+    variables <- updateVariables(
+      variables = variables,
+      date = addDic$short_name[grepl("date_", addDic$short_name)],
+      numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
+      binary = addDic$short_name[grepl("flag_", addDic$short_name)]
+    )
   }
 
-  # set variables
-  variablesToSummary <- list()
-  keys <- variables %>%
-    dplyr::pull("variable_type") %>%
-    unique()
-  for (k in seq_along(keys)) {
-    variablesToSummary[[keys[k]]] <- variables %>%
-      dplyr::filter(.data$variable_type == .env$keys[k]) %>%
-      dplyr::pull("variable")
-  }
+  # conceptIntersect
+  for (k in seq_along(conceptIntersect)) {
+    # prepare arguments
+    arguments <- formals(addConceptIntersect)
+    arguments <- updateArguments(arguments, conceptIntersect[[k]], TRUE)
 
-  # set functions
-  functionsToSummary <- list(
-    date = c("median", "min", "q25", "q75", "max"),
-    numeric = c("median", "min", "q25", "q75", "max"),
-    categorical = c("count", "percentage"),
-    binary = c("count", "percentage")
-  )
-  functionsToSummary <- functionsToSummary[names(variablesToSummary)]
+    # rename windows
+    fullNamesWindow <- names(argumnets$window)
+    shortNamesWindow <- uniqueVariableName(length(arguments$window))
+    names(argumnets$window) <- shortNamesWindow
+
+    # rename cohorts
+    fullNamesConcept <- names(conceptSet)
+    shortNamesConcept <- uniqueVariableName(length(fullNamesConcept))
+    names(conceptSet) <- shortNamesConcept
+
+    # update dictionary
+    addDic <- updateDic(
+      conceptIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
+      shortNamesConcept, fullNamesConcept
+    )
+    dic <- dic %>% dplyr::union_all(addDic)
+
+    # add intersect
+    cohort <- cohort %>%
+      PatientProfiles::addConceptIntersect(
+        cdm = cdm,
+        conceptSet = arguments$conceptSet,
+        indexDate = arguments$indexDate,
+        censorDate = arguments$censorDate,
+        window = arguments$window,
+        targetStartDate = arguments$targetStartDate,
+        targetEndDate = arguments$targetEndDate,
+        order = arguments$order,
+        flag = arguments$flag,
+        count = arguments$count,
+        date = arguments$date,
+        days = arguments$days,
+        nameStyle = "{value}_{concept_name}_{window_name}"
+      )
+
+    # update summary settings
+    variables <- updateVariables(
+      variables = variables,
+      date = addDic$short_name[grepl("date_", addDic$short_name)],
+      numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
+      binary = addDic$short_name[grepl("flag_", addDic$short_name)]
+    )
+  }
 
   # update cohort_names
   cohort <- cohort %>% addCohortName()
@@ -198,13 +285,26 @@ summariseCharacteristics <- function(cohort,
   # summarise results
   results <- cohort %>%
     summariseResult(
-      group = list("cohort_name"), strata = strata,
-      variables = variablesToSummary, functions = functionsToSummary,
+      group = list("cohort_name"),
+      strata = strata,
+      variables = variables,
+      functions = functions,
       minCellCount = minCellCount
     ) %>%
     addCdmName(cdm = cdm) %>%
     dplyr::mutate(result_type = "Summary characteristics")
 
+  # rename variables
+  results <- results %>%
+    dplyr::left_join(
+      dic %>% dplyr::rename("variable" = "short_name"),
+      by = "variable"
+    ) %>%
+    dplyr::mutate("full_name" = dplyr::if_else(
+      is.na(.data$full_name), .data$variable, .data$full_name
+    )) %>%
+    dplyr::select(-"variable") %>%
+    dplyr::rename("variable" = "full_name")
 
   if (cohort %>%
     dplyr::count() %>%
@@ -301,4 +401,83 @@ tidyResults <- function(results, variables, intersect) {
         tidyColumn
       ))
   }
+}
+
+uniqueVariableName <- function(n = 1) {
+  if (n != 0) {
+    i <- getOption("unique_variable_name", 0) + 1:n
+    options(unique_variable_name = i[length(i)])
+    x <- sprintf("variable_%05i", i)
+  } else {
+    x <- NULL
+  }
+  return(x)
+}
+updateVariables <- function(variables,
+                            date = NULL,
+                            numeric = NULL,
+                            binary = NULL,
+                            categorical = NULL) {
+  variables$date <- c(variables$date, date)
+  variables$numeric <- c(variables$numeric, numeric)
+  variables$binary <- c(variables$binary, binary)
+  variables$categorical <- c(variables$categorical, categorical)
+  return(variables)
+}
+updateArguments <- function(arguments, settings, splitValues = FALSE) {
+  if (!is.list(settings[["window"]])) {
+    settings[["window"]] <- list(settings[["window"]])
+  }
+  for (nm in names(settings)) {
+    arguments[[nm]] <- settings[[nm]]
+  }
+  if (splitValues) {
+    arguments$flag <- FALSE
+    arguments$count <- FALSE
+    arguments$date <- FALSE
+    arguments$days <- FALSE
+    arguments[arguments$value] <- TRUE
+  }
+  names(arguments[["window"]]) <- getWindowNames(arguments[["window"]])
+  return(arguments)
+}
+updateDic <- function(value,
+                      shortNames1,
+                      fullNames1,
+                      shortNames2 = NULL,
+                      fullNames2 = NULL) {
+  x <- expand.grid("value" = value, "short_name1" = shortNames1) %>%
+    dplyr::as_tibble() %>%
+    dplyr::inner_join(
+      dplyr::tibble("short_name1" = shortNames1, "full_name1" = fullNames1),
+      by = "short_name1"
+    )
+  if (!is.null(shortNames2)) {
+    x <- x %>%
+      dplyr::inner_join(
+        expand.grid("short_name1" = shortNames1, "short_name2" = shortNames2) %>%
+          dplyr::as_tibble(),
+        by = "short_name1"
+      ) %>%
+      dplyr::inner_join(
+        dplyr::tibble("short_name2" = shortNames2, "full_name2" = fullNames2),
+        by = "short_name2"
+      ) %>%
+      dplyr::mutate(
+        "short_name" = paste0(
+          .data$value, "_", .data$short_name2, "_", .data$short_name1
+        ),
+        "full_name" = paste0(
+          .data$value, "_", .data$full_name2, "_", .data$full_name1
+        )
+      )
+  } else {
+    x <- x %>%
+      dplyr::mutate(
+        "short_name" = paste0(.data$value, "_", .data$short_name1),
+        "full_name" = paste0(.data$value, "_", .data$full_name1)
+      )
+  }
+  x %>%
+    dplyr::select("short_name", "full_name")
 }
