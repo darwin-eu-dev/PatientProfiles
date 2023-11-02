@@ -646,7 +646,7 @@ correctMissing <- function(result) {
     x <- result %>%
       dplyr::filter(.data$estimate_type == "missing")
     xCount <- x %>%
-      dplyr::mutate(estimate_type = "count", variable_level = "missing")
+      dplyr::mutate(estimate_type = "count_missing")
     xPercentage <- x %>%
       dplyr::left_join(
         result %>%
@@ -656,8 +656,7 @@ correctMissing <- function(result) {
       ) %>%
       dplyr::mutate(
         estimate = 100*as.numeric(.data$estimate)/as.numeric(.data$denominator),
-        estimate_type = "percentage",
-        variable_level = "missing",
+        estimate_type = "percentage_missing",
         order_id = .data$order_id + 0.5
       ) %>%
       dplyr::select(-"denominator")

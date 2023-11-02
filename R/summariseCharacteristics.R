@@ -92,7 +92,10 @@ summariseCharacteristics <- function(cohort,
       "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
     )
 
-  dic <- dplyr::tibble(full_name = character(), short_name = character())
+  dic <- dplyr::tibble(
+    full_name = character(), short_name = character(), value = character(),
+    cohort = character(), window = character(), variable_group = character()
+  )
   variables <- list()
   options(unique_variable_name = 0)
 
@@ -106,7 +109,9 @@ summariseCharacteristics <- function(cohort,
       newNames <- uniqueVariableName(length(ageGroup))
       dic <- dic %>%
         dplyr::union_all(dplyr::tibble(
-          full_name = names(ageGroup), short_name = newNames
+          full_name = names(ageGroup), short_name = newNames,
+          value = as.character(NA), cohort = as.character(NA),
+          window = as.character(NA), variable_group = as.character(NA)
         ))
       names(ageGroup) <- newNames
     }
@@ -134,10 +139,14 @@ summariseCharacteristics <- function(cohort,
     names(arguments$window) <- shortNames
 
     # update dictionary
-    addDic <- updateDic(tableIntersect[[k]]$value, shortNames, fullNames)
+    addDic <- updateDic(
+      tableIntersect[[k]]$value, shortNames, fullNames, arguments$tableName,
+      arguments$tableName, names(tableIntersect)[k]
+    )
     dic <- dic %>% dplyr::union_all(addDic)
 
     # TODO to implement addTableIntersect
+
     # add intersect
     cohort <- cohort %>%
       PatientProfiles::addIntersect(
@@ -153,7 +162,7 @@ summariseCharacteristics <- function(cohort,
         #targetStartDate = arguments$targetStartDate,
         #targetEndDate = arguments$targetEndDate,
         order = arguments$order,
-        nameStyle = "{value}_{window_name}"
+        nameStyle = paste0("{value}_", arguments$tableName, "_{window_name}")
       )
 
     # update summary settings
@@ -197,7 +206,7 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       cohortIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesCohort, fullNamesCohort
+      shortNamesCohort, fullNamesCohort, names(cohortIntersect)[k]
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -248,7 +257,7 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       conceptIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesConcept, fullNamesConcept
+      shortNamesConcept, fullNamesConcept, names(conceptIntersect)[k]
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -297,56 +306,50 @@ summariseCharacteristics <- function(cohort,
   # rename variables
   results <- results %>%
     dplyr::left_join(
-      dic %>% dplyr::rename("variable" = "short_name"),
+      tidyDic(dic) %>% dplyr::select("full_name", "variable" = "short_name"),
       by = "variable"
     ) %>%
     dplyr::mutate("full_name" = dplyr::if_else(
       is.na(.data$full_name), .data$variable, .data$full_name
     )) %>%
     dplyr::select(-"variable") %>%
-    dplyr::rename("variable" = "full_name")
-
-  if (cohort %>%
-    dplyr::count() %>%
-    dplyr::pull() > 0) {
-    # style intersects
-    results <- tidyResults(results, variables, c(tableIntersect, cohortIntersect))
-
-    # select variables
-    results <- results %>%
-      dplyr::select(
-        "cdm_name", "result_type", "group_name", "group_level", "strata_name",
-        "strata_level", "variable", "variable_level", "variable_type",
-        "estimate_type", "estimate"
-      )
-  }
+    dplyr::rename("variable" = "full_name") %>%
+    dplyr::mutate(dplyr::across(
+      c("group_level", "strata_level", "variable", "variable_level"),
+      ~ stringr::str_to_sentence(gsub("_", " ", .x))
+    )) %>%
+    dplyr::select(
+      "cdm_name", "result_type", "group_name", "group_level", "strata_name",
+      "strata_level", "variable", "variable_level", "variable_type",
+      "estimate_type", "estimate"
+    )
 
   return(results)
 }
 
-tidyResults <- function(results, variables, intersect) {
-  tidyColumn <- function(col) {
-    stringr::str_to_sentence(gsub("_", " ", col))
-  }
-  if (length(intersect) != 0) {
-    patternNames <- lapply(names(intersect), function(x) {
-      tidyr::expand_grid(
-        value = intersect[[x]][["value"]],
-        window_name = names(intersect[[x]][["window"]]),
-        table_name = c(
-          intersect[[x]][["targetCohortTable"]],
-          intersect[[x]][["tableName"]]
-        )
-      ) %>%
-        dplyr::mutate(variable_group = .env$x)
-    }) %>%
-      dplyr::bind_rows() %>%
-      dplyr::rowwise() %>%
-      tidyr::separate(
-        col = "window_name", into = "window_first", sep = "_", remove = FALSE,
-        extra = "drop"
-      ) %>%
-      dplyr::mutate(
+tidyDic <- function(dic) {
+  dic2 <- dic %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::mutate("window_name" = gsub("_", " ", .data$window_name)) %>%
+    dplyr::mutate("window_name" = dplyr::if_else(
+      substr(.data$window_name, 1, 1) == "m" &
+        suppressWarnings(!is.na(as.numeric(substr(.data$window_name, 2, 2)))),
+      gsub("m", "-", paste(.data$window_name, "days")),
+      .data$window_name
+    )) %>%
+    dplyr::mutate("new_variable" = paste(
+      .data$variable_group, .data$value, .data$window
+    )) %>%
+    dplyr::select(
+      "variable" = "short_name", "new_variable", "new_variable_level" = "cohort"
+    ) %>%
+    dplyr::union_all(
+      dic %>%
+        dplyr::filter(is.na(.data$value))
+    )
+
+  if (nrow(dic) > 0) {
+
         pattern = paste0("_", .data$value, "_", .data$window_name),
         variable_new = paste(
           .data$variable_group, .data$value, dplyr::if_else(
@@ -396,10 +399,7 @@ tidyResults <- function(results, variables, intersect) {
       ))
   } else {
     results %>%
-      dplyr::mutate(dplyr::across(
-        c("group_level", "strata_level", "variable", "variable_level"),
-        tidyColumn
-      ))
+
   }
 }
 
@@ -442,42 +442,37 @@ updateArguments <- function(arguments, settings, splitValues = FALSE) {
   return(arguments)
 }
 updateDic <- function(value,
-                      shortNames1,
-                      fullNames1,
-                      shortNames2 = NULL,
-                      fullNames2 = NULL) {
-  x <- expand.grid("value" = value, "short_name1" = shortNames1) %>%
+                      shortWindow,
+                      fullWindow,
+                      shortCohort,
+                      fullCohort,
+                      variableGroup) {
+  expand.grid("value" = value, "short_window" = shortWindow) %>%
     dplyr::as_tibble() %>%
     dplyr::inner_join(
-      dplyr::tibble("short_name1" = shortNames1, "full_name1" = fullNames1),
-      by = "short_name1"
-    )
-  if (!is.null(shortNames2)) {
-    x <- x %>%
+      dplyr::tibble("short_window" = shortWindow, "full_window" = fullWindow),
+      by = "short_window"
+    ) %>%
       dplyr::inner_join(
-        expand.grid("short_name1" = shortNames1, "short_name2" = shortNames2) %>%
+        expand.grid("short_window" = shortWindow, "short_cohort" = shortCohort) %>%
           dplyr::as_tibble(),
-        by = "short_name1"
+        by = "short_window"
       ) %>%
       dplyr::inner_join(
-        dplyr::tibble("short_name2" = shortNames2, "full_name2" = fullNames2),
-        by = "short_name2"
+        dplyr::tibble("short_cohort" = shortCohort, "full_cohort" = fullCohort),
+        by = "short_cohort"
       ) %>%
       dplyr::mutate(
         "short_name" = paste0(
-          .data$value, "_", .data$short_name2, "_", .data$short_name1
+          .data$value, "_", .data$short_cohort, "_", .data$short_window
         ),
         "full_name" = paste0(
-          .data$value, "_", .data$full_name2, "_", .data$full_name1
+          .data$value, "_", .data$full_cohort, "_", .data$full_window
         )
-      )
-  } else {
-    x <- x %>%
-      dplyr::mutate(
-        "short_name" = paste0(.data$value, "_", .data$short_name1),
-        "full_name" = paste0(.data$value, "_", .data$full_name1)
-      )
-  }
-  x %>%
-    dplyr::select("short_name", "full_name")
+      ) %>%
+    dplyr::select(
+      "short_name", "full_name", "value", "cohort" = "full_cohort",
+      "window" = "full_window"
+    ) %>%
+    dplyr::mutate("variable_group" = .env$variableGroup)
 }
