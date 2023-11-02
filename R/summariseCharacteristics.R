@@ -93,11 +93,25 @@ summariseCharacteristics <- function(cohort,
     )
 
   if (cohort %>% dplyr::tally() %>% dplyr::pull() == 0) {
+    if (any(c("subject_id", "person_id") %in% colnames(cohort))) {
+      variables <- c("number subjects", "number records")
+    } else {
+      variables <- "number records"
+    }
     result <- dplyr::tibble(
-      "cdm_name", "result_type", "group_name", "group_level", "strata_name",
-      "strata_level", "variable", "variable_level", "variable_type",
-      "estimate_type", "estimate"
+      "cdm_name" = CDMConnector::cdmName(cdm),
+      "result_type" = "Summarised characteristics",
+      "group_name" = "Overall",
+      "group_level" = "Overall",
+      "strata_name" = "Overall",
+      "strata_level" = "Overall",
+      "variable" = variables,
+      "variable_level" = as.character(NA),
+      "variable_type" = "numeric",
+      "estimate_type" = "count",
+      "estimate" = 0
     )
+    return(result)
   }
 
   dic <- dplyr::tibble(
@@ -122,6 +136,9 @@ summariseCharacteristics <- function(cohort,
           window = as.character(NA), variable_group = as.character(NA)
         ))
       names(ageGroup) <- newNames
+      demographicsCategorical <- c("sex", newNames)
+    } else {
+      demographicsCategorical <- "sex"
     }
 
     # add demographics
@@ -133,7 +150,7 @@ summariseCharacteristics <- function(cohort,
       variables = variables,
       date = c("cohort_start_date", "cohort_end_date"),
       numeric = c("prior_observation", "future_observation", "age"),
-      categorical = c("sex", newNames)
+      categorical = demographicsCategorical
     )
   }
 
@@ -305,7 +322,7 @@ summariseCharacteristics <- function(cohort,
       group = list("cohort_name"),
       strata = strata,
       variables = variables,
-      functions = functions,
+      functions = functions[names(variables)],
       minCellCount = minCellCount
     ) %>%
     addCdmName(cdm = cdm) %>%
@@ -344,10 +361,32 @@ tidyDic <- function(dic) {
   dic %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::mutate("window" = gsub("_", " ", .data$window)) %>%
+    tidyr::separate_wider_delim(
+      cols = "window", delim = " ", names = "win", too_few = "align_start",
+      too_many = "drop", cols_remove = FALSE
+    ) %>%
     dplyr::mutate("window" = dplyr::if_else(
-      substr(.data$window, 1, 1) == "m" &
-        suppressWarnings(!is.na(as.numeric(substr(.data$window, 2, 2)))),
-      gsub("m", "-", paste(.data$window, "days")),
+      substr(.data$win, 1, 1) == "m" &
+        suppressWarnings(!is.na(as.numeric(substr(.data$win, 2, nchar(.data$win))))),
+      gsub("m", "-", .data$window),
+      .data$window
+    )) %>%
+    tidyr::separate_wider_delim(
+      cols = "window", delim = " ", names = c("w1", "w2", "w3"),
+      too_few = "align_start", too_many = "drop", cols_remove = FALSE
+    ) %>%
+    dplyr::mutate(dplyr::across(
+      dplyr::all_of(c("w1", "w3")),
+      ~ suppressWarnings(as.numeric(.x))
+    )) %>%
+    dplyr::mutate("window" = dplyr::if_else(
+      !is.na(.data$w1) & .data$w2 == "to" & !is.na(.data$w3),
+      paste(
+        "from",
+        dplyr::if_else(is.infinite(.data$w1), "any time prior", as.character(.data$w1)),
+        "to",
+        dplyr::if_else(is.infinite(.data$w3), "any time after", as.character(.data$w3))
+      ),
       .data$window
     )) %>%
     dplyr::mutate("new_variable" = paste(

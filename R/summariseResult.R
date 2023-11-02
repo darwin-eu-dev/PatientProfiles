@@ -521,7 +521,7 @@ countSubjects <- function(x) {
         .groups = "drop"
       ) %>%
       dplyr::mutate(
-        variable = "number subjects", variable_type = as.character(NA),
+        variable = "number subjects", variable_type = "numeric",
         estimate_type = "count"
       ) %>%
       dplyr::collect()
