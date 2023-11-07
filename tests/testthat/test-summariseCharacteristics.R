@@ -202,7 +202,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 8 # 2 group_level 4 estimate type
+        dplyr::tally() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
@@ -210,7 +210,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 8 # 2 group_level 4 estimate type
+        dplyr::tally() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
@@ -218,7 +218,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 16 # 2 group_level 4 estimate type 2 window
+        dplyr::tally() * 8 # 2 group_level 4 estimate type 2 window
   )
   expect_true(
     result %>%
@@ -226,7 +226,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$comorbidities, "cohort_set") %>%
-        dplyr::tally() * 8 # 2 group_level 4 estimate type
+        dplyr::tally() * 4 # 2 group_level 4 estimate type
   )
 
   result_notables <- summariseCharacteristics(
