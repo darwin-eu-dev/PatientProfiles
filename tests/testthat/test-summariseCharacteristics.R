@@ -237,6 +237,51 @@ test_that("test summariseCharacteristics", {
     all(c("cdm_name", "result_type", "group_name", "group_level", "strata_name", "strata_level", "variable", "variable_level", "variable_type", "estimate_type", "estimate") %in%
       colnames(result_notables))
   )
+
+  # demographics
+  expect_no_error(result <- summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = TRUE,
+    cohortIntersect = list(
+      "Medications" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      )
+    ),
+    minCellCount = 1
+  ))
+  expect_true(all(
+    c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
+      "Future observation") %in% result$variable
+  ))
+  expect_no_error(result <- summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = TRUE,
+    minCellCount = 1
+  ))
+  expect_true(all(
+    c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
+      "Future observation") %in% result$variable
+  ))
+  expect_no_error(result <- summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = FALSE,
+    cohortIntersect = list(
+      "Medications" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      )
+    ),
+    minCellCount = 1
+  ))
+  expect_false(any(
+    c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
+      "Future observation") %in% result$variable
+  ))
+  expect_error(summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = FALSE,
+    minCellCount = 1
+  ))
+
 })
 
 test_that("test empty cohort", {

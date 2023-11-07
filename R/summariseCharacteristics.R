@@ -74,15 +74,25 @@ summariseCharacteristics <- function(cohort,
   checkCohortIntersect(cohortIntersect, cdm)
   checkConceptIntersect(conceptIntersect, cdm)
 
+  # check empty
+  if (demographics == FALSE &
+      length(tableIntersect) == 0 &
+      length(cohortIntersect) == 0 &
+      length(conceptIntersect) == 0 ) {
+    cli::cli_abort(
+      "Please fill demographics, tableIntersect, cohortIntersect or
+      conceptIntersect"
+    )
+  }
+
   # functions
   functions <- list(
-    date = c("median", "min", "q25", "q75", "max", "missing"),
+    date = c("min", "q05", "q25", "median", "q75", "q95", "max"),
     numeric = c(
-      "min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd",
-      "missing"
+      "min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd"
     ),
     categorical = c("count", "percentage"),
-    binary = c("count", "percentage", "missing")
+    binary = c("count", "percentage")
   )
 
   # select necessary variables
