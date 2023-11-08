@@ -45,6 +45,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                minCellCount = 5,
                                                minimumFrequency = 0.005,
                                                cdm = attr(cohort, "cdm_reference")) {
+  if (!is.list(window)) {
+    window <- list(window)
+  }
+
   # initial checks
   checkX(cohort)
   checkStrata(strata, cohort)
@@ -156,6 +160,10 @@ addLargeScaleCharacteristics <- function(cohort,
                                          episodeInWindow = NULL,
                                          includeSource = FALSE,
                                          minimumFrequency = 0.005) {
+  if (!is.list(window)) {
+    window <- list(window)
+  }
+
   # initial checks
   checkX(cohort)
   checkWindow(window)

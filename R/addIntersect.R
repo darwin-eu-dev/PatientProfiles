@@ -67,6 +67,10 @@ addIntersect <- function(x,
                          targetEndDate = getEndName(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}") {
+  if (!is.list(window)) {
+    window <- list(window)
+  }
+
   # initial checks
   personVariable <- checkX(x)
   checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
