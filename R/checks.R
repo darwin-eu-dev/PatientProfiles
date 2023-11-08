@@ -154,12 +154,12 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
 #' @noRd
 checkWindow <- function(window) {
   if (!is.list(window)) {
-    window <- list(window)
+    cli::cli_abort("window must be a list")
   }
 
   # Find if any NA, throw warning that it will be changed to Inf, change it later
   if (any(unlist(lapply(window, is.na)))) {
-    cli::cli_abort("NA found in window, please change use Inf or -Inf instead")
+    cli::cli_abort("NA found in window, please use Inf or -Inf instead")
   }
 
   originalWindow <- window

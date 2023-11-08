@@ -1,4 +1,4 @@
-test_that("basic functionality large scale characteristics", {
+test_that("basic functionality summarise large scale characteristics", {
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = c(8507, 8532),
@@ -175,4 +175,171 @@ test_that("basic functionality large scale characteristics", {
       expect_true(r$estimate[r$estimate_type == "percentage"] == percentage[k])
     }
   }
+})
+
+test_that("basic functionality add large scale characteristics", {
+  person <- dplyr::tibble(
+    person_id = c(1, 2),
+    gender_concept_id = c(8507, 8532),
+    year_of_birth = c(1990, 1992),
+    month_of_birth = c(1, 1),
+    day_of_birth = c(1, 1)
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1, 2),
+    person_id = c(1, 2),
+    observation_period_start_date = as.Date(c("2011-10-07", "2000-01-01")),
+    observation_period_end_date = as.Date(c("2031-10-07", "2030-01-01")),
+    period_type_concept_id = 44814724
+  )
+  cohort_interest <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 2),
+    cohort_start_date = as.Date(c(
+      "2012-10-10", "2015-01-01", "2013-10-10", "2015-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2012-10-10", "2015-01-01", "2013-10-10", "2015-01-01"
+    ))
+  )
+  drug_exposure <- dplyr::tibble(
+    drug_exposure_id = 1:11,
+    person_id = c(rep(1, 8), rep(2, 3)),
+    drug_concept_id = c(
+      rep(1125315, 2), rep(1503328, 5), 1516978, 1125315, 1503328, 1516978
+    ),
+    drug_exposure_start_date = as.Date(c(
+      "2010-10-01", "2012-12-31", "2010-01-01", "2012-09-01", "2013-04-01",
+      "2014-10-31", "2015-05-01", "2015-10-01", "2012-01-01", "2012-10-01",
+      "2014-10-12"
+    )),
+    drug_exposure_end_date = as.Date(c(
+      "2010-12-01", "2013-05-12", "2011-01-01", "2012-10-01", "2013-05-01",
+      "2014-12-31", "2015-05-02", "2016-10-01", "2012-01-01", "2012-10-30",
+      "2015-01-10"
+    )),
+    drug_type_concept_id = 38000177,
+    quantity = 1
+  )
+  condition_occurrence <- dplyr::tibble(
+    condition_occurrence_id = 1:8,
+    person_id = c(rep(1, 4), rep(2, 4)),
+    condition_concept_id = c(
+      317009, 378253, 378253, 4266367, 317009, 317009, 378253, 4266367
+    ),
+    condition_start_date = as.Date(c(
+      "2012-10-01", "2012-01-01", "2014-01-01", "2010-01-01", "2015-02-01",
+      "2012-01-01", "2013-10-01", "2014-10-10"
+    )),
+    condition_end_date = as.Date(c(
+      "2013-01-01", "2012-04-01", "2014-10-12", "2015-01-01", "2015-03-01",
+      "2012-04-01", "2013-12-01", NA
+    )),
+    condition_type_concept_id = 32020
+  )
+  cdm <- mockPatientProfiles(
+    connectionDetails,
+    person = person, observation_period = observation_period,
+    cohort_interest = cohort_interest, drug_exposure = drug_exposure,
+    condition_occurrence = condition_occurrence
+  )
+  concept <- dplyr::tibble(
+    concept_id = c(1125315, 1503328, 1516978, 317009, 378253, 4266367)
+  ) %>%
+    dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+  name <- CDMConnector::inSchema(
+    schema = connectionDetails$write_schema, table = "concept"
+  )
+  DBI::dbWriteTable(
+    conn = connectionDetails$con, name = name, value = concept, overwrite = TRUE
+  )
+  cdm$concept <- dplyr::tbl(connectionDetails$con, name)
+
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      dplyr::filter(.data$cohort_definition_id == 1) %>%
+      addLargeScaleCharacteristics(
+        window = list(c(0, 0), c(-Inf, -366)),
+        eventInWindow = c("condition_occurrence", "drug_exposure"),
+        minimumFrequency = 0
+      )
+  )
+  conceptId <- c(317009, 378253, 4266367)
+  windowName <- "minf_to_m366"
+  count <- c(2, 1, 2)
+  expect_false(any(grepl("0_to_0", colnames(result))))
+  for (k in seq_along(conceptId)) {
+    column <- paste0("lsc_", windowName, "_", conceptId[k])
+    expect_true(column %in% colnames(result))
+    expect_equal(
+      result %>% dplyr::pull(dplyr::all_of(column)) %>% sum(),
+      count[k]
+    )
+  }
+
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      dplyr::filter(.data$cohort_definition_id == 1) %>%
+      addLargeScaleCharacteristics(
+        window = list(c(0, 0), c(-Inf, -366)),
+        episodeInWindow = c("condition_occurrence", "drug_exposure"),
+        minimumFrequency = 0
+      )
+  )
+  conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
+  windowName <- rep(c("0_to_0", "minf_to_m366"), 3)
+  count <- c(1, 2, 1, 1, 2, 2)
+  cols <- paste0("lsc_", windowName, "_", conceptId)
+  for (k in seq_along(conceptId)) {
+    expect_true(cols[k] %in% colnames(result))
+    expect_equal(
+      result %>% dplyr::pull(dplyr::all_of(cols[k])) %>% sum(),
+      count[k]
+    )
+  }
+
+  expect_no_error(
+    result2 <- cdm$cohort_interest %>%
+      dplyr::filter(.data$cohort_definition_id == 1) %>%
+      addLargeScaleCharacteristics(
+        window = list(c(0, 0), c(-Inf, -366)),
+        episodeInWindow = c("condition_occurrence", "drug_exposure"),
+        minimumFrequency = 0.25
+      )
+  )
+  expect_identical(
+    result %>%
+      dplyr::select(dplyr::all_of(sort(colnames(result)))) %>%
+      dplyr::collect() %>%
+      dplyr::arrange(.data$cohort_start_date),
+    result2 %>%
+      dplyr::select(dplyr::all_of(sort(colnames(result2)))) %>%
+      dplyr::collect() %>%
+      dplyr::arrange(.data$cohort_start_date)
+  )
+
+  expect_no_error(
+    result3 <- cdm$cohort_interest %>%
+      dplyr::filter(.data$cohort_definition_id == 1) %>%
+      addLargeScaleCharacteristics(
+        window = list(c(0, 0), c(-Inf, -366)),
+        episodeInWindow = c("condition_occurrence", "drug_exposure"),
+        minimumFrequency = 0.4
+      )
+  )
+  presentCols <- cols[count > 1]
+  expect_true(all(presentCols %in% colnames(result3)))
+  noCols <- cols[count <= 1]
+  expect_false(any(noCols %in% colnames(result3)))
+
+  expect_no_error(
+    result4 <- cdm$cohort_interest %>%
+      dplyr::filter(.data$cohort_definition_id == 1) %>%
+      addLargeScaleCharacteristics(
+        window = list(c(0, 0), c(-Inf, -366)),
+        episodeInWindow = c("condition_occurrence", "drug_exposure"),
+        minimumFrequency = 0.75
+      )
+  )
+  expect_false(any(cols %in% colnames(result4)))
 })
