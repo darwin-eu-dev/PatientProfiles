@@ -251,7 +251,7 @@ test_that("basic functionality add large scale characteristics", {
     schema = connectionDetails$write_schema, table = "concept"
   )
   DBI::dbWriteTable(
-    conn = connectionDetails$con, name = name, value = concept
+    conn = connectionDetails$con, name = name, value = concept, overwrite = TRUE
   )
   cdm$concept <- dplyr::tbl(connectionDetails$con, name)
 
