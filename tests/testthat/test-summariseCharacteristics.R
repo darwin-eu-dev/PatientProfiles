@@ -80,7 +80,8 @@ test_that("test summariseCharacteristics", {
       ), "Comorbidities" = list(
         targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
       )
-    ), minCellCount = 1
+    ),
+    minCellCount = 1
   ))
   expect_identical(colnames(result), c(
     "cdm_name", "result_type", "group_name", "group_level", "strata_name",
@@ -201,7 +202,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 2 estimate type
+        dplyr::tally() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
@@ -209,7 +210,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 2 estimate type
+        dplyr::tally() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
@@ -217,7 +218,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 8 # 2 group_level 2 estimate type 2 window
+        dplyr::tally() * 8 # 2 group_level 4 estimate type 2 window
   )
   expect_true(
     result %>%
@@ -225,7 +226,7 @@ test_that("test summariseCharacteristics", {
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$comorbidities, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 2 estimate type
+        dplyr::tally() * 4 # 2 group_level 4 estimate type
   )
 
   result_notables <- summariseCharacteristics(
@@ -236,6 +237,51 @@ test_that("test summariseCharacteristics", {
     all(c("cdm_name", "result_type", "group_name", "group_level", "strata_name", "strata_level", "variable", "variable_level", "variable_type", "estimate_type", "estimate") %in%
       colnames(result_notables))
   )
+
+  # demographics
+  expect_no_error(result <- summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = TRUE,
+    cohortIntersect = list(
+      "Medications" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      )
+    ),
+    minCellCount = 1
+  ))
+  expect_true(all(
+    c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
+      "Future observation") %in% result$variable
+  ))
+  expect_no_error(result <- summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = TRUE,
+    minCellCount = 1
+  ))
+  expect_true(all(
+    c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
+      "Future observation") %in% result$variable
+  ))
+  expect_no_error(result <- summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = FALSE,
+    cohortIntersect = list(
+      "Medications" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      )
+    ),
+    minCellCount = 1
+  ))
+  expect_false(any(
+    c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
+      "Future observation") %in% result$variable
+  ))
+  expect_error(summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = FALSE,
+    minCellCount = 1
+  ))
+
 })
 
 test_that("test empty cohort", {
