@@ -31,6 +31,10 @@ reference:
   desc: Add multiple variables indicating the intersection between two tablea in the OMOP Common Data Model.
 - contents:
   - '`addIntersect`'
+- subtitle: Add multiple columns from large scale characteristics
+  desc: Add multiple variables indicating the intersection between concepts in tables in the OMOP Common Data Model.
+- contents:
+  - '`addLargeScaleCharacteristics`'
 - subtitle: Summarise patient characteristics
   desc: Function that allow the user to summarise patient characteristics (characteristics must be added priot the use of the function)
 - contents:
