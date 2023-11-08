@@ -397,11 +397,10 @@ test_that("misisng counts", {
     x <- result %>%
       dplyr::filter(
         .data$strata_level == .env$expected$strata[k],
-        .data$variable == .env$expected$variable[k],
-        .data$variable_level == "missing"
+        .data$variable == .env$expected$variable[k]
       )
-    xcount <- x$estimate[x$estimate_type == "count"]
-    xpercentage <- x$estimate[x$estimate_type == "percentage"]
+    xcount <- x$estimate[x$estimate_type == "count_missing"]
+    xpercentage <- x$estimate[x$estimate_type == "percentage_missing"]
     expect_true(xcount == expected$count[k])
     expect_true(xpercentage == expected$percentage[k])
   }
@@ -409,8 +408,10 @@ test_that("misisng counts", {
   expect_true(
     result %>%
       dplyr::filter(
-        .data$variable == "age", .data$strata_level == "Female",
-        is.na(.data$variable_level)
+        .data$variable == "age",
+        .data$strata_level == "Female",
+        is.na(.data$variable_level),
+        !.data$estimate_type %in% c("count_missing", "percentage_missing")
       ) %>%
       dplyr::pull("estimate") %>%
       is.na() %>%

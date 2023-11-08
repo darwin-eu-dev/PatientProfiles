@@ -220,7 +220,6 @@ getNumericValues <- function(x, variablesNumeric) {
 
 #' @noRd
 getDateValues <- function(x, variablesDate) {
-
   x <- x %>% dplyr::collect()
   functions <- variablesDate %>%
     dplyr::pull("estimate_type") %>%
@@ -244,6 +243,11 @@ getDateValues <- function(x, variablesDate) {
         dplyr::mutate(dplyr::across(
           dplyr::all_of(variablesFunction),
           ~ as.character(as.Date(round(.x), origin = "1970-01-01"))
+        ))
+    } else {
+      resultK <- resultK %>%
+        dplyr::mutate(dplyr::across(
+          dplyr::all_of(variablesFunction), as.character
         ))
     }
     resultK <- resultK %>%
@@ -517,7 +521,7 @@ countSubjects <- function(x) {
         .groups = "drop"
       ) %>%
       dplyr::mutate(
-        variable = "number subjects", variable_type = as.character(NA),
+        variable = "number subjects", variable_type = "numeric",
         estimate_type = "count"
       ) %>%
       dplyr::collect()
@@ -642,7 +646,7 @@ correctMissing <- function(result) {
     x <- result %>%
       dplyr::filter(.data$estimate_type == "missing")
     xCount <- x %>%
-      dplyr::mutate(estimate_type = "count", variable_level = "missing")
+      dplyr::mutate(estimate_type = "count_missing")
     xPercentage <- x %>%
       dplyr::left_join(
         result %>%
@@ -652,8 +656,7 @@ correctMissing <- function(result) {
       ) %>%
       dplyr::mutate(
         estimate = 100*as.numeric(.data$estimate)/as.numeric(.data$denominator),
-        estimate_type = "percentage",
-        variable_level = "missing",
+        estimate_type = "percentage_missing",
         order_id = .data$order_id + 0.5
       ) %>%
       dplyr::select(-"denominator")
