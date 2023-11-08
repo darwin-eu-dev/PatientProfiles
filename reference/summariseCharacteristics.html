@@ -54,9 +54,11 @@
 <span>  <span class="va">cohort</span>,</span>
 <span>  cdm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="st">"cdm_reference"</span><span class="op">)</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  demographics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ageGroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tableIntersect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cohortIntersect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  conceptIntersect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -75,18 +77,27 @@
 <dd><p>Stratification list</p></dd>
 
 
+<dt>demographics</dt>
+<dd><p>Whether to summarise demographics data.</p></dd>
+
+
 <dt>ageGroup</dt>
 <dd><p>A list of age groups.</p></dd>
 
 
 <dt>tableIntersect</dt>
 <dd><p>A list of arguments that uses addTableIntersect
-function to add covariates and comorbidities.</p></dd>
+function to add variables to summarise</p></dd>
 
 
 <dt>cohortIntersect</dt>
 <dd><p>A list of arguments that uses addCohortIntersect
-function to add covariates and comorbidities.</p></dd>
+function to add variables to summarise.</p></dd>
+
+
+<dt>conceptIntersect</dt>
+<dd><p>A list of arguments that uses addConceptIntersect
+function to add variables to summarise</p></dd>
 
 
 <dt>minCellCount</dt>
@@ -135,7 +146,7 @@ function to add covariates and comorbidities.</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning in `base::max()`:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> no non-missing arguments to max; returning -Inf</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Run `dplyr::last_dplyr_warnings()` to see the 2 remaining warnings.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 88 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 128 × 11</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    cdm_name result_type group_name group_level strata_name strata_level variable</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> PP_MOCK  Summary ch… cohort_na… Cohort 1    Overall     Overall      Number …</span>
@@ -148,7 +159,7 @@ function to add covariates and comorbidities.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> PP_MOCK  Summary ch… cohort_na… Cohort 1    Overall     Overall      Cohort …</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> PP_MOCK  Summary ch… cohort_na… Cohort 1    Overall     Overall      Cohort …</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> PP_MOCK  Summary ch… cohort_na… Cohort 1    Overall     Overall      Cohort …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 78 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 118 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: variable_level &lt;chr&gt;, variable_type &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
