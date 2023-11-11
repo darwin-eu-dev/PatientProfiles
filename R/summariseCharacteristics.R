@@ -285,9 +285,9 @@ summariseCharacteristics <- function(cohort,
     arguments <- updateArguments(arguments, conceptIntersect[[k]], TRUE)
 
     # rename windows
-    fullNamesWindow <- names(argumnets$window)
+    fullNamesWindow <- names(arguments$window)
     shortNamesWindow <- uniqueVariableName(length(arguments$window))
-    names(argumnets$window) <- shortNamesWindow
+    names(arguments$window) <- shortNamesWindow
 
     # rename cohorts
     fullNamesConcept <- names(conceptSet)
