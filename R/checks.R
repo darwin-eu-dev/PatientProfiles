@@ -600,3 +600,15 @@ assertWriteSchema <- function(cdm, call = rlang::env_parent()) {
     )
   }
 }
+
+#' @noRd
+checkOtherVariables <- function(otherVariables, cohort, call = rlang::env_parent()) {
+  errorMessage <- "otherVariables must point to columns in cohort."
+  if (!is.character(otherVariables)) {
+    cli::cli_abort(errorMessage, call = call)
+  }
+  if (!all(otherVariables %in% colnames(cohort))) {
+    cli::cli_abort(errorMessage, call = call)
+  }
+  invisible(otherVariables)
+}

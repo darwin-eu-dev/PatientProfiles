@@ -13,6 +13,7 @@ summariseCharacteristics(
   tableIntersect = list(),
   cohortIntersect = list(),
   conceptIntersect = list(),
+  otherVariables = character(),
   minCellCount = 5
 )
 }
@@ -34,7 +35,10 @@ function to add variables to summarise}
 function to add variables to summarise.}
 
 \item{conceptIntersect}{A list of arguments that uses addConceptIntersect
-function to add variables to summarise}
+function to add variables to summarise.}
+
+\item{otherVariables}{Other variables contained in cohort that you want to be
+summarised.}
 
 \item{minCellCount}{minimum counts due to obscure}
 }

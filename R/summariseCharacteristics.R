@@ -26,7 +26,9 @@
 #' @param cohortIntersect A list of arguments that uses addCohortIntersect
 #' function to add variables to summarise.
 #' @param conceptIntersect A list of arguments that uses addConceptIntersect
-#' function to add variables to summarise
+#' function to add variables to summarise.
+#' @param otherVariables Other variables contained in cohort that you want to be
+#' summarised.
 #' @param minCellCount minimum counts due to obscure
 #'
 #' @return A summary of the characteristics of the individuals
@@ -62,6 +64,7 @@ summariseCharacteristics <- function(cohort,
                                      tableIntersect = list(),
                                      cohortIntersect = list(),
                                      conceptIntersect = list(),
+                                     otherVariables = character(),
                                      minCellCount = 5) {
   # check initial tables
   checkX(cohort)
@@ -73,6 +76,7 @@ summariseCharacteristics <- function(cohort,
   checkTableIntersect(tableIntersect, cdm)
   checkCohortIntersect(cohortIntersect, cdm)
   checkConceptIntersect(conceptIntersect, cdm)
+  checkOtherVariables(otherVariables, cohort)
 
   # check empty
   if (demographics == FALSE &
@@ -99,7 +103,8 @@ summariseCharacteristics <- function(cohort,
   cohort <- cohort %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
+      "cohort_end_date", dplyr::all_of(unique(unlist(strata))),
+      dplyr::all_of(otherVariables)
     )
 
   if (cohort %>% dplyr::tally() %>% dplyr::pull() == 0) {
@@ -325,6 +330,16 @@ summariseCharacteristics <- function(cohort,
 
   # update cohort_names
   cohort <- cohort %>% addCohortName()
+
+  # detect other variables
+  x <- variableTypes(cohort %>% dplyr::select(dplyr::all_of(otherVariables)))
+  variables <- updateVariables(
+    variables = variables,
+    date = x %>% dplyr::filter(.data$variable_type == "date") %>% dplyr::pull("variable"),
+    numeric = x %>% dplyr::filter(.data$variable_type == "numeric") %>% dplyr::pull("variable"),
+    binary = x %>% dplyr::filter(.data$variable_type == "binary") %>% dplyr::pull("variable"),
+    categorical = x %>% dplyr::filter(.data$variable_type == "categorical") %>% dplyr::pull("variable")
+  )
 
   # summarise results
   results <- cohort %>%
