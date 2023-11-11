@@ -290,9 +290,9 @@ summariseCharacteristics <- function(cohort,
     names(arguments$window) <- shortNamesWindow
 
     # rename cohorts
-    fullNamesConcept <- names(conceptSet)
+    fullNamesConcept <- names(arguments$conceptSet)
     shortNamesConcept <- uniqueVariableName(length(fullNamesConcept))
-    names(conceptSet) <- shortNamesConcept
+    names(arguments$conceptSet) <- shortNamesConcept
 
     # update dictionary
     addDic <- updateDic(
@@ -304,7 +304,6 @@ summariseCharacteristics <- function(cohort,
     # add intersect
     cohort <- cohort %>%
       PatientProfiles::addConceptIntersect(
-        cdm = cdm,
         conceptSet = arguments$conceptSet,
         indexDate = arguments$indexDate,
         censorDate = arguments$censorDate,

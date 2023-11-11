@@ -76,7 +76,7 @@ addConceptIntersect <- function(x,
     dplyr::select(dplyr::any_of(c("subject_id", "person_id"))) %>%
     dplyr::distinct() %>%
     dplyr::pull()
-  if (targetEndDate == "cohort_end_date") {
+  if (!is.null(targetEndDate) && targetEndDate == "cohort_end_date") {
     end <- "event_end_date"
   } else {
     end <- 0
