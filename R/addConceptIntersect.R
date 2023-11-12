@@ -73,23 +73,27 @@ addConceptIntersect <- function(x,
   cdm <- attr(x, "cdm_reference")
   nameCohort <- "add_intersect_concept_set"
   individuals <- x %>%
-    dplyr::select(dplyr::any_of(c("subject_id", "person_id"))) %>%
-    dplyr::distinct() %>%
-    dplyr::pull()
+    dplyr::select("person_id" = dplyr::any_of(c("subject_id", "person_id"))) %>%
+    dplyr::distinct()
+  for (tab in c(
+    "condition_occurrence", "drug_exposure", "procedure_occurrence",
+    "observation", "measurement", "device_exposure"
+  )) {
+    cdm[[tab]] <- cdm[[tab]] %>%
+      dplyr::inner_join(individuals, by = "person_id")
+  }
   if (!is.null(targetEndDate) && targetEndDate == "cohort_end_date") {
     end <- "event_end_date"
   } else {
     end <- 0
   }
-  end <- targetEndDate %||% 0
-  cdmNew <- CDMConnector::generateConceptCohortSet(
-    cdm = CDMConnector::cdmSubset(cdm, individuals),
+  cdm <- CDMConnector::generateConceptCohortSet(
     conceptSet = conceptSet,
     name = nameCohort,
     limit = "all",
-    end = end
+    end = end,
+    overwrite = TRUE
   )
-  cdm[[nameCohort]] <- cdmNew[[nameCohort]]
   x <- addCohortIntersect(
     x = x,
     cdm = cdm,
@@ -106,6 +110,7 @@ addConceptIntersect <- function(x,
     days = days,
     nameStyle = gsub("\\{concept_name\\}", "\\{cohort_name\\}", nameStyle)
   )
+  CDMConnector::dropTable(cdm, nameCohort)
   return(x)
 }
 
