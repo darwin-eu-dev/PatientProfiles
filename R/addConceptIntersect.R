@@ -88,6 +88,7 @@ addConceptIntersect <- function(x,
     end <- 0
   }
   cdm <- CDMConnector::generateConceptCohortSet(
+    cdm = cdm,
     conceptSet = conceptSet,
     name = nameCohort,
     limit = "all",
