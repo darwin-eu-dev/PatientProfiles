@@ -104,7 +104,7 @@ addConceptIntersect <- function(x,
     count = count,
     date = date,
     days = days,
-    nameStyle = gsub("{concept_name}", "{cohort_name}", nameStyle)
+    nameStyle = gsub("\\{concept_name\\}", "\\{cohort_name\\}", nameStyle)
   )
   return(x)
 }
