@@ -47,7 +47,7 @@ Suggests:
     DiagrammeRsvg
 Imports: 
     magrittr,
-    CDMConnector (>= 1.0.0),
+    CDMConnector (>= 1.2.0),
     dplyr,
     tidyr,
     checkmate,
