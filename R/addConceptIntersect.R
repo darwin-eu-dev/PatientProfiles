@@ -111,7 +111,10 @@ addConceptIntersect <- function(x,
     days = days,
     nameStyle = gsub("\\{concept_name\\}", "\\{cohort_name\\}", nameStyle)
   )
-  CDMConnector::dropTable(cdm, nameCohort)
+  CDMConnector::dropTable(
+    cdm = cdm,
+    name = paste0(nameCohort, c("", "_set", "_count", "_attrition"))
+  )
   return(x)
 }
 
