@@ -333,4 +333,14 @@ test_that("test empty cohort", {
         )
       ), minCellCount = 1)
   )
+  expect_no_error(
+    cdm$dus_cohort %>%
+      summariseCharacteristics(cohortIntersect = list(
+        "Medications" = list(
+          targetCohortTable = "medication", value = "flag", window = c(-365, 0), targetCohortId = 1
+        ), "Comorbidities" = list(
+          targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+        )
+      ), minCellCount = 1)
+  )
 })
