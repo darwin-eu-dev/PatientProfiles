@@ -228,20 +228,29 @@ summariseCharacteristics <- function(cohort,
     # rename cohorts
     fullNamesCohort <- CDMConnector::cohortSet(
       cdm[[arguments$targetCohortTable]]
-    ) %>%
-      dplyr::pull("cohort_name")
+    )
+    if (!is.null(arguments$targetCohortId)) {
+      fullNamesCohort <- fullNamesCohort %>%
+        dplyr::filter(
+          .data$cohort_definition_id %in% !!arguments$targetCohortId
+        )
+    }
+    fullNamesCohort <- fullNamesCohort %>% dplyr::pull("cohort_name")
     shortNamesCohort <- uniqueVariableName(length(fullNamesCohort))
-    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <-
-      attr(cdm[[arguments$targetCohortTable]], "cohort_set") %>%
-      dplyr::rename("old_cohort_name" = "cohort_name") %>%
+
+    # update cohort_set
+    originalCohortSet <- attr(cdm[[arguments$targetCohortTable]], "cohort_set")
+    newCohortSet <- originalCohortSet %>%
+      dplyr::rename(old_cohort_name = "cohort_name") %>%
       dplyr::inner_join(
         dplyr::tibble(
-          "old_cohort_name" = fullNamesCohort, "cohort_name" = shortNamesCohort
+          old_cohort_name = fullNamesCohort, cohort_name = shortNamesCohort
         ),
         by = "old_cohort_name",
         copy = TRUE
       ) %>%
       CDMConnector::computeQuery()
+    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- newCohortSet
 
     # update dictionary
     addDic <- updateDic(
@@ -276,6 +285,9 @@ summariseCharacteristics <- function(cohort,
       numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
       binary = addDic$short_name[grepl("flag_", addDic$short_name)]
     )
+
+    # restore cohort_set
+    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- originalCohortSet
   }
 
   # conceptIntersect
