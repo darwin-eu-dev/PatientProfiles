@@ -768,4 +768,15 @@ test_that("censorDate functionality", {
       unlist(use.names = F),
     c(0, 0, NA, NA)
   )))
+
+
+
+})
+
+test_that("casing of empty dates", {
+  cdm <- mockPatientProfiles(connectionDetails)
+  cdm$cohort1 <- cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 1)
+  cdm$cohort2 %>%
+    addCohortIntersectDate(targetCohortTable = "cohort1") %>%
+    dplyr::pull("")
 })
