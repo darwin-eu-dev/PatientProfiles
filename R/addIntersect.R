@@ -98,7 +98,6 @@ addIntersect <- function(x,
   tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
 
   startTibble <- x
-  originalColnames <- colnames(x)
 
   # define overlapTable that contains the events of interest
   overlapTable <- cdm[[tableName]]
@@ -375,7 +374,7 @@ addIntersect <- function(x,
 
   }
 
-  # misisng columns
+  # missing columns
   newCols <- newCols %>%
     dplyr::filter(!.data$colnam %in% colnames(x))
   for (k in seq_len(nrow(newCols))) {
