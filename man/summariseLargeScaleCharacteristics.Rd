@@ -12,6 +12,8 @@ summariseLargeScaleCharacteristics(
     c(366, Inf)),
   eventInWindow = NULL,
   episodeInWindow = NULL,
+  indexDate = "cohort_start_date",
+  censorDate = NULL,
   includeSource = FALSE,
   minCellCount = 5,
   minimumFrequency = 0.005,
@@ -28,6 +30,12 @@ summariseLargeScaleCharacteristics(
 \item{eventInWindow}{Tables to characterise the events in the window.}
 
 \item{episodeInWindow}{Tables to characterise the episodes in the window.}
+
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
+
+\item{censorDate}{whether to censor overlap events at a specific date
+or a column date of x}
 
 \item{includeSource}{Whether to include source concepts.}
 

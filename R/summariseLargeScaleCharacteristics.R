@@ -22,6 +22,10 @@
 #' @param window Temporal windows that we want to characterize.
 #' @param eventInWindow Tables to characterise the events in the window.
 #' @param episodeInWindow Tables to characterise the episodes in the window.
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param includeSource Whether to include source concepts.
 #' @param minCellCount All counts lower than minCellCount will be obscured.
 #' @param minimumFrequency Minimum frequency covariates to report.
@@ -41,6 +45,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                ),
                                                eventInWindow = NULL,
                                                episodeInWindow = NULL,
+                                               indexDate = "cohort_start_date",
+                                               censorDate = NULL,
                                                includeSource = FALSE,
                                                minCellCount = 5,
                                                minimumFrequency = 0.005,
@@ -76,7 +82,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
   tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
 
   # initial table
-  x <- getInitialTable(cohort, tablePrefix)
+  x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
 
   # get analysis table
   analyses <- getAnalyses(eventInWindow, episodeInWindow)
@@ -146,7 +152,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
 #' @param window Temporal windows that we want to characterize.
 #' @param eventInWindow Tables to characterise the events in the window.
 #' @param episodeInWindow Tables to characterise the episodes in the window.
-#' @param includeSource Whether to include source concepts.
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
+#' @param censorDate whether to censor overlap events at a specific date
+#' or a column date of x
 #' @param minimumFrequency Minimum frequency covariates to report.
 #'
 #' @return The output of this function is the cohort with the new created
@@ -158,7 +167,8 @@ addLargeScaleCharacteristics <- function(cohort,
                                          window = list(c(0, Inf)),
                                          eventInWindow = NULL,
                                          episodeInWindow = NULL,
-                                         includeSource = FALSE,
+                                         indexDate = "cohort_start_date",
+                                         censorDate = NULL,
                                          minimumFrequency = 0.005) {
   if (!is.list(window)) {
     window <- list(window)
@@ -175,8 +185,9 @@ addLargeScaleCharacteristics <- function(cohort,
   if (is.null(eventInWindow) & is.null(episodeInWindow)) {
     cli::cli_abort("'eventInWindow' or 'episodeInWindow' must be provided")
   }
-  checkmate::assertLogical(includeSource, any.missing = FALSE, len = 1)
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
+  checkmate::assertTRUE(indexDate %in% colnames(cohort))
+  checkmate::assertTRUE(is.null(censorDate) || censorDate %in% colnames(cohort))
   cdm <- attr(cohort, "cdm_reference")
   checkCdm(cdm)
   assertWriteSchema(cdm)
@@ -191,7 +202,7 @@ addLargeScaleCharacteristics <- function(cohort,
   tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
 
   # initial table
-  x <- getInitialTable(cohort, tablePrefix)
+  x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
 
   # minimum count
   numEntries <- x |>
@@ -209,7 +220,7 @@ addLargeScaleCharacteristics <- function(cohort,
   lsc <- NULL
   for (tab in unique(analyses$table)) {
     analysesTable <- analyses %>% dplyr::filter(.data$table == .env$tab)
-    table <- getTable(tab, x, includeSource, minWindow, maxWindow, tablePrefix)
+    table <- getTable(tab, x, FALSE, minWindow, maxWindow, tablePrefix)
     for (k in seq_len(nrow(analysesTable))) {
       type <- analysesTable$type[k]
       analysis <- analysesTable$analysis[k]
@@ -218,14 +229,6 @@ addLargeScaleCharacteristics <- function(cohort,
         tableWindow <- getTableWindow(tableAnalysis, window[[win]], tablePrefix)
         lsc <- lsc %>%
           trimCounts(tableWindow, minimumCount, tablePrefix, names(window)[win])
-      }
-      if (includeSource & analysis == "standard" & !is.na(getSourceConceptName(tab))) {
-        tableAnalysis <- getTableAnalysis(table, type, "source", tablePrefix)
-        for (win in seq_along(window)) {
-          tableWindow <- getTableWindow(tableAnalysis, window[[win]], tablePrefix)
-          lsc <- lsc %>%
-            trimCounts(tableWindow, minimumCount, tablePrefix, names(window)[win])
-        }
       }
     }
   }
@@ -260,7 +263,6 @@ addLargeScaleCharacteristics <- function(cohort,
 
   # return
   return(cohort)
-
 }
 
 getAnalyses <- function(eventInWindow, episodeInWindow) {
@@ -295,14 +297,27 @@ getAnalyses <- function(eventInWindow, episodeInWindow) {
     dplyr::bind_rows() %>%
     tidyr::drop_na()
 }
-getInitialTable <- function(cohort, tablePrefix) {
-  cohort %>%
+getInitialTable <- function(cohort, tablePrefix, indexDate, censorDate) {
+  x <- cohort %>%
     addDemographics(
-      age = FALSE, sex = FALSE, priorObservationName = "start_obs",
-      futureObservationName = "end_obs"
+      indexDate = indexDate, age = FALSE, sex = FALSE,
+      priorObservationName = "start_obs", futureObservationName = "end_obs"
     ) %>%
-    dplyr::mutate(start_obs = -.data$start_obs) %>%
-    dplyr::select("subject_id", "cohort_start_date", "start_obs", "end_obs") %>%
+    dplyr::mutate(start_obs = -.data$start_obs)
+  if (!is.null(censorDate)) {
+    x <- x %>%
+      dplyr::mutate("censor_obs" = !!CDMConnector::datediff(indexDate, censorDate)) %>%
+      dplyr::mutate("end_obs" = dplyr::if_else(
+        is.na(.data$censor_obs) | .data$censor_obs > .data$end_obs,
+        .data$end_obs,
+        .data$censor_obs
+      ))
+  }
+  x <- x %>%
+    dplyr::select(
+      "subject_id", "cohort_start_date" = dplyr::all_of(indexDate), "start_obs",
+      "end_obs"
+    ) %>%
     dplyr::distinct() %>%
     dbplyr::window_order(.data$subject_id, .data$cohort_start_date) %>%
     dplyr::mutate(obs_id = dplyr::row_number()) %>%
@@ -311,6 +326,7 @@ getInitialTable <- function(cohort, tablePrefix) {
       name = paste0(tablePrefix, "individuals"), temporary = FALSE,
       schema = writeSchema(cohort), overwrite = TRUE
     )
+  return(x)
 }
 getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix) {
   cdm <- attr(x, "cdm_reference")
