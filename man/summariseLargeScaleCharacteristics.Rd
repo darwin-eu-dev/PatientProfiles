@@ -27,9 +27,9 @@ summariseLargeScaleCharacteristics(
 
 \item{window}{Temporal windows that we want to characterize.}
 
-\item{eventInWindow}{Tables to characterise the events in the window.}
+\item{eventInWindow}{Tables to characterise the events in the window. eventInWindow must be provided if episodeInWindow is not specified.}
 
-\item{episodeInWindow}{Tables to characterise the episodes in the window.}
+\item{episodeInWindow}{Tables to characterise the episodes in the window. episodeInWindow must be provided if eventInWindow is not specified.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
