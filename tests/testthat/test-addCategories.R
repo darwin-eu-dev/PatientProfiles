@@ -20,13 +20,13 @@ test_that("addCategories, functionality", {
   expect_true(all(agegroup %>%
     dplyr::select(age_group) %>%
     dplyr::pull() ==
-    c("41 to 120", "41 to 120", "41 to 120", "41 to 120")))
+    c("0 to 40", "41 to 120", "41 to 120", "0 to 40")))
 
   expect_true(all(agegroupOverlap %>%
     dplyr::select(age_group) %>%
     dplyr::pull() ==
     c(
-      "0 to 55 and 50 to 120", "0 to 55 and 50 to 120", "50 to 120", "50 to 120"
+      "0 to 55",  "50 to 120", "0 to 55 and 50 to 120", "0 to 55"
     )))
 })
 

@@ -18,8 +18,14 @@ test_that("addDemographics, cohort and condition_occurrence", {
 
   expect_true(length(attributes(cdm$cohort1)) == length(attributes(oldcohort)))
   for (i in names(attributes(cdm$cohort1))) {
-    if (i != "names" && i != "class" && i != "cdm_reference") {
-      expect_true(identical(attr(cdm$cohort1, i), attr(oldcohort, i)))
+    if (i != "names" && i != "tbl_name" && i != "cdm_reference") {
+      x <- attr(cdm$cohort1, i)
+      y <- attr(oldcohort, i)
+      if (i == "class") {
+        x <- x[x != "GeneratedCohortSet"]
+        y <- y[y != "GeneratedCohortSet"]
+      }
+      expect_true(identical(x, y))
     }
   }
 
@@ -29,38 +35,38 @@ test_that("addDemographics, cohort and condition_occurrence", {
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")
     ) %>%
     dplyr::collect()
-  expect_true(s$age == 53)
+  expect_true(s$age == 22)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 5295)
+  expect_true(s$prior_observation == 4636)
   s <- cdm$cohort1 %>%
     dplyr::filter(
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
     ) %>%
     dplyr::collect()
-  expect_true(s$age == 53)
+  expect_true(s$age == 22)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 5447)
+  expect_true(s$prior_observation == 4788)
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 2) %>%
     dplyr::collect()
-  expect_true(s$age == 60)
+  expect_true(s$age == 94)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 5221)
+  expect_true(s$prior_observation == 5224)
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 3) %>%
     dplyr::collect()
-  expect_true(s$age == 58)
-  expect_true(s$sex == "Male")
-  expect_true(s$prior_observation == 4562)
+  expect_true(s$age == 52)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_observation == 3912)
 
   expect_true(all(c("age", "sex", "prior_observation") %in% colnames(cdm$condition_occurrence)))
-  expectedAge <- c(43, 58, 54, 39, 53, 39, 31, 97, 40, 78)
+  expectedAge <- c(20, 86, 45, 39, 32, 50, 90, 85, 57, 39)
   expectedSex <- c(
-    "Female", "Female", "Male", "Female", "Female", "Female", "Female", "Male",
-    "Male", "Male"
+    "Female", "Female", "Female", "Male", "Female", "Male", "Male", "Male",
+    "Female", "Male"
   )
   expectedpriorObservation <- c(
-    1711, 4714, 3160, 2304, NA, 3553, 2763, 5145, 697, 3209
+    3938, 2321, 1418, 4979, 4275, 253, 4283, NA, 4733, 2378
   )
   for (k in 1:length(expectedAge)) {
     expect_true(
@@ -103,32 +109,32 @@ test_that("addDemographics, parameters", {
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")
     ) %>%
     dplyr::collect()
-  expect_true(s$age == 53)
+  expect_true(s$age == 22)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 5386)
-  expect_true(s$age_group == "41 to 120")
+  expect_true(s$prior_observation == 4727)
+  expect_true(s$age_group == "0 to 40")
   s <- cdm$cohort1 %>%
     dplyr::filter(
       .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
     ) %>%
     dplyr::collect()
-  expect_true(s$age == 53)
+  expect_true(s$age == 22)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 5508)
-  expect_true(s$age_group == "41 to 120")
+  expect_true(s$prior_observation == 4849)
+  expect_true(s$age_group == "0 to 40")
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 2) %>%
     dplyr::collect()
-  expect_true(s$age == 60)
+  expect_true(s$age == 94)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 5252)
+  expect_true(s$prior_observation == 5255)
   expect_true(s$age_group == "41 to 120")
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 3) %>%
     dplyr::collect()
-  expect_true(s$age == 58)
-  expect_true(s$sex == "Male")
-  expect_true(s$prior_observation == 4622)
+  expect_true(s$age == 52)
+  expect_true(s$sex == "Female")
+  expect_true(s$prior_observation == 3972)
   expect_true(s$age_group == "41 to 120")
 })
 
@@ -294,43 +300,23 @@ test_that("partial demographics - omop tables", {
 
 test_that("priorObservation and future_observation - outside of observation period", {
   # priorObservation should be NA if index date is outside of an observation period
-
-  person <- dplyr::tibble(
-    person_id = c(1, 2),
-    gender_concept_id = 1,
-    year_of_birth = 1980,
-    month_of_birth = 01,
-    day_of_birth = 01
-  )
-  observation_period <- dplyr::tibble(
-    observation_period_id = c(1, 2),
-    person_id = c(1, 2),
-    observation_period_start_date = c(
-      as.Date("2000-01-01"),
-      as.Date("2014-01-01")
-    ),
-    observation_period_end_date = c(
-      as.Date("2001-01-01"),
-      as.Date("2015-01-01")
-    )
-  )
-  cohort1 <- dplyr::tibble(
-    cohort_definition_id = 1,
-    subject_id = c(1, 2),
-    cohort_start_date = as.Date(c("2012-02-01")),
-    cohort_end_date = as.Date(c("2013-02-01"))
+  condition_occurrence <- dplyr::tibble(
+    condition_occurrence_id = 1:2,
+    person_id = 1:2,
+    condition_concept_id = 0,
+    condition_start_date = as.Date(c("2000-02-01")),
+    condition_end_date = as.Date(c("2001-02-01")),
+    condition_type_concept_id = 0
   )
 
   cdm <- mockPatientProfiles(
     connectionDetails,
-    person = person,
-    observation_period = observation_period,
-    cohort1 = cohort1
+    condition_occurrence = condition_occurrence
   )
 
-  cdm$cohort1a <- cdm$cohort1 %>%
+  cdm$condition_occurrence <- cdm$condition_occurrence %>%
     addDemographics(
-      indexDate = "cohort_start_date",
+      indexDate = "condition_start_date",
       age = FALSE,
       ageGroup = NULL,
       sex = FALSE,
@@ -338,8 +324,8 @@ test_that("priorObservation and future_observation - outside of observation peri
       futureObservation = TRUE
     )
   # both should be missing
-  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(prior_observation))))
-  expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
+  expect_true(all(is.na(cdm$condition_occurrence %>% dplyr::pull(prior_observation))))
+  expect_true(all(is.na(cdm$condition_occurrence %>% dplyr::pull(future_observation))))
 })
 
 test_that("priorObservation - multiple observation periods", {
@@ -351,7 +337,9 @@ test_that("priorObservation - multiple observation periods", {
     gender_concept_id = 1,
     year_of_birth = 1980,
     month_of_birth = 01,
-    day_of_birth = 01
+    day_of_birth = 01,
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
   observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2, 3),
@@ -365,7 +353,8 @@ test_that("priorObservation - multiple observation periods", {
       as.Date("2005-01-01"),
       as.Date("2015-01-01"),
       as.Date("2015-01-01")
-    )
+    ),
+    period_type_concept_id = 0
   )
   cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
@@ -378,7 +367,8 @@ test_that("priorObservation - multiple observation periods", {
     connectionDetails,
     person = person,
     observation_period = observation_period,
-    cohort1 = cohort1
+    cohort1 = cohort1,
+    cohort2 = cohort1
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -407,18 +397,19 @@ test_that("check that no extra rows are added", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 2, 1, 2, 1),
     subject_id = c(1, 1, 1, 1, 1),
-    cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2021-01-01", "2021-01-01", "2022-01-01")),
-    cohort_end_date = as.Date(c("2020-01-01", "2020-01-01", "2021-01-01", "2021-01-01", "2022-01-01"))
+    cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2021-07-01", "2021-07-01", "2022-01-01")),
+    cohort_end_date = as.Date(c("2020-01-01", "2020-01-01", "2021-07-01", "2021-07-01", "2022-01-01"))
   )
   observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2, 3),
     person_id = c(1, 1, 1),
     observation_period_start_date = as.Date(c("2015-06-30", "2019-06-30", "2021-06-30")),
-    observation_period_end_date = as.Date(c("2018-06-30", "2020-06-30", "2022-06-30"))
+    observation_period_end_date = as.Date(c("2018-06-30", "2020-06-30", "2022-06-30")),
+    period_type_concept_id = 0
   )
   cdm <- mockPatientProfiles(
     connectionDetails,
-    cohort1 = cohort1, observation_period = observation_period
+    cohort1 = cohort1, observation_period = observation_period, cohort2 = cohort1
   )
   # using temp
   cdm$cohort1_new <- cdm$cohort1 %>%
@@ -506,15 +497,27 @@ test_that("age at cohort end, no missing, check age computation", {
     )
   )
 
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:2,
+    person_id = 1:2,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2020-01-01"),
+    period_type_concept_id = 0
+  )
+
   person <- dplyr::tibble(
     person_id = c("1", "2"),
     gender_concept_id = c("8507", "8507"),
     year_of_birth = c(2001, 2001),
     month_of_birth = c(12, 12),
-    day_of_birth = c(01, 01)
+    day_of_birth = c(01, 01),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(
+    connectionDetails, person = person, cohort1 = cohort1, observation_period = observation_period, cohort2 = cohort1
+  )
 
   # check if exact age is computed, ie, dob 2000-01-01, target date 2000-12-01  --> age 0
   # dob 2000-01-01, target date 2001-01-02  --> age 1
@@ -557,15 +560,28 @@ test_that("age at cohort entry, missing year/month/day of birth", {
     )
   )
 
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2020-01-01"),
+    period_type_concept_id = 0
+  )
+
   person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8507", "8507"),
     year_of_birth = c(2000, NA, 2000),
     month_of_birth = c(03, 07, NA),
-    day_of_birth = c(NA, 02, 01)
+    day_of_birth = c(NA, 02, 01),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
+    cohort2 = cohort1, observation_period = observation_period
+  )
 
   result <- addAge(
     x = cdm$cohort1, ageImposeMonth = FALSE, ageImposeDay = FALSE,
@@ -583,7 +599,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
     priorObservation = FALSE, futureObservation = FALSE,
   ) %>% dplyr::collect()
 
-  expect_equivalent(result, resultB)
+  expect_equal(result, resultB)
 })
 
 test_that("multiple cohortIds, check age at cohort end", {
@@ -598,14 +614,27 @@ test_that("multiple cohortIds, check age at cohort end", {
     )
   )
 
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2020-01-01"),
+    period_type_concept_id = 0
+  )
+
   person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8532", "8507"),
     year_of_birth = c(2000, 2000, NA),
     month_of_birth = c(NA, 01, 01),
-    day_of_birth = c(01, 01, 01)
+    day_of_birth = c(01, 01, 01),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
-  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
+    cohort2 = cohort1, observation_period = observation_period
+  )
 
   result <- addAge(
     x = cdm[["cohort1"]],
@@ -623,30 +652,42 @@ test_that("multiple cohortIds, check age at cohort end", {
     priorObservation = FALSE, futureObservation = FALSE,
   ) %>% dplyr::collect()
 
-  expect_equivalent(result, resultB)
+  expect_equal(result, resultB)
 })
 
 test_that("age group checks", {
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c("1", "1", "1"),
+    cohort_definition_id = c("1", "2", "3"),
     subject_id = c("1", "2", "3"),
     cohort_start_date = c(
-      as.Date("2010-03-03"), as.Date("2010-03-01"), as.Date("2010-02-01")
+      as.Date("2009-12-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
     ),
     cohort_end_date = c(
-      as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2013-01-01")
+      as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
     )
+  )
+
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2020-01-01"),
+    period_type_concept_id = 0
   )
 
   person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
-    gender_concept_id = c("8507", "8507", "8507"),
+    gender_concept_id = c("8507", "8532", "8507"),
     year_of_birth = c(1980, 1970, 2000),
-    month_of_birth = c(03, 07, NA),
-    day_of_birth = c(NA, 02, 01)
+    month_of_birth = c(3, 7, NA),
+    day_of_birth = c(NA, 02, 01),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
-
-  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
+    cohort2 = cohort1, observation_period = observation_period
+  )
 
   x <- cdm$cohort1 %>%
     addAge(cdm)
@@ -667,7 +708,7 @@ test_that("age group checks", {
     dplyr::collect() %>%
     dplyr::arrange(age)
   expect_true(all(result1a$age_group == c("1 to 20", "21 to 30", "31 to 40")))
-  expect_equivalent(result1a, result1b)
+  expect_equal(result1a, result1b)
 
   # change the order of ageGroup provided, result should be the same
   result2a <- x %>%
@@ -705,15 +746,36 @@ test_that("age group checks", {
   expect_true(identical(result1b, result3b))
 
   # if age has missing values
+  cohort1 <- dplyr::tibble(
+    cohort_definition_id = c("1", "2", "3"),
+    subject_id = c("1", "2", "3"),
+    cohort_start_date = c(
+      as.Date("2009-12-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
+    ),
+    cohort_end_date = c(
+      as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
+    )
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2020-01-01"),
+    period_type_concept_id = 0
+  )
   person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
-    gender_concept_id = c("8507", "8507", "8507"),
+    gender_concept_id = c("8507", "8532", "8507"),
     year_of_birth = c(NA, 1970, 2000),
-    month_of_birth = c(03, 07, NA),
-    day_of_birth = c(NA, 02, 01)
+    month_of_birth = c(3, 7, NA),
+    day_of_birth = c(NA, 02, 01),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
-
-  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
+    cohort2 = cohort1, observation_period = observation_period
+  )
   result1 <- cdm$cohort1 %>%
     addAge() %>%
     addCategories(
@@ -826,15 +888,28 @@ test_that("expected errors", {
     )
   )
 
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2020-01-01"),
+    period_type_concept_id = 0
+  )
+
   person <- dplyr::tibble(
     person_id = c("1", "2", "3"),
     gender_concept_id = c("8507", "8507", "8507"),
     year_of_birth = c(1980, 1970, 2000),
     month_of_birth = c(03, 07, NA),
-    day_of_birth = c(NA, 02, 01)
+    day_of_birth = c(NA, 02, 01),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
+  cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
+    cohort2 = cohort1, observation_period = observation_period
+  )
 
   cdm$cohort1 <- cdm$cohort1 %>% addAge()
 
@@ -981,7 +1056,18 @@ test_that("test if column exist, overwrite", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2025-01-01"),
+    period_type_concept_id = 0
+  )
+
+  cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails, cohort1 = cohort1, cohort2 = cohort2,
+    observation_period = observation_period
+  )
 
   result <- cdm$cohort1 %>%
     addDemographics() %>%
@@ -1034,10 +1120,23 @@ test_that("date of birth", {
     gender_concept_id = c("8507", "8507"),
     year_of_birth = c(2001, 2005),
     month_of_birth = c(12, 06),
-    day_of_birth = c(01, 15)
+    day_of_birth = c(01, 15),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, person = person, cohort1 = cohort1)
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date("2000-01-01"),
+    observation_period_end_date = as.Date("2025-01-01"),
+    period_type_concept_id = 0
+  )
+
+  cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails, cohort1 = cohort1, cohort2 = cohort2,
+    observation_period = observation_period, person = person
+  )
 
   personDOB <- cdm$person %>%
     addDateOfBirth(cdm) %>%
