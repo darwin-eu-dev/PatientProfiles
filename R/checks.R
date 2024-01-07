@@ -324,7 +324,7 @@ checkCohortNames <- function(x, targetCohortId, name) {
   if (!("cohort_table" %in% class(x))) {
     cli::cli_abort("cdm[[targetCohortTable]]) must be a 'cohort_table'.")
   }
-  cohort <- CDMConnector::cohortSet(x)
+  cohort <- omopgenerics::settings(x)
   filterVariable <- "cohort_definition_id"
   if (is.null(targetCohortId)) {
     if (is.null(cohort)) {
