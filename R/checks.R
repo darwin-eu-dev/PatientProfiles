@@ -40,7 +40,7 @@ checkX <- function(x) {
 #' @noRd
 checkCdm <- function(cdm, tables = NULL) {
   if (!isTRUE(inherits(cdm, "cdm_reference"))) {
-    cli::cli_abort("cdm must be a CDMConnector CDM reference object")
+    cli::cli_abort("cdm a cdm_reference object.")
   }
   if (!is.null(tables)) {
     tables <- tables[!(tables %in% names(cdm))]
@@ -321,12 +321,8 @@ checkValue <- function(value, x, name) {
 
 #' @noRd
 checkCohortNames <- function(x, targetCohortId, name) {
-  if (!("GeneratedCohortSet" %in% class(x))) {
-    cli::cli_abort(
-      "cdm[[targetCohortTable]]) must be a 'GeneratedCohortSet'. Please use a
-      generateCohortSet function or create it with
-      CDMConnector::newGeneratedCohortSet()."
-    )
+  if (!("cohort_table" %in% class(x))) {
+    cli::cli_abort("cdm[[targetCohortTable]]) must be a 'cohort_table'.")
   }
   cohort <- CDMConnector::cohortSet(x)
   filterVariable <- "cohort_definition_id"

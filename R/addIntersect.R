@@ -17,8 +17,7 @@
 #' It creates columns to indicate overlap information between two tables
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param tableName name of the cohort that we want to check for overlap
 #' @param filterVariable the variable that we are going to use to filter (e.g.
 #' cohort_definition_id)
@@ -396,7 +395,9 @@ addIntersect <- function(x,
 
   x <- dplyr::compute(x)
 
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
+  cdm <- omopgenerics::dropTable(
+    cdm = cdm, name = dplyr::starts_with(tablePrefix)
+  )
 
   return(x)
 }
@@ -487,16 +488,4 @@ getSourceConceptName <- function(tableName) {
   } else {
     return(as.character(NA))
   }
-}
-
-appendPermanent <- function(x, name, schema) {
-  con <- x$src$con
-  name <- CDMConnector::inSchema(
-    schema = schema, table = name, dbms = CDMConnector::dbms(con)
-  )
-  fullName <- DBI::dbQuoteIdentifier(con, name)
-  DBI::dbExecute(
-    con, glue::glue("INSERT INTO {fullName} {dbplyr::sql_render(x)}")
-  )
-  dplyr::tbl(con, name)
 }

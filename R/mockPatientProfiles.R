@@ -550,12 +550,13 @@ mockPatientProfiles <- function(connectionDetails = list(
     "condition_occurrence", "visit_occurrence", "concept_ancestor"
   )
 
+  src <- CDMConnector::dbSource(
+    con = connectionDetails$con, writeSchema = connectionDetails$write_schema
+  )
+
   for (tab in tablesToInsert) {
-    DBI::dbWriteTable(
-      conn = db,
-      name = CDMConnector::inSchema(schema = writeSchema, table = tab),
-      value = get(tab),
-      overwrite = TRUE
+    x <- omopgenerics::insertTable(
+      cdm = src, name = tab, table = get(tab), overwrite = TRUE
     )
   }
 
@@ -564,38 +565,22 @@ mockPatientProfiles <- function(connectionDetails = list(
   cohorts <- names(listTables)
   for (cohort in cohorts) {
     x <- addCohortCountAttr(listTables[[cohort]])
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(writeSchema, cohort),
-      value = x, overwrite = TRUE
+    omopgenerics::insertTable(
+      cdm = src, name = cohort, table = x, overwrite = TRUE
     )
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(
-        writeSchema, paste0(cohort, "_set")
-      ), value = attr(x, "cohort_set"), overwrite = TRUE
+    omopgenerics::insertTable(
+      cdm = src,
+      name = paste0(cohort, "_set"),
+      table = attr(x, "cohort_set"),
+      overwrite = TRUE
     )
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(
-        writeSchema, paste0(cohort, "_count")
-      ), value = attr(x, "cohort_count"), overwrite = TRUE
-    )
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(
-        writeSchema, paste0(cohort, "_attrition")
-      ), value = attr(x, "cohort_attrition"), overwrite = TRUE
+    omopgenerics::insertTable(
+      cdm = src,
+      name = paste0(cohort, "_attrition"),
+      table = attr(x, "cohort_attrition"),
+      overwrite = TRUE
     )
   }
-
-  cdmTables <- c(
-    "drug_strength", "drug_exposure", "person", "concept_ancestor",
-    "observation_period", "condition_occurrence", "visit_occurrence"
-  )
-  writeTables <- tidyr::expand_grid(
-    cohort_name = cohorts, attribute = c("", "_set", "_count", "_attrition")
-  ) %>%
-    dplyr::mutate(name = paste0(.data$cohort_name, .data$attribute)) %>%
-    dplyr::pull("name")
-
-  updateWrittenTables(cdmTables, writeTables)
 
   # create the cdm object
   cdm <- CDMConnector::cdm_from_con(
@@ -628,17 +613,6 @@ addCohortCountAttr <- function(cohort) {
       ))
   }
 
-  # add cohort count
-  if (!("cohort_count" %in% attributes(cohort))) {
-    attr(cohort, "cohort_count") <- cohort %>%
-      dplyr::group_by(.data$cohort_definition_id) %>%
-      dplyr::summarise(
-        number_records = dplyr::n(),
-        number_subjects = dplyr::n_distinct(.data$subject_id)
-      ) %>%
-      dplyr::collect()
-  }
-
   # add cohort attrition
   if (!("cohort_attrition" %in% attributes(cohort))) {
     attr(cohort, "cohort_attrition") <- cohort %>%
@@ -657,24 +631,6 @@ addCohortCountAttr <- function(cohort) {
   }
 
   return(cohort)
-}
-
-#' Update tables that have been modified in scratch or write schema
-#'
-#' @param scratchTables Tables written in the scratch schema
-#' @param writeTables Tables written in the write schema
-#'
-#' @noRd
-#'
-updateWrittenTables <- function(scratchTables = NULL, writeTables = NULL) {
-  options(
-    mock_cdm_scratch_tables = unique(c(
-      scratchTables, getOption("mock_cdm_scratch_tables", NULL)
-    )),
-    mock_cdm_write_tables = unique(c(
-      writeTables, getOption("mock_cdm_write_tables", NULL)
-    ))
-  )
 }
 
 #' Delete tables that have been added during the testing

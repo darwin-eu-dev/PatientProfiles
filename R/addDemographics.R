@@ -309,8 +309,7 @@ futureObservationQuery <- function(indexDate, name) {
 #' Compute the age of the individuals at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the age.
 #' @param ageName Name of the new column that contains age.
 #' @param ageGroup List of age groups to be added.
@@ -387,8 +386,7 @@ addAge <- function(x,
 #' certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
 #' @param futureObservationName name of the new column to be added
@@ -471,8 +469,7 @@ addFutureObservation <- function(x,
 #' at a certain date
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the prior
 #' observation.
 #' @param priorObservationName name of the new column to be added
@@ -554,8 +551,7 @@ addPriorObservation <- function(x,
 #' Indicate if a certain record is within the observation period
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
 #' @param name name of the column to hold the result of the query:
@@ -611,8 +607,7 @@ addInObservation <- function(x,
 #' Compute the sex of the individuals
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param sexName name of the new column to be added
 #'
 #' @return table x with the added column with sex information

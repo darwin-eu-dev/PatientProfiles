@@ -19,7 +19,7 @@
 addCohortName <- function(cohort) {
   cohort %>%
     dplyr::left_join(
-      CDMConnector::cohortSet(cohort) %>%
+      omopgenerics::settings(cohort) %>%
         dplyr::select("cohort_definition_id", "cohort_name"),
       by = "cohort_definition_id",
       copy = TRUE
@@ -44,10 +44,11 @@ addCohortName <- function(cohort) {
 #'   addCdmName()
 #' }
 #'
-addCdmName <- function(table, cdm = NULL) {
-  table %>%
-    dplyr::mutate(cdm_name = dplyr::coalesce(
-      CDMConnector::cdmName(cdm %||% attr(table, "cdm_reference")),
-      as.character(NA)
-    ))
+addCdmName <- function(table, cdm = attr(table, "cdm_reference")) {
+  if (is.null(cdm)) {
+    name <- NA_character_
+  } else {
+    name <- omopgenerics::cdmName(cdm)
+  }
+  table %>% dplyr::mutate("cdm_name" = .env$name)
 }
