@@ -78,10 +78,10 @@ test_that("groups and strata", {
     summariseResult(strata = list("sex"))
 
   expect_true(result %>%
-    dplyr::filter(group_name == "Overall" &
-      group_level == "Overall" &
-      strata_name == "Overall" &
-      strata_level == "Overall" &
+    dplyr::filter(group_name == "overall" &
+      group_level == "overall" &
+      strata_name == "overall" &
+      strata_level == "overall" &
       variable == "number subjects") %>%
     dplyr::pull("estimate") == "1000")
 
@@ -98,13 +98,13 @@ test_that("groups and strata", {
     dplyr::select("strata_name") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c("Overall", "age_group and sex")))
+    c("overall", "age_group and sex")))
   expect_true(all(result %>%
     dplyr::select("strata_level") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
     c(
-      "Overall",
+      "overall",
       "0 to 30 and Female",
       "0 to 30 and Male",
       "31 to 60 and Female",
@@ -124,13 +124,13 @@ test_that("groups and strata", {
     dplyr::select("group_name") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c("Overall", "age_group and sex")))
+    c("overall", "age_group and sex")))
   expect_true(all(result %>%
     dplyr::select("group_level") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
     c(
-      "Overall",
+      "overall",
       "0 to 30 and Female",
       "0 to 30 and Male",
       "31 to 60 and Female",
@@ -187,14 +187,14 @@ test_that("with and with overall groups and strata", {
       includeOverallStrata = FALSE
     ) %>%
     dplyr::pull("strata_name") %in%
-    c("Overall")))
+    c("overall")))
   expect_true(any(test_data %>%
     summariseResult(
       strata = list("sex"),
       includeOverallStrata = TRUE
     ) %>%
     dplyr::pull("strata_name") %in%
-    c("Overall")))
+    c("overall")))
 
   expect_false(any(test_data %>%
     summariseResult(
@@ -202,14 +202,14 @@ test_that("with and with overall groups and strata", {
       includeOverallGroup = FALSE
     ) %>%
     dplyr::pull("group_name") %in%
-    c("Overall")))
+    c("overall")))
   expect_true(any(test_data %>%
     summariseResult(
       group = list("sex"),
       includeOverallGroup = TRUE
     ) %>%
     dplyr::pull("group_name") %in%
-    c("Overall")))
+    c("overall")))
 
   CDMConnector::cdm_disconnect(cdm)
 })
@@ -379,9 +379,9 @@ test_that("misisng counts", {
   )
   expected <- dplyr::tribble(
     ~strata, ~variable, ~count, ~percentage,
-    "Overall", "age", 2, 50,
-    "Overall", "number_visits", 1, 25,
-    "Overall", "prior_history", 0, 0,
+    "overall", "age", 2, 50,
+    "overall", "number_visits", 1, 25,
+    "overall", "prior_history", 0, 0,
     "Male", "age", 1, 100/3,
     "Male", "number_visits", 1, 100/3,
     "Male", "prior_history", 0, 0,
@@ -448,7 +448,7 @@ test_that("data is ordered", {
   )
   # check first overall, second sex
   order <- unique(result$strata_level)
-  expect_identical(order, c("Overall", "Female", "Male"))
+  expect_identical(order, c("overall", "Female", "Male"))
   # first numbers, age, sex, prior_history, number_visits
   variables <- unique(result$variable)
   expect_identical(variables, c(
@@ -488,7 +488,7 @@ test_that("data is ordered", {
   )
   # check first overall, second sex
   order <- unique(result$strata_level)
-  expect_identical(order, c("Overall", "Male", "xFemale"))
+  expect_identical(order, c("overall", "Male", "xFemale"))
   # first numbers, age, sex, prior_history, number_visits
   variables <- unique(result$variable)
   expect_identical(variables, c(

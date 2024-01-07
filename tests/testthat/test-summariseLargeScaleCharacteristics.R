@@ -147,9 +147,9 @@ test_that("basic functionality summarise large scale characteristics", {
       )
   )
   expect_true(all(c("cohort_1", "cohort_2") %in% result$group_level))
-  expect_true(all(c("Overall", "age_group", "age_group and sex") %in% result$strata_name))
+  expect_true(all(c("overall", "age_group", "age_group and sex") %in% result$strata_name))
   expect_true(all(c(
-    "Overall", "0 to 24", "25 to 150", "0 to 24 and Female",
+    "overall", "0 to 24", "25 to 150", "0 to 24 and Female",
     "25 to 150 and Male", "0 to 24 and Male"
   ) %in% result$strata_level))
   result <- result %>%

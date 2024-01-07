@@ -324,7 +324,7 @@ pivotWide <- function(summaryTable, wide) {
       xLevel <- strsplit(nl[[level]], " and ")
       labels <- unique(unlist(xName))
       for (i in seq_along(labels)) {
-        column <- rep("Overall", length(xName))
+        column <- rep("overall", length(xName))
         for (j in seq_along(xName)) {
           id <- which(xName[[j]] == labels[i])
           if (length(id) == 1) {

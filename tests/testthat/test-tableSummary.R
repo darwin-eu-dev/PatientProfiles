@@ -4,7 +4,7 @@ test_that("with and with overall groups and strata", {
     result_type = "Summary characteristics",
     group_name = "Cohort name",
     group_level = c(rep("Cohort 1", 11), rep("Cohort 2", 11)),
-    strata_name = "Overall", strata_level = "Overall",
+    strata_name = "overall", strata_level = "overall",
     variable = rep(c(
       "Number subjects", "Number records", rep("Age", 5),
       rep("Medications prior year", 4)

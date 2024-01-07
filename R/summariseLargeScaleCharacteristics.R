@@ -399,7 +399,7 @@ summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
           dplyr::group_by(.data$concept) %>%
           dplyr::summarise(count = as.numeric(dplyr::n()), .groups = "drop") %>%
           dplyr::collect() %>%
-          dplyr::mutate(strata_name = "Overall", strata_level = "Overall") %>%
+          dplyr::mutate(strata_name = "overall", strata_level = "overall") %>%
           dplyr::bind_rows(summariseStrataCounts(tableWindowCohort, strata)) %>%
           dplyr::mutate(group_name = "Cohort name", group_level = cohortName)
       )

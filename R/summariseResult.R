@@ -74,7 +74,7 @@ summariseResult <- function(table,
     result <- table %>%
       dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
       dplyr::mutate(
-        variable = "number records", variable_type = as.character(NA),
+        variable = "number records", variable_type = "numeric",
         estimate_type = "count"
       )
   } else {
@@ -124,8 +124,8 @@ summariseResult <- function(table,
           includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(
-          group_name = "Overall",
-          group_level = "Overall"
+          group_name = "overall",
+          group_level = "overall"
         ) %>%
         dplyr::select(
           "group_name", "group_level", "strata_name", "strata_level",
@@ -171,10 +171,36 @@ summariseResult <- function(table,
         result <- dplyr::bind_rows(result, workingResult)
       }
     }
-
-    # obscure counts
-    result <- suppressCounts(result, minCellCount = minCellCount)
   }
+
+  if (is.null(attr(table, "cdm_reference"))) {
+    cdm_name <- "unknown"
+  } else {
+    cdm_name <- omopgenerics::cdmName(attr(table, "cdm_reference"))
+  }
+
+  result <- result |>
+    dplyr::rename(
+      "variable_name" = "variable", "estimate_name" = "estimate_type",
+      "estimate_value" = "estimate"
+    ) |>
+    dplyr::left_join(
+      formats |> dplyr::select("variable_type", "estimate_type" = "result"),
+      relationship = "many-to-many",
+      by = "variable_type"
+    ) |>
+    dplyr::mutate(
+      "cdm_name" = .env$cdm_name,
+      "result_type" = "summarise_table",
+      "package_name" = "PatientProfiles",
+      "package_version" = as.character(utils::packageVersion("PatientProfiles")),
+      "additional_name" = "overall",
+      "additional_level" = "overall"
+    ) |>
+    dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
+      "summarised_result"
+    ))) |>
+    omopgenerics::summarisedResult()
 
   return(result)
 }
@@ -430,7 +456,7 @@ summaryValues <- function(x, requiredFunctions) {
   result <- x %>%
     dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
     dplyr::mutate(
-      variable = "number records", variable_type = as.character(NA),
+      variable = "number records", variable_type = "numeric",
       estimate_type = "count"
     ) %>%
     dplyr::collect()
@@ -539,10 +565,10 @@ summaryValuesStrata <- function(x,
   result <- list()
   if (isTRUE(includeOverall) || length(strata) == 0) {
     result <- x %>%
-      dplyr::mutate(strata_level = "Overall") %>%
+      dplyr::mutate(strata_level = "overall") %>%
       dplyr::group_by(.data$strata_level) %>%
       summaryValues(requiredFunctions) %>%
-      dplyr::mutate(strata_name = "Overall")
+      dplyr::mutate(strata_name = "overall")
   }
   for (k in seq_along(strata)) {
     xx <- x %>%
@@ -681,7 +707,7 @@ arrangeStrata <- function(result, strata) {
     paste0(x, collapse = " and ")
   }) %>%
     unlist()
-  namesStrata <- c("Overall", namesStrata)
+  namesStrata <- c("overall", namesStrata)
   result <- result %>%
     dplyr::inner_join(
       dplyr::tibble(strata_name = namesStrata) %>%
