@@ -2,7 +2,6 @@
 
 export("%>%")
 export(addAge)
-export(addAttributes)
 export(addCategories)
 export(addCdmName)
 export(addCohortIntersect)

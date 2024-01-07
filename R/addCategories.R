@@ -217,7 +217,7 @@ addCategories <- function(x,
       }
     }
 
-    x <- x %>% CDMConnector::computeQuery()
+    x <- x %>% dplyr::compute()
   }
 
   if (date) {

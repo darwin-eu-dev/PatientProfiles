@@ -314,7 +314,7 @@ test_that("working examples with extra column", {
     ) %>%
     dplyr::mutate(measurment_result = dplyr::row_number()) %>%
     dbplyr::window_order() %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
   result <- cdm$cohort1 %>%
     addIntersect(cdm, "cohort2", c("flag", "measurment_result"), "cohort_definition_id", 1, "covid", list(c(0, Inf))) %>%
@@ -363,7 +363,7 @@ test_that("working examples with extra column", {
     ) %>%
     dplyr::mutate(measurment_result = dplyr::row_number()) %>%
     dbplyr::window_order() %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
   result2 <- cdm$cohort1 %>%
     addIntersect(cdm, "cohort2", "measurment_result",

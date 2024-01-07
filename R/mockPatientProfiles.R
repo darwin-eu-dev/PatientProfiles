@@ -207,14 +207,14 @@ mockPatientProfiles <- function(connectionDetails = list(
           sample(ingredient_concept_id, drug_concept_id_size, replace = TRUE)
         ),
         amount_value = as.numeric(amount_value),
-        amount_unit_concept_id = as.numeric(amount_unit_concept_id)
+        amount_unit_concept_id = as.numeric(amount_unit_concept_id),
         # numerator_value = numeric(),
         # numerator_unit_concept_id = numeric(),
         # denominator_value = numeric(),
         # denominator_unit_concept_id = numeric(),
         # box_size = numeric(),
-        # valid_start_date = as.Date(character()),
-        # valid_end_date = as.Date(character()),
+        valid_start_date = rep(as.Date("1900-01-01"), drug_concept_id_size),
+        valid_end_date = rep(as.Date("2030-01-01"), drug_concept_id_size)
         # invalid_reason = character()
       )
   }
@@ -272,12 +272,13 @@ mockPatientProfiles <- function(connectionDetails = list(
         drug_concept_id = as.numeric(drug_concept_id),
         drug_exposure_start_date = drug_exposure_start_date,
         drug_exposure_end_date = drug_exposure_end_date,
-        quantity = as.numeric(quantity)
+        quantity = as.numeric(quantity),
+        drug_type_concept_id = 0
         ##  days_supply = as.numeric(days_supply)
       )
   }
   # person table
-  id <- sample(seq(1:patient_size))
+  id <- seq(1:patient_size)
   # person gender
   gender_id <- sample(c("8507", "8532"),
     patient_size,
@@ -457,7 +458,9 @@ mockPatientProfiles <- function(connectionDetails = list(
       gender_concept_id = gender_id,
       year_of_birth = DOB_year,
       month_of_birth = DOB_month,
-      day_of_birth = DOB_day
+      day_of_birth = DOB_day,
+      race_concept_id = 0,
+      ethnicity_concept_id = 0
     )
   }
 
@@ -466,7 +469,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       observation_period_id = id,
       person_id = id,
       observation_period_start_date = obs_start_date,
-      observation_period_end_date = obs_end_date
+      observation_period_end_date = obs_end_date,
+      period_type_concept_id = 0
     )
   }
 
@@ -478,7 +482,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       person_id = id,
       condition_concept_id = condition_concept_id,
       condition_start_date = condition_start_date,
-      condition_end_date = condition_end_date
+      condition_end_date = condition_end_date,
+      condition_type_concept_id = 0
     )
   }
 
@@ -491,7 +496,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       person_id = id,
       visit_concept_id = visit_concept_id,
       visit_start_date = visit_start_date,
-      visit_end_date = visit_end_date
+      visit_end_date = visit_end_date,
+      visit_type_concept_id = 0
     )
   }
 
@@ -502,7 +508,9 @@ mockPatientProfiles <- function(connectionDetails = list(
       seq((ancestor_concept_id_size + 1):(ancestor_concept_id_size + ancestor_concept_id_size))
     concept_ancestor <- data.frame(
       ancestor_concept_id = as.numeric(ancestor_concept_id),
-      descendant_concept_id = as.numeric(descendant_concept_id)
+      descendant_concept_id = as.numeric(descendant_concept_id),
+      min_levels_of_separation = 1,
+      max_levels_of_separation = 1
     )
   }
 
@@ -513,7 +521,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       subject_id = c(1, 1, 2, 3),
       cohort_start_date = as.Date(c("2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01")),
       cohort_end_date = as.Date(c("2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"))
-    )
+    ) |>
+      dplyr::filter(.data$subject_id %in% seq(1, patient_size))
   }
 
 
@@ -525,7 +534,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       subject_id = c(1, 3, 1, 2, 1),
       cohort_start_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25")),
       cohort_end_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"))
-    )
+    ) |>
+      dplyr::filter(.data$subject_id %in% seq(1, patient_size))
   }
 
   # into database

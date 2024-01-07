@@ -249,7 +249,7 @@ summariseCharacteristics <- function(cohort,
         by = "old_cohort_name",
         copy = TRUE
       ) %>%
-      CDMConnector::computeQuery()
+      dplyr::compute()
     attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- newCohortSet
 
     # update dictionary

@@ -95,7 +95,7 @@ cdm$exposure_cohort <- union_all(
   cdm$celecoxib,
   cdm$diclofenac
 ) %>%
-  computeQuery(name = "exposure_cohort")
+  compute(name = "exposure_cohort")
 ```
 
 ```{r, echo = FALSE}
@@ -159,7 +159,7 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
     "cohort_definition_id", "subject_id",
     "cohort_start_date", "cohort_end_date"
   ) %>%
-  computeQuery(name = "gi_bleed")
+  compute(name = "gi_bleed")
 ```
 
 ```{r, echo = FALSE}

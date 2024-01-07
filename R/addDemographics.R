@@ -255,8 +255,7 @@ addDemographics <- function(x,
       ))
   }
 
-  x <- x %>%
-    CDMConnector::computeQuery()
+  x <- x %>% dplyr::compute()
 
   if (!is.null(ageGroup)) {
     x <- addCategories(
@@ -266,9 +265,6 @@ addDemographics <- function(x,
       missingCategoryValue = "None"
     )
   }
-
-  # put back the initial attributes to the output tibble
-  x <- x %>% addAttributes(startTibble)
 
   return(x)
 }
@@ -607,8 +603,7 @@ addInObservation <- function(x,
       -"prior_observation", -"future_observation"
     )
 
-  x <- x %>%
-    CDMConnector::computeQuery()
+  x <- x %>% dplyr::compute()
 
   return(x)
 }

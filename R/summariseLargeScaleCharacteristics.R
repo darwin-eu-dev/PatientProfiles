@@ -73,7 +73,6 @@ summariseLargeScaleCharacteristics <- function(cohort,
   )
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
   checkCdm(cdm)
-  assertWriteSchema(cdm)
 
   # add names to windows
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
@@ -190,7 +189,6 @@ addLargeScaleCharacteristics <- function(cohort,
   checkmate::assertTRUE(is.null(censorDate) || censorDate %in% colnames(cohort))
   cdm <- attr(cohort, "cdm_reference")
   checkCdm(cdm)
-  assertWriteSchema(cdm)
 
   # add names to windows
   winNams <- unlist(getWindowNames(window))
@@ -256,7 +254,7 @@ addLargeScaleCharacteristics <- function(cohort,
     dplyr::mutate(dplyr::across(
       !dplyr::all_of(originalCols), ~ dplyr::if_else(is.na(.x), 0, 1)
     )) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
   # eliminate permanent tables
   CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
@@ -322,9 +320,10 @@ getInitialTable <- function(cohort, tablePrefix, indexDate, censorDate) {
     dbplyr::window_order(.data$subject_id, .data$cohort_start_date) %>%
     dplyr::mutate(obs_id = dplyr::row_number()) %>%
     dbplyr::window_order() %>%
-    CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "individuals"), temporary = FALSE,
-      schema = writeSchema(cohort), overwrite = TRUE
+    dplyr::compute(
+      name = paste0(tablePrefix, "individuals"),
+      temporary = FALSE,
+      overwrite = TRUE
     )
   return(x)
 }
@@ -365,9 +364,10 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix) {
   }
   table <- table %>%
     dplyr::select(-"start_obs", -"end_obs") %>%
-    CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "table"), temporary = FALSE,
-      schema = writeSchema(x), overwrite = TRUE
+    dplyr::compute(
+      name = paste0(tablePrefix, "table"),
+      temporary = FALSE,
+      overwrite = TRUE
     )
 }
 writeSchema <- function(x) {
@@ -389,9 +389,10 @@ summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
       dplyr::select(
         "obs_id", "concept", dplyr::all_of(unique(unlist(strata)))
       ) %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "table_window_cohort"), temporary = FALSE,
-        schema = writeSchema(cohort), overwrite = TRUE
+      dplyr::compute(
+        name = paste0(tablePrefix, "table_window_cohort"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
     result <- result %>%
       dplyr::bind_rows(
@@ -527,9 +528,10 @@ getCodesGroup <- function(table, analysis, tablePrefix) {
     dplyr::inner_join(codes, by = "concept") %>%
     dplyr::select(-"concept") %>%
     dplyr::rename("concept" = "concept_new") %>%
-    CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "table_group"), temporary = FALSE,
-      schema = writeSchema(table), overwrite = TRUE
+    dplyr::compute(
+      name = paste0(tablePrefix, "table_group"),
+      temporary = FALSE,
+      overwrite = TRUE
     )
   return(table)
 }
@@ -558,9 +560,10 @@ getTableWindow <- function(table, window, tablePrefix) {
   tableWindow <- tableWindow %>%
     dplyr::select("subject_id", "cohort_start_date", "obs_id", "concept") %>%
     dplyr::distinct() %>%
-    CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "table_window"), temporary = FALSE,
-      schema = writeSchema(table), overwrite = TRUE
+    dplyr::compute(
+      name = paste0(tablePrefix, "table_window"),
+      temporary = FALSE,
+      overwrite = TRUE
     )
   return(tableWindow)
 }
@@ -577,9 +580,10 @@ trimCounts <- function(lsc, tableWindow, minimumCount, tablePrefix, winName) {
     dplyr::mutate("window_name" = .env$winName)
   if (is.null(lsc)) {
     lsc <- x %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "lsc"), temporary = FALSE,
-        schema = writeSchema(tableWindow), overwrite = TRUE
+      dplyr::compute(
+        name = paste0(tablePrefix, "lsc"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
   } else {
     lsc <- x %>%
