@@ -1,13 +1,5 @@
 test_that("check input length and type for each of the arguments", {
-  cdm <-
-    mockPatientProfiles(
-      connectionDetails,
-      seed = 1,
-      patient_size = 5,
-      latest_observation_start_date = "2019-01-01",
-      max_days_to_observation_end = 1,
-      min_days_to_observation_end = 1
-    )
+  cdm <- mockPatientProfiles(connectionDetails)
 
   expect_error(addFutureObservation("cdm$cohort1", cdm))
 
@@ -18,15 +10,7 @@ test_that("check input length and type for each of the arguments", {
 
 test_that("check condition_occurrence and cohort1 work", {
   # mock data
-  cdm <-
-    mockPatientProfiles(
-      connectionDetails,
-      seed = 1,
-      patient_size = 5,
-      latest_observation_start_date = "2005-01-01",
-      max_days_to_observation_end = 1,
-      min_days_to_observation_end = 1
-    )
+  cdm <- mockPatientProfiles(connectionDetails)
   # check it works with cohort1 table in mockdb
   expect_true(typeof(cdm$cohort1 %>% addFutureObservation(cdm) %>% dplyr::collect()) == "list")
   expect_true("future_observation" %in% colnames(cdm$cohort1 %>% addFutureObservation(cdm)))
@@ -46,9 +30,9 @@ test_that("check working example with cohort1", {
       as.Date("2010-02-01")
     ),
     cohort_end_date = c(
-      as.Date("2015-01-01"),
-      as.Date("2013-01-01"),
-      as.Date("2013-01-01")
+      as.Date("2010-03-03"),
+      as.Date("2010-02-01"),
+      as.Date("2010-02-01")
     )
   )
 
@@ -64,7 +48,8 @@ test_that("check working example with cohort1", {
       as.Date("2014-01-01"),
       as.Date("2012-01-01"),
       as.Date("2012-01-01")
-    )
+    ),
+    period_type_concept_id = 0
   )
 
   cdm <-
@@ -72,7 +57,8 @@ test_that("check working example with cohort1", {
       connectionDetails,
       seed = 1,
       cohort1 = cohort1,
-      observation_period = obs1
+      observation_period = obs1,
+      cohort2 = cohort1
     )
 
   result <- cdm$cohort1 %>%
@@ -107,6 +93,8 @@ test_that("check working example with condition_occurrence", {
   condition_occurrence <- dplyr::tibble(
     condition_occurrence_id = c("1", "1", "1"),
     person_id = c("1", "2", "3"),
+    condition_concept_id = 0,
+    condition_type_concept_id = 0,
     condition_start_date = c(
       as.Date("2010-03-03"),
       as.Date("2010-03-01"),
@@ -131,7 +119,8 @@ test_that("check working example with condition_occurrence", {
       as.Date("2014-01-01"),
       as.Date("2012-01-01"),
       as.Date("2012-01-01")
-    )
+    ),
+    period_type_concept_id = 0
   )
 
   cdm <-
@@ -139,7 +128,8 @@ test_that("check working example with condition_occurrence", {
       connectionDetails,
       seed = 1,
       condition_occurrence = condition_occurrence,
-      observation_period = obs1
+      observation_period = obs1,
+      cohort1 = emptyCohort, cohort2 = emptyCohort
     )
 
   result <- cdm$condition_occurrence %>%
@@ -184,7 +174,9 @@ test_that("different name", {
       as.Date("2015-01-01"),
       as.Date("2013-01-01"),
       as.Date("2013-01-01")
-    )
+    ),
+    condition_concept_id = 0,
+    condition_type_concept_id = 0
   )
 
   obs1 <- dplyr::tibble(
@@ -199,7 +191,8 @@ test_that("different name", {
       as.Date("2014-01-01"),
       as.Date("2012-01-01"),
       as.Date("2012-01-01")
-    )
+    ),
+    period_type_concept_id = 0
   )
 
   cdm <-
@@ -207,7 +200,9 @@ test_that("different name", {
       connectionDetails,
       seed = 1,
       condition_occurrence = condition_occurrence,
-      observation_period = obs1
+      observation_period = obs1,
+      cohort1 = emptyCohort,
+      cohort2 = emptyCohort
     )
 
   cdm$condition_occurrence <-
@@ -227,7 +222,9 @@ test_that("priorHistory and future_observation - outside of observation period",
     gender_concept_id = 1,
     year_of_birth = 1980,
     month_of_birth = 01,
-    day_of_birth = 01
+    day_of_birth = 01,
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
   observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2),
@@ -239,26 +236,29 @@ test_that("priorHistory and future_observation - outside of observation period",
     observation_period_end_date = c(
       as.Date("2001-01-01"),
       as.Date("2015-01-01")
-    )
+    ),
+    period_type_concept_id = 0
   )
-  cohort1 <- dplyr::tibble(
-    cohort_definition_id = 1,
-    subject_id = c(1, 2),
-    cohort_start_date = as.Date(c("2012-02-01")),
-    cohort_end_date = as.Date(c("2013-02-01"))
+  co <- dplyr::tibble(
+    condition_occurrence_id = 1:2,
+    person_id = c(1, 2),
+    condition_start_date = as.Date(c("2012-02-01")),
+    condition_end_date = as.Date(c("2013-02-01")),
+    condition_concept_id = 0,
+    condition_type_concept_id = 0
   )
 
   cdm <- mockPatientProfiles(
     connectionDetails,
     person = person,
     observation_period = observation_period,
-    cohort1 = cohort1
+    condition_occurrence = co,
+    cohort1 = emptyCohort,
+    cohort2 = emptyCohort
   )
 
-  cdm$cohort1a <- cdm$cohort1 %>%
-    addFutureObservation(cdm,
-      indexDate = "cohort_start_date"
-    )
+  cdm$cohort1a <- cdm$condition_occurrence %>%
+    addFutureObservation(indexDate = "condition_start_date")
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
 })
@@ -272,7 +272,9 @@ test_that("multiple observation periods", {
     gender_concept_id = 1,
     year_of_birth = 1980,
     month_of_birth = 01,
-    day_of_birth = 01
+    day_of_birth = 01,
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
   observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2, 3),
@@ -286,7 +288,8 @@ test_that("multiple observation periods", {
       as.Date("2005-01-01"),
       as.Date("2015-01-01"),
       as.Date("2015-01-01")
-    )
+    ),
+    period_type_concept_id = 0
   )
   cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
@@ -299,7 +302,8 @@ test_that("multiple observation periods", {
     connectionDetails,
     person = person,
     observation_period = observation_period,
-    cohort1 = cohort1
+    cohort1 = cohort1,
+    cohort2 = emptyCohort
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%

@@ -58,8 +58,14 @@ test_that("working examples", {
 
   expect_true(length(attributes(cdm$cohort1)) == length(attributes(result)))
   for (i in names(attributes(cdm$cohort1))) {
-    if (i != "names" && i != "class") {
-      expect_true(identical(attr(cdm$cohort1, i), attr(result, i)))
+    if (i != "names" && i != "tbl_name") {
+      x <- attr(cdm$cohort1, i)
+      y <- attr(result, i)
+      if (i == "class") {
+        x <- x[x != "GeneratedCohortSet"]
+        y <- y[y != "GeneratedCohortSet"]
+      }
+      expect_true(identical(x, y))
     }
   }
 

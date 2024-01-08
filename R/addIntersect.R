@@ -219,10 +219,12 @@ addIntersect <- function(x,
             overwrite = TRUE
           )
       } else {
-        resultCountFlag <- appendPermanent(
-            x = resultCF,
+        resultCountFlag <- resultCountFlag |>
+          dplyr::union_all(resultCF) |>
+          dplyr::compute(
             name = paste0(tablePrefix, "win_count_flag"),
-            schema = attr(cdm, "write_schema")
+            temporary = FALSE,
+            overwrite = TRUE
           )
       }
     }
@@ -298,11 +300,13 @@ addIntersect <- function(x,
             overwrite = TRUE
           )
       } else {
-        resultDateTimeOther <- appendPermanent(
-          x = resultDTO,
-          name = paste0(tablePrefix, "win_date_days"),
-          schema = attr(cdm, "write_schema")
-        )
+        resultDateTimeOther <- resultDateTimeOther |>
+          dplyr::union_all(resultDTO) |>
+          dplyr::compute(
+            name = paste0(tablePrefix, "win_date_days"),
+            temporary = FALSE,
+            overwrite = TRUE
+          )
       }
     }
   }

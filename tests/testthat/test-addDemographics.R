@@ -1134,7 +1134,7 @@ test_that("date of birth", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, cohort2 = cohort2,
+    connectionDetails = connectionDetails, cohort1 = cohort1, cohort2 = cohort1,
     observation_period = observation_period, person = person
   )
 
