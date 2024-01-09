@@ -74,7 +74,7 @@ summariseResult <- function(table,
     result <- table %>%
       dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
       dplyr::mutate(
-        variable = "number records", variable_type = "numeric",
+        variable = "number records", variable_type = "categorical",
         estimate_type = "count"
       )
   } else {
@@ -185,11 +185,21 @@ summariseResult <- function(table,
       "estimate_value" = "estimate"
     ) |>
     dplyr::left_join(
-      formats |> dplyr::select("variable_type", "estimate_type" = "result"),
+      formats |>
+        dplyr::select(
+          "estimate_name" = "format_key",
+          "variable_type",
+          "estimate_type" = "result"
+        ),
       relationship = "many-to-many",
-      by = "variable_type"
+      by = c("estimate_name", "variable_type")
     ) |>
     dplyr::mutate(
+      "estimate_type" = dplyr::if_else(
+        .data$estimate_name %in% c("count_missing", "percentage_missing"),
+        "numeric",
+        .data$estimate_type
+      ),
       "cdm_name" = .env$cdm_name,
       "result_type" = "summarise_table",
       "package_name" = "PatientProfiles",
@@ -200,7 +210,8 @@ summariseResult <- function(table,
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
       "summarised_result"
     ))) |>
-    omopgenerics::summarisedResult()
+    omopgenerics::summarisedResult() |>
+    omopgenerics::suppress(minCellCount = minCellCount)
 
   return(result)
 }
@@ -456,7 +467,7 @@ summaryValues <- function(x, requiredFunctions) {
   result <- x %>%
     dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
     dplyr::mutate(
-      variable = "number records", variable_type = "numeric",
+      variable = "number records", variable_type = "categorical",
       estimate_type = "count"
     ) %>%
     dplyr::collect()
@@ -547,7 +558,7 @@ countSubjects <- function(x) {
         .groups = "drop"
       ) %>%
       dplyr::mutate(
-        variable = "number subjects", variable_type = "numeric",
+        variable = "number subjects", variable_type = "categorical",
         estimate_type = "count"
       ) %>%
       dplyr::collect()
@@ -585,68 +596,6 @@ summaryValuesStrata <- function(x,
   }
   result <- result %>%
     dplyr::relocate("strata_name")
-  return(result)
-}
-
-#' Function to suppress counts in summarised objects
-#'
-#' @param result SummarisedResult object
-#' @param minCellCount Minimum count of records to report results.
-#'
-#' @return Table with suppressed counts
-#'
-#' @export
-suppressCounts <- function(result,
-                           minCellCount = 5) {
-  checkmate::assertTRUE(all(c(
-    "variable", "estimate", "estimate_type", "group_name", "group_level",
-    "strata_name", "strata_level"
-  ) %in%
-    colnames(result)))
-
-  checkSuppressCellCount(minCellCount)
-
-  if (minCellCount > 1) {
-    if ("number subjects" %in% result$variable) {
-      personCount <- "number subjects"
-    } else {
-      personCount <- "number records"
-    }
-    toObscure <- result %>%
-      dplyr::filter(.data$variable == .env$personCount) %>%
-      dplyr::mutate(estimate = suppressWarnings(as.numeric(.data$estimate))) %>%
-      dplyr::filter(.data$estimate > 0 & .data$estimate < .env$minCellCount) %>%
-      dplyr::select("group_name", "group_level", "strata_name", "strata_level")
-    for (k in seq_len(nrow(toObscure))) {
-      ik <- result$group_name == toObscure$group_name[k] &
-        result$group_level == toObscure$group_level[k] &
-        result$strata_name == toObscure$strata_name[k] &
-        result$strata_level == toObscure$strata_level[k]
-      is <- result$variable == personCount
-      if (sum((ik & is) | is.na(ik & is)) > 0) {
-        result$estimate[ik & is] <- paste0("<", minCellCount)
-        result$estimate[ik & !is] <- as.character(NA)
-      }
-    }
-    estimate <- suppressWarnings(as.numeric(result$estimate))
-    id <- which(
-      result$estimate_type == "count" & estimate < minCellCount &
-        estimate > 0 & !is.na(estimate)
-    )
-    x <- result[id, ] %>%
-      dplyr::select(-"estimate") %>%
-      dplyr::mutate(estimate_type = "percentage")
-    result <- result %>%
-      dplyr::left_join(
-        x %>% dplyr::mutate(obscure_estimate = 1),
-        by = colnames(x)
-      ) %>%
-      dplyr::mutate(estimate = dplyr::if_else(
-        !is.na(.data$obscure_estimate), as.character(NA), .data$estimate
-      )) %>%
-      dplyr::select(-"obscure_estimate")
-    result$estimate[id] <- paste0("<", minCellCount)
-  }
   return(result)
 }
 

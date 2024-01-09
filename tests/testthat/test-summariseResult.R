@@ -1,10 +1,10 @@
 test_that("test all functions", {
   x <- dplyr::tibble(
-    s = c("g1", "g1", "g2", "g1 and g2", "g2", "g1 and g2"),
-    v1 = c(1, 2, 3, 4, 6, 3),
-    v2 = c("a", "b", "a and b", "b", "0", "0 and ab"),
-    v3 = c(0, 1, 0, 1, 1, 0),
-    v4 = as.Date(c(
+    s = c("g1", "g1", "g2", "g12", "g2", "g12"),
+    v_1 = c(1, 2, 3, 4, 6, 3),
+    v_2 = c("a", "b", "a", "b", "0", "0"),
+    v_3 = c(0, 1, 0, 1, 1, 0),
+    v_4 = as.Date(c(
       "2021-05-12", "2012-05-15", "2023-11-30", "2015-12-10", "2014-01-12",
       "1993-04-190"
     ))
@@ -17,7 +17,7 @@ test_that("test all functions", {
   )
   s4 <- summariseResult(
     x,
-    strata = list(c("s", "v2"), group2 = "s"),
+    strata = list(c("s", "v_2"), group2 = "s"),
     minCellCount = 1
   )
 
@@ -77,13 +77,15 @@ test_that("groups and strata", {
     dplyr::collect() %>%
     summariseResult(strata = list("sex"))
 
-  expect_true(result %>%
-    dplyr::filter(group_name == "overall" &
-      group_level == "overall" &
-      strata_name == "overall" &
-      strata_level == "overall" &
-      variable == "number subjects") %>%
-    dplyr::pull("estimate") == "1000")
+  expect_true(
+    result %>%
+      dplyr::filter(
+        group_name == "overall" & group_level == "overall" &
+          strata_name == "overall" & strata_level == "overall" &
+          variable_name == "number subjects"
+      ) %>%
+      dplyr::pull("estimate_value") == "1000"
+  )
 
 
   result <- cdm$condition_occurrence %>%
@@ -229,44 +231,44 @@ test_that("obscure", {
   # minCellCount = 1
   s <- summariseResult(x, minCellCount = 1)
   expect_true(nrow(s) == 29)
-  expect_true(sum(s$estimate[!is.na(s$estimate)] == "<1") == 0)
-  expect_true(sum(is.na(s$estimate)) == 0)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<1") == 0)
+  expect_true(sum(is.na(s$estimate_value)) == 0)
 
   # minCellCount = 2
   s <- summariseResult(x, minCellCount = 2)
   expect_true(nrow(s) == 29)
-  expect_true(sum(s$estimate[!is.na(s$estimate)] == "<2") == 4)
-  expect_true(sum(is.na(s$estimate)) == 4)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<2") == 4)
+  expect_true(sum(is.na(s$estimate_value)) == 4)
 
   # minCellCount = 3
   s <- summariseResult(x, minCellCount = 3)
   expect_true(nrow(s) == 29)
-  expect_true(sum(s$estimate[!is.na(s$estimate)] == "<3") == 8)
-  expect_true(sum(is.na(s$estimate)) == 8)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<3") == 8)
+  expect_true(sum(is.na(s$estimate_value)) == 8)
 
   # minCellCount = 4
   s <- summariseResult(x, minCellCount = 4)
   expect_true(nrow(s) == 29)
-  expect_true(sum(s$estimate[!is.na(s$estimate)] == "<4") == 9)
-  expect_true(sum(is.na(s$estimate)) == 9)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<4") == 9)
+  expect_true(sum(is.na(s$estimate_value)) == 9)
 
   # minCellCount = 5
   s <- summariseResult(x, minCellCount = 5)
   expect_true(nrow(s) == 29)
-  expect_true(sum(s$estimate[!is.na(s$estimate)] == "<5") == 9)
-  expect_true(sum(is.na(s$estimate)) == 9)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<5") == 9)
+  expect_true(sum(is.na(s$estimate_value)) == 9)
 
   # minCellCount = 6
   s <- summariseResult(x, minCellCount = 6)
   expect_true(nrow(s) == 29)
-  expect_true(sum(s$estimate[!is.na(s$estimate)] == "<6") == 9)
-  expect_true(sum(is.na(s$estimate)) == 9)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<6") == 9)
+  expect_true(sum(is.na(s$estimate_value)) == 9)
 
   # minCellCount = 7
   s <- summariseResult(x, minCellCount = 7)
   expect_true(nrow(s) == 29)
-  expect_true(sum(s$estimate[!is.na(s$estimate)] == "<7") == 1)
-  expect_true(sum(is.na(s$estimate)) == 28)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<7") == 1)
+  expect_true(sum(is.na(s$estimate_value)) == 28)
 })
 
 test_that("test empty cohort", {
@@ -340,7 +342,7 @@ test_that("test summary table naming", {
     summariseResult()
 
   expect_true(all(
-    c("age_age", "age", "age_age_age", "age_age_age_age") %in% dat$variable
+    c("age_age", "age", "age_age_age", "age_age_age_age") %in% dat$variable_name
   ))
 
 
@@ -378,7 +380,7 @@ test_that("misisng counts", {
     )
   )
   expected <- dplyr::tribble(
-    ~strata, ~variable, ~count, ~percentage,
+    ~strata, ~variable_name, ~count, ~percentage,
     "overall", "age", 2, 50,
     "overall", "number_visits", 1, 25,
     "overall", "prior_history", 0, 0,
@@ -397,10 +399,10 @@ test_that("misisng counts", {
     x <- result %>%
       dplyr::filter(
         .data$strata_level == .env$expected$strata[k],
-        .data$variable == .env$expected$variable[k]
+        .data$variable_name == .env$expected$variable_name[k]
       )
-    xcount <- x$estimate[x$estimate_type == "count_missing"]
-    xpercentage <- x$estimate[x$estimate_type == "percentage_missing"]
+    xcount <- x$estimate_value[x$estimate_type == "count_missing"]
+    xpercentage <- x$estimate_value[x$estimate_type == "percentage_missing"]
     expect_true(xcount == expected$count[k])
     expect_true(xpercentage == expected$percentage[k])
   }
@@ -408,12 +410,12 @@ test_that("misisng counts", {
   expect_true(
     result %>%
       dplyr::filter(
-        .data$variable == "age",
+        .data$variable_name == "age",
         .data$strata_level == "Female",
         is.na(.data$variable_level),
         !.data$estimate_type %in% c("count_missing", "percentage_missing")
       ) %>%
-      dplyr::pull("estimate") %>%
+      dplyr::pull("estimate_value") %>%
       is.na() %>%
       all()
   )
@@ -450,13 +452,13 @@ test_that("data is ordered", {
   order <- unique(result$strata_level)
   expect_identical(order, c("overall", "Female", "Male"))
   # first numbers, age, sex, prior_history, number_visits
-  variables <- unique(result$variable)
+  variables <- unique(result$variable_name)
   expect_identical(variables, c(
     "number subjects", "number records", "age", "sex", "prior_history",
     "number_visits"
   ))
   # variable levels appear by order
-  order <- unique(result$variable_level[result$variable == "sex"])
+  order <- unique(result$variable_level[result$variable_name == "sex"])
   order <- order[!is.na(order)]
   expect_identical(order, c("Female", "Male"))
   DBI::dbRemoveTable(connectionDetails$con, name = name)
@@ -490,13 +492,13 @@ test_that("data is ordered", {
   order <- unique(result$strata_level)
   expect_identical(order, c("overall", "Male", "xFemale"))
   # first numbers, age, sex, prior_history, number_visits
-  variables <- unique(result$variable)
+  variables <- unique(result$variable_name)
   expect_identical(variables, c(
     "number subjects", "number records", "age", "sex", "prior_history",
     "number_visits"
   ))
   # variable levels appear by order
-  order <- unique(result$variable_level[result$variable == "sex"])
+  order <- unique(result$variable_level[result$variable_name == "sex"])
   order <- order[!is.na(order)]
   expect_identical(order, c("Male", "xFemale"))
   DBI::dbRemoveTable(connectionDetails$con, name = name)
