@@ -27,7 +27,6 @@
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x
 #' @param includeSource Whether to include source concepts.
-#' @param minCellCount All counts lower than minCellCount will be obscured.
 #' @param minimumFrequency Minimum frequency covariates to report.
 #' @param cdm A cdm reference.
 #'
@@ -48,7 +47,6 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                indexDate = "cohort_start_date",
                                                censorDate = NULL,
                                                includeSource = FALSE,
-                                               minCellCount = 5,
                                                minimumFrequency = 0.005,
                                                cdm = attr(cohort, "cdm_reference")) {
   if (!is.list(window)) {
@@ -135,10 +133,34 @@ summariseLargeScaleCharacteristics <- function(cohort,
 
   # format results
   results <- lsc %>%
-    formatLscResult(den, cdm, minimumFrequency, minCellCount)
+    formatLscResult(den, cdm, minimumFrequency)
+
+  # summarised_result format
+  results <- results |>
+    dplyr::mutate(
+      "result_type" = "summarised_large_scale_characteristics",
+      "package_name" = "PatientProfiles",
+      "package_version" = as.character(utils::packageVersion("PatientProfiles")),
+      "variable_name" = .data$variable,
+      "estimate_name" = .data$estimate_type,
+      "estimate_value" = .data$estimate,
+      "estimate_type" = dplyr::if_else(
+        .data$estimate_type == "count", "numeric", "percentage"
+      )
+    ) |>
+    omopgenerics::uniteGroup(
+      cols = c("table_name", "type", "analysis", "concept"),
+      name = "additional_name",
+      level = "additional_level",
+      keep = FALSE
+    ) |>
+    dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
+      "summarised_result"
+    ))) |>
+    omopgenerics::summarisedResult()
 
   # eliminate permanent tables
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
+  cdm <- omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   # return
   return(results)
@@ -257,7 +279,7 @@ addLargeScaleCharacteristics <- function(cohort,
     dplyr::compute()
 
   # eliminate permanent tables
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
+  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   # return
   return(cohort)
@@ -402,7 +424,7 @@ summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
           dplyr::collect() %>%
           dplyr::mutate(strata_name = "overall", strata_level = "overall") %>%
           dplyr::bind_rows(summariseStrataCounts(tableWindowCohort, strata)) %>%
-          dplyr::mutate(group_name = "Cohort name", group_level = cohortName)
+          dplyr::mutate(group_name = "cohort_name", group_level = cohortName)
       )
   }
   return(result)
@@ -437,12 +459,11 @@ denominatorCounts <- function(cohort, x, strata, window, tablePrefix) {
   }
   return(den)
 }
-formatLscResult <- function(lsc, den, cdm, minimumFrequency, minCellCount) {
+formatLscResult <- function(lsc, den, cdm, minimumFrequency) {
   lsc %>%
     dplyr::inner_join(
       den %>%
         dplyr::rename("denominator" = "count") %>%
-        dplyr::filter(.data$denominator >= .env$minCellCount) %>%
         dplyr::select(-"concept"),
       by = c(
         "strata_name", "strata_level", "group_name", "group_level",
@@ -451,7 +472,6 @@ formatLscResult <- function(lsc, den, cdm, minimumFrequency, minCellCount) {
     ) %>%
     dplyr::mutate(percentage = 100 * .data$count / .data$denominator) %>%
     dplyr::select(-"denominator") %>%
-    dplyr::filter(.data$count >= .env$minCellCount) %>%
     dplyr::filter(.data$percentage >= 100 * .env$minimumFrequency) %>%
     tidyr::pivot_longer(
       cols = c("count", "percentage"), names_to = "estimate_type",
@@ -581,14 +601,13 @@ trimCounts <- function(lsc, tableWindow, minimumCount, tablePrefix, winName) {
   if (is.null(lsc)) {
     lsc <- x %>%
       dplyr::compute(
-        name = paste0(tablePrefix, "lsc"),
-        temporary = FALSE,
-        overwrite = TRUE
+        name = paste0(tablePrefix, "lsc"), temporary = FALSE, overwrite = TRUE
       )
   } else {
-    lsc <- x %>%
-      CDMConnector::appendPermanent(
-        name = paste0(tablePrefix, "lsc"), schema = writeSchema(tableWindow)
+    lsc <- lsc %>%
+      dplyr::union_all(x) %>%
+      dplyr::compute(
+        name = paste0(tablePrefix, "lsc"), temporary = FALSE, overwrite = TRUE
       )
   }
   return(lsc)

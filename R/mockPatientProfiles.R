@@ -632,24 +632,3 @@ addCohortCountAttr <- function(cohort) {
 
   return(cohort)
 }
-
-#' Delete tables that have been added during the testing
-#'
-#' @param connectionDetails Connection details of the mock database
-#'
-#' @noRd
-#'
-disconnectMockCdm <- function(connectionDetails) {
-  db <- connectionDetails[["con"]]
-  writeSchema <- connectionDetails[["write_schema"]]
-  scratchTables <- getOption("mock_cdm_scratch_tables", NULL)
-  writeTables <- getOption("mock_cdm_write_tables", NULL)
-  for (tab in scratchTables) {
-    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
-  }
-  for (tab in writeTables) {
-    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
-  }
-  DBI::dbDisconnect(db, shutdown = TRUE)
-  options(mock_cdm_scratch_tables = NULL, mock_cdm_write_tables = NULL)
-}

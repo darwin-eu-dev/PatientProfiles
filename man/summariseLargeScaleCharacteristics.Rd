@@ -15,7 +15,6 @@ summariseLargeScaleCharacteristics(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   includeSource = FALSE,
-  minCellCount = 5,
   minimumFrequency = 0.005,
   cdm = attr(cohort, "cdm_reference")
 )
@@ -38,8 +37,6 @@ intersection.}
 or a column date of x}
 
 \item{includeSource}{Whether to include source concepts.}
-
-\item{minCellCount}{All counts lower than minCellCount will be obscured.}
 
 \item{minimumFrequency}{Minimum frequency covariates to report.}
 
