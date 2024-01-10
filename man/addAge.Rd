@@ -19,8 +19,7 @@ addAge(
 \arguments{
 \item{x}{Table with individuals in the cdm.}
 
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
+\item{cdm}{A cdm_reference object.}
 
 \item{indexDate}{Variable in x that contains the date to compute the age.}
 

@@ -4,7 +4,7 @@
 \alias{addCdmName}
 \title{Add cdm name}
 \usage{
-addCdmName(table, cdm = NULL)
+addCdmName(table, cdm = attr(table, "cdm_reference"))
 }
 \arguments{
 \item{table}{Table in the cdm}

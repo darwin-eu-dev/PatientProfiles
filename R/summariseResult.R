@@ -71,12 +71,13 @@ summariseResult <- function(table,
   if (table %>%
     dplyr::count() %>%
     dplyr::pull() == 0) {
-    result <- table %>%
-      dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
-      dplyr::mutate(
-        variable = "number records", variable_type = "categorical",
-        estimate_type = "count"
-      )
+    result <- dplyr::tibble(
+      "estimate" = "0", "variable" = "number records",
+      "variable_type" = "categorical", "estimate_type" = "count",
+      "group_name" = "overall", "group_level" = "overall",
+      "strata_name" = "overall", "strata_level" = "overall",
+      "variable_level" = NA_character_
+    )
   } else {
     if (!is.list(variables)) {
       variables <- list("all" = variables)

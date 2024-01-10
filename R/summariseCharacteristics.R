@@ -115,17 +115,22 @@ summariseCharacteristics <- function(cohort,
     }
     result <- dplyr::tibble(
       "cdm_name" = CDMConnector::cdmName(cdm),
-      "result_type" = "Summarised characteristics",
+      "result_type" = "summarised_characteristics",
+      "package_name" = "PatientProfiles",
+      "package_version" = as.character(utils::packageVersion("PatientProfiles")),
       "group_name" = "overall",
       "group_level" = "overall",
       "strata_name" = "overall",
       "strata_level" = "overall",
-      "variable" = variables,
+      "variable_name" = variables,
       "variable_level" = as.character(NA),
-      "variable_type" = "numeric",
-      "estimate_type" = "count",
-      "estimate" = 0
-    )
+      "estimate_name" = "count",
+      "estimate_type" = "integer",
+      "estimate_value" = "0",
+      "additional_name" = "overall",
+      "additional_level" = "overall"
+    ) |>
+      omopgenerics::summarisedResult()
     return(result)
   }
 
@@ -362,17 +367,17 @@ summariseCharacteristics <- function(cohort,
       minCellCount = minCellCount
     ) %>%
     addCdmName(cdm = cdm) %>%
-    dplyr::mutate(result_type = "Summary characteristics")
+    dplyr::mutate(result_type = "summary_characteristics")
 
   # rename variables
   results <- results %>%
     dplyr::left_join(
-      tidyDic(dic),
-      by = "variable"
+      tidyDic(dic) |> dplyr::rename("variable_name" = "variable"),
+      by = "variable_name"
     ) %>%
     dplyr::mutate(
-      "variable" = dplyr::if_else(
-        is.na(.data$new_variable), .data$variable, .data$new_variable
+      "variable_name" = dplyr::if_else(
+        is.na(.data$new_variable), .data$variable_name, .data$new_variable
       ),
       "variable_level" = dplyr::if_else(
         is.na(.data$new_variable_level), .data$variable_level,
@@ -381,14 +386,11 @@ summariseCharacteristics <- function(cohort,
     ) %>%
     dplyr::select(-"new_variable", -"new_variable_level") %>%
     dplyr::mutate(dplyr::across(
-      c("group_level", "strata_level", "variable", "variable_level"),
+      c("variable_name", "variable_level"),
       ~ stringr::str_to_sentence(gsub("_", " ", .x))
     )) %>%
-    dplyr::select(
-      "cdm_name", "result_type", "group_name", "group_level", "strata_name",
-      "strata_level", "variable", "variable_level", "variable_type",
-      "estimate_type", "estimate"
-    )
+    dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result"))) |>
+    omopgenerics::summarisedResult()
 
   return(results)
 }

@@ -272,25 +272,10 @@ test_that("obscure", {
 })
 
 test_that("test empty cohort", {
-  dus_cohort <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 3),
-    cohort_start_date = as.Date(c(
-      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
-    )),
-    cohort_end_date = as.Date(c(
-      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
-    ))
-  )
-
-
-  cdm <- mockPatientProfiles(
-   connectionDetails,
-    dus_cohort = dus_cohort
-  )
+  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
 
   expect_no_error(
-    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+    cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
         group = list("cohort_name"),
         includeOverallGroup = FALSE,
@@ -299,7 +284,7 @@ test_that("test empty cohort", {
   )
 
   expect_no_error(
-    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+    cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
         group = list("cohort_name"),
         includeOverallGroup = TRUE,
@@ -309,7 +294,7 @@ test_that("test empty cohort", {
 
 
   expect_no_error(
-    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+    cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
         group = list("cohort_name"),
         includeOverallGroup = FALSE,
@@ -318,7 +303,7 @@ test_that("test empty cohort", {
   )
 
   expect_no_error(
-    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+    cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseResult(
         group = list("cohort_name"),
         includeOverallGroup = TRUE,
@@ -329,10 +314,7 @@ test_that("test empty cohort", {
 
 test_that("test summary table naming", {
 
-
-  cdm <- PatientProfiles::mockPatientProfiles(
-    connectionDetails
-  )
+  cdm <- PatientProfiles::mockPatientProfiles(connectionDetails = connectionDetails)
 
   dat <-
     cdm$cohort1 %>% addDemographics() %>%
@@ -344,10 +326,6 @@ test_that("test summary table naming", {
   expect_true(all(
     c("age_age", "age", "age_age_age", "age_age_age_age") %in% dat$variable_name
   ))
-
-
-
-
 
 })
 
@@ -401,8 +379,8 @@ test_that("misisng counts", {
         .data$strata_level == .env$expected$strata[k],
         .data$variable_name == .env$expected$variable_name[k]
       )
-    xcount <- x$estimate_value[x$estimate_type == "count_missing"]
-    xpercentage <- x$estimate_value[x$estimate_type == "percentage_missing"]
+    xcount <- x$estimate_value[x$estimate_name == "count_missing"]
+    xpercentage <- x$estimate_value[x$estimate_name == "percentage_missing"]
     expect_true(xcount == expected$count[k])
     expect_true(xpercentage == expected$percentage[k])
   }
@@ -413,7 +391,7 @@ test_that("misisng counts", {
         .data$variable_name == "age",
         .data$strata_level == "Female",
         is.na(.data$variable_level),
-        !.data$estimate_type %in% c("count_missing", "percentage_missing")
+        !.data$estimate_name %in% c("count_missing", "percentage_missing")
       ) %>%
       dplyr::pull("estimate_value") %>%
       is.na() %>%
