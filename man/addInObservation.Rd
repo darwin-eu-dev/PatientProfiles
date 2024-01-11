@@ -30,9 +30,9 @@ Indicate if a certain record is within the observation period
 }
 \examples{
 \donttest{
-library(PatientProfiles)
 cdm <- mockPatientProfiles()
-cdm$cohort1 \%>\% addInObservation(cdm)
+cdm$cohort1 \%>\%
+  addInObservation()
 }
 
 }

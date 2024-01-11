@@ -664,15 +664,20 @@ test_that("working examples with tables, not cohorts", {
   )
 
   drugExposure <- dplyr::tibble(
-    subject_id = c(1, 1),
+    drug_exposure_id = 0,
+    drug_type_concept_id = 0,
+    person_id = c(1, 1),
     drug_concept_id = c(1, 2),
-    drug_exposure_start_date = as.Date(c("2020-02-10", "2019-09-01"))
+    drug_exposure_start_date = as.Date(c("2020-02-10", "2019-09-01")),
+    drug_exposure_end_date = as.Date(NA)
   )
 
   conditionOccurrence <- dplyr::tibble(
     condition_concept_id = c(1, 1, 2, 2, 3, 3, 3),
-    subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    condition_occurrence_start_date = as.Date(
+    condition_occurrence_id = 0,
+    condition_type_concept_id = 0,
+    person_id = c(1, 1, 1, 2, 2, 2, 1),
+    condition_start_date = as.Date(
       c(
         "2020-01-15",
         "2020-01-25",
@@ -683,7 +688,7 @@ test_that("working examples with tables, not cohorts", {
         "2020-02-16"
       )
     ),
-    condition_occurrence_end_date = as.Date(
+    condition_end_date = as.Date(
       c(
         "2020-01-15",
         "2020-01-25",
@@ -696,7 +701,7 @@ test_that("working examples with tables, not cohorts", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails,
+  cdm <- mockPatientProfiles(connectionDetails = connectionDetails,
     cohort1 = cohort1,
     condition_occurrence = conditionOccurrence,
     drug_exposure = drugExposure, patient_size = 2
@@ -711,8 +716,8 @@ test_that("working examples with tables, not cohorts", {
   result <- cdm$cohort1 %>%
     addIntersect(
       cdm = cdm, tableName = "condition_occurrence", value = "date",
-      targetStartDate = "condition_occurrence_start_date",
-      targetEndDate = "condition_occurrence_end_date",
+      targetStartDate = "condition_start_date",
+      targetEndDate = "condition_end_date",
       window = list(c(0, Inf), c(-Inf, 0))
     ) %>%
     dplyr::collect()
@@ -722,13 +727,13 @@ test_that("working examples with tables, not cohorts", {
   result1 <- cdm$condition_occurrence %>%
     addIntersect(
       cdm = cdm, tableName = "drug_exposure", value = "count",
-      indexDate = "condition_occurrence_start_date",
+      indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf), c(-Inf, 0)), filterVariable = "drug_concept_id",
       filterId = c(1, 2)
     ) %>%
     dplyr::collect() |>
-    dplyr::arrange(subject_id, condition_occurrence_start_date)
+    dplyr::arrange(person_id, condition_start_date)
 
   expect_true(all(result1$count_id1_0_to_inf == c(1, 1, 1, 0, 0, 0, 0)))
   # test output all zero column when no result found
@@ -739,12 +744,12 @@ test_that("working examples with tables, not cohorts", {
   result2 <- cdm$condition_occurrence %>%
     addIntersect(
       cdm = cdm, tableName = "drug_exposure", value = "count",
-      indexDate = "condition_occurrence_start_date",
+      indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf), c(-Inf, 0))
     ) %>%
     dplyr::collect() |>
-    dplyr::arrange(subject_id, condition_occurrence_start_date)
+    dplyr::arrange(person_id, condition_start_date)
 
   expect_true(all(result1$count_id1_0_to_inf + result1$count_id2_0_to_inf == result2$count_all_0_to_inf))
   expect_true(all(result1$count_id1_minf_to_0 + result1$count_id2_minf_to_0 == result2$count_all_minf_to_0))
@@ -752,26 +757,26 @@ test_that("working examples with tables, not cohorts", {
   result3 <- cdm$condition_occurrence %>%
     addIntersect(
       cdm = cdm, tableName = "drug_exposure", value = "date",
-      indexDate = "condition_occurrence_start_date",
+      indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf)), filterVariable = "drug_concept_id",
       filterId = c(1, 2)
     ) %>%
     dplyr::collect() |>
-    dplyr::arrange(subject_id, condition_occurrence_start_date)
+    dplyr::arrange(person_id, condition_start_date)
   # test output all zero column when no result found
   expect_true(all(is.na(result3$date_id2_0_to_inf)))
 
   result4 <- cdm$condition_occurrence %>%
     addIntersect(
       cdm = cdm, tableName = "drug_exposure", value = "days",
-      indexDate = "condition_occurrence_start_date",
+      indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf)), filterVariable = "drug_concept_id",
       filterId = c(1, 2)
     ) %>%
     dplyr::collect() |>
-    dplyr::arrange(subject_id, condition_occurrence_start_date)
+    dplyr::arrange(person_id, condition_start_date)
   # test output all zero column when no result found
   expect_true(all(is.na(result4$days_id2_0_to_inf)))
 })
@@ -1211,26 +1216,21 @@ test_that("non snake columns not repeated in output", {
     addCohortIntersectFlag(cdm, "cohort1")
 
   expect_true("cohort_1_0_to_inf" %in% colnames(cdm$cohort2))
-  expect_true("cohort_2_0_to_inf" %in% colnames(cdm$cohort2))
   expect_false("COHORT_1_0_to_inf" %in% colnames(cdm$cohort2))
-  expect_false("COHORT_2_0_to_inf" %in% colnames(cdm$cohort2))
 })
 
 test_that("no NA when overwrite column", {
 
   cdm <- mockPatientProfiles(
+    connectionDetails = connectionDetails,
     patient_size = 1000,
     drug_exposure_size = 1000
     )
 
-  # To get more logical table names and sort the records:
-  cdm$study_cohort <- cdm$cohort1
-  cdm$characteristics_cohort <- cdm$cohort2
-
   # Presence in characteristis 'cohort 1' in 180 days before cohort start
-  cdm$study_cohort <- cdm$study_cohort %>%
+  cdm$cohort1 <- cdm$cohort1 %>%
     addCohortIntersectFlag(
-      targetCohortTable = "characteristics_cohort",
+      targetCohortTable = "cohort2",
       window = list(c(-180, -1)),
       targetCohortId = 1,
       nameStyle = "{cohort_name}"
@@ -1238,31 +1238,31 @@ test_that("no NA when overwrite column", {
 
 
   # Trying to overwrite the previous created variable, for example because the characteristics cohort has changed.
-  cdm$study_cohort <- cdm$study_cohort %>%
+  cdm$cohort1 <- cdm$cohort1 %>%
     addCohortIntersectFlag(
-      targetCohortTable = "characteristics_cohort",
+      targetCohortTable = "cohort2",
       window = list(c(-180, -1)),
       targetCohortId = 1,
       nameStyle = "{cohort_name}"
     )
 
-  expect_true(!any(is.na(cdm$study_cohort %>% dplyr::pull("cohort_1"))))
+  expect_true(!any(is.na(cdm$cohort1 %>% dplyr::pull("cohort_1"))))
 
   # subject 2, who has no record for cohort_definition_id 1 in the characteristics cohort, now gets a "NA"
 
   # Moving the "cohort_definition_id == 1" records from subject 1 to subject 2:
-  cdm$characteristics_cohort <- cdm$characteristics_cohort %>%
+  cdm$cohort2 <- cdm$cohort2 %>%
     dplyr::mutate(subject_id = dplyr::if_else(cohort_definition_id == 1 & subject_id == 1, 2, subject_id))
 
-  cdm$study_cohort <- cdm$study_cohort %>%
+  cdm$cohort1 <- cdm$cohort1 %>%
     addCohortIntersectFlag(
-      targetCohortTable = "characteristics_cohort",
+      targetCohortTable = "cohort2",
       window = list(c(-180, -1)),
       targetCohortId = 1,
       nameStyle = "{cohort_name}"
     )
 
-  expect_true(!any(is.na(cdm$study_cohort %>% dplyr::pull("cohort_1"))))
+  expect_true(!any(is.na(cdm$cohort1 %>% dplyr::pull("cohort_1"))))
 
 })
 

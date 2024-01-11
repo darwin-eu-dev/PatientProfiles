@@ -75,9 +75,9 @@ test_that("test summariseCharacteristics", {
       ), "Comorbidities" = list(
         targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
       )
-    ),
-    minCellCount = 1
-  ))
+    )
+  ) |>
+    omopgenerics::suppress(minCellCount = 1))
   expect_identical(class(result), c(
     "summary_characteristics", "summarised_result", "summarise_table", "tbl_df",
     "tbl", "data.frame"
@@ -183,8 +183,9 @@ test_that("test summariseCharacteristics", {
       ), "Comorbidities" = list(
         targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
       )
-    ), minCellCount = 1
-  ))
+    )
+  )|>
+    omopgenerics::suppress(minCellCount = 1))
   expect_identical(class(result), c(
     "summary_characteristics", "summarised_result", "summarise_table", "tbl_df",
     "tbl", "data.frame"
@@ -224,8 +225,9 @@ test_that("test summariseCharacteristics", {
 
   result_notables <- summariseCharacteristics(
     cdm$dus_cohort,
-    cohortIntersect = list(), tableIntersect = list(), minCellCount = 1
-  )
+    cohortIntersect = list(), tableIntersect = list()
+  )|>
+    omopgenerics::suppress(minCellCount = 1)
   expect_identical(class(result), c(
     "summary_characteristics", "summarised_result", "summarise_table", "tbl_df",
     "tbl", "data.frame"
@@ -239,8 +241,7 @@ test_that("test summariseCharacteristics", {
       "Medications" = list(
         targetCohortTable = "medication", value = "flag", window = c(-365, 0)
       )
-    ),
-    minCellCount = 1
+    )
   ))
   expect_true(all(
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
@@ -248,8 +249,7 @@ test_that("test summariseCharacteristics", {
   ))
   expect_no_error(result <- summariseCharacteristics(
     cdm$dus_cohort,
-    demographics = TRUE,
-    minCellCount = 1
+    demographics = TRUE
   ))
   expect_true(all(
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
@@ -262,8 +262,7 @@ test_that("test summariseCharacteristics", {
       "Medications" = list(
         targetCohortTable = "medication", value = "flag", window = c(-365, 0)
       )
-    ),
-    minCellCount = 1
+    )
   ))
   expect_false(any(
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
@@ -271,8 +270,7 @@ test_that("test summariseCharacteristics", {
   ))
   expect_error(summariseCharacteristics(
     cdm$dus_cohort,
-    demographics = FALSE,
-    minCellCount = 1
+    demographics = FALSE
   ))
 
 })
@@ -288,7 +286,7 @@ test_that("test empty cohort", {
         ), "Comorbidities" = list(
           targetCohortTable = "cohort2", value = "flag", window = c(-Inf, 0)
         )
-      ), minCellCount = 1)
+      ))
   )
   expect_no_error(
     cdm$cohort1 %>%
@@ -298,6 +296,6 @@ test_that("test empty cohort", {
         ), "Comorbidities" = list(
           targetCohortTable = "cohort2", value = "flag", window = c(-Inf, 0)
         )
-      ), minCellCount = 1)
+      ))
   )
 })

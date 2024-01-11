@@ -124,7 +124,7 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
     "cohort_definition_id", "subject_id",
     "cohort_start_date", "cohort_end_date"
   ) %>%
-  compute(name = "gi_bleed") |>
+  compute(name = "gi_bleed", temporary = FALSE) |>
   cohortTable(cohortSetRef = tibble(
     cohort_definition_id = 1, cohort_name = "gi_bleed"
   ))

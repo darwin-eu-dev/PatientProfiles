@@ -54,9 +54,7 @@ summariseCharacteristics(
     "Medications" = list(
       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
     )
-  ),
-  minCellCount = 1
-) \%>\%
-  gtCharacteristics()
+  )
+)
 }
 }

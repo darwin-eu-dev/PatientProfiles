@@ -13,12 +13,11 @@ test_that("test all functions", {
   s2 <- summariseResult(x, strata = list("s"))
   s3 <- summariseResult(
     x,
-    strata = list("s"), minCellCount = 1
+    strata = list("s"),
   )
   s4 <- summariseResult(
     x,
-    strata = list(c("s", "v_2"), group2 = "s"),
-    minCellCount = 1
+    strata = list(c("s", "v_2"), group2 = "s")
   )
 
   x <- dplyr::tibble(
@@ -34,7 +33,7 @@ test_that("test all functions", {
   )
   expect_no_error(summariseResult(
     x,
-    strata = list(), minCellCount = 1
+    strata = list()
   ))
 
   cohort <- dplyr::tibble(
@@ -229,43 +228,50 @@ test_that("obscure", {
   )
 
   # minCellCount = 1
-  s <- summariseResult(x, minCellCount = 1)
+  s <- summariseResult(x) |>
+    omopgenerics::suppress(minCellCount = 1)
   expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<1") == 0)
   expect_true(sum(is.na(s$estimate_value)) == 0)
 
   # minCellCount = 2
-  s <- summariseResult(x, minCellCount = 2)
+  s <- summariseResult(x) |>
+    omopgenerics::suppress(minCellCount = 2)
   expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<2") == 4)
   expect_true(sum(is.na(s$estimate_value)) == 4)
 
   # minCellCount = 3
-  s <- summariseResult(x, minCellCount = 3)
+  s <- summariseResult(x) |>
+    omopgenerics::suppress(minCellCount = 3)
   expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<3") == 8)
   expect_true(sum(is.na(s$estimate_value)) == 8)
 
   # minCellCount = 4
-  s <- summariseResult(x, minCellCount = 4)
+  s <- summariseResult(x) |>
+    omopgenerics::suppress(minCellCount = 4)
   expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<4") == 9)
   expect_true(sum(is.na(s$estimate_value)) == 9)
 
   # minCellCount = 5
-  s <- summariseResult(x, minCellCount = 5)
+  s <- summariseResult(x) |>
+    omopgenerics::suppress(minCellCount = 5)
   expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<5") == 9)
   expect_true(sum(is.na(s$estimate_value)) == 9)
 
   # minCellCount = 6
-  s <- summariseResult(x, minCellCount = 6)
+  s <- summariseResult(x) |>
+    omopgenerics::suppress(minCellCount = 6)
   expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<6") == 9)
   expect_true(sum(is.na(s$estimate_value)) == 9)
 
   # minCellCount = 7
-  s <- summariseResult(x, minCellCount = 7)
+  s <- summariseResult(x) |>
+    omopgenerics::suppress(minCellCount = 7)
   expect_true(nrow(s) == 29)
   expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<7") == 1)
   expect_true(sum(is.na(s$estimate_value)) == 28)
@@ -354,7 +360,7 @@ test_that("misisng counts", {
   expect_no_error(
     result <- summariseResult(
       cohort, strata = list("sex"), variables = variables,
-      functions = functions, minCellCount = 1
+      functions = functions
     )
   )
   expected <- dplyr::tribble(
@@ -423,7 +429,7 @@ test_that("data is ordered", {
   expect_no_error(
     result <- summariseResult(
       table = testTable, strata = list("sex"), variables = variables,
-      functions = functions, minCellCount = 1
+      functions = functions
     )
   )
   # check first overall, second sex
@@ -463,7 +469,7 @@ test_that("data is ordered", {
   expect_no_error(
     result <- summariseResult(
       table = testTable, strata = list("sex"), variables = variables,
-      functions = functions, minCellCount = 1
+      functions = functions
     )
   )
   # check first overall, second sex

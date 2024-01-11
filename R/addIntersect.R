@@ -350,8 +350,8 @@ addIntersect <- function(x,
     for (val in values) {
       resultDateTimeOtherX <- resultDateTimeOther %>%
         dplyr::select(
-          "subject_id", "index_date", dplyr::all_of(val), "id_name",
-          "window_name"
+          dplyr::all_of(personVariable), "index_date", dplyr::all_of(val),
+          "id_name", "window_name"
         ) %>%
         tidyr::pivot_longer(
           dplyr::all_of(val),

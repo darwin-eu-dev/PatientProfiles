@@ -1,7 +1,7 @@
 Package: PatientProfiles
 Type: Package
 Title: Identify Characteristics of Patients in the OMOP Common Data Model
-Version: 0.5.2
+Version: 0.6.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
@@ -44,7 +44,8 @@ Suggests:
     ggraph,
     DT,
     cowplot,
-    DiagrammeRsvg
+    DiagrammeRsvg,
+    DBI
 Imports: 
     magrittr,
     CDMConnector (>= 1.2.0),
@@ -52,7 +53,6 @@ Imports:
     tidyr,
     checkmate,
     lubridate,
-    DBI,
     rlang,
     cli,
     pillar,
@@ -68,3 +68,4 @@ Config/testthat/edition: 3
 Config/testthat/parallel: true
 Remotes:
     darwin-eu-dev/omopgenerics
+    darwin-eu-dev/CDMConnector@omopgenerics

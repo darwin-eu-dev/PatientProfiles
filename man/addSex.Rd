@@ -21,9 +21,9 @@ Compute the sex of the individuals
 }
 \examples{
 \donttest{
-library(PatientProfiles)
 cdm <- mockPatientProfiles()
-cdm$cohort1 \%>\% addSex(cdm)
+cdm$cohort1 \%>\%
+  addSex()
 }
 
 }

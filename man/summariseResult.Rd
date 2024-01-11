@@ -15,8 +15,7 @@ summariseResult(
     categoricalVariables = detectVariables(table, "categorical")),
   functions = list(numericVariables = c("median", "min", "q25", "q75", "max"),
     dateVariables = c("median", "min", "q25", "q75", "max"), binaryVariables = c("count",
-    "percentage"), categoricalVariables = c("count", "percentage")),
-  minCellCount = 5
+    "percentage"), categoricalVariables = c("count", "percentage"))
 )
 }
 \arguments{
@@ -37,8 +36,6 @@ are automatically classified.}
 
 \item{functions}{List of functions to be applied to each one of the group of
 variables.}
-
-\item{minCellCount}{Minimum count of records to report results.}
 }
 \value{
 Table that summarises the characteristics of the individual.

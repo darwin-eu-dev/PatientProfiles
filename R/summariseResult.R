@@ -27,7 +27,6 @@
 #' are automatically classified.
 #' @param functions List of functions to be applied to each one of the group of
 #' variables.
-#' @param minCellCount Minimum count of records to report results.
 #'
 #' @return Table that summarises the characteristics of the individual.
 #'
@@ -61,8 +60,7 @@ summariseResult <- function(table,
                               dateVariables = c("median", "min", "q25", "q75", "max"),
                               binaryVariables = c("count", "percentage"),
                               categoricalVariables = c("count", "percentage")
-                            ),
-                            minCellCount = 5) {
+                            )) {
   # initial checks
   checkTable(table)
 
@@ -88,7 +86,6 @@ summariseResult <- function(table,
     checkStrata(group, table)
     checkStrata(strata, table)
     checkVariablesFunctions(variables, functions, table)
-    checkSuppressCellCount(minCellCount)
 
     # get which are the estimates that are needed
     requiredFunctions <- NULL
@@ -211,8 +208,7 @@ summariseResult <- function(table,
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
       "summarised_result"
     ))) |>
-    omopgenerics::summarisedResult() |>
-    omopgenerics::suppress(minCellCount = minCellCount)
+    omopgenerics::summarisedResult()
 
   return(result)
 }

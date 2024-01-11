@@ -29,7 +29,6 @@
 #' function to add variables to summarise.
 #' @param otherVariables Other variables contained in cohort that you want to be
 #' summarised.
-#' @param minCellCount minimum counts due to obscure
 #'
 #' @return A summary of the characteristics of the individuals
 #'
@@ -64,15 +63,13 @@ summariseCharacteristics <- function(cohort,
                                      tableIntersect = list(),
                                      cohortIntersect = list(),
                                      conceptIntersect = list(),
-                                     otherVariables = character(),
-                                     minCellCount = 5) {
+                                     otherVariables = character()) {
   # check initial tables
   checkX(cohort)
   checkmate::assertLogical(demographics, any.missing = FALSE, len = 1)
   checkCdm(cdm)
   checkStrata(strata, cohort)
   checkAgeGroup(ageGroup)
-  checkmate::assertIntegerish(minCellCount, lower = 1)
   checkTableIntersect(tableIntersect, cdm)
   checkCohortIntersect(cohortIntersect, cdm)
   checkConceptIntersect(conceptIntersect, cdm)
@@ -363,8 +360,7 @@ summariseCharacteristics <- function(cohort,
       group = list("cohort_name"),
       strata = strata,
       variables = variables,
-      functions = functions[names(variables)],
-      minCellCount = minCellCount
+      functions = functions[names(variables)]
     ) %>%
     addCdmName(cdm = cdm) %>%
     dplyr::mutate(result_type = "summary_characteristics")

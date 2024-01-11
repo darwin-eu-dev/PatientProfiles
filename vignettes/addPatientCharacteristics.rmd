@@ -71,7 +71,7 @@ cdm$condition_occurrence_mod <- cdm$condition_occurrence %>%
     ageDefaultDay = 6,
     indexDate = "condition_start_date",
     ageGroup = list(
-      "ageBand_20" =
+      "age_band_20" =
         list(
           "0 to 19" = c(0, 19),
           "20 to 39" = c(20, 39),
@@ -80,13 +80,14 @@ cdm$condition_occurrence_mod <- cdm$condition_occurrence %>%
           "80 to 99" = c(80, 99),
           ">= 100" = c(100, 150)
         ),
-      "ageThreshold_60" =
+      "age_threshold_60" =
         list(
           "less60" = c(0, 59),
           "more60" = c(60, 150)
         )
     )
-  )
+  ) |>
+  dplyr::compute(name = "condition_occurrence_mod")
 
 cdm$condition_occurrence_mod %>%
   glimpse()
@@ -109,13 +110,13 @@ numConditions <- cdm$condition_occurrence_mod %>%
     sex == "Male"
   ) %>%
   filter(
-    ageThreshold_60 == "more60"
+    age_threshold_60 == "more60"
   ) %>%
   filter(
     condition_concept_id == 5
   ) %>%
   group_by(
-    ageBand_20
+    age_band_20
   ) %>%
   summarise(
     n = count(condition_occurrence_id)

@@ -66,9 +66,6 @@ summariseLargeScaleCharacteristics <- function(cohort,
     cli::cli_abort("'eventInWindow' or 'episodeInWindow' must be provided")
   }
   checkmate::assertLogical(includeSource, any.missing = FALSE, len = 1)
-  checkmate::assertIntegerish(
-    minCellCount, lower = 0, any.missing = FALSE, len = 1
-  )
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
   checkCdm(cdm)
 
