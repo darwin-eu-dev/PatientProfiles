@@ -48,7 +48,7 @@ Suggests:
     DBI
 Imports: 
     magrittr,
-    CDMConnector (>= 1.2.0),
+    CDMConnector,
     dplyr,
     tidyr,
     checkmate,
