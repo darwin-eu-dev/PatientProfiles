@@ -42,7 +42,7 @@
 #'   tableIntersect = list(
 #'     "Visits" = list(
 #'       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
-#'      )
+#'     )
 #'   ),
 #'   cohortIntersect = list(
 #'     "Medications" = list(
@@ -127,9 +127,12 @@ summariseCharacteristics <- function(cohort,
     variables <- variables %>%
       dplyr::bind_rows(dplyr::tibble(
         variable = columTableIntersect,
-        variable_type = switch(
-          tableIntersect[[k]][["value"]], "flag" = "binary", "date" = "date",
-          "time" = "numeric", "count" = "numeric", "categorical"
+        variable_type = switch(tableIntersect[[k]][["value"]],
+          "flag" = "binary",
+          "date" = "date",
+          "time" = "numeric",
+          "count" = "numeric",
+          "categorical"
         ),
         variable_group = names(tableIntersect)[k]
       ))
@@ -152,9 +155,11 @@ summariseCharacteristics <- function(cohort,
     variables <- variables %>%
       dplyr::bind_rows(dplyr::tibble(
         variable = columCohortIntersect,
-        variable_type = switch(
-          cohortIntersect[[k]][["value"]], "flag" = "binary", "date" = "date",
-          "time" = "numeric", "count" = "numeric"
+        variable_type = switch(cohortIntersect[[k]][["value"]],
+          "flag" = "binary",
+          "date" = "date",
+          "time" = "numeric",
+          "count" = "numeric"
         ),
         variable_group = names(cohortIntersect)[k]
       ))
@@ -162,7 +167,9 @@ summariseCharacteristics <- function(cohort,
 
   # set variables
   variablesToSummary <- list()
-  keys <- variables %>% dplyr::pull("variable_type") %>% unique()
+  keys <- variables %>%
+    dplyr::pull("variable_type") %>%
+    unique()
   for (k in seq_along(keys)) {
     variablesToSummary[[keys[k]]] <- variables %>%
       dplyr::filter(.data$variable_type == .env$keys[k]) %>%
@@ -193,18 +200,19 @@ summariseCharacteristics <- function(cohort,
 
 
   if (cohort %>%
-      dplyr::count() %>%
-      dplyr::pull() > 0) {
-  # style intersects
-  results <- tidyResults(results, variables, c(tableIntersect, cohortIntersect))
+    dplyr::count() %>%
+    dplyr::pull() > 0) {
+    # style intersects
+    results <- tidyResults(results, variables, c(tableIntersect, cohortIntersect))
 
-  # select variables
-  results <- results %>%
-    dplyr::select(
-      "cdm_name", "result_type", "group_name", "group_level", "strata_name",
-      "strata_level", "variable", "variable_level", "variable_type",
-      "estimate_type", "estimate"
-    )}
+    # select variables
+    results <- results %>%
+      dplyr::select(
+        "cdm_name", "result_type", "group_name", "group_level", "strata_name",
+        "strata_level", "variable", "variable_level", "variable_type",
+        "estimate_type", "estimate"
+      )
+  }
 
   return(results)
 }
@@ -213,7 +221,7 @@ tidyResults <- function(results, variables, intersect) {
   tidyColumn <- function(col) {
     stringr::str_to_sentence(gsub("_", " ", col))
   }
-  if(length(intersect) != 0) {
+  if (length(intersect) != 0) {
     patternNames <- lapply(names(intersect), function(x) {
       tidyr::expand_grid(
         value = intersect[[x]][["value"]],
@@ -237,47 +245,48 @@ tidyResults <- function(results, variables, intersect) {
           .data$variable_group, .data$value, dplyr::if_else(
             substr(.data$window_first, 1, 1) == "m" &
               suppressWarnings(!is.na(as.numeric(substr(
-                .data$window_first, 2, nchar(.data$window_first))
-              ))),
+                .data$window_first, 2, nchar(.data$window_first)
+              )))),
             gsub("m", "-", paste(.data$window_name, "days")), .data$window_name
-          ))
+          )
+        )
       ) %>%
       dplyr::select("pattern", "table_name", "variable_group", "variable_new")
 
-  results %>%
-    dplyr::left_join(
-      variables %>%
-        dplyr::select(-"variable_type") %>%
-        dplyr::filter(!is.na(.data$variable_group)) %>%
-        dplyr::inner_join(patternNames, by = "variable_group") %>%
-        dplyr::rowwise() %>%
-        dplyr::filter(
-          grepl(.data$pattern, .data$variable) &
-            grepl(.data$table_name, .data$variable)
-        ) %>%
-        dplyr::mutate(
-          variable_level_new = gsub(.data$pattern, "", .data$variable)
-        ) %>%
-        dplyr::mutate(variable_level_new = gsub(
-          paste0(.data$table_name, "_"), "", .data$variable_level_new
-        )) %>%
-        dplyr::select(-c("pattern", "variable_group", "table_name")),
-      by = "variable"
-    ) %>%
-    dplyr::mutate(
-      variable = dplyr::if_else(
-        is.na(.data$variable_new), .data$variable,
-        .data$variable_new
-      ),
-      variable_level = dplyr::if_else(
-        is.na(.data$variable_level_new), .data$variable_level,
-        .data$variable_level_new
-      )
-    ) %>%
-    dplyr::mutate(dplyr::across(
-      c("group_level", "strata_level", "variable", "variable_level"),
-      tidyColumn
-    ))
+    results %>%
+      dplyr::left_join(
+        variables %>%
+          dplyr::select(-"variable_type") %>%
+          dplyr::filter(!is.na(.data$variable_group)) %>%
+          dplyr::inner_join(patternNames, by = "variable_group") %>%
+          dplyr::rowwise() %>%
+          dplyr::filter(
+            grepl(.data$pattern, .data$variable) &
+              grepl(.data$table_name, .data$variable)
+          ) %>%
+          dplyr::mutate(
+            variable_level_new = gsub(.data$pattern, "", .data$variable)
+          ) %>%
+          dplyr::mutate(variable_level_new = gsub(
+            paste0(.data$table_name, "_"), "", .data$variable_level_new
+          )) %>%
+          dplyr::select(-c("pattern", "variable_group", "table_name")),
+        by = "variable"
+      ) %>%
+      dplyr::mutate(
+        variable = dplyr::if_else(
+          is.na(.data$variable_new), .data$variable,
+          .data$variable_new
+        ),
+        variable_level = dplyr::if_else(
+          is.na(.data$variable_level_new), .data$variable_level,
+          .data$variable_level_new
+        )
+      ) %>%
+      dplyr::mutate(dplyr::across(
+        c("group_level", "strata_level", "variable", "variable_level"),
+        tidyColumn
+      ))
   } else {
     results %>%
       dplyr::mutate(dplyr::across(

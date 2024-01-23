@@ -68,7 +68,7 @@ cdm$cohort1 \%>\%
     ),
     decimals = c(count = 0),
     keepNotFormatted = FALSE
-   )
+  )
 }
 
 }

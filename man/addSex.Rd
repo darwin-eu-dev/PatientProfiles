@@ -4,7 +4,7 @@
 \alias{addSex}
 \title{Compute the sex of the individuals}
 \usage{
-addSex(x, cdm = attr(x, "cdm_reference"), sexName = "sex", tablePrefix = NULL)
+addSex(x, cdm = attr(x, "cdm_reference"), sexName = "sex")
 }
 \arguments{
 \item{x}{Table with individuals in the cdm}
@@ -13,9 +13,6 @@ addSex(x, cdm = attr(x, "cdm_reference"), sexName = "sex", tablePrefix = NULL)
 cdm reference.}
 
 \item{sexName}{name of the new column to be added}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 table x with the added column with sex information

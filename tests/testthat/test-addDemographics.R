@@ -1,4 +1,4 @@
-test_that("addDemographics, input length, type, tableprefix", {
+test_that("addDemographics, input length, type", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 
   expect_error(addDemographics(2))
@@ -6,7 +6,6 @@ test_that("addDemographics, input length, type, tableprefix", {
   expect_error(addDemographics(cdm$cohort1, indexDate = "condition_start_date"))
   expect_error(addDemographics(cdm$cohort1, indexDate = c("cohort_start_date", "cohort_end_date")))
   expect_error(addDemographics(cdm$cohort1, ageGroup = 10))
-  expect_error(addDemographics(cdm$cohort1, tablePrefix = 1))
   expect_error(addDemographics(cdm$cohort1, age = FALSE, sex = FALSE, priorObservation = FALSE, futureObservation = FALSE))
 })
 
@@ -529,8 +528,8 @@ test_that("age at cohort end, no missing, check age computation", {
     dplyr::filter(subject_id == 1) %>%
     dplyr::pull("age") == 0)
   expect_true(result %>%
-                dplyr::filter(subject_id == 2) %>%
-                dplyr::pull("age") == 1)
+    dplyr::filter(subject_id == 2) %>%
+    dplyr::pull("age") == 1)
 
   result <- addDemographics(
     x = cdm[["cohort1"]],
@@ -539,12 +538,12 @@ test_that("age at cohort end, no missing, check age computation", {
   ) %>%
     dplyr::collect()
   expect_true(result %>%
-                dplyr::filter(subject_id == 1) %>%
-                dplyr::pull("age") == 0)
+    dplyr::filter(subject_id == 1) %>%
+    dplyr::pull("age") == 0)
   expect_true(result %>%
-                dplyr::filter(subject_id == 2) %>%
-                dplyr::pull("age") == 1)
-  })
+    dplyr::filter(subject_id == 2) %>%
+    dplyr::pull("age") == 1)
+})
 
 test_that("age at cohort entry, missing year/month/day of birth", {
   cohort1 <- dplyr::tibble(
@@ -654,9 +653,9 @@ test_that("age group checks", {
 
   result1a <- x %>%
     addCategories(
-    variable = "age",
-    categories = list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
-  ) %>%
+      variable = "age",
+      categories = list("age_group" = list(c(1, 20), c(21, 30), c(31, 40)))
+    ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
   result1b <- addDemographics(
@@ -672,10 +671,10 @@ test_that("age group checks", {
 
   # change the order of ageGroup provided, result should be the same
   result2a <- x %>%
-  addCategories(
-    variable = "age",
-    categories = list("age_group" = list(c(21, 30), c(1, 20), c(31, 40)))
-  ) %>%
+    addCategories(
+      variable = "age",
+      categories = list("age_group" = list(c(21, 30), c(1, 20), c(31, 40)))
+    ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
   result3a <- cdm$cohort1 %>%
@@ -687,10 +686,10 @@ test_that("age group checks", {
 
   result2b <- cdm$cohort1 %>%
     addDemographics(
-    ageGroup = list("age_group" = list(c(21, 30), c(1, 20), c(31, 40))),
-    sex = FALSE,
-    priorObservation = FALSE, futureObservation = FALSE
-  ) %>%
+      ageGroup = list("age_group" = list(c(21, 30), c(1, 20), c(31, 40))),
+      sex = FALSE,
+      priorObservation = FALSE, futureObservation = FALSE
+    ) %>%
     dplyr::collect() %>%
     dplyr::arrange(age)
   result3b <- addDemographics(
@@ -787,10 +786,6 @@ test_that("expected errors", {
   expect_error(addAge(cdm$cohort1, cdm,
     indexDate = "cohort_start_date",
     ageImposeDay = "TRUE"
-  ))
-  expect_error(addAge(cdm$cohort1, cdm,
-    indexDate = "cohort_start_date",
-    tablePrefix = 1
   ))
 
 

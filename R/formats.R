@@ -240,6 +240,9 @@ getFunctions <- function(f) {
     },
     "q95" = function(x) {
       stats::quantile(x, 0.95, na.rm = TRUE)
+    },
+    "missing" = function(x) {
+      base::sum(base::as.numeric(base::is.na(x)), na.rm = TRUE)
     }
   )
   return(estimatesFunc[f])

@@ -78,6 +78,12 @@ summariseResult <- function(table,
         estimate_type = "count"
       )
   } else {
+    if (!is.list(variables)) {
+      variables <- list("all" = variables)
+    }
+    if (!is.list(functions)) {
+      functions <- list("all" = functions)
+    }
     checkStrata(group, table)
     checkStrata(strata, table)
     checkVariablesFunctions(variables, functions, table)
@@ -103,9 +109,9 @@ summariseResult <- function(table,
         by = "variable"
       )
 
-    # collect if necessary
+    #collect if necessary
     collectFlag <- requiredFunctions %>%
-      dplyr::filter(.data$variable_type != "binary") %>%
+      dplyr::filter(!.data$variable_type %in% c("binary","numeric")) %>%
       nrow() > 0
     if (collectFlag) {
       table <- table %>% dplyr::collect()
@@ -114,7 +120,8 @@ summariseResult <- function(table,
     if (isTRUE(includeOverallGroup) || length(group) == 0) {
       result <- table %>%
         summaryValuesStrata(
-          strata, requiredFunctions, includeOverall = includeOverallStrata
+          strata, requiredFunctions,
+          includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(
           group_name = "Overall",
@@ -133,7 +140,7 @@ summariseResult <- function(table,
 
     # add results for each group
     for (i in seq_along(group)) {
-      workingGroup <- group[[i]]
+
       table <- table %>%
         dplyr::mutate(
           group_var = !!rlang::parse_expr(uniteStrata(group[[i]]))
@@ -149,7 +156,8 @@ summariseResult <- function(table,
             .data[["group_var"]] == !!workingGroupLevels[j]
           ) %>%
           summaryValuesStrata(
-            strata, requiredFunctions, includeOverall = includeOverallStrata
+            strata, requiredFunctions,
+            includeOverall = includeOverallStrata
           ) %>%
           dplyr::mutate(
             group_name = !!paste0(group[[i]], collapse = " and "),
@@ -178,36 +186,38 @@ summariseResult <- function(table,
 
 #' @noRd
 getNumericValues <- function(x, variablesNumeric) {
-  x <- x %>% dplyr::collect()
   functions <- variablesNumeric %>%
     dplyr::pull("estimate_type") %>%
     unique()
   result <- NULL
   for (k in seq_along(functions)) {
+    functionName <- functions[k]
     variablesFunction <- variablesNumeric %>%
-      dplyr::filter(.data$estimate_type == .env$functions[k]) %>%
+      dplyr::filter(.data$estimate_type == functionName) %>%
       dplyr::pull("variable")
     result <- result %>%
       dplyr::union_all(
         x %>%
           dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(variablesFunction),
-            .fns = getFunctions(functions[k]),
-            .names = "{.col}"
+            .fns = getFunctions(functionName),
+            .names = "{.col}_{.fn}"
           )) %>%
           tidyr::pivot_longer(
-            dplyr::all_of(variablesFunction),
+            dplyr::all_of(variablesFunction %>% paste(functionName, sep="_")),
             names_to = "variable",
             values_to = "estimate",
             values_transform = list(estimate = as.character)
           ) %>%
           dplyr::mutate(
-            estimate_type = .env$functions[k], variable_type = "numeric"
+            estimate_type = as.character(functionName), variable_type = "numeric"
           ) %>%
           dplyr::select(
             "strata_level", "variable", "variable_type", "estimate_type",
             "estimate"
-          )
+          ) %>% dplyr::collect() %>%
+          dplyr::mutate(variable = stringr::str_replace(.data$variable,  "_[^_]+$", ""))
+
       )
   }
   return(result)
@@ -215,6 +225,7 @@ getNumericValues <- function(x, variablesNumeric) {
 
 #' @noRd
 getDateValues <- function(x, variablesDate) {
+
   x <- x %>% dplyr::collect()
   functions <- variablesDate %>%
     dplyr::pull("estimate_type") %>%
@@ -251,6 +262,7 @@ getDateValues <- function(x, variablesDate) {
       )
     result <- dplyr::union_all(result, resultK)
   }
+
   result <- result %>%
     dplyr::select(
       "strata_level", "variable", "variable_type", "estimate_type",
@@ -261,7 +273,6 @@ getDateValues <- function(x, variablesDate) {
 
 #' @noRd
 getBinaryValues <- function(x, variablesBinary) {
-  x <- x %>% dplyr::collect()
   result <- NULL
   variablesFunction <- variablesBinary %>%
     dplyr::filter(.data$estimate_type %in% c("count", "percentage")) %>%
@@ -272,15 +283,13 @@ getBinaryValues <- function(x, variablesBinary) {
       dplyr::union_all(
         x %>%
           dplyr::mutate(denominator = 1) %>%
-          dplyr::summarise(
-            dplyr::across(
-              .cols = dplyr::all_of(c(variablesFunction, "denominator")),
-              .fns = list("sum" = function(x) {sum(x, na.rm = TRUE)}),
-              .names = "{.col}"
-            ),
-            .groups = "drop"
-          ) %>%
-          dplyr::collect() %>%
+          dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(c(variablesFunction, "denominator")),
+            .fns = list("sum" = function(x) {
+              sum(x)
+            }),
+            .names = "{.col}"
+          )) %>%
           tidyr::pivot_longer(
             dplyr::all_of(variablesFunction),
             names_to = "variable",
@@ -289,9 +298,10 @@ getBinaryValues <- function(x, variablesBinary) {
           dplyr::mutate("percentage" = 100 * .data$count / .data$denominator) %>%
           dplyr::select(-"denominator") %>%
           tidyr::pivot_longer(c("count", "percentage"),
-            names_to = "estimate_type",
-            values_to = "estimate"
+                              names_to = "estimate_type",
+                              values_to = "estimate"
           ) %>%
+          dplyr::collect() %>%
           dplyr::inner_join(
             variablesBinary %>%
               dplyr::select("variable", "variable_type", "estimate_type"),
@@ -486,6 +496,9 @@ summaryValues <- function(x, requiredFunctions) {
     )
   }
 
+  # add percentage to missing values
+  result <- correctMissing(result)
+
   return(result)
 }
 
@@ -626,4 +639,42 @@ uniteStrata <- function(columns,
     ")"
   )
   return(pasteStr)
+}
+
+correctMissing <- function(result) {
+  if ("missing" %in% result$estimate_type) {
+    result <- result %>%
+      dplyr::mutate(order_id = dplyr::row_number())
+    x <- result %>%
+      dplyr::filter(.data$estimate_type == "missing")
+    xCount <- x %>%
+      dplyr::mutate(estimate_type = "count", variable_level = "missing")
+    xPercentage <- x %>%
+      dplyr::left_join(
+        result %>%
+          dplyr::filter(.data$variable == "number records") %>%
+          dplyr::select("strata_level", "denominator" = "estimate"),
+        by = "strata_level"
+      ) %>%
+      dplyr::mutate(
+        estimate = 100*as.numeric(.data$estimate)/as.numeric(.data$denominator),
+        estimate_type = "percentage",
+        variable_level = "missing",
+        order_id = .data$order_id + 0.5
+      ) %>%
+      dplyr::select(-"denominator")
+    result <- result %>%
+      dplyr::filter(.data$estimate_type != "missing") %>%
+      dplyr::union_all(
+        xCount %>%
+          dplyr::mutate(estimate = as.character(.data$estimate))
+      ) %>%
+      dplyr::union_all(
+        xPercentage %>%
+          dplyr::mutate(estimate = as.character(.data$estimate))
+      ) %>%
+      dplyr::arrange(.data$order_id) %>%
+      dplyr::select(-"order_id")
+  }
+  return(result)
 }
