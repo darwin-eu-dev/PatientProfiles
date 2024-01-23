@@ -65,5 +65,6 @@ Language: en-US
 Depends: 
     R (>= 2.10)
 Remotes:
-    darwin-eu-dev/CDMConnector
     darwin-eu/CodelistGenerator
+Config/testthat/edition: 3
+Config/testthat/parallel: true
