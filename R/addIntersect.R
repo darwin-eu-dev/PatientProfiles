@@ -384,22 +384,34 @@ addIntersect <- function(x,
   # missing columns
   newCols <- newCols %>%
     dplyr::filter(!.data$colnam %in% colnames(x))
-  for (k in seq_len(nrow(newCols))) {
-    colnam <- newCols$colnam[k]
-    val <- as.character(newCols$value[k])
-    x <- switch(
+
+  for (val in as.character(unique(newCols$value))) {
+    cols <- newCols$colnam[newCols$value == val]
+    valk <- switch(
       val,
-      "flag" = dplyr::mutate(x, !!colnam := 0),
-      "count" = dplyr::mutate(x, !!colnam := 0),
-      "days" = dplyr::mutate(x, !!colnam := as.numeric(NA)),
-      "date" = dplyr::mutate(x, !!colnam := as.Date(NA)),
-      dplyr::mutate(x, !!colnam := as.character(NA))
+      flag = 0,
+      count = 0,
+      days = as.numeric(NA),
+      date = as.Date(NA),
+      as.character(NA)
     )
+
+    id <- paste0("id_", paste0(sample(letters, 5), collapse = ""))
+
+    newTib <- dplyr::tibble(!!id := 1)
+    newTib[, cols] <- valk
+
+    x <- x |>
+      dplyr::mutate(!!id := 1) |>
+      dplyr::inner_join(newTib, copy = TRUE, by = id) |>
+      dplyr::compute()
   }
 
-  x <- dplyr::compute(x)
+  if(nrow(newCols) == 0) {
+    x <- dplyr::compute(x)
+  }
 
-  cdm <- omopgenerics::dropTable(
+ cdm <- omopgenerics::dropTable(
     cdm = cdm, name = dplyr::starts_with(tablePrefix)
   )
 
