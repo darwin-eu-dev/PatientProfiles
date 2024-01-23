@@ -58,6 +58,8 @@ Imports:
     pillar,
     stringr,
     gt
+Remotes:
+   darwin-eu/CodelistGenerator
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 Language: en-US
