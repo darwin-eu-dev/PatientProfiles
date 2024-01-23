@@ -65,6 +65,6 @@ Language: en-US
 Depends: 
     R (>= 2.10)
 Remotes:
-    darwin-eu/CDMConnector
+    darwin-eu-dev/CDMConnector
 Config/testthat/edition: 3
 Config/testthat/parallel: true
