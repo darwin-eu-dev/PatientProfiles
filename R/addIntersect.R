@@ -92,7 +92,10 @@ addIntersect <- function(x,
     idName <- checkSnakeCase(idName)
   }
 
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  tablePrefix <- paste0(
+    "temp_",
+    c(sample(letters, 5, TRUE), "_") |> paste0(collapse = "")
+  )
 
   startTibble <- x
 
@@ -404,14 +407,14 @@ addIntersect <- function(x,
     x <- x |>
       dplyr::mutate(!!id := 1) |>
       dplyr::inner_join(newTib, copy = TRUE, by = id) |>
-      dplyr::compute()
+      dplyr::compute(
+        name = paste0(tablePrefix, "_val"), temporary = FALSE, overwrite = TRUE
+      )
   }
 
-  if(nrow(newCols) == 0) {
-    x <- dplyr::compute(x)
-  }
+  x <- dplyr::compute(x)
 
- cdm <- omopgenerics::dropTable(
+  cdm <- omopgenerics::dropTable(
     cdm = cdm, name = dplyr::starts_with(tablePrefix)
   )
 
