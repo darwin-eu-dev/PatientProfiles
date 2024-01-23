@@ -400,7 +400,7 @@ addIntersect <- function(x,
       CDMConnector::computeQuery()
   }
 
-  if(newCols %>% dplyr::tally() == 0) {
+  if(nrow(newCols) == 0) {
     x <- CDMConnector::computeQuery(x)
   }
 
