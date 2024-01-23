@@ -530,7 +530,10 @@ mockPatientProfiles <- function(connectionDetails = list(
 
   # into database
   db <- connectionDetails[["con"]]
-  writeSchema <- strsplit(connectionDetails[["write_schema"]], "\\.")[[1]]
+  writeSchema <- c(
+    "schema" = strsplit(connectionDetails[["write_schema"]], "\\.")[[1]],
+    "prefix" = connectionDetails[["mock_prefix"]]
+  )
 
   tablesToInsert <- c(
     "drug_strength", "drug_exposure", "person", "observation_period",
@@ -540,11 +543,9 @@ mockPatientProfiles <- function(connectionDetails = list(
   for (tab in tablesToInsert) {
     DBI::dbWriteTable(
       conn = db,
-      name = CDMConnector::inSchema(writeSchema,
-                                    table = paste0(
-                                      connectionDetails[["mock_prefix"]],
-                                                   tab)),
-      value = eval(parse(text = tab)), overwrite = TRUE
+      name = CDMConnector::inSchema(schema = writeSchema, table = tab),
+      value = get(tab),
+      overwrite = TRUE
     )
   }
 
@@ -589,12 +590,8 @@ mockPatientProfiles <- function(connectionDetails = list(
   # create the cdm object
   cdm <- CDMConnector::cdm_from_con(
     con = db,
-    cdm_schema =  c(
-      schema = writeSchema, prefix = connectionDetails$mock_prefix
-    ),
-    write_schema =  c(
-      schema = writeSchema, prefix = connectionDetails$mock_prefix
-    ),
+    cdm_schema = writeSchema,
+    write_schema = writeSchema,
     cohort_tables = cohorts,
     cdm_name = "PP_MOCK"
   )

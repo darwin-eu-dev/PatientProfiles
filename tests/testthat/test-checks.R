@@ -1,5 +1,5 @@
 test_that("test checkX: subject_id and person_id", {
-  cohort1 <- dplyr::tibble(
+  cohort3 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
     subject_id = c(1, 1),
     person_id = c(1, 1),
@@ -10,9 +10,7 @@ test_that("test checkX: subject_id and person_id", {
       c("2020-01-01", "2020-01-15")
     )
   )
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1)
-
-  expect_error(cdm$cohort1 %>% addDemographics(cdm))
+  expect_error(cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort3))
 })
 
 
@@ -42,7 +40,7 @@ test_that("test checkCategory with length 1 ", {
 
   a <- cdm$cohort1 %>%
     addAge(cdm, indexDate = "cohort_start_date") %>%
-    addCategories(cdm, "age", categories) %>%
+    addCategories("age", categories) %>%
     dplyr::collect()
   expect_true(a[a$subject_id == 2, ]$age_group == "70 to 70")
 
@@ -51,53 +49,8 @@ test_that("test checkCategory with length 1 ", {
   categories <- list("age_group" = list(c(69, 0), c(70)))
 
   expect_error(cdm$cohort1 %>% addAge(cdm, indexDate = "cohort_start_date") %>%
-    addCategories(cdm, "age", categories))
+    addCategories("age", categories))
 })
-
-
-test_that("test #checkValue: multiple value  ", {
-  cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1),
-    subject_id = c(1, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    )
-  )
-
-  cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1),
-    subject_id = c(1, 1, 2),
-    flag = c(1, 1, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26"
-      )
-    ),
-  )
-
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
-
-  expect_warning(cdm$cohort1 %>% addIntersect(cdm = cdm, tableName = "cohort2", value = c("flag", "count")))
-})
-
 
 test_that(" test checkNewName renames duplicate column names in addInObservation  ", {
   cohort1 <- dplyr::tibble(

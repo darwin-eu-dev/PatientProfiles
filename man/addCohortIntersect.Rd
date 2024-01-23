@@ -20,8 +20,7 @@ addCohortIntersect(
   count = TRUE,
   date = TRUE,
   days = TRUE,
-  nameStyle = "{value}_{cohort_name}_{window_name}",
-  tablePrefix = NULL
+  nameStyle = "{value}_{cohort_name}_{window_name}"
 )
 }
 \arguments{
@@ -64,9 +63,6 @@ calculated for this intersection}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 table with added columns with overlap information

@@ -104,7 +104,6 @@ Let us comment on the `targetEndDate` functionality found in `addCohortIntersect
 By default, `indexDate = cohort_start_date`, `targetStartDate = cohort_start_date` and `targetEndDate = cohort_end_date`. This means that, if we are intersecting two cohorts and specify `window = c(-30,-1)`, we will get any events from the intersecting cohort happening up to 30 days previous to the cohort start date of the main cohort. Namely:
 
 ```{r}
-
 # This will be our "main" cohort
 cohort1 <- dplyr::tibble(
   cohort_definition_id = 1,

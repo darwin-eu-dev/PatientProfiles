@@ -8,10 +8,12 @@ summariseCharacteristics(
   cohort,
   cdm = attr(cohort, "cdm_reference"),
   strata = list(),
+  demographics = TRUE,
   ageGroup = NULL,
-  tableIntersect = list(Visit = list(tableName = "visit_occurrence", value = "count",
-    window = c(-365, 0))),
+  tableIntersect = list(),
   cohortIntersect = list(),
+  conceptIntersect = list(),
+  otherVariables = character(),
   minCellCount = 5
 )
 }
@@ -22,13 +24,21 @@ summariseCharacteristics(
 
 \item{strata}{Stratification list}
 
+\item{demographics}{Whether to summarise demographics data.}
+
 \item{ageGroup}{A list of age groups.}
 
 \item{tableIntersect}{A list of arguments that uses addTableIntersect
-function to add covariates and comorbidities.}
+function to add variables to summarise}
 
 \item{cohortIntersect}{A list of arguments that uses addCohortIntersect
-function to add covariates and comorbidities.}
+function to add variables to summarise.}
+
+\item{conceptIntersect}{A list of arguments that uses addConceptIntersect
+function to add variables to summarise.}
+
+\item{otherVariables}{Other variables contained in cohort that you want to be
+summarised.}
 
 \item{minCellCount}{minimum counts due to obscure}
 }
@@ -50,7 +60,7 @@ summariseCharacteristics(
   tableIntersect = list(
     "Visits" = list(
       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
-     )
+    )
   ),
   cohortIntersect = list(
     "Medications" = list(

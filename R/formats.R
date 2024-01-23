@@ -36,19 +36,27 @@
 #'
 variableTypes <- function(table) {
   checkTable(table)
-  x <- dplyr::tibble(
-    variable = colnames(table),
-    type_sum = lapply(colnames(table), function(x) {
-      table %>%
-        dplyr::select(dplyr::all_of(x)) %>%
-        utils::head(1) %>%
-        dplyr::pull() %>%
-        pillar::type_sum()
-    }) %>% unlist()
-  ) %>%
-    dplyr::mutate(variable_type = assertClassification(
-      .data$type_sum, .env$table
-    ))
+  if (ncol(table) > 0) {
+    x <- dplyr::tibble(
+      "variable" = colnames(table),
+      "type_sum" = lapply(colnames(table), function(x) {
+        table %>%
+          dplyr::select(dplyr::all_of(x)) %>%
+          utils::head(1) %>%
+          dplyr::pull() %>%
+          pillar::type_sum()
+      }) %>% unlist()
+    ) %>%
+      dplyr::mutate("variable_type" = assertClassification(
+        .data$type_sum, .env$table
+      ))
+  } else {
+    x <- dplyr::tibble(
+      "variable" = character(),
+      "type_sum" = character(),
+      "variable_type" = character()
+    )
+  }
   return(x)
 }
 
@@ -178,12 +186,6 @@ getFunctions <- function(f) {
     "sum" = function(x) {
       base::sum(x, na.rm = TRUE)
     },
-    "iqr" = function(x) {
-      stats::IQR(x, na.rm = TRUE)
-    },
-    "range" = function(x) {
-      base::diff(base::range(x, na.rm = TRUE))
-    },
     "sd" = function(x) {
       stats::sd(x, na.rm = TRUE)
     },
@@ -240,6 +242,9 @@ getFunctions <- function(f) {
     },
     "q95" = function(x) {
       stats::quantile(x, 0.95, na.rm = TRUE)
+    },
+    "missing" = function(x) {
+      base::sum(base::as.numeric(base::is.na(x)), na.rm = TRUE)
     }
   )
   return(estimatesFunc[f])
