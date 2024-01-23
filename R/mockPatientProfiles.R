@@ -560,36 +560,28 @@ mockPatientProfiles <- function(connectionDetails = list(
     )
   }
 
-  listTables[["cohort1"]] <- cohort1
-  listTables[["cohort2"]] <- cohort2
-  cohorts <- names(listTables)
-  for (cohort in cohorts) {
-    x <- addCohortCountAttr(listTables[[cohort]])
-    omopgenerics::insertTable(
-      cdm = src, name = cohort, table = x, overwrite = TRUE
-    )
-    omopgenerics::insertTable(
-      cdm = src,
-      name = paste0(cohort, "_set"),
-      table = attr(x, "cohort_set"),
-      overwrite = TRUE
-    )
-    omopgenerics::insertTable(
-      cdm = src,
-      name = paste0(cohort, "_attrition"),
-      table = attr(x, "cohort_attrition"),
-      overwrite = TRUE
-    )
-  }
-
   # create the cdm object
   cdm <- CDMConnector::cdm_from_con(
     con = db,
     cdm_schema = writeSchema,
     write_schema = writeSchema,
-    cohort_tables = cohorts,
     cdm_name = "PP_MOCK"
   )
+
+  listTables[["cohort1"]] <- cohort1
+  listTables[["cohort2"]] <- cohort2
+  cohorts <- names(listTables)
+  for (cohort in cohorts) {
+    x <- addCohortCountAttr(listTables[[cohort]])
+    cdm <- omopgenerics::insertTable(
+      cdm = cdm, name = cohort, table = listTables[[cohort]], overwrite = TRUE
+    )
+    cdm[[cohort]] <- cdm[[cohort]] |>
+      omopgenerics::cohortTable(
+        cohortSetRef = attr(x, "cohort_set"),
+        cohortAttritionRef = attr(x, "cohort_attrition")
+      )
+  }
 
   return(cdm)
 }

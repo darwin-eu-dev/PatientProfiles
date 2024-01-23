@@ -31,7 +31,7 @@ test_that("check working example with cohort1", {
     ),
     cohort_end_date = c(
       as.Date("2010-03-03"),
-      as.Date("2010-02-01"),
+      as.Date("2010-03-01"),
       as.Date("2010-02-01")
     )
   )
