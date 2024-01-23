@@ -21,7 +21,7 @@ jobs:
           - {os: ubuntu-latest,   r: 'release'}
 
     env:
-      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 #      CDM5_REDSHIFT_DBNAME: ${{ secrets.CDM5_REDSHIFT_DBNAME }}
 #      CDM5_REDSHIFT_HOST: ${{ secrets.CDM5_REDSHIFT_HOST }}
 #      CDM5_REDSHIFT_OHDSI_SCHEMA: ${{ secrets.CDM5_REDSHIFT_OHDSI_SCHEMA }}
