@@ -400,7 +400,9 @@ addIntersect <- function(x,
       CDMConnector::computeQuery()
   }
 
-  x <- CDMConnector::computeQuery(x)
+  if(newCols %>% dplyr::tally() == 0) {
+    x <- CDMConnector::computeQuery(x)
+  }
 
   CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
