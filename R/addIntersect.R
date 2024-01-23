@@ -400,6 +400,8 @@ addIntersect <- function(x,
       CDMConnector::computeQuery()
   }
 
+  x <- CDMConnector::computeQuery(x)
+
   CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   # put back the initial attributes to the output tibble
