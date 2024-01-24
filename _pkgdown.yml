@@ -51,10 +51,6 @@ reference:
   desc: Set of functions to create pretty gt tables from summarisedReuslts objects
 - contents:
   - matches("gt")
-- subtitle: Suppress counts
-  desc: Function to supress counts smaller than a certain number
-- contents:
-  - '`suppressCounts`'
 - subtitle: Other functions
   desc: Helper functions
 - contents:
