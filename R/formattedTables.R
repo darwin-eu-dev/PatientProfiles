@@ -35,7 +35,7 @@
 #'
 #' cdm$cohort1 |>
 #'   summariseCharacteristics() |>
-#'   formattedCharacteristics()
+#'   formatCharacteristics()
 #' }
 #'
 #' @return A tibble with a tidy version of the summarised_characteristics

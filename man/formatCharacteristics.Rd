@@ -49,7 +49,7 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 |>
   summariseCharacteristics() |>
-  formattedCharacteristics()
+  formatCharacteristics()
 }
 
 }
