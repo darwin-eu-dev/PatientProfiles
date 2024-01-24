@@ -363,7 +363,7 @@ summariseCharacteristics <- function(cohort,
       functions = functions[names(variables)]
     ) %>%
     addCdmName(cdm = cdm) %>%
-    dplyr::mutate(result_type = "summary_characteristics")
+    dplyr::mutate(result_type = "summarised_characteristics")
 
   # rename variables
   results <- results %>%
@@ -386,6 +386,7 @@ summariseCharacteristics <- function(cohort,
       ~ stringr::str_to_sentence(gsub("_", " ", .x))
     )) %>%
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result"))) |>
+    dplyr::as_tibble() |>
     omopgenerics::summarisedResult()
 
   return(results)

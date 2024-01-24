@@ -58,7 +58,8 @@ Imports:
     pillar,
     stringr,
     gt,
-    omopgenerics
+    omopgenerics,
+    visOmopResults
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 Language: en-US
@@ -66,6 +67,7 @@ Depends:
     R (>= 2.10)
 Remotes:
     darwin-eu-dev/CDMConnector,
-    darwin-eu/CodelistGenerator
+    darwin-eu/CodelistGenerator,
+    oxford-pharmacoepi/visOmopResults
 Config/testthat/edition: 3
 Config/testthat/parallel: true
