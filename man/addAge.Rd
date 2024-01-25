@@ -19,8 +19,7 @@ addAge(
 \arguments{
 \item{x}{Table with individuals in the cdm.}
 
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
+\item{cdm}{A cdm_reference object.}
 
 \item{indexDate}{Variable in x that contains the date to compute the age.}
 
@@ -48,28 +47,9 @@ Compute the age of the individuals at a certain date
 }
 \examples{
 \donttest{
-library(DBI)
-library(duckdb)
-library(PatientProfiles)
-cohort1 <- dplyr::tibble(
-  cohort_definition_id = c("1", "1", "1"),
-  subject_id = c("1", "2", "3"),
-  cohort_start_date = c(
-    as.Date("2010-01-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
-  ),
-  cohort_end_date = c(
-    as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
-  )
-)
+cdm <- mockPatientProfiles()
 
-person <- dplyr::tibble(
-  person_id = c("1", "2", "3"),
-  gender_concept_id = c("8507", "8532", "8507"),
-  year_of_birth = c(2000, 1995, NA),
-  month_of_birth = c(NA, 07, 08),
-  day_of_birth = c(01, 25, 03)
-)
-cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
-addAge(x = cdm[["cohort1"]], cdm = cdm)
+cdm$cohort1 |>
+  addAge()
 }
 }

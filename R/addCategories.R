@@ -32,32 +32,11 @@
 #' @examples
 #' #'
 #' \donttest{
-#' library(DBI)
-#' library(duckdb)
-#' library(PatientProfiles)
-#' cohort1 <- dplyr::tibble(
-#'   cohort_definition_id = c("1", "1", "1"),
-#'   subject_id = c("1", "2", "3"),
-#'   cohort_start_date = c(
-#'     as.Date("2010-03-03"), as.Date("2010-03-01"), as.Date("2010-02-01")
-#'   ),
-#'   cohort_end_date = c(
-#'     as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2013-01-01")
-#'   )
-#' )
 #'
-#' person <- dplyr::tibble(
-#'   person_id = c("1", "2", "3"),
-#'   gender_concept_id = c("8507", "8507", "8507"),
-#'   year_of_birth = c(1980, 1970, 2000),
-#'   month_of_birth = c(03, 07, NA),
-#'   day_of_birth = c(NA, 02, 01)
-#' )
-#'
-#' cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+#' cdm <- mockPatientProfiles()
 #'
 #' result <- cdm$cohort1 %>%
-#'   addAge(cdm) %>%
+#'   addAge() %>%
 #'   addCategories(
 #'     variable = "age",
 #'     categories = list("age_group" = list(
@@ -217,7 +196,7 @@ addCategories <- function(x,
       }
     }
 
-    x <- x %>% CDMConnector::computeQuery()
+    x <- x %>% dplyr::compute()
   }
 
   if (date) {

@@ -4,7 +4,9 @@ test_that("basic functionality summarise large scale characteristics", {
     gender_concept_id = c(8507, 8532),
     year_of_birth = c(1990, 1992),
     month_of_birth = c(1, 1),
-    day_of_birth = c(1, 1)
+    day_of_birth = c(1, 1),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
   observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2),
@@ -65,14 +67,20 @@ test_that("basic functionality summarise large scale characteristics", {
     condition_occurrence = condition_occurrence
   )
   concept <- dplyr::tibble(
-    concept_id = c(1125315, 1503328, 1516978, 317009, 378253, 4266367)
+    concept_id = c(1125315, 1503328, 1516978, 317009, 378253, 4266367),
+    domain_id = NA_character_,
+    vocabulary_id = NA_character_,
+    concept_class_id = NA_character_,
+    concept_code = NA_character_,
+    valid_start_date = as.Date("1900-01-01"),
+    valid_end_date = as.Date("2099-01-01")
   ) %>%
     dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
   name <- CDMConnector::inSchema(
     schema = connectionDetails$write_schema, table = "concept"
   )
   DBI::dbWriteTable(
-    conn = connectionDetails$con, name = name, value = concept
+    conn = connectionDetails$con, name = name, value = concept, overwrite = TRUE
   )
   cdm$concept <- dplyr::tbl(connectionDetails$con, name)
 
@@ -80,8 +88,11 @@ test_that("basic functionality summarise large scale characteristics", {
     result <- cdm$cohort_interest %>%
       summariseLargeScaleCharacteristics(
         eventInWindow = c("condition_occurrence", "drug_exposure"),
-        minCellCount = 1, minimumFrequency = 0
+        minimumFrequency = 0
       )
+  )
+  result <- result |> omopgenerics::splitGroup(
+    name = "additional_name", level = "additional_level"
   )
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
@@ -100,8 +111,8 @@ test_that("basic functionality summarise large scale characteristics", {
       expect_true(nrow(r) == 0)
     } else {
       expect_true(nrow(r) == 2)
-      expect_true(r$estimate[r$estimate_type == "count"] == count[k])
-      expect_true(r$estimate[r$estimate_type == "percentage"] == percentage[k])
+      expect_true(r$estimate_value[r$estimate_name == "count"] == count[k])
+      expect_true(r$estimate_value[r$estimate_name == "percentage"] == percentage[k])
     }
   }
 
@@ -109,8 +120,11 @@ test_that("basic functionality summarise large scale characteristics", {
     result <- cdm$cohort_interest %>%
       summariseLargeScaleCharacteristics(
         episodeInWindow = c("condition_occurrence", "drug_exposure"),
-        minCellCount = 1, minimumFrequency = 0
+        minimumFrequency = 0
       )
+  )
+  result <- result |> omopgenerics::splitGroup(
+    name = "additional_name", level = "additional_level"
   )
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
@@ -129,8 +143,8 @@ test_that("basic functionality summarise large scale characteristics", {
       expect_true(nrow(r) == 0)
     } else {
       expect_true(nrow(r) == 2)
-      expect_true(r$estimate[r$estimate_type == "count"] == count[k])
-      expect_true(r$estimate[r$estimate_type == "percentage"] == percentage[k])
+      expect_true(r$estimate_value[r$estimate_name == "count"] == count[k])
+      expect_true(r$estimate_value[r$estimate_name == "percentage"] == percentage[k])
     }
   }
 
@@ -143,17 +157,20 @@ test_that("basic functionality summarise large scale characteristics", {
         cdm = cdm,
         strata = list("age" = "age_group", "age & sex" = c("age_group", "sex")),
         episodeInWindow = c("condition_occurrence", "drug_exposure"),
-        minCellCount = 1, minimumFrequency = 0
+        minimumFrequency = 0
       )
   )
   expect_true(all(c("cohort_1", "cohort_2") %in% result$group_level))
-  expect_true(all(c("Overall", "age_group", "age_group and sex") %in% result$strata_name))
+  expect_true(all(c("overall", "age_group", "age_group and sex") %in% result$strata_name))
   expect_true(all(c(
-    "Overall", "0 to 24", "25 to 150", "0 to 24 and Female",
+    "overall", "0 to 24", "25 to 150", "0 to 24 and Female",
     "25 to 150 and Male", "0 to 24 and Male"
   ) %in% result$strata_level))
   result <- result %>%
     dplyr::filter(strata_level == "0 to 24 and Female")
+  result <- result |> omopgenerics::splitGroup(
+    name = "additional_name", level = "additional_level"
+  )
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)
@@ -171,10 +188,15 @@ test_that("basic functionality summarise large scale characteristics", {
       expect_true(nrow(r) == 0)
     } else {
       expect_true(nrow(r) == 2)
-      expect_true(r$estimate[r$estimate_type == "count"] == count[k])
-      expect_true(r$estimate[r$estimate_type == "percentage"] == percentage[k])
+      expect_true(r$estimate_value[r$estimate_name == "count"] == count[k])
+      expect_true(r$estimate_value[r$estimate_name == "percentage"] == percentage[k])
     }
   }
+
+  expect_equal(class(result), c(
+    "summarised_large_scale_characteristics", "summarised_result", "tbl_df",
+    "tbl", "data.frame"
+  ))
 })
 
 test_that("basic functionality add large scale characteristics", {
@@ -183,7 +205,9 @@ test_that("basic functionality add large scale characteristics", {
     gender_concept_id = c(8507, 8532),
     year_of_birth = c(1990, 1992),
     month_of_birth = c(1, 1),
-    day_of_birth = c(1, 1)
+    day_of_birth = c(1, 1),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
   observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2),
@@ -244,7 +268,13 @@ test_that("basic functionality add large scale characteristics", {
     condition_occurrence = condition_occurrence
   )
   concept <- dplyr::tibble(
-    concept_id = c(1125315, 1503328, 1516978, 317009, 378253, 4266367)
+    concept_id = c(1125315, 1503328, 1516978, 317009, 378253, 4266367),
+    domain_id = NA_character_,
+    vocabulary_id = NA_character_,
+    concept_class_id = NA_character_,
+    concept_code = NA_character_,
+    valid_start_date = as.Date("1900-01-01"),
+    valid_end_date = as.Date("2099-01-01")
   ) %>%
     dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
   name <- CDMConnector::inSchema(
@@ -343,3 +373,4 @@ test_that("basic functionality add large scale characteristics", {
   )
   expect_false(any(cols %in% colnames(result4)))
 })
+

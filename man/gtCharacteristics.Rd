@@ -34,7 +34,7 @@ gtCharacteristics(
 New table in gt format
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{
@@ -54,9 +54,7 @@ summariseCharacteristics(
     "Medications" = list(
       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
     )
-  ),
-  minCellCount = 1
-) \%>\%
-  gtCharacteristics()
+  )
+)
 }
 }

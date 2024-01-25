@@ -17,8 +17,7 @@
 #' It creates columns to indicate overlap information between two tables
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param tableName name of the cohort that we want to check for overlap
 #' @param filterVariable the variable that we are going to use to filter (e.g.
 #' cohort_definition_id)
@@ -86,8 +85,6 @@ addIntersect <- function(x,
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkVariableInX(censorDate, x, TRUE, "censorDate")
 
-  assertWriteSchema(cdm)
-
   if (!is.null(censorDate)) {
     checkCensorDate(x, censorDate)
   }
@@ -95,7 +92,10 @@ addIntersect <- function(x,
     idName <- checkSnakeCase(idName)
   }
 
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  tablePrefix <- paste0(
+    "temp_",
+    c(sample(letters, 5, TRUE), "_") |> paste0(collapse = "")
+  )
 
   startTibble <- x
 
@@ -160,9 +160,10 @@ addIntersect <- function(x,
     ) %>%
     dplyr::distinct() %>%
     dplyr::inner_join(overlapTable, by = personVariable) %>%
-    CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "individuals"), temporary = FALSE,
-      schema = attr(cdm, "write_schema"), overwrite = TRUE
+    dplyr::compute(
+      name = paste0(tablePrefix, "individuals"),
+      temporary = FALSE,
+      overwrite = TRUE
     )
 
   resultCountFlag <- NULL
@@ -192,9 +193,10 @@ addIntersect <- function(x,
         )), 0, .data$indicator))
     }
     resultW <- resultW %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "window"), temporary = FALSE,
-        schema = attr(cdm, "write_schema"), overwrite = TRUE
+      dplyr::compute(
+        name = paste0(tablePrefix, "window"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
 
     # add count or flag
@@ -214,15 +216,18 @@ addIntersect <- function(x,
 
       if (i == 1) {
         resultCountFlag <- resultCF %>%
-          CDMConnector::computeQuery(
-            name = paste0(tablePrefix, "win_count_flag"), temporary = FALSE,
-            schema = attr(cdm, "write_schema"), overwrite = TRUE
+          dplyr::compute(
+            name = paste0(tablePrefix, "win_count_flag"),
+            temporary = FALSE,
+            overwrite = TRUE
           )
       } else {
-        resultCountFlag <- appendPermanent(
-            x = resultCF,
+        resultCountFlag <- resultCountFlag |>
+          dplyr::union_all(resultCF) |>
+          dplyr::compute(
             name = paste0(tablePrefix, "win_count_flag"),
-            schema = attr(cdm, "write_schema")
+            temporary = FALSE,
+            overwrite = TRUE
           )
       }
     }
@@ -292,16 +297,19 @@ addIntersect <- function(x,
 
       if (i == 1) {
         resultDateTimeOther <- resultDTO %>%
-          CDMConnector::computeQuery(
-            name = paste0(tablePrefix, "win_date_days"), temporary = FALSE,
-            schema = attr(cdm, "write_schema"), overwrite = TRUE
+          dplyr::compute(
+            name = paste0(tablePrefix, "win_date_days"),
+            temporary = FALSE,
+            overwrite = TRUE
           )
       } else {
-        resultDateTimeOther <- appendPermanent(
-          x = resultDTO,
-          name = paste0(tablePrefix, "win_date_days"),
-          schema = attr(cdm, "write_schema")
-        )
+        resultDateTimeOther <- resultDateTimeOther |>
+          dplyr::union_all(resultDTO) |>
+          dplyr::compute(
+            name = paste0(tablePrefix, "win_date_days"),
+            temporary = FALSE,
+            overwrite = TRUE
+          )
       }
     }
   }
@@ -333,9 +341,10 @@ addIntersect <- function(x,
       dplyr::mutate(dplyr::across(
         dplyr::all_of(newColCountFlag), ~ dplyr::if_else(is.na(.x), 0, .x)
       )) %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "count_flag"), temporary = FALSE,
-        schema = attr(cdm, "write_schema"), overwrite = TRUE
+      dplyr::compute(
+        name = paste0(tablePrefix, "count_flag"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
   }
 
@@ -344,8 +353,8 @@ addIntersect <- function(x,
     for (val in values) {
       resultDateTimeOtherX <- resultDateTimeOther %>%
         dplyr::select(
-          "subject_id", "index_date", dplyr::all_of(val), "id_name",
-          "window_name"
+          dplyr::all_of(personVariable), "index_date", dplyr::all_of(val),
+          "id_name", "window_name"
         ) %>%
         tidyr::pivot_longer(
           dplyr::all_of(val),
@@ -367,9 +376,10 @@ addIntersect <- function(x,
     }
 
     x <- x %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "date_days"), temporary = FALSE,
-        schema = attr(cdm, "write_schema"), overwrite = TRUE
+      dplyr::compute(
+        name = paste0(tablePrefix, "date_days"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
 
   }
@@ -397,17 +407,16 @@ addIntersect <- function(x,
     x <- x |>
       dplyr::mutate(!!id := 1) |>
       dplyr::inner_join(newTib, copy = TRUE, by = id) |>
-      CDMConnector::computeQuery()
+      dplyr::compute(
+        name = paste0(tablePrefix, "_val"), temporary = FALSE, overwrite = TRUE
+      )
   }
 
-  if(nrow(newCols) == 0) {
-    x <- CDMConnector::computeQuery(x)
-  }
+  x <- dplyr::compute(x)
 
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
-
-  # put back the initial attributes to the output tibble
-  x <- x %>% addAttributes(startTibble)
+  cdm <- omopgenerics::dropTable(
+    cdm = cdm, name = dplyr::starts_with(tablePrefix)
+  )
 
   return(x)
 }
@@ -498,16 +507,4 @@ getSourceConceptName <- function(tableName) {
   } else {
     return(as.character(NA))
   }
-}
-
-appendPermanent <- function(x, name, schema) {
-  con <- x$src$con
-  name <- CDMConnector::inSchema(
-    schema = schema, table = name, dbms = CDMConnector::dbms(con)
-  )
-  fullName <- DBI::dbQuoteIdentifier(con, name)
-  DBI::dbExecute(
-    con, glue::glue("INSERT INTO {fullName} {dbplyr::sql_render(x)}")
-  )
-  dplyr::tbl(con, name)
 }

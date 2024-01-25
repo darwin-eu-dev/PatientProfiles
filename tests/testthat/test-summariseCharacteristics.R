@@ -2,15 +2,9 @@ test_that("test summariseCharacteristics", {
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
-    day_of_birth = c(30, 10, 24)
-  )
-  observation_period <- dplyr::tibble(
-    observation_period_id = c(1, 2, 3), person_id = c(1, 2, 3),
-    observation_period_start_date = as.Date(
-      c("1990-01-01", "2005-12-30", "1990-05-12")
-    ), observation_period_end_date = as.Date(
-      c("2022-01-01", "2022-12-30", "2022-05-12")
-    )
+    day_of_birth = c(30, 10, 24),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
   )
   dus_cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
@@ -42,7 +36,6 @@ test_that("test summariseCharacteristics", {
       "1990-02-01", "1990-08-01", "2009-01-01", "1995-06-01"
     ))
   )
-
   observation_period <- dplyr::tibble(
     observation_period_id = c(1, 2, 3),
     person_id = c(1, 2, 3),
@@ -51,14 +44,16 @@ test_that("test summariseCharacteristics", {
     )),
     observation_period_end_date = as.Date(c(
       "2011-03-04", "2022-03-14", "2023-07-10"
-    ))
+    )),
+    period_type_concept_id = 0
   )
 
   cdm <- mockPatientProfiles(
     connectionDetails,
     dus_cohort = dus_cohort, person = person,
     comorbidities = comorbidities, medication = medication,
-    observation_period = observation_period
+    observation_period = observation_period, cohort1 = emptyCohort,
+    cohort2 = emptyCohort
   )
 
   attr(cdm$dus_cohort, "cohort_set") <- dplyr::tibble(
@@ -80,101 +75,100 @@ test_that("test summariseCharacteristics", {
       ), "Comorbidities" = list(
         targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
       )
-    ),
-    minCellCount = 1
-  ))
-  expect_identical(colnames(result), c(
-    "cdm_name", "result_type", "group_name", "group_level", "strata_name",
-    "strata_level", "variable", "variable_level", "variable_type",
-    "estimate_type", "estimate"
+    )
+  ) |>
+    omopgenerics::suppress(minCellCount = 1))
+  expect_identical(class(result), c(
+    "summarised_characteristics", "summarised_result", "tbl_df",
+    "tbl", "data.frame"
   ))
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(group_level == "exposed") %>%
       dplyr::filter(variable_level == "Covid") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     2
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(group_level == "exposed") %>%
       dplyr::filter(variable_level == "Headache") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     1
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(group_level == "exposed") %>%
       dplyr::filter(variable_level == "Acetaminophen") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     2
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(group_level == "exposed") %>%
       dplyr::filter(variable_level == "Ibuprophen") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     0
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(group_level == "exposed") %>%
       dplyr::filter(variable_level == "Naloxone") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     0
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(group_level == "unexposed") %>%
       dplyr::filter(variable_level == "Covid") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     0
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(group_level == "unexposed") %>%
       dplyr::filter(variable_level == "Headache") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     1
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(group_level == "unexposed") %>%
       dplyr::filter(variable_level == "Acetaminophen") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     0
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(group_level == "unexposed") %>%
       dplyr::filter(variable_level == "Ibuprophen") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     0
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(group_level == "unexposed") %>%
       dplyr::filter(variable_level == "Naloxone") %>%
-      dplyr::filter(estimate_type == "count") %>%
-      dplyr::pull("estimate") %>%
+      dplyr::filter(estimate_name == "count") %>%
+      dplyr::pull("estimate_value") %>%
       as.numeric(),
     0
   )
@@ -189,16 +183,16 @@ test_that("test summariseCharacteristics", {
       ), "Comorbidities" = list(
         targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
       )
-    ), minCellCount = 1
-  ))
-  expect_identical(colnames(result), c(
-    "cdm_name", "result_type", "group_name", "group_level", "strata_name",
-    "strata_level", "variable", "variable_level", "variable_type",
-    "estimate_type", "estimate"
+    )
+  )|>
+    omopgenerics::suppress(minCellCount = 1))
+  expect_identical(class(result), c(
+    "summarised_characteristics", "summarised_result", "tbl_df",
+    "tbl", "data.frame"
   ))
   expect_true(
     result %>%
-      dplyr::filter(grepl("short", variable)) %>%
+      dplyr::filter(grepl("short", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
@@ -206,7 +200,7 @@ test_that("test summariseCharacteristics", {
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("long", variable)) %>%
+      dplyr::filter(grepl("long", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
@@ -214,7 +208,7 @@ test_that("test summariseCharacteristics", {
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("Medications", variable)) %>%
+      dplyr::filter(grepl("Medications", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$medication, "cohort_set") %>%
@@ -222,7 +216,7 @@ test_that("test summariseCharacteristics", {
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("Comorbidities", variable)) %>%
+      dplyr::filter(grepl("Comorbidities", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       attr(cdm$comorbidities, "cohort_set") %>%
@@ -231,12 +225,13 @@ test_that("test summariseCharacteristics", {
 
   result_notables <- summariseCharacteristics(
     cdm$dus_cohort,
-    cohortIntersect = list(), tableIntersect = list(), minCellCount = 1
-  )
-  expect_true(
-    all(c("cdm_name", "result_type", "group_name", "group_level", "strata_name", "strata_level", "variable", "variable_level", "variable_type", "estimate_type", "estimate") %in%
-      colnames(result_notables))
-  )
+    cohortIntersect = list(), tableIntersect = list()
+  )|>
+    omopgenerics::suppress(minCellCount = 1)
+  expect_identical(class(result), c(
+    "summarised_characteristics", "summarised_result", "tbl_df",
+    "tbl", "data.frame"
+  ))
 
   # demographics
   expect_no_error(result <- summariseCharacteristics(
@@ -246,21 +241,19 @@ test_that("test summariseCharacteristics", {
       "Medications" = list(
         targetCohortTable = "medication", value = "flag", window = c(-365, 0)
       )
-    ),
-    minCellCount = 1
+    )
   ))
   expect_true(all(
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
-      "Future observation") %in% result$variable
+      "Future observation") %in% result$variable_name
   ))
   expect_no_error(result <- summariseCharacteristics(
     cdm$dus_cohort,
-    demographics = TRUE,
-    minCellCount = 1
+    demographics = TRUE
   ))
   expect_true(all(
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
-      "Future observation") %in% result$variable
+      "Future observation") %in% result$variable_name
   ))
   expect_no_error(result <- summariseCharacteristics(
     cdm$dus_cohort,
@@ -269,78 +262,40 @@ test_that("test summariseCharacteristics", {
       "Medications" = list(
         targetCohortTable = "medication", value = "flag", window = c(-365, 0)
       )
-    ),
-    minCellCount = 1
+    )
   ))
   expect_false(any(
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
-      "Future observation") %in% result$variable
+      "Future observation") %in% result$variable_name
   ))
   expect_error(summariseCharacteristics(
     cdm$dus_cohort,
-    demographics = FALSE,
-    minCellCount = 1
+    demographics = FALSE
   ))
 
 })
 
 test_that("test empty cohort", {
-  dus_cohort <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 3),
-    cohort_start_date = as.Date(c(
-      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
-    )),
-    cohort_end_date = as.Date(c(
-      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
-    ))
-  )
-  comorbidities <- dplyr::tibble(
-    cohort_definition_id = c(1, 2, 2, 1),
-    subject_id = c(1, 1, 3, 3),
-    cohort_start_date = as.Date(c(
-      "1990-01-01", "1990-06-01", "2000-01-01", "2000-06-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "1990-01-01", "1990-06-01", "2000-01-01", "2000-06-01"
-    ))
-  )
-  medication <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 1),
-    subject_id = c(1, 1, 2, 3),
-    cohort_start_date = as.Date(c(
-      "1990-02-01", "1990-08-01", "2009-01-01", "1995-06-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "1990-02-01", "1990-08-01", "2009-01-01", "1995-06-01"
-    ))
-  )
-
-
-  cdm <- mockPatientProfiles(
-    connectionDetails,
-    dus_cohort = dus_cohort,
-    comorbidities = comorbidities, medication = medication
-  )
+  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
 
   expect_no_error(
-    cdm$dus_cohort %>% dplyr::filter(cohort_definition_id == 0) %>%
+    cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 0) %>%
       summariseCharacteristics(cohortIntersect = list(
         "Medications" = list(
-          targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+          targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
         ), "Comorbidities" = list(
-          targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+          targetCohortTable = "cohort2", value = "flag", window = c(-Inf, 0)
         )
-      ), minCellCount = 1)
+      ))
   )
   expect_no_error(
-    cdm$dus_cohort %>%
+    cdm$cohort1 %>%
       summariseCharacteristics(cohortIntersect = list(
         "Medications" = list(
-          targetCohortTable = "medication", value = "flag", window = c(-365, 0), targetCohortId = 1
+          targetCohortTable = "cohort2", value = "flag", window = c(-365, 0), targetCohortId = 1
         ), "Comorbidities" = list(
-          targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+          targetCohortTable = "cohort2", value = "flag", window = c(-Inf, 0)
         )
-      ), minCellCount = 1)
+      ))
   )
 })

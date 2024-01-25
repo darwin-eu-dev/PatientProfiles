@@ -5,17 +5,33 @@ test_that("addAttributes, functionality", {
   newCohort <- cdm$cohort1 %>%
     addDemographics(cdm)
 
-  newCohort <- newCohort %>%
-    addAttributes(oldCohort)
-
   expect_true(length(attributes(newCohort)) == length(attributes(oldCohort)))
   for (i in names(attributes(newCohort))) {
-    if (i != "names" && i != "class") {
-      expect_true(identical(attr(newCohort, i), attr(oldCohort, i)))
+    if (i != "tbl_name") {
+      x <- attr(newCohort, i)
+      y <- attr(oldCohort, i)
+      if (i == "class") {
+        x <- x[x != "GeneratedCohortSet"]
+        y <- y[y != "GeneratedCohortSet"]
+      }
+      expect_true(identical(x ,y))
     }
   }
 
-  # expect errors
-  expect_error(addAttributes(cdm))
-  expect_error(addAttributes(cdm$cohort1, "cdm$cohort2"))
+  oldCohort <- cdm$cohort1
+  newCohort <- cdm$cohort1 %>%
+    addCohortIntersect(targetCohortTable = "cohort2")
+
+  expect_true(length(attributes(newCohort)) == length(attributes(oldCohort)))
+  for (i in names(attributes(newCohort))) {
+    if (i != "tbl_name") {
+      x <- attr(newCohort, i)
+      y <- attr(oldCohort, i)
+      if (i == "class") {
+        x <- x[x != "GeneratedCohortSet"]
+        y <- y[y != "GeneratedCohortSet"]
+      }
+      expect_true(identical(x ,y))
+    }
+  }
 })

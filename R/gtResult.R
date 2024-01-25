@@ -1,6 +1,6 @@
 #' Create a gt table from a summarisedCharacteristics object.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param summarisedCharacteristics Summary characteristics long table.
 #' @param pivotWide variables to pivot wide
@@ -32,10 +32,8 @@
 #'     "Medications" = list(
 #'       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
 #'     )
-#'   ),
-#'   minCellCount = 1
-#' ) %>%
-#'   gtCharacteristics()
+#'   )
+#' )
 #' }
 gtCharacteristics <- function(summarisedCharacteristics,
                               pivotWide = c("CDM Name", "Group", "Strata"),
@@ -50,6 +48,11 @@ gtCharacteristics <- function(summarisedCharacteristics,
                               decimals = c(default = 0),
                               decimalMark = ".",
                               bigMark = ",") {
+  lifecycle::deprecate_soft(
+    when = "0.7.0",
+    what = "gtCharacteristics()",
+    with = "formatCharacteristics()"
+  )
   all <- list(
     "Variable" = c(level = "variable", "clean"),
     "Level" = c(level = "variable_level"),
@@ -70,7 +73,7 @@ gtCharacteristics <- function(summarisedCharacteristics,
 
 #' Create a gt table from a summary object.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param summarisedResult A SummarisedResult object.
 #' @param long List of variables and specification to long
@@ -93,27 +96,7 @@ gtCharacteristics <- function(summarisedCharacteristics,
 #'
 #' cdm$cohort1 %>%
 #'   summariseCharacteristics(
-#'     ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
-#'     minCellCount = 1
-#'   ) %>%
-#'   gtResult(
-#'     long = list(
-#'       "Variable" = c(level = "variable", "clean"),
-#'       "Level" = c(level = "variable_level"),
-#'       "Format" = c(level = "format", "separator-right")
-#'     ),
-#'     wide = list(
-#'       "CDM Name" = c(level = "cdm_name"),
-#'       "Group" = c(level = c("group_name", "group_level")),
-#'       "Strata" = c(level = c("strata_name", "strata_level"))
-#'     ),
-#'     format = c(
-#'       "N (%)" = "count (percentage%)",
-#'       "N" = "count",
-#'       "median [Q25-Q75]" = "median [q25-q75]"
-#'     ),
-#'     decimals = c(count = 0),
-#'     keepNotFormatted = FALSE
+#'     ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))
 #'   )
 #' }
 #'
@@ -324,7 +307,7 @@ pivotWide <- function(summaryTable, wide) {
       xLevel <- strsplit(nl[[level]], " and ")
       labels <- unique(unlist(xName))
       for (i in seq_along(labels)) {
-        column <- rep("Overall", length(xName))
+        column <- rep("overall", length(xName))
         for (j in seq_along(xName)) {
           id <- which(xName[[j]] == labels[i])
           if (length(id) == 1) {

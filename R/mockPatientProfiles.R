@@ -207,14 +207,14 @@ mockPatientProfiles <- function(connectionDetails = list(
           sample(ingredient_concept_id, drug_concept_id_size, replace = TRUE)
         ),
         amount_value = as.numeric(amount_value),
-        amount_unit_concept_id = as.numeric(amount_unit_concept_id)
+        amount_unit_concept_id = as.numeric(amount_unit_concept_id),
         # numerator_value = numeric(),
         # numerator_unit_concept_id = numeric(),
         # denominator_value = numeric(),
         # denominator_unit_concept_id = numeric(),
         # box_size = numeric(),
-        # valid_start_date = as.Date(character()),
-        # valid_end_date = as.Date(character()),
+        valid_start_date = rep(as.Date("1900-01-01"), drug_concept_id_size),
+        valid_end_date = rep(as.Date("2030-01-01"), drug_concept_id_size)
         # invalid_reason = character()
       )
   }
@@ -272,12 +272,13 @@ mockPatientProfiles <- function(connectionDetails = list(
         drug_concept_id = as.numeric(drug_concept_id),
         drug_exposure_start_date = drug_exposure_start_date,
         drug_exposure_end_date = drug_exposure_end_date,
-        quantity = as.numeric(quantity)
+        quantity = as.numeric(quantity),
+        drug_type_concept_id = 0
         ##  days_supply = as.numeric(days_supply)
       )
   }
   # person table
-  id <- sample(seq(1:patient_size))
+  id <- seq(1:patient_size)
   # person gender
   gender_id <- sample(c("8507", "8532"),
     patient_size,
@@ -457,7 +458,9 @@ mockPatientProfiles <- function(connectionDetails = list(
       gender_concept_id = gender_id,
       year_of_birth = DOB_year,
       month_of_birth = DOB_month,
-      day_of_birth = DOB_day
+      day_of_birth = DOB_day,
+      race_concept_id = 0,
+      ethnicity_concept_id = 0
     )
   }
 
@@ -466,7 +469,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       observation_period_id = id,
       person_id = id,
       observation_period_start_date = obs_start_date,
-      observation_period_end_date = obs_end_date
+      observation_period_end_date = obs_end_date,
+      period_type_concept_id = 0
     )
   }
 
@@ -478,7 +482,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       person_id = id,
       condition_concept_id = condition_concept_id,
       condition_start_date = condition_start_date,
-      condition_end_date = condition_end_date
+      condition_end_date = condition_end_date,
+      condition_type_concept_id = 0
     )
   }
 
@@ -491,7 +496,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       person_id = id,
       visit_concept_id = visit_concept_id,
       visit_start_date = visit_start_date,
-      visit_end_date = visit_end_date
+      visit_end_date = visit_end_date,
+      visit_type_concept_id = 0
     )
   }
 
@@ -502,7 +508,9 @@ mockPatientProfiles <- function(connectionDetails = list(
       seq((ancestor_concept_id_size + 1):(ancestor_concept_id_size + ancestor_concept_id_size))
     concept_ancestor <- data.frame(
       ancestor_concept_id = as.numeric(ancestor_concept_id),
-      descendant_concept_id = as.numeric(descendant_concept_id)
+      descendant_concept_id = as.numeric(descendant_concept_id),
+      min_levels_of_separation = 1,
+      max_levels_of_separation = 1
     )
   }
 
@@ -513,7 +521,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       subject_id = c(1, 1, 2, 3),
       cohort_start_date = as.Date(c("2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01")),
       cohort_end_date = as.Date(c("2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"))
-    )
+    ) |>
+      dplyr::filter(.data$subject_id %in% seq(1, patient_size))
   }
 
 
@@ -525,7 +534,8 @@ mockPatientProfiles <- function(connectionDetails = list(
       subject_id = c(1, 3, 1, 2, 1),
       cohort_start_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25")),
       cohort_end_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"))
-    )
+    ) |>
+      dplyr::filter(.data$subject_id %in% seq(1, patient_size))
   }
 
   # into database
@@ -540,61 +550,38 @@ mockPatientProfiles <- function(connectionDetails = list(
     "condition_occurrence", "visit_occurrence", "concept_ancestor"
   )
 
-  for (tab in tablesToInsert) {
-    DBI::dbWriteTable(
-      conn = db,
-      name = CDMConnector::inSchema(schema = writeSchema, table = tab),
-      value = get(tab),
-      overwrite = TRUE
-    )
-  }
-
-  listTables[["cohort1"]] <- cohort1
-  listTables[["cohort2"]] <- cohort2
-  cohorts <- names(listTables)
-  for (cohort in cohorts) {
-    x <- addCohortCountAttr(listTables[[cohort]])
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(writeSchema, cohort),
-      value = x, overwrite = TRUE
-    )
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(
-        writeSchema, paste0(cohort, "_set")
-      ), value = attr(x, "cohort_set"), overwrite = TRUE
-    )
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(
-        writeSchema, paste0(cohort, "_count")
-      ), value = attr(x, "cohort_count"), overwrite = TRUE
-    )
-    DBI::dbWriteTable(
-      conn = db, name = CDMConnector::inSchema(
-        writeSchema, paste0(cohort, "_attrition")
-      ), value = attr(x, "cohort_attrition"), overwrite = TRUE
-    )
-  }
-
-  cdmTables <- c(
-    "drug_strength", "drug_exposure", "person", "concept_ancestor",
-    "observation_period", "condition_occurrence", "visit_occurrence"
+  src <- CDMConnector::dbSource(
+    con = connectionDetails$con, writeSchema = connectionDetails$write_schema
   )
-  writeTables <- tidyr::expand_grid(
-    cohort_name = cohorts, attribute = c("", "_set", "_count", "_attrition")
-  ) %>%
-    dplyr::mutate(name = paste0(.data$cohort_name, .data$attribute)) %>%
-    dplyr::pull("name")
 
-  updateWrittenTables(cdmTables, writeTables)
+  for (tab in tablesToInsert) {
+    x <- omopgenerics::insertTable(
+      cdm = src, name = tab, table = get(tab), overwrite = TRUE
+    )
+  }
 
   # create the cdm object
   cdm <- CDMConnector::cdm_from_con(
     con = db,
     cdm_schema = writeSchema,
     write_schema = writeSchema,
-    cohort_tables = cohorts,
     cdm_name = "PP_MOCK"
   )
+
+  listTables[["cohort1"]] <- cohort1
+  listTables[["cohort2"]] <- cohort2
+  cohorts <- names(listTables)
+  for (cohort in cohorts) {
+    x <- addCohortCountAttr(listTables[[cohort]])
+    cdm <- omopgenerics::insertTable(
+      cdm = cdm, name = cohort, table = listTables[[cohort]], overwrite = TRUE
+    )
+    cdm[[cohort]] <- cdm[[cohort]] |>
+      omopgenerics::cohortTable(
+        cohortSetRef = attr(x, "cohort_set"),
+        cohortAttritionRef = attr(x, "cohort_attrition")
+      )
+  }
 
   return(cdm)
 }
@@ -618,17 +605,6 @@ addCohortCountAttr <- function(cohort) {
       ))
   }
 
-  # add cohort count
-  if (!("cohort_count" %in% attributes(cohort))) {
-    attr(cohort, "cohort_count") <- cohort %>%
-      dplyr::group_by(.data$cohort_definition_id) %>%
-      dplyr::summarise(
-        number_records = dplyr::n(),
-        number_subjects = dplyr::n_distinct(.data$subject_id)
-      ) %>%
-      dplyr::collect()
-  }
-
   # add cohort attrition
   if (!("cohort_attrition" %in% attributes(cohort))) {
     attr(cohort, "cohort_attrition") <- cohort %>%
@@ -647,43 +623,4 @@ addCohortCountAttr <- function(cohort) {
   }
 
   return(cohort)
-}
-
-#' Update tables that have been modified in scratch or write schema
-#'
-#' @param scratchTables Tables written in the scratch schema
-#' @param writeTables Tables written in the write schema
-#'
-#' @noRd
-#'
-updateWrittenTables <- function(scratchTables = NULL, writeTables = NULL) {
-  options(
-    mock_cdm_scratch_tables = unique(c(
-      scratchTables, getOption("mock_cdm_scratch_tables", NULL)
-    )),
-    mock_cdm_write_tables = unique(c(
-      writeTables, getOption("mock_cdm_write_tables", NULL)
-    ))
-  )
-}
-
-#' Delete tables that have been added during the testing
-#'
-#' @param connectionDetails Connection details of the mock database
-#'
-#' @noRd
-#'
-disconnectMockCdm <- function(connectionDetails) {
-  db <- connectionDetails[["con"]]
-  writeSchema <- connectionDetails[["write_schema"]]
-  scratchTables <- getOption("mock_cdm_scratch_tables", NULL)
-  writeTables <- getOption("mock_cdm_write_tables", NULL)
-  for (tab in scratchTables) {
-    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
-  }
-  for (tab in writeTables) {
-    DBI::dbRemoveTable(db, CDMConnector::inSchema(writeSchema, tab))
-  }
-  DBI::dbDisconnect(db, shutdown = TRUE)
-  options(mock_cdm_scratch_tables = NULL, mock_cdm_write_tables = NULL)
 }

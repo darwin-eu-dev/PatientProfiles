@@ -27,7 +27,6 @@
 #' are automatically classified.
 #' @param functions List of functions to be applied to each one of the group of
 #' variables.
-#' @param minCellCount Minimum count of records to report results.
 #'
 #' @return Table that summarises the characteristics of the individual.
 #'
@@ -61,8 +60,7 @@ summariseResult <- function(table,
                               dateVariables = c("median", "min", "q25", "q75", "max"),
                               binaryVariables = c("count", "percentage"),
                               categoricalVariables = c("count", "percentage")
-                            ),
-                            minCellCount = 5) {
+                            )) {
   # initial checks
   checkTable(table)
 
@@ -71,12 +69,13 @@ summariseResult <- function(table,
   if (table %>%
     dplyr::count() %>%
     dplyr::pull() == 0) {
-    result <- table %>%
-      dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
-      dplyr::mutate(
-        variable = "number records", variable_type = as.character(NA),
-        estimate_type = "count"
-      )
+    result <- dplyr::tibble(
+      "estimate" = "0", "variable" = "number records",
+      "variable_type" = "categorical", "estimate_type" = "count",
+      "group_name" = "overall", "group_level" = "overall",
+      "strata_name" = "overall", "strata_level" = "overall",
+      "variable_level" = NA_character_
+    )
   } else {
     if (!is.list(variables)) {
       variables <- list("all" = variables)
@@ -87,7 +86,6 @@ summariseResult <- function(table,
     checkStrata(group, table)
     checkStrata(strata, table)
     checkVariablesFunctions(variables, functions, table)
-    checkSuppressCellCount(minCellCount)
 
     # get which are the estimates that are needed
     requiredFunctions <- NULL
@@ -124,8 +122,8 @@ summariseResult <- function(table,
           includeOverall = includeOverallStrata
         ) %>%
         dplyr::mutate(
-          group_name = "Overall",
-          group_level = "Overall"
+          group_name = "overall",
+          group_level = "overall"
         ) %>%
         dplyr::select(
           "group_name", "group_level", "strata_name", "strata_level",
@@ -171,10 +169,46 @@ summariseResult <- function(table,
         result <- dplyr::bind_rows(result, workingResult)
       }
     }
-
-    # obscure counts
-    result <- suppressCounts(result, minCellCount = minCellCount)
   }
+
+  if (is.null(attr(table, "cdm_reference"))) {
+    cdm_name <- "unknown"
+  } else {
+    cdm_name <- omopgenerics::cdmName(attr(table, "cdm_reference"))
+  }
+
+  result <- result |>
+    dplyr::rename(
+      "variable_name" = "variable", "estimate_name" = "estimate_type",
+      "estimate_value" = "estimate"
+    ) |>
+    dplyr::left_join(
+      formats |>
+        dplyr::select(
+          "estimate_name" = "format_key",
+          "variable_type",
+          "estimate_type" = "result"
+        ),
+      relationship = "many-to-many",
+      by = c("estimate_name", "variable_type")
+    ) |>
+    dplyr::mutate(
+      "estimate_type" = dplyr::if_else(
+        .data$estimate_name %in% c("count_missing", "percentage_missing"),
+        "numeric",
+        .data$estimate_type
+      ),
+      "cdm_name" = .env$cdm_name,
+      "result_type" = "summarise_table",
+      "package_name" = "PatientProfiles",
+      "package_version" = as.character(utils::packageVersion("PatientProfiles")),
+      "additional_name" = "overall",
+      "additional_level" = "overall"
+    ) |>
+    dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
+      "summarised_result"
+    ))) |>
+    omopgenerics::summarisedResult()
 
   return(result)
 }
@@ -430,7 +464,7 @@ summaryValues <- function(x, requiredFunctions) {
   result <- x %>%
     dplyr::summarise(estimate = as.character(dplyr::n()), .groups = "drop") %>%
     dplyr::mutate(
-      variable = "number records", variable_type = as.character(NA),
+      variable = "number records", variable_type = "categorical",
       estimate_type = "count"
     ) %>%
     dplyr::collect()
@@ -521,7 +555,7 @@ countSubjects <- function(x) {
         .groups = "drop"
       ) %>%
       dplyr::mutate(
-        variable = "number subjects", variable_type = "numeric",
+        variable = "number subjects", variable_type = "categorical",
         estimate_type = "count"
       ) %>%
       dplyr::collect()
@@ -539,10 +573,10 @@ summaryValuesStrata <- function(x,
   result <- list()
   if (isTRUE(includeOverall) || length(strata) == 0) {
     result <- x %>%
-      dplyr::mutate(strata_level = "Overall") %>%
+      dplyr::mutate(strata_level = "overall") %>%
       dplyr::group_by(.data$strata_level) %>%
       summaryValues(requiredFunctions) %>%
-      dplyr::mutate(strata_name = "Overall")
+      dplyr::mutate(strata_name = "overall")
   }
   for (k in seq_along(strata)) {
     xx <- x %>%
@@ -559,68 +593,6 @@ summaryValuesStrata <- function(x,
   }
   result <- result %>%
     dplyr::relocate("strata_name")
-  return(result)
-}
-
-#' Function to suppress counts in summarised objects
-#'
-#' @param result SummarisedResult object
-#' @param minCellCount Minimum count of records to report results.
-#'
-#' @return Table with suppressed counts
-#'
-#' @export
-suppressCounts <- function(result,
-                           minCellCount = 5) {
-  checkmate::assertTRUE(all(c(
-    "variable", "estimate", "estimate_type", "group_name", "group_level",
-    "strata_name", "strata_level"
-  ) %in%
-    colnames(result)))
-
-  checkSuppressCellCount(minCellCount)
-
-  if (minCellCount > 1) {
-    if ("number subjects" %in% result$variable) {
-      personCount <- "number subjects"
-    } else {
-      personCount <- "number records"
-    }
-    toObscure <- result %>%
-      dplyr::filter(.data$variable == .env$personCount) %>%
-      dplyr::mutate(estimate = suppressWarnings(as.numeric(.data$estimate))) %>%
-      dplyr::filter(.data$estimate > 0 & .data$estimate < .env$minCellCount) %>%
-      dplyr::select("group_name", "group_level", "strata_name", "strata_level")
-    for (k in seq_len(nrow(toObscure))) {
-      ik <- result$group_name == toObscure$group_name[k] &
-        result$group_level == toObscure$group_level[k] &
-        result$strata_name == toObscure$strata_name[k] &
-        result$strata_level == toObscure$strata_level[k]
-      is <- result$variable == personCount
-      if (sum((ik & is) | is.na(ik & is)) > 0) {
-        result$estimate[ik & is] <- paste0("<", minCellCount)
-        result$estimate[ik & !is] <- as.character(NA)
-      }
-    }
-    estimate <- suppressWarnings(as.numeric(result$estimate))
-    id <- which(
-      result$estimate_type == "count" & estimate < minCellCount &
-        estimate > 0 & !is.na(estimate)
-    )
-    x <- result[id, ] %>%
-      dplyr::select(-"estimate") %>%
-      dplyr::mutate(estimate_type = "percentage")
-    result <- result %>%
-      dplyr::left_join(
-        x %>% dplyr::mutate(obscure_estimate = 1),
-        by = colnames(x)
-      ) %>%
-      dplyr::mutate(estimate = dplyr::if_else(
-        !is.na(.data$obscure_estimate), as.character(NA), .data$estimate
-      )) %>%
-      dplyr::select(-"obscure_estimate")
-    result$estimate[id] <- paste0("<", minCellCount)
-  }
   return(result)
 }
 
@@ -681,7 +653,7 @@ arrangeStrata <- function(result, strata) {
     paste0(x, collapse = " and ")
   }) %>%
     unlist()
-  namesStrata <- c("Overall", namesStrata)
+  namesStrata <- c("overall", namesStrata)
   result <- result %>%
     dplyr::inner_join(
       dplyr::tibble(strata_name = namesStrata) %>%

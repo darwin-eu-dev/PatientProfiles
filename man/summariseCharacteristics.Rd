@@ -13,8 +13,7 @@ summariseCharacteristics(
   tableIntersect = list(),
   cohortIntersect = list(),
   conceptIntersect = list(),
-  otherVariables = character(),
-  minCellCount = 5
+  otherVariables = character()
 )
 }
 \arguments{
@@ -39,8 +38,6 @@ function to add variables to summarise.}
 
 \item{otherVariables}{Other variables contained in cohort that you want to be
 summarised.}
-
-\item{minCellCount}{minimum counts due to obscure}
 }
 \value{
 A summary of the characteristics of the individuals

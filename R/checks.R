@@ -40,7 +40,7 @@ checkX <- function(x) {
 #' @noRd
 checkCdm <- function(cdm, tables = NULL) {
   if (!isTRUE(inherits(cdm, "cdm_reference"))) {
-    cli::cli_abort("cdm must be a CDMConnector CDM reference object")
+    cli::cli_abort("cdm a cdm_reference object.")
   }
   if (!is.null(tables)) {
     tables <- tables[!(tables %in% names(cdm))]
@@ -48,7 +48,7 @@ checkCdm <- function(cdm, tables = NULL) {
       cli::cli_abort(paste0(
         "tables: ",
         paste0(tables, collapse = ", "),
-        "are not present in the cdm object"
+        " are not present in the cdm object"
       ))
     }
   }
@@ -321,14 +321,10 @@ checkValue <- function(value, x, name) {
 
 #' @noRd
 checkCohortNames <- function(x, targetCohortId, name) {
-  if (!("GeneratedCohortSet" %in% class(x))) {
-    cli::cli_abort(
-      "cdm[[targetCohortTable]]) must be a 'GeneratedCohortSet'. Please use a
-      generateCohortSet function or create it with
-      CDMConnector::newGeneratedCohortSet()."
-    )
+  if (!("cohort_table" %in% class(x))) {
+    cli::cli_abort("cdm[[targetCohortTable]]) must be a 'cohort_table'.")
   }
-  cohort <- CDMConnector::cohortSet(x)
+  cohort <- omopgenerics::settings(x)
   filterVariable <- "cohort_definition_id"
   if (is.null(targetCohortId)) {
     if (is.null(cohort)) {
@@ -588,16 +584,6 @@ checkCensorDate <- function(x, censorDate) {
     inherits("Date")
   if (!check) {
     cli::cli_abort("{censorDate} is not a date variable")
-  }
-}
-
-#' @noRd
-assertWriteSchema <- function(cdm, call = rlang::env_parent()) {
-  if (!("write_schema" %in% names(attributes(cdm)))) {
-    cli::cli_abort(
-      message = "write_schema must be provided in the cdm object to use this function",
-      call = call
-    )
   }
 }
 

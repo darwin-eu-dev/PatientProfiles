@@ -255,8 +255,7 @@ addDemographics <- function(x,
       ))
   }
 
-  x <- x %>%
-    CDMConnector::computeQuery()
+  x <- x %>% dplyr::compute()
 
   if (!is.null(ageGroup)) {
     x <- addCategories(
@@ -266,9 +265,6 @@ addDemographics <- function(x,
       missingCategoryValue = "None"
     )
   }
-
-  # put back the initial attributes to the output tibble
-  x <- x %>% addAttributes(startTibble)
 
   return(x)
 }
@@ -313,8 +309,7 @@ futureObservationQuery <- function(indexDate, name) {
 #' Compute the age of the individuals at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the age.
 #' @param ageName Name of the new column that contains age.
 #' @param ageGroup List of age groups to be added.
@@ -332,29 +327,10 @@ futureObservationQuery <- function(indexDate, name) {
 #'
 #' @examples
 #' \donttest{
-#' library(DBI)
-#' library(duckdb)
-#' library(PatientProfiles)
-#' cohort1 <- dplyr::tibble(
-#'   cohort_definition_id = c("1", "1", "1"),
-#'   subject_id = c("1", "2", "3"),
-#'   cohort_start_date = c(
-#'     as.Date("2010-01-01"), as.Date("2010-01-01"), as.Date("2010-01-01")
-#'   ),
-#'   cohort_end_date = c(
-#'     as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2018-01-01")
-#'   )
-#' )
+#' cdm <- mockPatientProfiles()
 #'
-#' person <- dplyr::tibble(
-#'   person_id = c("1", "2", "3"),
-#'   gender_concept_id = c("8507", "8532", "8507"),
-#'   year_of_birth = c(2000, 1995, NA),
-#'   month_of_birth = c(NA, 07, 08),
-#'   day_of_birth = c(01, 25, 03)
-#' )
-#' cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
-#' addAge(x = cdm[["cohort1"]], cdm = cdm)
+#' cdm$cohort1 |>
+#'   addAge()
 #' }
 addAge <- function(x,
                    cdm = attr(x, "cdm_reference"),
@@ -391,8 +367,7 @@ addAge <- function(x,
 #' certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
 #' @param futureObservationName name of the new column to be added
@@ -403,47 +378,10 @@ addAge <- function(x,
 #'
 #' @examples
 #' \donttest{
-#' library(DBI)
-#' library(duckdb)
-#' library(PatientProfiles)
-#' cohort1 <- dplyr::tibble(
-#'   cohort_definition_id = c("1", "1", "1"),
-#'   subject_id = c("1", "2", "3"),
-#'   cohort_start_date = c(
-#'     as.Date("2010-03-03"),
-#'     as.Date("2010-03-01"),
-#'     as.Date("2010-02-01")
-#'   ),
-#'   cohort_end_date = c(
-#'     as.Date("2015-01-01"),
-#'     as.Date("2013-01-01"),
-#'     as.Date("2013-01-01")
-#'   )
-#' )
+#' cdm <- mockPatientProfiles()
 #'
-#' obs_1 <- dplyr::tibble(
-#'   observation_period_id = c("1", "2", "3"),
-#'   person_id = c("1", "2", "3"),
-#'   observation_period_start_date = c(
-#'     as.Date("2010-02-03"),
-#'     as.Date("2010-02-01"),
-#'     as.Date("2010-01-01")
-#'   ),
-#'   observation_period_end_date = c(
-#'     as.Date("2014-01-01"),
-#'     as.Date("2012-01-01"),
-#'     as.Date("2012-01-01")
-#'   )
-#' )
-#'
-#' cdm <-
-#'   mockPatientProfiles(
-#'     seed = 1,
-#'     cohort1 = cohort1,
-#'     observation_period = obs_1
-#'   )
-#'
-#' result <- cdm$cohort1 %>% addFutureObservation(cdm)
+#' cdm$cohort1 %>%
+#'   addFutureObservation()
 #' }
 addFutureObservation <- function(x,
                                  cdm = attr(x, "cdm_reference"),
@@ -475,8 +413,7 @@ addFutureObservation <- function(x,
 #' at a certain date
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the prior
 #' observation.
 #' @param priorObservationName name of the new column to be added
@@ -487,47 +424,10 @@ addFutureObservation <- function(x,
 #'
 #' @examples
 #' \donttest{
-#' library(DBI)
-#' library(duckdb)
-#' library(PatientProfiles)
-#' cohort1 <- dplyr::tibble(
-#'   cohort_definition_id = c("1", "1", "1"),
-#'   subject_id = c("1", "2", "3"),
-#'   cohort_start_date = c(
-#'     as.Date("2010-03-03"),
-#'     as.Date("2010-03-01"),
-#'     as.Date("2010-02-01")
-#'   ),
-#'   cohort_end_date = c(
-#'     as.Date("2015-01-01"),
-#'     as.Date("2013-01-01"),
-#'     as.Date("2013-01-01")
-#'   )
-#' )
+#' cdm <- mockPatientProfiles()
 #'
-#' obs_1 <- dplyr::tibble(
-#'   observation_period_id = c("1", "2", "3"),
-#'   person_id = c("1", "2", "3"),
-#'   observation_period_start_date = c(
-#'     as.Date("2010-02-03"),
-#'     as.Date("2010-02-01"),
-#'     as.Date("2010-01-01")
-#'   ),
-#'   observation_period_end_date = c(
-#'     as.Date("2014-01-01"),
-#'     as.Date("2012-01-01"),
-#'     as.Date("2012-01-01")
-#'   )
-#' )
-#'
-#' cdm <-
-#'   mockPatientProfiles(
-#'     seed = 1,
-#'     cohort1 = cohort1,
-#'     observation_period = obs_1
-#'   )
-#'
-#' result <- cdm$cohort1 %>% addPriorObservation(cdm)
+#' cdm$cohort1 %>%
+#'   addPriorObservation()
 #' }
 addPriorObservation <- function(x,
                                 cdm = attr(x, "cdm_reference"),
@@ -558,8 +458,7 @@ addPriorObservation <- function(x,
 #' Indicate if a certain record is within the observation period
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
 #' @param name name of the column to hold the result of the query:
@@ -570,9 +469,9 @@ addPriorObservation <- function(x,
 #'
 #' @examples
 #' \donttest{
-#' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#' cdm$cohort1 %>% addInObservation(cdm)
+#' cdm$cohort1 %>%
+#'   addInObservation()
 #' }
 #'
 addInObservation <- function(x,
@@ -607,8 +506,7 @@ addInObservation <- function(x,
       -"prior_observation", -"future_observation"
     )
 
-  x <- x %>%
-    CDMConnector::computeQuery()
+  x <- x %>% dplyr::compute()
 
   return(x)
 }
@@ -616,8 +514,7 @@ addInObservation <- function(x,
 #' Compute the sex of the individuals
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param sexName name of the new column to be added
 #'
 #' @return table x with the added column with sex information
@@ -625,9 +522,9 @@ addInObservation <- function(x,
 #'
 #' @examples
 #' \donttest{
-#' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#' cdm$cohort1 %>% addSex(cdm)
+#' cdm$cohort1 %>%
+#'   addSex()
 #' }
 #'
 addSex <- function(x,
