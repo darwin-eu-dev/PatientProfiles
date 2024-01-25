@@ -1,6 +1,6 @@
 #' Create a gt table from a summarisedCharacteristics object.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param summarisedCharacteristics Summary characteristics long table.
 #' @param pivotWide variables to pivot wide
@@ -48,6 +48,11 @@ gtCharacteristics <- function(summarisedCharacteristics,
                               decimals = c(default = 0),
                               decimalMark = ".",
                               bigMark = ",") {
+  lifecycle::deprecate_soft(
+    when = "0.7.0",
+    what = "gtCharacteristics()",
+    with = "formatCharacteristics()"
+  )
   all <- list(
     "Variable" = c(level = "variable", "clean"),
     "Level" = c(level = "variable_level"),
@@ -68,7 +73,7 @@ gtCharacteristics <- function(summarisedCharacteristics,
 
 #' Create a gt table from a summary object.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param summarisedResult A SummarisedResult object.
 #' @param long List of variables and specification to long
