@@ -17,6 +17,7 @@
 #' A tidy implementation of the summarised_characteristics object.
 #'
 #' @param result A summarised_characteristics object.
+#' @param minCellCount Minimum number of counts to report.
 #'
 #' @examples
 #' \donttest{
@@ -34,12 +35,13 @@
 #'
 #' @export
 #'
-tidyCharacteristics <- function(result) {
+tidyCharacteristics <- function(result, minCellCount = 5) {
   result <- omopgenerics::summarisedResult(result)
   if (!inherits(result, "summarised_characteristics")) {
     cli::cli_abort("result is not a valid `summarised_characteristics` object.")
   }
   result |>
+    omopgenerics::suppress(minCellCount = minCellCount) |>
     dplyr::select(-c("result_type", "package_name", "package_version")) |>
     visOmopResults::splitAll()
 }

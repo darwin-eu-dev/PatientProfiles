@@ -25,6 +25,7 @@
 #' @param cdmName .
 #' @param cohortName .
 #' @param style .
+#' @param minCellCount .
 #' @param .options .
 #'
 #' @examples
@@ -56,13 +57,115 @@ formatCharacteristics <- function(result,
                                   cdmName = TRUE,
                                   cohortName = TRUE,
                                   style = "default",
+                                  minCellCount = 5,
                                   .options = list()) {
+  # check input
   result <- omopgenerics::summarisedResult(result)
   if (!inherits(result, "summarised_characteristics")) {
     cli::cli_abort("result is not a valid `summarised_characteristics` object.")
   }
+  checkmate::assertChoice(type, c("gt", "flextable"))
+  checkmate::assertLogical(splitStrata, any.missing = FALSE, len = 1)
+  checkmate::assertCharacter(format, any.missing = FALSE)
+  checkmate::assertLogical(cdmName, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(cohortName, any.missing = FALSE, len = 1)
+  checkmate::assertList(.options)
+  checkmate::assertIntegerish(minCellCount, any.missing = FALSE, len = 1)
 
-  result |>
-    dplyr::select(-c("result_type", "package_name", "package_version")) |>
-    visOmopResults::formatEstimateValue()
+  # add default options
+  .options <- defaultOptions(.options)
+
+  result <- result |>
+    omopgenerics::suppress(minCellCount = minCellCount) |>
+    visOmopResults::formatEstimateValue(
+      decimals = .options$decimals,
+      decimalMark = .options$decimalMark,
+      bigMark = .options$bigMark
+    ) |>
+    visOmopResults::formatEstimateName(
+      estimateNameFormat = format, keepNotFormatted = .options$keepNotFormatted
+    ) |>
+    dplyr::select(-c("result_type", "package_name", "package_version", "estimate_type")) |>
+    visOmopResults::splitGroup(overall = FALSE) |>
+    visOmopResults::splitAdditional(overall = FALSE)
+
+  colsStrata <- visOmopResults::strataColumns(result, overall = FALSE)
+  if (length(colsStrata) > 0 & !splitStrata) {
+    result <- result |>
+      dplyr::mutate(
+        "strata" = paste0(.data$strata_name, ": ", .data$strata_level)
+      )
+    colsStrata <- "strata"
+  } else {
+    result <- result |>
+      visOmopResults::splitStrata(overall = FALSE)
+  }
+
+  headers <- character()
+  if (cdmName) headers <- c(headers, "CDM name")
+  if (cohortName) headers <- c(headers, "Cohort name")
+  if (length(colsStrata) > 0) {
+    headers <- c(headers, "strata")
+    if (colsStrata != "strata") {
+      headers <- c(headers, colsStrata)
+    }
+  }
+  result <- result |>
+    dplyr::rename(
+      "CDM name" = "cdm_name", "Cohort name" = "cohort_name",
+      "Variable" = "variable_name", "Level" = "variable_level",
+      "Format" = "estimate_name"
+    ) |>
+    dplyr::mutate("Cohort name" = stringr::str_to_sentence(
+      gsub("_", " ", .data[["Cohort name"]])
+    )) |>
+    visOmopResults::formatTable(
+      header = headers, delim = "\n",
+      includeHeaderName = .options$includeHeaderName,
+      includeHeaderKey = TRUE
+    )
+
+
+  result <- switch(
+    type,
+    "gt" = visOmopResults::gtTable(
+      x = result, delim = "\n", style = style, na = .options$na,
+      title = .options$title, subtitle = .options$subtitle,
+      caption = .options$caption, groupNameCol = .options$groupNameCol,
+      groupNameAsColumn = .options$groupNameAsColumn,
+      groupOrder = .options$groupOrder
+    ),
+    "flextable" = visOmopResults::fxTable(
+      x = result, delim = "\n", style = style, na = .options$na,
+      title = .options$title, subtitle = .options$subtitle,
+      caption = .options$caption, groupNameCol = .options$groupNameCol,
+      groupNameAsColumn = .options$groupNameAsColumn,
+      groupOrder = .options$groupOrder
+    )
+  )
+
+  return(result)
+}
+
+defaultOptions <- function(.options) {
+  defaults <- list(
+    "decimals" = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
+    "decimalMark" = ".",
+    "bigMark" = ",",
+    "keepNotFormatted" = FALSE,
+    "includeHeaderName" = TRUE,
+    "na" = "-",
+    "title" = NULL,
+    "subtitle" = NULL,
+    "caption" = NULL,
+    "groupNameCol" = NULL,
+    "groupNameAsColumn" = FALSE,
+    "groupOrder" = NULL
+  )
+  for (nm in names(defaults)) {
+    if (!nm %in% names(.options)) {
+      .options[[nm]] <- defaults[[nm]]
+    }
+  }
+  return(.options)
 }

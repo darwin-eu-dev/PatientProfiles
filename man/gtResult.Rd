@@ -37,7 +37,7 @@ gtResult(
 A formatted summarisedResult gt object.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

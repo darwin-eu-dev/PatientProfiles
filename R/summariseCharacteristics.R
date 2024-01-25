@@ -386,8 +386,17 @@ summariseCharacteristics <- function(cohort,
       ~ stringr::str_to_sentence(gsub("_", " ", .x))
     )) %>%
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result"))) |>
-    dplyr::as_tibble() |>
-    omopgenerics::summarisedResult()
+    dplyr::as_tibble()
+
+  # correct integers
+  integers <- results$estimate_value
+  integers[results$estimate_type == "date"] <- NA
+  integers <- as.numeric(integers)
+  results$estimate_type[
+    results$estimate_type == "numeric" & integers == floor(integers)
+  ] <- "integer"
+
+  results <- omopgenerics::summarisedResult(results)
 
   return(results)
 }

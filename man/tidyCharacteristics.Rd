@@ -4,10 +4,12 @@
 \alias{tidyCharacteristics}
 \title{A tidy implementation of the summarised_characteristics object.}
 \usage{
-tidyCharacteristics(result)
+tidyCharacteristics(result, minCellCount = 5)
 }
 \arguments{
 \item{result}{A summarised_characteristics object.}
+
+\item{minCellCount}{Minimum number of counts to report.}
 }
 \value{
 A tibble with a tidy version of the summarised_characteristics

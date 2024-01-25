@@ -13,6 +13,7 @@ formatCharacteristics(
   cdmName = TRUE,
   cohortName = TRUE,
   style = "default",
+  minCellCount = 5,
   .options = list()
 )
 }
@@ -31,6 +32,8 @@ formatCharacteristics(
 \item{cohortName}{.}
 
 \item{style}{.}
+
+\item{minCellCount}{.}
 
 \item{.options}{.}
 }
