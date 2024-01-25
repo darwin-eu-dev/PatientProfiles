@@ -37,9 +37,6 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAttributes.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCategories.html</loc>
   </url>
   <url>
@@ -109,6 +106,9 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/detectVariables.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/formatCharacteristics.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getConceptName.html</loc>
   </url>
   <url>
@@ -145,7 +145,7 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseResult.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/suppressCounts.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tidyCharacteristics.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/variableTypes.html</loc>

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,7 +149,7 @@ If we want to exclude patients from cohort1 who had a stroke event in
 the last 180 days before entering the cohort, we can use the
 <code><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag()</a></code> like this:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1WashOut</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">cohort1WashOut</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -157,7 +157,7 @@ the last 180 days before entering the cohort, we can use the
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cohort_1_m180_to_m1</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1WashOut</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cohort1WashOut</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
@@ -174,14 +174,14 @@ event of interest in different time windows before entering the study
 population. For example, we can look at the number of strokes in the
 0-90 day, 90-365 day, and all prior history windows:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1StrokeCounts</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">cohort1StrokeCounts</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">366</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">181</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1StrokeCounts</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cohort1StrokeCounts</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
@@ -190,9 +190,9 @@ population. For example, we can look at the number of strokes in the
 <span><span class="co">## $ subject_id            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 3, 1, 1, 2</span></span>
 <span><span class="co">## $ cohort_start_date     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-01, 2020-01-02</span></span>
 <span><span class="co">## $ cohort_end_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-03-01, 2020-08-01, 2020-04-01, 2020-02-02</span></span>
+<span><span class="co">## $ cohort_1_minf_to_m366 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0</span></span>
 <span><span class="co">## $ cohort_1_m365_to_m181 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0</span></span>
-<span><span class="co">## $ cohort_1_m180_to_m1   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 2, 1, 0</span></span>
-<span><span class="co">## $ cohort_1_minf_to_m366 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0</span></span></code></pre>
+<span><span class="co">## $ cohort_1_m180_to_m1   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 2, 1, 0</span></span></code></pre>
 <p>Let us comment on the <code>targetEndDate</code> functionality found
 in <code><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount()</a></code> and
 <code><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag()</a></code> functions. In both of them, there
@@ -230,7 +230,7 @@ previous to the cohort start date of the main cohort. Namely:</p>
 <span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-03-03"</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-02-27"</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-01-25"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2010-03-25"</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2013-01-03"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -241,7 +241,16 @@ previous to the cohort start date of the main cohort. Namely:</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">observation_period</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  observation_period_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span>
+<span>  person_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>,</span>
+<span>  observation_period_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1990-01-01"</span>, <span class="st">"1995-08-16"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  observation_period_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01"</span>, <span class="st">"2030-08-16"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  period_type_concept_id <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span></span>
+<span>  observation_period <span class="op">=</span> <span class="va">observation_period</span>,</span>
 <span>  cohort1 <span class="op">=</span> <span class="va">cohort1</span>,</span>
 <span>  cohort2 <span class="op">=</span> <span class="va">cohort2</span></span>
 <span><span class="op">)</span></span>
@@ -255,12 +264,11 @@ previous to the cohort start date of the main cohort. Namely:</p>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>                    1 1          2010-03-01        2015-01-01     </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">2</span>                    1 2          2012-03-01        2016-03-01     </span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 1 more variable: cohort_1_m30_to_m1 &lt;dbl&gt;</span></span></span></code></pre>
-<p>We get two events for <code>subject_id = 1</code>, the one starting
+<p>We get one event for <code>subject_id = 1</code>, the one starting
 and ending on the <code>2010-02-27</code>, which is within the window
-before the index date <code>2010-03-01</code>; and the one starting in
-<code>2010-01-25</code> and ending on <code>2012-03-25</code>. The
-individual <code>subject_id = 2</code> does not have any of the
-intersecting events of interest.</p>
+before the index date <code>2010-03-01</code>. The individual
+<code>subject_id = 2</code> does not have any of the intersecting events
+of interest.</p>
 <p>Note that, with the specifications by default, we pick one event (the
 second one), which is not incident in the window of interest, but
 overlaps it. Indeed, as the event start date is before the index date in
@@ -303,14 +311,14 @@ one in the time window (“order” argument).</p>
 interest, such as time until the first stroke after index date. If the
 patient did not experience the event, the function will return NA.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1TimeTo</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">cohort1TimeTo</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"first"</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1TimeTo</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cohort1TimeTo</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 6</span></span>
@@ -320,7 +328,7 @@ patient did not experience the event, the function will return NA.</p>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2015-01-01, 2016-03-01</span></span>
 <span><span class="co">## $ cohort_1_m30_to_m1   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0</span></span>
-<span><span class="co">## $ cohort_1_0_to_inf    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, NA</span></span></code></pre>
+<span><span class="co">## $ cohort_1_0_to_inf    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 308</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="example-addcohortintersectdate-function">Example: addCohortIntersectDate function<a class="anchor" aria-label="anchor" href="#example-addcohortintersectdate-function"></a>
@@ -333,7 +341,7 @@ patients who enrolled when they received their first vaccine dose. We
 could use this function to obtain the date of their second dose if we
 have a cohort with vaccine records (e.g. cohort2):</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1NextEvent</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">cohort1NextEvent</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"first"</span>,</span>
@@ -341,7 +349,7 @@ have a cohort with vaccine records (e.g. cohort2):</p>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1NextEvent</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cohort1NextEvent</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 6</span></span>
@@ -351,7 +359,7 @@ have a cohort with vaccine records (e.g. cohort2):</p>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2015-01-01, 2016-03-01</span></span>
 <span><span class="co">## $ cohort_1_m30_to_m1   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0</span></span>
-<span><span class="co">## $ cohort_1_1_to_inf    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-03, NA</span></span></code></pre>
+<span><span class="co">## $ cohort_1_1_to_inf    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-03, 2013-01-03</span></span></code></pre>
 <p>Please note that the new columns added to the table (for all function
 presented) will have the format cohort_“cohort_definition_id”_ “time
 window”. If the window number is negative, a “m” will be added in front
@@ -373,14 +381,14 @@ if you want to append all the intersection information with this
 function. For information on what these function does, you can read
 above example.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">cohort1CohortIntersect</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersect.html">addCohortIntersect</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"first"</span>,</span>
 <span>    targetCohortId <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cohort1CohortIntersect</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 9</span></span>
@@ -390,16 +398,16 @@ above example.</p>
 <span><span class="co">## $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
 <span><span class="co">## $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2015-01-01, 2016-03-01</span></span>
 <span><span class="co">## $ cohort_1_m30_to_m1      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0</span></span>
-<span><span class="co">## $ flag_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0</span></span>
-<span><span class="co">## $ count_cohort_1_1_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 0</span></span>
-<span><span class="co">## $ date_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-01-25, NA</span></span>
-<span><span class="co">## $ days_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> -35, NA</span></span></code></pre>
+<span><span class="co">## $ flag_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1</span></span>
+<span><span class="co">## $ count_cohort_1_1_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 1</span></span>
+<span><span class="co">## $ date_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-03, 2013-01-03</span></span>
+<span><span class="co">## $ days_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 308</span></span></code></pre>
 <p>We can also control which columns to append to your data by using the
 flag, count, date and time options in the function, if we do not want
 everything. For example if we only want the cohort count and flag we can
 use below example.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">cohort1CohortIntersect</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersect.html">addCohortIntersect</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    order <span class="op">=</span> <span class="st">"first"</span>,</span>
@@ -410,7 +418,7 @@ use below example.</p>
 <span>    date <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    days <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1CohortIntersect</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cohort1CohortIntersect</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
@@ -420,8 +428,8 @@ use below example.</p>
 <span><span class="co">## $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-03-01, 2012-03-01</span></span>
 <span><span class="co">## $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2015-01-01, 2016-03-01</span></span>
 <span><span class="co">## $ cohort_1_m30_to_m1      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0</span></span>
-<span><span class="co">## $ count_cohort_1_1_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 0</span></span>
-<span><span class="co">## $ flag_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0</span></span></code></pre>
+<span><span class="co">## $ flag_cohort_1_1_to_inf  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1</span></span>
+<span><span class="co">## $ count_cohort_1_1_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 1</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

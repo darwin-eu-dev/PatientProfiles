@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -287,8 +287,8 @@ a cohort table.</dd>
 cohort table</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="gt-tables-from-summarisedresults-objects">gt tables from summarisedResults objects<a class="anchor" aria-label="anchor" href="#gt-tables-from-summarisedresults-objects"></a></h3>
-      <p class="section-desc"></p><p>Set of functions to create pretty gt tables from summarisedReuslts objects</p>
+      <h3 id="tidy-functions-to-display-results-in-a-more-easy-to-manage-table">Tidy functions to display results in a more easy to manage table<a class="anchor" aria-label="anchor" href="#tidy-functions-to-display-results-in-a-more-easy-to-manage-table"></a></h3>
+      <p class="section-desc"></p><p>Functions to modify the summarised_result objects into more easy to manage tibbles</p>
 
       
     </div><div id="" class="section level2">
@@ -298,18 +298,13 @@ cohort table</dd>
 
       <dl><dt>
           
-          <code><a href="gtCharacteristics.html">gtCharacteristics()</a></code> 
+          <code><a href="tidyCharacteristics.html">tidyCharacteristics()</a></code> 
         </dt>
-        <dd>Create a gt table from a summarisedCharacteristics object.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="gtResult.html">gtResult()</a></code> 
-        </dt>
-        <dd>Create a gt table from a summary object.</dd>
+        <dd>A tidy implementation of the summarised_characteristics object.</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="suppress-counts">Suppress counts<a class="anchor" aria-label="anchor" href="#suppress-counts"></a></h3>
-      <p class="section-desc"></p><p>Function to supress counts smaller than a certain number</p>
+      <h3 id="format-summarised-result-into-a-more-visual-and-exportable-format-gt-flextables-">Format summarised_result into a more visual and exportable format (gt, flextables, …)<a class="anchor" aria-label="anchor" href="#format-summarised-result-into-a-more-visual-and-exportable-format-gt-flextables-"></a></h3>
+      <p class="section-desc"></p><p>Functions to format the summarised_result objects into gt and flextables object that latter can be exported as html, docx, pdf, … Ideal for shinyapps and reports.</p>
 
       
     </div><div id="" class="section level2">
@@ -319,9 +314,9 @@ cohort table</dd>
 
       <dl><dt>
           
-          <code><a href="suppressCounts.html">suppressCounts()</a></code> 
+          <code><a href="formatCharacteristics.html">formatCharacteristics()</a></code> 
         </dt>
-        <dd>Function to suppress counts in summarised objects</dd>
+        <dd>Format a summarised_characteristics object into a visual table.</dd>
       </dl></div><div class="section level2">
       
       <h3 id="other-functions">Other functions<a class="anchor" aria-label="anchor" href="#other-functions"></a></h3>
@@ -334,11 +329,6 @@ cohort table</dd>
       
 
       <dl><dt>
-          
-          <code><a href="addAttributes.html">addAttributes()</a></code> 
-        </dt>
-        <dd>Get attributes from one cohort to another</dd>
-      </dl><dl><dt>
           
           <code><a href="addCategories.html">addCategories()</a></code> 
         </dt>
@@ -384,6 +374,16 @@ supported (numeric, date, binary and categorical)</dd>
           <code><a href="getStartName.html">getStartName()</a></code> 
         </dt>
         <dd>Get the name of the start date column for a certain table in the cdm</dd>
+      </dl><dl><dt>
+          
+          <code><a href="gtCharacteristics.html">gtCharacteristics()</a></code> 
+        </dt>
+        <dd>Create a gt table from a summarisedCharacteristics object.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="gtResult.html">gtResult()</a></code> 
+        </dt>
+        <dd>Create a gt table from a summary object.</dd>
       </dl><dl><dt>
           
           <code><a href="mockPatientProfiles.html">mockPatientProfiles()</a></code> 

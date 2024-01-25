@@ -14,7 +14,7 @@ cohort table"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
     
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,6 @@ cohort table</p>
 <span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>  censorDate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  includeSource <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  minCellCount <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  minimumFrequency <span class="op">=</span> <span class="fl">0.005</span>,</span>
 <span>  cdm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="st">"cdm_reference"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -106,10 +105,6 @@ or a column date of x</p></dd>
 
 <dt>includeSource</dt>
 <dd><p>Whether to include source concepts.</p></dd>
-
-
-<dt>minCellCount</dt>
-<dd><p>All counts lower than minCellCount will be obscured.</p></dd>
 
 
 <dt>minimumFrequency</dt>
