@@ -91,7 +91,7 @@ test_that("basic functionality summarise large scale characteristics", {
         minimumFrequency = 0
       )
   )
-  result <- result |> omopgenerics::splitGroup(
+  result <- result |> visOmopResults::splitGroup(
     name = "additional_name", level = "additional_level"
   )
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
@@ -123,7 +123,7 @@ test_that("basic functionality summarise large scale characteristics", {
         minimumFrequency = 0
       )
   )
-  result <- result |> omopgenerics::splitGroup(
+  result <- result |> visOmopResults::splitGroup(
     name = "additional_name", level = "additional_level"
   )
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
@@ -168,7 +168,7 @@ test_that("basic functionality summarise large scale characteristics", {
   ) %in% result$strata_level))
   result <- result %>%
     dplyr::filter(strata_level == "0 to 24 and Female")
-  result <- result |> omopgenerics::splitGroup(
+  result <- result |> visOmopResults::splitGroup(
     name = "additional_name", level = "additional_level"
   )
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)

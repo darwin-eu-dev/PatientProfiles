@@ -145,7 +145,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
         .data$estimate_type == "count", "numeric", "percentage"
       )
     ) |>
-    omopgenerics::uniteGroup(
+    visOmopResults::uniteGroup(
       cols = c("table_name", "type", "analysis", "concept"),
       name = "additional_name",
       level = "additional_level",
