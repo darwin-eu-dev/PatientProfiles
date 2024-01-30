@@ -59,11 +59,11 @@ addIntersect <- function(x,
                          filterVariable = NULL,
                          filterId = NULL,
                          idName = NULL,
-                         window = list(c(0, Inf)), # list
+                         window = list(c(0, Inf)),
                          indexDate = "cohort_start_date",
                          censorDate = NULL,
-                         targetStartDate = getStartName(tableName),
-                         targetEndDate = getEndName(tableName),
+                         targetStartDate = startDateColumn(tableName),
+                         targetEndDate = endDateColumn(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}") {
   if (!is.list(window)) {
