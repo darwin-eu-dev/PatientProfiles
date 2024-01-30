@@ -44,7 +44,7 @@ variableTypes <- function(table) {
           dplyr::select(dplyr::all_of(x)) %>%
           utils::head(1) %>%
           dplyr::pull() %>%
-          pillar::type_sum()
+          dplyr::type_sum()
       }) %>% unlist()
     ) %>%
       dplyr::mutate("variable_type" = assertClassification(
