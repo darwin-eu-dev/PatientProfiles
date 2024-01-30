@@ -96,7 +96,7 @@ cdm$diclofenac <- cdm$drug_era %>%
 
 cdm$exposure_cohort <- union_all(cdm$celecoxib, cdm$diclofenac) %>%
   compute(name = "exposure_cohort", temporary = FALSE) |>
-  cohortTable(cohortSetRef = tibble(
+  newCohortTable(cohortSetRef = tibble(
     cohort_definition_id = c(1, 2), cohort_name = c("celecoxib", "diclofenac")
   ))
 ```
@@ -125,7 +125,7 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
     "cohort_start_date", "cohort_end_date"
   ) %>%
   compute(name = "gi_bleed", temporary = FALSE) |>
-  cohortTable(cohortSetRef = tibble(
+  newCohortTable(cohortSetRef = tibble(
     cohort_definition_id = 1, cohort_name = "gi_bleed"
   ))
 ```
