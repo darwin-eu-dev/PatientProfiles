@@ -432,10 +432,10 @@ addIntersect <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getStartName("condition_occurrence")
+#' startDateColumn("condition_occurrence")
 #' }
 #'
-getStartName <- function(tableName) {
+startDateColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$start_date_name[namesTable$table_name == tableName])
   } else {
@@ -454,10 +454,10 @@ getStartName <- function(tableName) {
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getEndName("condition_occurrence")
+#' endDateColumn("condition_occurrence")
 #' }
 #'
-getEndName <- function(tableName) {
+endDateColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$end_date_name[namesTable$table_name == tableName])
   } else {
@@ -465,7 +465,7 @@ getEndName <- function(tableName) {
   }
 }
 
-#' Get the name of the concept_id column for a certain table in the cdm
+#' Get the name of the standard concept_id column for a certain table in the cdm
 #'
 #' @param tableName Name of the table
 #'
@@ -476,10 +476,10 @@ getEndName <- function(tableName) {
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getConceptName("condition_occurrence")
+#' standardConceptIdColumn("condition_occurrence")
 #' }
 #'
-getConceptName <- function(tableName) {
+standardConceptIdColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$concept_id_name[namesTable$table_name == tableName])
   } else {
@@ -487,7 +487,7 @@ getConceptName <- function(tableName) {
   }
 }
 
-#' Get the name of the source_concept_id column for a certain table in the cdm
+#' Get the name of the source concept_id column for a certain table in the cdm
 #'
 #' @param tableName Name of the table
 #'
@@ -498,10 +498,10 @@ getConceptName <- function(tableName) {
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getSourceConceptName("condition_occurrence")
+#' sourceConceptIdColumn("condition_occurrence")
 #' }
 #'
-getSourceConceptName <- function(tableName) {
+sourceConceptIdColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$source_concept_id_name[namesTable$table_name == tableName])
   } else {
