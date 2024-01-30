@@ -12,7 +12,8 @@ addLargeScaleCharacteristics(
   episodeInWindow = NULL,
   indexDate = "cohort_start_date",
   censorDate = NULL,
-  minimumFrequency = 0.005
+  minimumFrequency = 0.005,
+  excludedCodes = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ intersection.}
 or a column date of x}
 
 \item{minimumFrequency}{Minimum frequency covariates to report.}
+
+\item{excludedCodes}{Codes excluded.}
 }
 \value{
 The output of this function is the cohort with the new created

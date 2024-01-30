@@ -28,6 +28,7 @@
 #' or a column date of x
 #' @param includeSource Whether to include source concepts.
 #' @param minimumFrequency Minimum frequency covariates to report.
+#' @param excludedCodes Codes excluded.
 #' @param cdm A cdm reference.
 #'
 #' @return The output of this function is a `ResultSummary` containing the
@@ -48,6 +49,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                censorDate = NULL,
                                                includeSource = FALSE,
                                                minimumFrequency = 0.005,
+                                               excludedCodes = NULL,
                                                cdm = attr(cohort, "cdm_reference")) {
   if (!is.list(window)) {
     window <- list(window)
@@ -67,6 +69,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
   }
   checkmate::assertLogical(includeSource, any.missing = FALSE, len = 1)
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
+  checkmate::assert_integerish(excludedCodes, any.missing = FALSE, null.ok = TRUE)
   checkCdm(cdm)
 
   # add names to windows
@@ -88,7 +91,9 @@ summariseLargeScaleCharacteristics <- function(cohort,
   lsc <- NULL
   for (tab in unique(analyses$table)) {
     analysesTable <- analyses %>% dplyr::filter(.data$table == .env$tab)
-    table <- getTable(tab, x, includeSource, minWindow, maxWindow, tablePrefix)
+    table <- getTable(
+      tab, x, includeSource, minWindow, maxWindow, tablePrefix, excludedCodes
+    )
     for (k in seq_len(nrow(analysesTable))) {
       type <- analysesTable$type[k]
       analysis <- analysesTable$analysis[k]
@@ -175,6 +180,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x
 #' @param minimumFrequency Minimum frequency covariates to report.
+#' @param excludedCodes Codes excluded.
 #'
 #' @return The output of this function is the cohort with the new created
 #' columns
@@ -187,7 +193,8 @@ addLargeScaleCharacteristics <- function(cohort,
                                          episodeInWindow = NULL,
                                          indexDate = "cohort_start_date",
                                          censorDate = NULL,
-                                         minimumFrequency = 0.005) {
+                                         minimumFrequency = 0.005,
+                                         excludedCodes = NULL) {
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -206,6 +213,7 @@ addLargeScaleCharacteristics <- function(cohort,
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
   checkmate::assertTRUE(indexDate %in% colnames(cohort))
   checkmate::assertTRUE(is.null(censorDate) || censorDate %in% colnames(cohort))
+  checkmate::assert_integerish(excludedCodes, any.missing = FALSE, null.ok = TRUE)
   cdm <- attr(cohort, "cdm_reference")
   checkCdm(cdm)
 
@@ -237,7 +245,9 @@ addLargeScaleCharacteristics <- function(cohort,
   lsc <- NULL
   for (tab in unique(analyses$table)) {
     analysesTable <- analyses %>% dplyr::filter(.data$table == .env$tab)
-    table <- getTable(tab, x, FALSE, minWindow, maxWindow, tablePrefix)
+    table <- getTable(
+      tab, x, FALSE, minWindow, maxWindow, tablePrefix, excludedCodes
+    )
     for (k in seq_len(nrow(analysesTable))) {
       type <- analysesTable$type[k]
       analysis <- analysesTable$analysis[k]
@@ -346,7 +356,7 @@ getInitialTable <- function(cohort, tablePrefix, indexDate, censorDate) {
     )
   return(x)
 }
-getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix) {
+getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, excludedCodes) {
   cdm <- attr(x, "cdm_reference")
   toSelect <- c(
     "subject_id" = "person_id",
@@ -380,6 +390,21 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix) {
   if (!is.infinite(maxWindow)) {
     table <- table %>%
       dplyr::filter(.data$start_diff <= .env$maxWindow)
+  }
+  if (length(excludedCodes) > 0) {
+    nm <- paste0(tablePrefix, "concepts")
+    cdm <- omopgenerics::insertTable(
+      cdm = cdm, name = nm, table = dplyr::tibble("standard" = excludedCodes),
+      overwrite = TRUE
+    )
+    table <- table |>
+      dplyr::anti_join(cdm[[nm]], by = "standard")
+    if (includeSource) {
+      table <- table |>
+        dplyr::anti_join(
+          cdm[[nm]] |> dplyr::rename("source" = "standard"), by = "source"
+        )
+    }
   }
   table <- table %>%
     dplyr::select(-"start_obs", -"end_obs") %>%

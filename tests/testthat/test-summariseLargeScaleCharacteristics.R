@@ -197,6 +197,16 @@ test_that("basic functionality summarise large scale characteristics", {
     "summarised_large_scale_characteristics", "summarised_result", "tbl_df",
     "tbl", "data.frame"
   ))
+
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      summariseLargeScaleCharacteristics(
+        episodeInWindow = c("condition_occurrence", "drug_exposure"),
+        minimumFrequency = 0, excludedCodes = 317009
+      )
+  )
+  expect_false(any(grepl("317009", result$variable_name)))
+
 })
 
 test_that("basic functionality add large scale characteristics", {
