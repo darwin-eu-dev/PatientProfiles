@@ -16,6 +16,7 @@ summariseLargeScaleCharacteristics(
   censorDate = NULL,
   includeSource = FALSE,
   minimumFrequency = 0.005,
+  excludedCodes = NULL,
   cdm = attr(cohort, "cdm_reference")
 )
 }
@@ -39,6 +40,8 @@ or a column date of x}
 \item{includeSource}{Whether to include source concepts.}
 
 \item{minimumFrequency}{Minimum frequency covariates to report.}
+
+\item{excludedCodes}{Codes excluded.}
 
 \item{cdm}{A cdm reference.}
 }
