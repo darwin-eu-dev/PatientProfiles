@@ -36,7 +36,7 @@
 #' @export
 #'
 tidyCharacteristics <- function(result, minCellCount = 5) {
-  result <- omopgenerics::summarisedResult(result)
+  result <- omopgenerics::newSummarisedResult(result)
   if (!inherits(result, "summarised_characteristics")) {
     cli::cli_abort("result is not a valid `summarised_characteristics` object.")
   }

@@ -127,7 +127,7 @@ summariseCharacteristics <- function(cohort,
       "additional_name" = "overall",
       "additional_level" = "overall"
     ) |>
-      omopgenerics::summarisedResult()
+      omopgenerics::newSummarisedResult()
     return(result)
   }
 
@@ -396,7 +396,7 @@ summariseCharacteristics <- function(cohort,
     results$estimate_type == "numeric" & integers == floor(integers)
   ] <- "integer"
 
-  results <- omopgenerics::summarisedResult(results)
+  results <- omopgenerics::newSummarisedResult(results)
 
   return(results)
 }
