@@ -68,6 +68,9 @@ summariseCharacteristics <- function(cohort,
   checkX(cohort)
   checkmate::assertLogical(demographics, any.missing = FALSE, len = 1)
   checkCdm(cdm)
+  if (!is.list(strata)) {
+    strata <- list(strata)
+  }
   checkStrata(strata, cohort)
   checkAgeGroup(ageGroup)
   checkTableIntersect(tableIntersect, cdm)
@@ -228,7 +231,7 @@ summariseCharacteristics <- function(cohort,
     names(arguments$window) <- shortNamesWindow
 
     # rename cohorts
-    fullNamesCohort <- CDMConnector::cohortSet(
+    fullNamesCohort <- omopgenerics::settings(
       cdm[[arguments$targetCohortTable]]
     )
     if (!is.null(arguments$targetCohortId)) {

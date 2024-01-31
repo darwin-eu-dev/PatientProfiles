@@ -391,9 +391,9 @@ writeSchema <- function(x) {
 }
 summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
   result <- NULL
-  cohortNames <- CDMConnector::cohortSet(cohort)$cohort_name
+  cohortNames <- omopgenerics::settings(cohort)$cohort_name
   for (cohortName in cohortNames) {
-    cdi <- CDMConnector::cohortSet(cohort) %>%
+    cdi <- omopgenerics::settings(cohort) %>%
       dplyr::filter(.data$cohort_name == .env$cohortName) %>%
       dplyr::pull("cohort_definition_id")
     tableWindowCohort <- tableWindow %>%
