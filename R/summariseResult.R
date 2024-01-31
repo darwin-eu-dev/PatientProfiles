@@ -64,19 +64,38 @@ summariseResult <- function(table,
   # initial checks
   checkTable(table)
 
+  cdm <- omopgenerics::cdmReference(table)
+  if (is.null(cdm)) {
+    cdm_name <- "unknown"
+  } else {
+    cdm_name <- omopgenerics::cdmName(cdm)
+  }
+
   # create the summary for overall
-  result <- list()
   if (table %>%
     dplyr::count() %>%
     dplyr::pull() == 0) {
     result <- dplyr::tibble(
-      "estimate" = "0", "variable" = "number records",
-      "variable_type" = "categorical", "estimate_type" = "count",
-      "group_name" = "overall", "group_level" = "overall",
-      "strata_name" = "overall", "strata_level" = "overall",
-      "variable_level" = NA_character_
-    )
+      "cdm_name" = cdm_name,
+      "result_type" = NA_character_,
+      "package_name" = "PatientProfiles",
+      "package_version" = utils::packageVersion("PatientProfiles") |>
+        as.character(),
+      "group_name" = "overall",
+      "group_level" = "overall",
+      "strata_name" = "overall",
+      "strata_level" = "overall",
+      "variable_name" = "number records",
+      "variable_level" = NA_character_,
+      "estimate_name" = "count",
+      "estimate_type" = "integer",
+      "estimate_value" = "0",
+      "additional_name" = "overall",
+      "additional_level" = "overall"
+    ) |>
+      omopgenerics::newSummarisedResult()
   } else {
+    result <- list()
     if (!is.list(variables)) {
       variables <- list("all" = variables)
     }
@@ -169,12 +188,6 @@ summariseResult <- function(table,
         result <- dplyr::bind_rows(result, workingResult)
       }
     }
-  }
-
-  if (is.null(attr(table, "cdm_reference"))) {
-    cdm_name <- "unknown"
-  } else {
-    cdm_name <- omopgenerics::cdmName(attr(table, "cdm_reference"))
   }
 
   result <- result |>
