@@ -91,9 +91,7 @@ test_that("basic functionality summarise large scale characteristics", {
         minimumFrequency = 0
       )
   )
-  result <- result |> visOmopResults::splitGroup(
-    name = "additional_name", level = "additional_level"
-  )
+  result <- result |> visOmopResults::splitAdditional()
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)
@@ -123,9 +121,7 @@ test_that("basic functionality summarise large scale characteristics", {
         minimumFrequency = 0
       )
   )
-  result <- result |> visOmopResults::splitGroup(
-    name = "additional_name", level = "additional_level"
-  )
+  result <- result |> visOmopResults::splitAdditional()
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)
@@ -168,9 +164,7 @@ test_that("basic functionality summarise large scale characteristics", {
   ) %in% result$strata_level))
   result <- result %>%
     dplyr::filter(strata_level == "0 to 24 and Female")
-  result <- result |> visOmopResults::splitGroup(
-    name = "additional_name", level = "additional_level"
-  )
+  result <- result |> visOmopResults::splitAdditional()
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)

@@ -145,11 +145,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
         .data$estimate_type == "count", "numeric", "percentage"
       )
     ) |>
-    visOmopResults::uniteGroup(
-      cols = c("table_name", "type", "analysis", "concept"),
-      name = "additional_name",
-      level = "additional_level",
-      keep = FALSE
+    visOmopResults::uniteAdditional(
+      cols = c("table_name", "type", "analysis", "concept")
     ) |>
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
       "summarised_result"
