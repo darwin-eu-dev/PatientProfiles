@@ -5,7 +5,7 @@ articles:
   addCohortIntersections: addCohortIntersections.html
   addPatientCharacteristics: addPatientCharacteristics.html
   ExampleAnalysis: ExampleAnalysis.html
-last_built: 2024-01-30T23:06Z
+last_built: 2024-01-31T16:01Z
 urls:
   reference: https://darwin-eu-dev.github.io/PatientProfiles/reference
   article: https://darwin-eu-dev.github.io/PatientProfiles/articles

@@ -106,19 +106,10 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/detectVariables.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/endDateColumn.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/formatCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getConceptName.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getEndName.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getSourceConceptName.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/getStartName.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/gtCharacteristics.html</loc>
@@ -134,6 +125,15 @@
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/sourceConceptIdColumn.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/standardConceptIdColumn.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/startDateColumn.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCharacteristics.html</loc>
