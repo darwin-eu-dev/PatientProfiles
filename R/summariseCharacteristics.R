@@ -68,6 +68,9 @@ summariseCharacteristics <- function(cohort,
   checkX(cohort)
   checkmate::assertLogical(demographics, any.missing = FALSE, len = 1)
   checkCdm(cdm)
+  if (!is.list(strata)) {
+    strata <- list(strata)
+  }
   checkStrata(strata, cohort)
   checkAgeGroup(ageGroup)
   checkTableIntersect(tableIntersect, cdm)
@@ -140,6 +143,7 @@ summariseCharacteristics <- function(cohort,
 
   # demographics
   if (demographics) {
+    cli::cli_alert_info("adding demographics columns")
     if (!is.null(ageGroup)) {
       # default names
       ageGroup <- checkAgeGroup(ageGroup)
@@ -173,6 +177,10 @@ summariseCharacteristics <- function(cohort,
 
   # tableIntersect
   for (k in seq_along(tableIntersect)) {
+    cli::cli_alert_info(
+      "adding table intersect columns for table:
+      {tableIntersect[[k]]$table_name}"
+    )
     # prepare arguments
     arguments <- formals(addIntersect)
     arguments <- updateArguments(arguments, tableIntersect[[k]])
@@ -218,6 +226,10 @@ summariseCharacteristics <- function(cohort,
 
   # cohortIntersect
   for (k in seq_along(cohortIntersect)) {
+    cli::cli_alert_info(
+      "adding cohort intersect columns for table:
+      {cohortIntersect[[k]]$targetCohortTable}"
+    )
     # prepare arguments
     arguments <- formals(addCohortIntersect)
     arguments <- updateArguments(arguments, cohortIntersect[[k]], TRUE)
@@ -228,7 +240,7 @@ summariseCharacteristics <- function(cohort,
     names(arguments$window) <- shortNamesWindow
 
     # rename cohorts
-    fullNamesCohort <- CDMConnector::cohortSet(
+    fullNamesCohort <- omopgenerics::settings(
       cdm[[arguments$targetCohortTable]]
     )
     if (!is.null(arguments$targetCohortId)) {
@@ -294,6 +306,10 @@ summariseCharacteristics <- function(cohort,
 
   # conceptIntersect
   for (k in seq_along(conceptIntersect)) {
+    cli::cli_alert_info(
+      "adding concept intersect columns for conceptSet
+      {k}/{length(conceptIntersect)}"
+    )
     # prepare arguments
     arguments <- formals(addConceptIntersect)
     arguments <- updateArguments(arguments, conceptIntersect[[k]], TRUE)
@@ -354,6 +370,7 @@ summariseCharacteristics <- function(cohort,
     categorical = x %>% dplyr::filter(.data$variable_type == "categorical") %>% dplyr::pull("variable")
   )
 
+  cli::cli_alert_info("summarising data")
   # summarise results
   results <- cohort %>%
     summariseResult(
@@ -397,6 +414,8 @@ summariseCharacteristics <- function(cohort,
   ] <- "integer"
 
   results <- omopgenerics::newSummarisedResult(results)
+
+  cli::cli_alert_success("summariseCharacteristics finished!")
 
   return(results)
 }
