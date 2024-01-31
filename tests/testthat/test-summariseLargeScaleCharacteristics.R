@@ -188,8 +188,8 @@ test_that("basic functionality summarise large scale characteristics", {
   }
 
   expect_equal(class(result), c(
-    "summarised_large_scale_characteristics", "summarised_result", "tbl_df",
-    "tbl", "data.frame"
+    "summarised_large_scale_characteristics", "summarised_result",
+    "omop_result", "tbl_df", "tbl", "data.frame"
   ))
 })
 
