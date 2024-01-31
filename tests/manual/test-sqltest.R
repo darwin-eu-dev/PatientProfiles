@@ -27,23 +27,6 @@ test_that("test methods against sql test server", {
     cohort_tables = c("cohort", "cohort1")
   )
 
-
-  # cohortToAdd <-
-  #   cdm$condition_occurrence %>% select(
-  #     "subject_id" = "person_id",
-  #     "cohort_start_date" = "condition_start_date",
-  #     "cohort_end_date" = "condition_end_date",
-  #     "cohort_definition_id" = "condition_occurrence_id"
-  #   ) %>%
-  #   head(., 10000)
-  #
-  # cohortToAdd %>% computeQuery("cohort",
-  #                              schema = "mdu",
-  #                              temporary = FALSE,
-  #                              overwrite = TRUE)
-
-
-
   # add age and add sex
   cdm$condition_occurrence <- cdm$condition_occurrence %>%
     addAge(indexDate = "condition_start_date") %>%

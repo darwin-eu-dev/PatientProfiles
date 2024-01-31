@@ -3,7 +3,7 @@ test_that("output format - one outcome cohort", {
   # additional column should be added
   # with the name as specified
 
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(connectionDetails, patient_size = 3)
 
   cdm$cohort1a <- cdm$cohort1 %>%
     addCohortIntersectDays(
@@ -193,7 +193,7 @@ test_that("multiple cohort entries per person", {
       as.Date("2011-02-01")
     ),
     cohort_end_date = c(
-      as.Date("2015-01-01"),
+      as.Date("2012-01-01"),
       as.Date("2016-03-01"),
       as.Date("2013-01-01")
     )
@@ -279,7 +279,7 @@ test_that("output names", {
   # additional column should be added
   # with the name as specified
 
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(connectionDetails, patient_size = 3)
 
   # default naming
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -471,20 +471,20 @@ test_that("working examples", {
 
   result0 <- cdm$cohort1 %>%
     addCohortIntersectCount(targetCohortTable = "cohort2") %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
   result1 <- cdm$cohort1 %>%
     addCohortIntersectCount(targetCohortTable = "cohort2", targetCohortId = 1) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
   result2 <- cdm$cohort1 %>%
     addCohortIntersectCount(targetCohortTable = "cohort2", targetCohortId = 2) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
   result3 <- cdm$cohort1 %>%
     addCohortIntersectCount(targetCohortTable = "cohort2", targetCohortId = 3) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result0$cohort_1_0_to_inf == result1$cohort_1_0_to_inf))
   expect_true(all(result0$cohort_2_0_to_inf == result2$cohort_2_0_to_inf))
@@ -495,8 +495,8 @@ test_that("working examples", {
       targetCohortTable = "cohort2", targetCohortId = c(2, 3),
       window = list(c(-Inf, 0))
     ) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result1$cohort_2_minf_to_0 == c(0, 0, 0, 0, 1)))
   expect_true(all(result1$cohort_3_minf_to_0 == c(0, 0, 0, 0, 1)))
@@ -510,8 +510,8 @@ test_that("working examples", {
       targetCohortTable = "cohort2", targetCohortId = c(2, 3),
       window = list(c(-Inf, 0))
     ) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result2$covid_minf_to_0 == c(0, 0, 0, 0, 1)))
   expect_true(all(result2$tb_minf_to_0 == c(0, 0, 0, 0, 1)))
@@ -577,20 +577,20 @@ test_that("working examples", {
 
   result0 <- cdm$cohort1 %>%
     addCohortIntersectFlag(targetCohortTable = "cohort2") %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
   result1 <- cdm$cohort1 %>%
     addCohortIntersectFlag(targetCohortTable = "cohort2", targetCohortId = 1) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
   result2 <- cdm$cohort1 %>%
     addCohortIntersectFlag(targetCohortTable = "cohort2", targetCohortId = 2) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
   result3 <- cdm$cohort1 %>%
     addCohortIntersectFlag(targetCohortTable = "cohort2", targetCohortId = 3) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result0$cohort_1_0_to_inf == result1$cohort_1_0_to_inf))
   expect_true(all(result0$cohort_2_0_to_inf == result2$cohort_2_0_to_inf))
@@ -598,8 +598,8 @@ test_that("working examples", {
 
   result1 <- cdm$cohort1 %>%
     addCohortIntersectFlag(targetCohortTable = "cohort2", targetCohortId = 2) %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result1$cohort_2_0_to_inf == c(1, 1, 1, 1, 0)))
 })
@@ -664,16 +664,16 @@ test_that("working examples", {
 
   result1 <- cdm$cohort1 %>%
     addCohortIntersect(targetCohortTable = "cohort2") %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   result2 <- cdm$cohort1 %>%
     addCohortIntersectCount(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
     addCohortIntersectFlag(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
     addCohortIntersectDate(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
     addCohortIntersectDays(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   for (k in colnames(result1)) {
     x <- result1[[k]]
@@ -749,13 +749,13 @@ test_that("censorDate functionality", {
 
   result1 <- cdm$cohort1 %>%
     addCohortIntersect(targetCohortTable = "cohort2") %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   result2 <- cdm$cohort1 %>%
     addCohortIntersect(targetCohortTable = "cohort2", censorDate = "cohort_end_date") %>%
-    dplyr::arrange(subject_id, cohort_start_date) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result1 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("cohort_start_date") %>% dplyr::select(order(colnames(result1))) ==
     result2 %>%
@@ -768,4 +768,17 @@ test_that("censorDate functionality", {
       unlist(use.names = F),
     c(0, 0, NA, NA)
   )))
+
+})
+
+test_that("casing of empty dates", {
+  cdm <- mockPatientProfiles(connectionDetails, patient_size = 3)
+  cdm$cohort1 <- cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 1)
+  expect_false(
+    cdm$cohort2 %>%
+      addCohortIntersectDate(targetCohortTable = "cohort1") %>%
+      head(1) %>%
+      dplyr::pull("cohort_2_0_to_inf") %>%
+      is.numeric()
+  )
 })

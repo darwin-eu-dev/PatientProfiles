@@ -17,8 +17,7 @@
 #' It creates columns to indicate overlap information between two tables
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
+#' @param cdm A cdm_reference object.
 #' @param tableName name of the cohort that we want to check for overlap
 #' @param filterVariable the variable that we are going to use to filter (e.g.
 #' cohort_definition_id)
@@ -67,6 +66,10 @@ addIntersect <- function(x,
                          targetEndDate = getEndName(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}") {
+  if (!is.list(window)) {
+    window <- list(window)
+  }
+
   # initial checks
   personVariable <- checkX(x)
   checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
@@ -81,6 +84,7 @@ addIntersect <- function(x,
   checkmate::assertChoice(order, c("first", "last"))
   checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkVariableInX(censorDate, x, TRUE, "censorDate")
+
   if (!is.null(censorDate)) {
     checkCensorDate(x, censorDate)
   }
@@ -88,10 +92,12 @@ addIntersect <- function(x,
     idName <- checkSnakeCase(idName)
   }
 
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  tablePrefix <- paste0(
+    "temp_",
+    c(sample(letters, 5, TRUE), "_") |> paste0(collapse = "")
+  )
 
   startTibble <- x
-  originalColnames <- colnames(x)
 
   # define overlapTable that contains the events of interest
   overlapTable <- cdm[[tableName]]
@@ -102,6 +108,28 @@ addIntersect <- function(x,
     filterVariable <- "id"
     filterTbl <- dplyr::tibble("id" = 1, "id_name" = "all")
     overlapTable <- dplyr::mutate(overlapTable, "id" = 1)
+  }
+
+  # columns that will be added
+  newCols <- expand.grid(
+    value = value,
+    id_name = filterTbl$id_name,
+    window_name = windowTbl$window_name
+  ) %>%
+    dplyr::as_tibble() %>%
+    dplyr::mutate(colnam = as.character(glue::glue(
+      nameStyle,
+      value = .data$value,
+      id_name = .data$id_name,
+      window_name = .data$window_name
+    ))) %>%
+    dplyr::select("colnam", "value") %>%
+    dplyr::mutate(colnam = checkSnakeCase(.data$colnam, verbose = F))
+  overwriteCols <- newCols$colnam[newCols$colnam %in% colnames(x)]
+  if (length(overwriteCols) > 0) {
+    cli::cli_warn("The following cols will be overwriten: {paste0(overwriteCols, collapse = ', ')}")
+    x <- x %>%
+      dplyr::select(-dplyr::all_of(overwriteCols))
   }
 
   overlapTable <- overlapTable %>%
@@ -132,9 +160,10 @@ addIntersect <- function(x,
     ) %>%
     dplyr::distinct() %>%
     dplyr::inner_join(overlapTable, by = personVariable) %>%
-    CDMConnector::computeQuery(
-      name = paste0(tablePrefix, "individuals"), temporary = FALSE,
-      schema = attr(cdm, "write_schema"), overwrite = TRUE
+    dplyr::compute(
+      name = paste0(tablePrefix, "individuals"),
+      temporary = FALSE,
+      overwrite = TRUE
     )
 
   resultCountFlag <- NULL
@@ -164,9 +193,10 @@ addIntersect <- function(x,
         )), 0, .data$indicator))
     }
     resultW <- resultW %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "window"), temporary = FALSE,
-        schema = attr(cdm, "write_schema"), overwrite = TRUE
+      dplyr::compute(
+        name = paste0(tablePrefix, "window"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
 
     # add count or flag
@@ -186,15 +216,18 @@ addIntersect <- function(x,
 
       if (i == 1) {
         resultCountFlag <- resultCF %>%
-          CDMConnector::computeQuery(
-            name = paste0(tablePrefix, "win_count_flag"), temporary = FALSE,
-            schema = attr(cdm, "write_schema"), overwrite = TRUE
+          dplyr::compute(
+            name = paste0(tablePrefix, "win_count_flag"),
+            temporary = FALSE,
+            overwrite = TRUE
           )
       } else {
-        resultCountFlag <- appendPermanent(
-            x = resultCF,
+        resultCountFlag <- resultCountFlag |>
+          dplyr::union_all(resultCF) |>
+          dplyr::compute(
             name = paste0(tablePrefix, "win_count_flag"),
-            schema = attr(cdm, "write_schema")
+            temporary = FALSE,
+            overwrite = TRUE
           )
       }
     }
@@ -264,56 +297,54 @@ addIntersect <- function(x,
 
       if (i == 1) {
         resultDateTimeOther <- resultDTO %>%
-          CDMConnector::computeQuery(
-            name = paste0(tablePrefix, "win_date_days"), temporary = FALSE,
-            schema = attr(cdm, "write_schema"), overwrite = TRUE
+          dplyr::compute(
+            name = paste0(tablePrefix, "win_date_days"),
+            temporary = FALSE,
+            overwrite = TRUE
           )
       } else {
-        resultDateTimeOther <- appendPermanent(
-          x = resultDTO,
-          name = paste0(tablePrefix, "win_date_days"),
-          schema = attr(cdm, "write_schema")
-        )
+        resultDateTimeOther <- resultDateTimeOther |>
+          dplyr::union_all(resultDTO) |>
+          dplyr::compute(
+            name = paste0(tablePrefix, "win_date_days"),
+            temporary = FALSE,
+            overwrite = TRUE
+          )
       }
     }
   }
 
   if (any(c("flag", "count") %in% value)) {
-    resultCountFlag <- resultCountFlag %>%
+    resultCountFlagPivot <- resultCountFlag %>%
       tidyr::pivot_longer(
         dplyr::any_of(c("count", "flag")),
         names_to = "value",
         values_to = "values"
-      ) %>%
+      )  %>%
       tidyr::pivot_wider(
         names_from = c("value", "id_name", "window_name"),
         values_from = "values",
         names_glue = nameStyle,
         values_fill = 0
       ) %>%
-      dplyr::rename(!!indexDate := "index_date") %>%
-      dplyr::rename_all(tolower)
+    dplyr::rename(!!indexDate := "index_date") %>%
+    dplyr::rename_all(tolower)
 
-    namesToEliminate <- intersect(colnames(x), colnames(resultCountFlag))
-    namesToEliminate <- namesToEliminate[
-      !(namesToEliminate %in% c(personVariable, indexDate))
-    ]
+    newColCountFlag <- colnames(resultCountFlagPivot)
+    newColCountFlag <- newColCountFlag[newColCountFlag %in% newCols$colnam]
+
     x <- x %>%
-      dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
       dplyr::left_join(
-        resultCountFlag,
+        resultCountFlagPivot,
         by = c(personVariable, indexDate)
-      )
-    currentColnames <- colnames(x)
-    x <- x %>%
+      ) %>%
       dplyr::mutate(dplyr::across(
-        dplyr::all_of(currentColnames[!(currentColnames %in% originalColnames)]),
-        ~ dplyr::if_else(is.na(.x), 0, .x)
-      ))
-    x <- x %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "count_flag"), temporary = FALSE,
-        schema = attr(cdm, "write_schema"), overwrite = TRUE
+        dplyr::all_of(newColCountFlag), ~ dplyr::if_else(is.na(.x), 0, .x)
+      )) %>%
+      dplyr::compute(
+        name = paste0(tablePrefix, "count_flag"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
   }
 
@@ -322,8 +353,8 @@ addIntersect <- function(x,
     for (val in values) {
       resultDateTimeOtherX <- resultDateTimeOther %>%
         dplyr::select(
-          "subject_id", "index_date", dplyr::all_of(val), "id_name",
-          "window_name"
+          dplyr::all_of(personVariable), "index_date", dplyr::all_of(val),
+          "id_name", "window_name"
         ) %>%
         tidyr::pivot_longer(
           dplyr::all_of(val),
@@ -338,55 +369,54 @@ addIntersect <- function(x,
         dplyr::rename(!!indexDate := "index_date") %>%
         dplyr::rename_all(tolower)
 
-      namesToEliminate <- intersect(colnames(x), colnames(resultDateTimeOtherX))
-      namesToEliminate <- namesToEliminate[
-        !(namesToEliminate %in% c(personVariable, indexDate))
-      ]
-
       x <- x %>%
-        dplyr::select(-dplyr::all_of(namesToEliminate)) %>%
-        dplyr::left_join(resultDateTimeOtherX,
-          by = c(personVariable, indexDate)
+        dplyr::left_join(
+          resultDateTimeOtherX, by = c(personVariable, indexDate)
         )
     }
 
     x <- x %>%
-      CDMConnector::computeQuery(
-        name = paste0(tablePrefix, "date_days"), temporary = FALSE,
-        schema = attr(cdm, "write_schema"), overwrite = TRUE
+      dplyr::compute(
+        name = paste0(tablePrefix, "date_days"),
+        temporary = FALSE,
+        overwrite = TRUE
       )
 
   }
 
-  colnames <- expand.grid(value = value, id_name = filterTbl$id_name, window_name = windowTbl$window_name) %>%
-    dplyr::mutate(column = glue::glue(nameStyle, value = .data$value, id_name = .data$id_name, window_name = .data$window_name)) %>%
-    dplyr::mutate(val = ifelse(value %in% c("flag", "count"), 0,
-      ifelse(value %in% "date", as.Date(NA),
-        ifelse(value %in% "days", as.numeric(NA), as.character(NA))
-      )
-    )) %>%
-    dplyr::select(.data$column, .data$val) %>%
-    dplyr::mutate(column = checkSnakeCase(.data$column, verbose = F)) %>%
-    dplyr::anti_join(dplyr::tibble(column = colnames(x)), by = "column")
+  # missing columns
+  newCols <- newCols %>%
+    dplyr::filter(!.data$colnam %in% colnames(x))
 
-  if (colnames %>% dplyr::tally() %>% dplyr::pull() != 0) {
-    x <- x %>%
-      dplyr::cross_join(
-        colnames %>%
-          tidyr::pivot_wider(
-            names_from = .data$column,
-            values_from = .data$val
-          ),
-        copy = TRUE
+  for (val in as.character(unique(newCols$value))) {
+    cols <- newCols$colnam[newCols$value == val]
+    valk <- switch(
+      val,
+      flag = 0,
+      count = 0,
+      days = as.numeric(NA),
+      date = as.Date(NA),
+      as.character(NA)
+    )
+
+    id <- paste0("id_", paste0(sample(letters, 5), collapse = ""))
+
+    newTib <- dplyr::tibble(!!id := 1)
+    newTib[, cols] <- valk
+
+    x <- x |>
+      dplyr::mutate(!!id := 1) |>
+      dplyr::inner_join(newTib, copy = TRUE, by = id) |>
+      dplyr::compute(
+        name = paste0(tablePrefix, "_val"), temporary = FALSE, overwrite = TRUE
       )
   }
 
-  x <- CDMConnector::computeQuery(x)
+  x <- dplyr::compute(x)
 
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
-
-  # put back the initial attributes to the output tibble
-  x <- x %>% addAttributes(startTibble)
+  cdm <- omopgenerics::dropTable(
+    cdm = cdm, name = dplyr::starts_with(tablePrefix)
+  )
 
   return(x)
 }
@@ -477,16 +507,4 @@ getSourceConceptName <- function(tableName) {
   } else {
     return(as.character(NA))
   }
-}
-
-appendPermanent <- function(x, name, schema) {
-  con <- x$src$con
-  name <- CDMConnector::inSchema(
-    schema = schema, table = name, dbms = CDMConnector::dbms(con)
-  )
-  fullName <- DBI::dbQuoteIdentifier(con, name)
-  DBI::dbExecute(
-    con, glue::glue("INSERT INTO {fullName} {dbplyr::sql_render(x)}")
-  )
-  dplyr::tbl(con, name)
 }

@@ -40,7 +40,7 @@ checkX <- function(x) {
 #' @noRd
 checkCdm <- function(cdm, tables = NULL) {
   if (!isTRUE(inherits(cdm, "cdm_reference"))) {
-    cli::cli_abort("cdm must be a CDMConnector CDM reference object")
+    cli::cli_abort("cdm a cdm_reference object.")
   }
   if (!is.null(tables)) {
     tables <- tables[!(tables %in% names(cdm))]
@@ -48,7 +48,7 @@ checkCdm <- function(cdm, tables = NULL) {
       cli::cli_abort(paste0(
         "tables: ",
         paste0(tables, collapse = ", "),
-        "are not present in the cdm object"
+        " are not present in the cdm object"
       ))
     }
   }
@@ -68,10 +68,10 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 }
 
 #' @noRd
-checkCategory <- function(category, overlap = FALSE) {
+checkCategory <- function(category, overlap = FALSE, type = "numeric") {
   checkmate::assertList(
     category,
-    types = "integerish", any.missing = FALSE, unique = TRUE,
+    types = type, any.missing = FALSE, unique = TRUE,
     min.len = 1
   )
 
@@ -154,12 +154,12 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
 #' @noRd
 checkWindow <- function(window) {
   if (!is.list(window)) {
-    window <- list(window)
+    cli::cli_abort("window must be a list")
   }
 
   # Find if any NA, throw warning that it will be changed to Inf, change it later
   if (any(unlist(lapply(window, is.na)))) {
-    cli::cli_abort("NA found in window, please change use Inf or -Inf instead")
+    cli::cli_abort("NA found in window, please use Inf or -Inf instead")
   }
 
   originalWindow <- window
@@ -321,14 +321,10 @@ checkValue <- function(value, x, name) {
 
 #' @noRd
 checkCohortNames <- function(x, targetCohortId, name) {
-  if (!("GeneratedCohortSet" %in% class(x))) {
-    cli::cli_abort(
-      "cdm[[targetCohortTable]]) must be a 'GeneratedCohortSet'. Please use a
-      generateCohortSet function or create it with
-      CDMConnector::newGeneratedCohortSet()."
-    )
+  if (!("cohort_table" %in% class(x))) {
+    cli::cli_abort("cdm[[targetCohortTable]]) must be a 'cohort_table'.")
   }
-  cohort <- CDMConnector::cohortSet(x)
+  cohort <- omopgenerics::settings(x)
   filterVariable <- "cohort_definition_id"
   if (is.null(targetCohortId)) {
     if (is.null(cohort)) {
@@ -532,27 +528,49 @@ checkSignificantDecimals <- function(significantDecimals) {
 #' @noRd
 checkTableIntersect <- function(tableIntersect, cdm) {
   checkmate::assertList(tableIntersect, names = "named")
+  arguments <- getArguments(addIntersect)
   lapply(tableIntersect, function(x) {
-    checkmate::assertList(x, names = "named", len = 3)
-    checkmate::assertTRUE(all(names(x) %in% c("tableName", "value", "window")))
-    checkmate::assertCharacter(x[["tableName"]], len = 1)
-    checkmate::assertTRUE(x[["tableName"]] %in% names(cdm))
-    checkValue(x[["value"]], cdm[x[["tableName"]]])
-    checkWindow(x[["window"]])
+    checkmate::assertList(x, names = "named")
+    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
+    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
   invisible(NULL)
+}
+
+getArguments <- function(fun) {
+  arguments <- formals(fun)
+  compulsory <- character()
+  for (k in seq_along(arguments)) {
+    x <- arguments[[k]]
+    if (missing(x)) {
+      compulsory <- c(compulsory, names(arguments)[k])
+    }
+  }
+  compulsory <- compulsory[compulsory != "x"]
+  all <- names(arguments)
+  return(list(all = all, compulsory = compulsory))
 }
 
 #' @noRd
 checkCohortIntersect <- function(cohortIntersect, cdm) {
   checkmate::assertList(cohortIntersect, names = "named")
+  arguments <- getArguments(addCohortIntersect)
   lapply(cohortIntersect, function(x) {
-    checkmate::assertList(x, names = "named", len = 3)
-    checkmate::assertTRUE(all(names(x) %in% c("targetCohortTable", "value", "window")))
-    checkmate::assertCharacter(x[["targetCohortTable"]], len = 1)
-    checkmate::assertTRUE(x[["targetCohortTable"]] %in% names(cdm))
-    checkValue(x[["value"]], cdm[x[["targetCohortTable"]]])
-    checkWindow(x[["window"]])
+    checkmate::assertList(x, names = "named")
+    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
+    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
+  })
+  invisible(NULL)
+}
+
+#' @noRd
+checkConceptIntersect <- function(conceptIntersect, cdm) {
+  checkmate::assertList(conceptIntersect, names = "named")
+  arguments <- getArguments(addConceptIntersect)
+  lapply(conceptIntersect, function(x) {
+    checkmate::assertList(x, names = "named")
+    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
+    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
   invisible(NULL)
 }
@@ -567,4 +585,16 @@ checkCensorDate <- function(x, censorDate) {
   if (!check) {
     cli::cli_abort("{censorDate} is not a date variable")
   }
+}
+
+#' @noRd
+checkOtherVariables <- function(otherVariables, cohort, call = rlang::env_parent()) {
+  errorMessage <- "otherVariables must point to columns in cohort."
+  if (!is.character(otherVariables)) {
+    cli::cli_abort(errorMessage, call = call)
+  }
+  if (!all(otherVariables %in% colnames(cohort))) {
+    cli::cli_abort(errorMessage, call = call)
+  }
+  invisible(otherVariables)
 }

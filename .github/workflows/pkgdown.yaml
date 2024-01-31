@@ -18,6 +18,9 @@ jobs:
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
 
+    env:
+      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+
     steps:
       - uses: actions/checkout@v3
 

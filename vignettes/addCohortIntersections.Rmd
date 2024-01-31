@@ -68,7 +68,7 @@ cdm$cohort2 %>%
 Suppose cohort2 with definition_id = 1 contains stroke occurrences. If we want to exclude patients from cohort1 who had a stroke event in the last 180 days before entering the cohort, we can use the `addCohortIntersectFlag()` like this:
 
 ```{r, message= FALSE, warning=FALSE}
-cdm$cohort1WashOut <- cdm$cohort1 %>%
+cohort1WashOut <- cdm$cohort1 %>%
   addCohortIntersectFlag(
     targetCohortTable = "cohort2",
     window = list(c(-180, -1)),
@@ -76,7 +76,7 @@ cdm$cohort1WashOut <- cdm$cohort1 %>%
   ) %>%
   filter(cohort_1_m180_to_m1 == 0)
 
-cdm$cohort1WashOut %>%
+cohort1WashOut %>%
   glimpse()
 ```
 
@@ -85,14 +85,14 @@ cdm$cohort1WashOut %>%
 We can use the function to count the number of occurrences of an event of interest in different time windows before entering the study population. For example, we can look at the number of strokes in the 0-90 day, 90-365 day, and all prior history windows:
 
 ```{r, message= FALSE, warning=FALSE}
-cdm$cohort1StrokeCounts <- cdm$cohort1 %>%
+cohort1StrokeCounts <- cdm$cohort1 %>%
   addCohortIntersectCount(
     targetCohortTable = "cohort2",
     window = list(c(-Inf, -366), c(-365, -181), c(-180, -1)),
     targetCohortId = 1
   )
 
-cdm$cohort1StrokeCounts %>%
+cohort1StrokeCounts %>%
   glimpse()
 ```
 
@@ -125,7 +125,7 @@ cohort2 <- dplyr::tibble(
   cohort_start_date = c(
     as.Date("2010-03-03"),
     as.Date("2010-02-27"),
-    as.Date("2010-01-25"),
+    as.Date("2010-03-25"),
     as.Date("2013-01-03")
   ),
   cohort_end_date = c(
@@ -136,7 +136,16 @@ cohort2 <- dplyr::tibble(
   )
 )
 
+observation_period <- dplyr::tibble(
+  observation_period_id = 1:2,
+  person_id = c(1,2),
+  observation_period_start_date = as.Date(c("1990-01-01", "1995-08-16")),
+  observation_period_end_date = as.Date(c("2025-01-01", "2030-08-16")),
+  period_type_concept_id = 0
+)
+
 cdm <- mockPatientProfiles(
+  observation_period = observation_period,
   cohort1 = cohort1,
   cohort2 = cohort2
 )
@@ -145,7 +154,7 @@ cdm$cohort1 <- cdm$cohort1 %>% addCohortIntersectCount(cdm, targetCohortTable = 
 cdm$cohort1
 ```
 
-We get two events for `subject_id = 1`, the one starting and ending on the `2010-02-27`, which is within the window before the index date `2010-03-01`; and the one starting in `2010-01-25` and ending on `2012-03-25`. The individual `subject_id = 2` does not have any of the intersecting events of interest.
+We get one event for `subject_id = 1`, the one starting and ending on the `2010-02-27`, which is within the window before the index date `2010-03-01`. The individual `subject_id = 2` does not have any of the intersecting events of interest.
 
 Note that, with the specifications by default, we pick one event (the second one), which is not incident in the window of interest, but overlaps it. Indeed, as the event start date is before the index date in the main cohort and the end date is after it, it is regarded as intersecting.
 
@@ -171,14 +180,14 @@ As for the functions `addCohortIntersectDays()` and `addCohortIntersectDate()`, 
 The function can be utilized to calculate the time to the event of interest, such as time until the first stroke after index date. If the patient did not experience the event, the function will return NA.
 
 ```{r, message= FALSE, warning=FALSE}
-cdm$cohort1TimeTo <- cdm$cohort1 %>%
+cohort1TimeTo <- cdm$cohort1 %>%
   addCohortIntersectDays(
     targetCohortTable = "cohort2",
     targetCohortId = 1,
     order = "first"
   )
 
-cdm$cohort1TimeTo %>%
+cohort1TimeTo %>%
   glimpse()
 ```
 
@@ -190,7 +199,7 @@ cdm$cohort1TimeTo %>%
 This function can be handy in obtaining the date of the next occurrence of a specific event. For instance, suppose cohort1 comprises patients who enrolled when they received their first vaccine dose. We could use this function to obtain the date of their second dose if we have a cohort with vaccine records (e.g. cohort2): 
 
 ```{r, message= FALSE, warning=FALSE}
-cdm$cohort1NextEvent <- cdm$cohort1 %>%
+cohort1NextEvent <- cdm$cohort1 %>%
   addCohortIntersectDate(
     targetCohortTable = "cohort2",
     order = "first",
@@ -198,7 +207,7 @@ cdm$cohort1NextEvent <- cdm$cohort1 %>%
     window = c(1, Inf)
   )
 
-cdm$cohort1NextEvent %>%
+cohort1NextEvent %>%
   glimpse()
 ```
 
@@ -212,21 +221,21 @@ Please note that the new columns added to the table (for all function presented)
 We can use the function to compute all the intersect information with a target cohort. By default it will return output from `addCohortIntersectCount()`, `addCohortIntersectFlag()`, `addCohortIntersectDate()` and `addCohortIntersectDays()` in a time frame. Use this function if you want to append all the intersection information with this function. For information on what these function does, you can read above example.
 
 ```{r, message= FALSE, warning=FALSE}
-cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
+cohort1CohortIntersect <- cdm$cohort1 %>%
   addCohortIntersect(
     targetCohortTable = "cohort2",
     order = "first",
     targetCohortId = 1,
     window = c(1, Inf)
   )
-cdm$cohort1CohortIntersect %>%
+cohort1CohortIntersect %>%
   glimpse()
 ```
 
 We can also control which columns to append to your data by using the flag, count, date and time options in the function, if we do not want everything. For example if we only want the cohort count and flag we can use below example.
 
 ```{r, message= FALSE, warning=FALSE}
-cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
+cohort1CohortIntersect <- cdm$cohort1 %>%
   addCohortIntersect(
     targetCohortTable = "cohort2",
     order = "first",
@@ -237,7 +246,7 @@ cdm$cohort1CohortIntersect <- cdm$cohort1 %>%
     date = FALSE,
     days = FALSE
   )
-cdm$cohort1CohortIntersect %>%
+cohort1CohortIntersect %>%
   glimpse()
 ```
 

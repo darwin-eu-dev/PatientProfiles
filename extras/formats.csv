@@ -23,8 +23,6 @@ numeric,q95,qualtile of 95% the variable of interest.,numeric
 numeric,min,minimum of the variable of interest.,numeric
 numeric,max,maximum of the variable of interest.,numeric
 numeric,sum,sum of all the values for the variable of interest.,numeric
-numeric,iqr,distance between q75 and q25,numeric
-numeric,range,diatance between maximum and minimum,numeric
 numeric,missing,number and percentage of missing values,numeric
 date,mean,mean of the date of interest.,date
 date,sd,standard deviation of the date of interest. ,numeric
@@ -49,15 +47,13 @@ date,q90,qualtile of 90% the variable of interest.,date
 date,q95,qualtile of 95% the variable of interest.,date
 date,min,minimum of the date of interest.,date
 date,max,maximum of the date of interest.,date
-date,iqr,days between q75 and q25,numeric
-date,range,days between maximum and minimum,numeric
 date,missing,number and percentage of missing values,numeric
 categorical,count,number of times that each category is observed.,numeric
-categorical,percentage,percentage of individuals with that category,numeric
-categorical,distinct,number of distinct categories,numeric
-categorical,mean,mean number of individuals per category,numeric
-categorical,sd,standard deviation of the number of individuals per category,numeric
-categorical,median,median number of individuals per category,numeric
+categorical,percentage,percentage of records with that category,numeric
+categorical,distinct_categories,number of distinct categories,numeric
+categorical,mean,mean number of records per category,numeric
+categorical,sd,standard deviation of the number of records per category,numeric
+categorical,median,median number of records per category,numeric
 categorical,q05,qualtile of 05% the variable of interest.,numeric
 categorical,q10,qualtile of 10% the variable of interest.,numeric
 categorical,q15,qualtile of 15% the variable of interest.,numeric
@@ -76,10 +72,8 @@ categorical,q80,qualtile of 80% the variable of interest.,numeric
 categorical,q85,qualtile of 85% the variable of interest.,numeric
 categorical,q90,qualtile of 90% the variable of interest.,numeric
 categorical,q95,qualtile of 95% the variable of interest.,numeric
-categorical,min,minimum number of individuals per category,numeric
-categorical,max,maximum number of individuals per category,numeric
-categorical,iqr,difference between q75 and q25 of individuals per category,numeric
-categorical,range,distance between maximum and minimum of individuals per category,numeric
+categorical,min,minimum number of _records per category,numeric
+categorical,max,maximum number of _records per category,numeric
 binary,count,number of times that each category is observed.,numeric
 binary,percentage,percentage of individuals with that category,percentage
 binary,mean,mean of the variable of interest.,numeric
@@ -106,6 +100,4 @@ binary,q95,qualtile of 95% the variable of interest.,numeric
 binary,min,minimum of the variable of interest.,numeric
 binary,max,maximum of the variable of interest.,numeric
 binary,sum,sum of all the values for the variable of interest.,numeric
-binary,iqr,distance between q75 and q25,numeric
-binary,range,diatance between maximum and minimum,numeric
 binary,missing,number and percentage of missing values,numeric

@@ -12,9 +12,11 @@ summariseLargeScaleCharacteristics(
     c(366, Inf)),
   eventInWindow = NULL,
   episodeInWindow = NULL,
+  indexDate = "cohort_start_date",
+  censorDate = NULL,
   includeSource = FALSE,
-  minCellCount = 5,
   minimumFrequency = 0.005,
+  excludedCodes = NULL,
   cdm = attr(cohort, "cdm_reference")
 )
 }
@@ -25,15 +27,21 @@ summariseLargeScaleCharacteristics(
 
 \item{window}{Temporal windows that we want to characterize.}
 
-\item{eventInWindow}{Tables to characterise the events in the window.}
+\item{eventInWindow}{Tables to characterise the events in the window. eventInWindow must be provided if episodeInWindow is not specified.}
 
-\item{episodeInWindow}{Tables to characterise the episodes in the window.}
+\item{episodeInWindow}{Tables to characterise the episodes in the window. episodeInWindow must be provided if eventInWindow is not specified.}
+
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
+
+\item{censorDate}{whether to censor overlap events at a specific date
+or a column date of x}
 
 \item{includeSource}{Whether to include source concepts.}
 
-\item{minCellCount}{All counts lower than minCellCount will be obscured.}
-
 \item{minimumFrequency}{Minimum frequency covariates to report.}
+
+\item{excludedCodes}{Codes excluded.}
 
 \item{cdm}{A cdm reference.}
 }

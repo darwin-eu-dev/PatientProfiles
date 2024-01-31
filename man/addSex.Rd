@@ -9,8 +9,7 @@ addSex(x, cdm = attr(x, "cdm_reference"), sexName = "sex")
 \arguments{
 \item{x}{Table with individuals in the cdm}
 
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
+\item{cdm}{A cdm_reference object.}
 
 \item{sexName}{name of the new column to be added}
 }
@@ -22,9 +21,9 @@ Compute the sex of the individuals
 }
 \examples{
 \donttest{
-library(PatientProfiles)
 cdm <- mockPatientProfiles()
-cdm$cohort1 \%>\% addSex(cdm)
+cdm$cohort1 \%>\%
+  addSex()
 }
 
 }

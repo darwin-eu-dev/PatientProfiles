@@ -1,7 +1,7 @@
 Package: PatientProfiles
 Type: Package
 Title: Identify Characteristics of Patients in the OMOP Common Data Model
-Version: 0.4.0
+Version: 0.6.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
@@ -23,7 +23,7 @@ Description: Identify the characteristics of patients in data mapped to the Obse
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Suggests: 
     covr,
     duckdb,
@@ -44,22 +44,30 @@ Suggests:
     ggraph,
     DT,
     cowplot,
-    DiagrammeRsvg
+    DiagrammeRsvg,
+    DBI
 Imports: 
     magrittr,
-    CDMConnector (>= 1.0.0),
+    CDMConnector,
     dplyr,
     tidyr,
     checkmate,
     lubridate,
-    DBI,
     rlang,
     cli,
-    pillar,
     stringr,
-    gt
+    gt,
+    omopgenerics,
+    visOmopResults,
+    lifecycle
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 Language: en-US
 Depends: 
     R (>= 2.10)
+Remotes:
+    darwin-eu-dev/CDMConnector,
+    darwin-eu/CodelistGenerator,
+    oxford-pharmacoepi/visOmopResults
+Config/testthat/edition: 3
+Config/testthat/parallel: true

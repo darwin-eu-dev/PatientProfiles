@@ -31,6 +31,10 @@ reference:
   desc: Add multiple variables indicating the intersection between two tablea in the OMOP Common Data Model.
 - contents:
   - '`addIntersect`'
+- subtitle: Add multiple columns from large scale characteristics
+  desc: Add multiple variables indicating the intersection between concepts in tables in the OMOP Common Data Model.
+- contents:
+  - '`addLargeScaleCharacteristics`'
 - subtitle: Summarise patient characteristics
   desc: Function that allow the user to summarise patient characteristics (characteristics must be added priot the use of the function)
 - contents:
@@ -43,15 +47,16 @@ reference:
   desc: Summarise large scale characteristics
 - contents:
   - '`summariseLargeScaleCharacteristics`'
-- subtitle: gt tables from summarisedResults objects
-  desc: Set of functions to create pretty gt tables from summarisedReuslts objects
+- subtitle: Tidy functions to display results in a more easy to manage table
+  desc: Functions to modify the summarised_result objects into more easy to manage tibbles
 - contents:
-  - matches("gt")
-- subtitle: Suppress counts
-  desc: Function to supress counts smaller than a certain number
+  - matches("tidy")
+- subtitle: Format summarised_result into a more visual and exportable format (gt, flextables, ...)
+  desc: Functions to format the summarised_result objects into gt and flextables object that latter can be exported as html, docx, pdf, ... Ideal for shinyapps and reports.
 - contents:
-  - '`suppressCounts`'
+  - matches("format")
+
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCohortName|addCdmName|addAttributes|addCategories|variableTypes|availableFunctions|detectVariables|getSourceConceptName|getStartName|getEndName|getConceptName|mockPatientProfiles")
+  - matches("addCohortName|addCdmName|addCategories|variableTypes|availableFunctions|detectVariables|getSourceConceptName|getStartName|getEndName|getConceptName|mockPatientProfiles|gt")

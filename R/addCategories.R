@@ -17,8 +17,6 @@
 #' Categorize a numeric variable
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
@@ -34,32 +32,11 @@
 #' @examples
 #' #'
 #' \donttest{
-#' library(DBI)
-#' library(duckdb)
-#' library(PatientProfiles)
-#' cohort1 <- dplyr::tibble(
-#'   cohort_definition_id = c("1", "1", "1"),
-#'   subject_id = c("1", "2", "3"),
-#'   cohort_start_date = c(
-#'     as.Date("2010-03-03"), as.Date("2010-03-01"), as.Date("2010-02-01")
-#'   ),
-#'   cohort_end_date = c(
-#'     as.Date("2015-01-01"), as.Date("2013-01-01"), as.Date("2013-01-01")
-#'   )
-#' )
 #'
-#' person <- dplyr::tibble(
-#'   person_id = c("1", "2", "3"),
-#'   gender_concept_id = c("8507", "8507", "8507"),
-#'   year_of_birth = c(1980, 1970, 2000),
-#'   month_of_birth = c(03, 07, NA),
-#'   day_of_birth = c(NA, 02, 01)
-#' )
-#'
-#' cdm <- mockPatientProfiles(person = person, cohort1 = cohort1)
+#' cdm <- mockPatientProfiles()
 #'
 #' result <- cdm$cohort1 %>%
-#'   addAge(cdm) %>%
+#'   addAge() %>%
 #'   addCategories(
 #'     variable = "age",
 #'     categories = list("age_group" = list(
@@ -68,14 +45,13 @@
 #'   )
 #' }
 addCategories <- function(x,
-                          cdm = attr(x, "cdm_reference"),
                           variable,
                           categories,
                           missingCategoryValue = "None",
                           overlap = FALSE) {
-  if (!isTRUE(inherits(x, "tbl_dbi"))) {
-    cli::cli_abort("x is not a table")
-  }
+  # if (!isTRUE(inherits(x, "tbl_dbi"))) {
+  #   cli::cli_abort("x is not a table")
+  # }
 
   checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)
   checkmate::assertTRUE(variable %in% colnames(x))
@@ -107,11 +83,42 @@ addCategories <- function(x,
     nam <- names(categories)
   }
 
+  if (
+    utils::head(x, 1) %>%
+      dplyr::pull(dplyr::all_of(variable)) %>%
+      inherits("Date")
+  ) {
+    rand1 <- paste0("extra_", sample(letters, 5, TRUE) %>% paste0(collapse = ""))
+    rand2 <- paste0("extra_", sample(letters, 6, TRUE) %>% paste0(collapse = ""))
+    x <- x %>%
+      dplyr::mutate(!!rand1 := as.Date("1970-01-01")) %>%
+      dplyr::mutate(!!rand2 := !!CDMConnector::datediff(rand1, variable)) %>%
+      dplyr::select(-dplyr::all_of(rand1))
+    variable <- rand2
+    categories <- lapply(categories, function(x) {
+      lapply(x, function(y) {
+        y <- as.numeric(y)
+        y[is.na(y)] <- Inf
+        return(y)
+      })
+    })
+    date <- TRUE
+  } else {
+    date <- FALSE
+  }
+
   categoryTibble <- list()
   for (k in seq_along(categories)) {
     categoryTibble[[nam[k]]] <- checkCategory(categories[[k]],
       overlap = overlap
     )
+    if (date) {
+      categoryTibble[[nam[k]]] <- categoryTibble[[nam[k]]] %>%
+        dplyr::mutate(category_label = paste(
+          as.Date(.data$lower_bound, origin = "1970-01-01"), "to",
+          as.Date(.data$lower_bound, origin = "1970-01-01")
+        ))
+    }
   }
 
   for (k in seq_along(categories)) {
@@ -123,10 +130,32 @@ addCategories <- function(x,
         lower <- categoryTibbleK$lower_bound[i]
         upper <- categoryTibbleK$upper_bound[i]
         category <- categoryTibbleK$category_label[i]
-        newSql <- paste0(
-          "dplyr::if_else(.data[[variable]] >= ", lower,
-          " & .data[[variable]] <= ", upper, ", \"", category, "\" , #ELSE#)"
-        )
+        if (is.infinite(lower)) {
+          if (is.infinite(upper)) {
+            sqlCategories <- gsub(
+              "#ELSE#", paste0("\"", category, "\""), sqlCategories
+            )
+            break
+          } else {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] <= ", upper, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          }
+        } else {
+          if (is.infinite(upper)) {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] >= ", lower, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          } else {
+            newSql <- paste0(
+              "dplyr::if_else(.data[[variable]] >= ", lower,
+              " & .data[[variable]] <= ", upper, ", \"", category,
+              "\" , #ELSE#)"
+            )
+          }
+        }
         sqlCategories <- gsub("#ELSE#", newSql, sqlCategories)
       }
       sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
@@ -167,7 +196,11 @@ addCategories <- function(x,
       }
     }
 
-    x <- x %>% CDMConnector::computeQuery()
+    x <- x %>% dplyr::compute()
+  }
+
+  if (date) {
+    x <- x %>% dplyr::select(-dplyr::all_of(variable))
   }
 
   return(x)
