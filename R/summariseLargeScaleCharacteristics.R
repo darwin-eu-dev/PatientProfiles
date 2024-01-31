@@ -111,7 +111,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
               )
           )
       }
-      if (includeSource & analysis == "standard" & !is.na(getSourceConceptName(tab))) {
+      if (includeSource & analysis == "standard" & !is.na(sourceConceptIdColumn(tab))) {
         tableAnalysis <- getTableAnalysis(table, type, "source", tablePrefix)
         for (win in seq_along(window)) {
           tableWindow <- getTableWindow(tableAnalysis, window[[win]], tablePrefix)
@@ -150,16 +150,13 @@ summariseLargeScaleCharacteristics <- function(cohort,
         .data$estimate_type == "count", "numeric", "percentage"
       )
     ) |>
-    omopgenerics::uniteGroup(
-      cols = c("table_name", "type", "analysis", "concept"),
-      name = "additional_name",
-      level = "additional_level",
-      keep = FALSE
+    visOmopResults::uniteAdditional(
+      cols = c("table_name", "type", "analysis", "concept")
     ) |>
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
       "summarised_result"
     ))) |>
-    omopgenerics::summarisedResult()
+    omopgenerics::newSummarisedResult()
 
   # eliminate permanent tables
   cdm <- omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
@@ -360,10 +357,10 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
   cdm <- attr(x, "cdm_reference")
   toSelect <- c(
     "subject_id" = "person_id",
-    "start_diff" = getStartName(tab),
-    "end_diff" = ifelse(is.na(getEndName(tab)), getStartName(tab), getEndName(tab)),
-    "standard" = getConceptName(tab),
-    "source" = getSourceConceptName(tab)
+    "start_diff" = startDateColumn(tab),
+    "end_diff" = ifelse(is.na(endDateColumn(tab)), startDateColumn(tab), endDateColumn(tab)),
+    "standard" = standardConceptIdColumn(tab),
+    "source" = sourceConceptIdColumn(tab)
   )
   if (includeSource == FALSE) {
     toSelect <- toSelect["source" != names(toSelect)]

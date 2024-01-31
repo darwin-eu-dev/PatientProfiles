@@ -208,7 +208,7 @@ summariseResult <- function(table,
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
       "summarised_result"
     ))) |>
-    omopgenerics::summarisedResult()
+    omopgenerics::newSummarisedResult()
 
   return(result)
 }
