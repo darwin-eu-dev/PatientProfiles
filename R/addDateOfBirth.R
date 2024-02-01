@@ -44,6 +44,9 @@ addDateOfBirth <- function(x,
                            missingMonth = 1,
                            imposeDay = FALSE,
                            imposeMonth = FALSE) {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addDateOfBirth(cdm)")
+  }
   # initial checks
   # checkInputs(
   #   x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth

@@ -97,7 +97,6 @@ addConceptIntersect <- function(x,
   )
   x <- addCohortIntersect(
     x = x,
-    cdm = cdm,
     targetCohortTable = nameCohort,
     indexDate = indexDate,
     censorDate = censorDate,

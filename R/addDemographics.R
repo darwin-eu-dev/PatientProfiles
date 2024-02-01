@@ -70,7 +70,9 @@ addDemographics <- function(x,
                             futureObservation = TRUE,
                             futureObservationName = "future_observation") {
   ## change ageDefaultMonth, ageDefaultDay to integer
-
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addDemographics(cdm)")
+  }
   cdm <- omopgenerics::cdmReference(x)
 
   if (typeof(ageDefaultMonth) == "character") {
@@ -343,6 +345,9 @@ addAge <- function(x,
                    ageDefaultDay = 1,
                    ageImposeMonth = FALSE,
                    ageImposeDay = FALSE) {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addAge(cdm)")
+  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -388,6 +393,9 @@ addFutureObservation <- function(x,
                                  cdm = lifecycle::deprecated(),
                                  indexDate = "cohort_start_date",
                                  futureObservationName = "future_observation") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addFutureObservation(cdm)")
+  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -433,6 +441,9 @@ addPriorObservation <- function(x,
                                 cdm = lifecycle::deprecated(),
                                 indexDate = "cohort_start_date",
                                 priorObservationName = "prior_observation") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addPriorObservation(cdm)")
+  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -477,6 +488,9 @@ addInObservation <- function(x,
                              cdm = lifecycle::deprecated(),
                              indexDate = "cohort_start_date",
                              name = "in_observation") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "inObservation(cdm)")
+  }
   ## check for standard types of user error
   cdm <- omopgenerics::cdmReference(x)
   personVariable <- checkX(x)
@@ -529,6 +543,9 @@ addInObservation <- function(x,
 addSex <- function(x,
                    cdm = lifecycle::deprecated(),
                    sexName = "sex") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addSex(cdm)")
+  }
   x <- x %>%
     addDemographics(
       indexDate = NULL,

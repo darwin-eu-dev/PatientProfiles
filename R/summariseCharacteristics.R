@@ -64,6 +64,9 @@ summariseCharacteristics <- function(cohort,
                                      cohortIntersect = list(),
                                      conceptIntersect = list(),
                                      otherVariables = character()) {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "summariseCharacteristics(cdm)")
+  }
   # check initial tables
   cdm <- omopgenerics::cdmReference(cohort)
   checkX(cohort)
@@ -201,7 +204,6 @@ summariseCharacteristics <- function(cohort,
     # add intersect
     cohort <- cohort %>%
       PatientProfiles::addIntersect(
-        cdm = cdm,
         tableName = arguments$tableName,
         value = arguments$value,
         filterVariable = arguments$filterVariable,
@@ -276,7 +278,6 @@ summariseCharacteristics <- function(cohort,
     # add intersect
     cohort <- cohort %>%
       PatientProfiles::addCohortIntersect(
-        cdm = cdm,
         targetCohortTable = arguments$targetCohortTable,
         targetCohortId = arguments$targetCohortId,
         indexDate = arguments$indexDate,

@@ -54,7 +54,9 @@ summariseLargeScaleCharacteristics <- function(cohort,
   if (!is.list(window)) {
     window <- list(window)
   }
-
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "summariseLargeScaleCharacteristics(cdm)")
+  }
   cdm <- omopgenerics::cdmReference(cohort)
 
   # initial checks
