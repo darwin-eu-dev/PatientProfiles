@@ -61,8 +61,10 @@
 <span>  ageImposeMonth <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ageImposeDay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ageGroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  missingAgeGroupValue <span class="op">=</span> <span class="st">"None"</span>,</span>
 <span>  sex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sexName <span class="op">=</span> <span class="st">"sex"</span>,</span>
+<span>  missingSexValue <span class="op">=</span> <span class="st">"None"</span>,</span>
 <span>  priorObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  priorObservationName <span class="op">=</span> <span class="st">"prior_observation"</span>,</span>
 <span>  futureObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -116,7 +118,11 @@ will be considered as missing for all the individuals.</p></dd>
 
 
 <dt>ageGroup</dt>
-<dd><p>if not NULL, a list of ageGroup vectors</p></dd>
+<dd><p>if not NULL, a list of ageGroup vectors.</p></dd>
+
+
+<dt>missingAgeGroupValue</dt>
+<dd><p>Value to include if missing age.</p></dd>
 
 
 <dt>sex</dt>
@@ -125,6 +131,10 @@ will be considered as missing for all the individuals.</p></dd>
 
 <dt>sexName</dt>
 <dd><p>Sex variable name</p></dd>
+
+
+<dt>missingSexValue</dt>
+<dd><p>Value to include if missing sex.</p></dd>
 
 
 <dt>priorObservation</dt>
@@ -160,7 +170,7 @@ calculated</p></dd>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">addDemographics</span><span class="op">(</span><span class="va">cdm</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;dbplyr_021&gt; [2 x 8]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.2.0-1018-azure:R 4.3.2/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.2.0-1019-azure:R 4.3.2/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date   age sex   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 2020-01-01        2020-04-01         27 Female</span>
