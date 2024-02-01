@@ -98,7 +98,7 @@ test_that("addDemographics, parameters", {
   cdm$cohort1 <- cdm$cohort1 %>%
     addDemographics(
       indexDate = "cohort_end_date",
-      ageGroup = list("age_group" = list(c(0, 40), c(41, 120))),
+      ageGroup = list("age_group" = list(c(0, 40), c(41, Inf))),
       ageImposeMonth = TRUE,
       ageImposeDay = TRUE
     )
@@ -849,8 +849,6 @@ test_that("expected errors", {
     indexDate = "cohort_start_date",
     ageImposeDay = "TRUE"
   ))
-
-
 
   cdm <- mockPatientProfiles(connectionDetails)
 

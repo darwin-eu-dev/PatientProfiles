@@ -18,7 +18,7 @@ addTableIntersect(
   count = TRUE,
   date = TRUE,
   days = TRUE,
-  extraValue = character(),
+  field = character(),
   nameStyle = "{table_name}_{value}_{window_name}"
 )
 }
@@ -55,7 +55,7 @@ intersection}
 \item{days}{TRUE or FALSE. If TRUE, time difference in days will be
 calculated for this intersection}
 
-\item{extraValue}{Other columns from the table to intersect.}
+\item{field}{Other columns from the table to intersect.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}

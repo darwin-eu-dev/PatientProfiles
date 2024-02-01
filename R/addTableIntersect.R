@@ -39,7 +39,7 @@
 #' intersection
 #' @param days TRUE or FALSE. If TRUE, time difference in days will be
 #' calculated for this intersection
-#' @param extraValue Other columns from the table to intersect.
+#' @param field Other columns from the table to intersect.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters
 #'
@@ -65,7 +65,7 @@ addTableIntersect <- function(x,
                               count = TRUE,
                               date = TRUE,
                               days = TRUE,
-                              extraValue = character(),
+                              field = character(),
                               nameStyle = "{table_name}_{value}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
@@ -75,9 +75,9 @@ addTableIntersect <- function(x,
   checkmate::assertLogical(date, any.missing = FALSE, len = 1)
   checkmate::assertLogical(days, any.missing = FALSE, len = 1)
   checkmate::assertLogical(overlap, any.missing = FALSE, len = 1)
-  checkmate::assertTRUE(flag | count | date | days | length(extraValue)>0)
+  checkmate::assertTRUE(flag | count | date | days | length(field)>0)
   value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
-  value <- c(value, extraValue)
+  value <- c(value, field)
 
   end <- endDateColumn(tableName)
   start <- startDateColumn(tableName)
@@ -355,7 +355,7 @@ addTableIntersectDays <- function(x,
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
 #' device_exposure, measurement, observation, drug_era, condition_era, specimen.
-#' @param extraValue Other columns from the table to intersect.
+#' @param field Other columns from the table to intersect.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
@@ -375,23 +375,23 @@ addTableIntersectDays <- function(x,
 #' cdm <- mockPatientProfiles()
 #'
 #' cdm$cohort1 %>%
-#'   addTableIntersectExtraValue(
+#'   addTableIntersectField(
 #'     tableName = "visit_occurrence",
-#'     extraValue = "visit_concept_id",
+#'     field = "visit_concept_id",
 #'     order = "last",
 #'     window = c(-Inf, -1)
 #'   )
 #' }
 #'
-addTableIntersectExtraValue <- function(x,
-                                        tableName,
-                                        extraValue,
-                                        indexDate = "cohort_start_date",
-                                        censorDate = NULL,
-                                        window = list(c(0, Inf)),
-                                        targetDate = startDateColumn(tableName),
-                                        order = "first",
-                                        nameStyle = "{table_name}_{extra_value}_{window_name}") {
+addTableIntersectField <- function(x,
+                                   tableName,
+                                   field,
+                                   indexDate = "cohort_start_date",
+                                   censorDate = NULL,
+                                   window = list(c(0, Inf)),
+                                   targetDate = startDateColumn(tableName),
+                                   order = "first",
+                                   nameStyle = "{table_name}_{extra_value}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
@@ -404,7 +404,7 @@ addTableIntersectExtraValue <- function(x,
       filterVariable = NULL,
       filterId = NULL,
       idName = NULL,
-      value = extraValue,
+      value = field,
       indexDate = indexDate,
       targetStartDate = targetDate,
       targetEndDate = NULL,

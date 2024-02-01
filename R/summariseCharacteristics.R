@@ -182,7 +182,7 @@ summariseCharacteristics <- function(cohort,
       {tableIntersect[[k]]$table_name}"
     )
     # prepare arguments
-    arguments <- formals(addIntersect)
+    arguments <- formals(addTableIntersect)
     arguments <- updateArguments(arguments, tableIntersect[[k]])
     shortNames <- uniqueVariableName(length(arguments$window))
     fullNames <- names(arguments$window)
@@ -195,24 +195,21 @@ summariseCharacteristics <- function(cohort,
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
-    # TODO to implement addTableIntersect
-
     # add intersect
     cohort <- cohort %>%
-      PatientProfiles::addIntersect(
+      PatientProfiles::addTableIntersect(
         cdm = cdm,
         tableName = arguments$tableName,
-        value = arguments$value,
-        filterVariable = arguments$filterVariable,
-        filterId = arguments$filterId,
-        idName = arguments$idName,
         window = arguments$window,
         indexDate = arguments$indexDate,
         censorDate = arguments$censorDate,
-        #targetStartDate = arguments$targetStartDate,
-        #targetEndDate = arguments$targetEndDate,
         order = arguments$order,
-        nameStyle = paste0("{value}_", arguments$tableName, "_{window_name}")
+        flag = arguments$flag,
+        count = arguments$count,
+        date = arguments$date,
+        days = arguments$days,
+        field = arguments$field,
+        overlap = arguments$overlap
       )
 
     # update summary settings
@@ -232,7 +229,7 @@ summariseCharacteristics <- function(cohort,
     )
     # prepare arguments
     arguments <- formals(addCohortIntersect)
-    arguments <- updateArguments(arguments, cohortIntersect[[k]], TRUE)
+    arguments <- updateArguments(arguments, cohortIntersect[[k]])
 
     # rename windows
     fullNamesWindow <- names(arguments$window)
@@ -312,7 +309,7 @@ summariseCharacteristics <- function(cohort,
     )
     # prepare arguments
     arguments <- formals(addConceptIntersect)
-    arguments <- updateArguments(arguments, conceptIntersect[[k]], TRUE)
+    arguments <- updateArguments(arguments, conceptIntersect[[k]])
 
     # rename windows
     fullNamesWindow <- names(arguments$window)
@@ -489,19 +486,22 @@ updateVariables <- function(variables,
   variables$categorical <- c(variables$categorical, categorical)
   return(variables)
 }
-updateArguments <- function(arguments, settings, splitValues = FALSE) {
-  if (!is.list(settings[["window"]])) {
-    settings[["window"]] <- list(settings[["window"]])
+updateArguments <- function(arguments, def) {
+  if (!is.list(def[["window"]])) {
+    def[["window"]] <- list(def[["window"]])
   }
-  for (nm in names(settings)) {
-    arguments[[nm]] <- settings[[nm]]
+  for (nm in names(def)) {
+    arguments[[nm]] <- def[[nm]]
   }
-  if (splitValues) {
+  if ("value" %in% names(arguments)) {
     arguments$flag <- FALSE
     arguments$count <- FALSE
     arguments$date <- FALSE
     arguments$days <- FALSE
     arguments[arguments$value] <- TRUE
+    arguments$field <- arguments$value[
+      arguments$value != c("flag", "count", "date", "days")
+    ]
   }
   names(arguments[["window"]]) <- getWindowNames(arguments[["window"]])
   return(arguments)
