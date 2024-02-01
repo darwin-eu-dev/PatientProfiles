@@ -10,8 +10,8 @@ addTableIntersectDays(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = list(c(0, Inf)),
+  targetDate = startDateColumn(tableName),
   order = "first",
-  overlap = TRUE,
   nameStyle = "{table_name}_{window_name}"
 )
 }
@@ -29,6 +29,8 @@ intersection.}
 or a column date of x.}
 
 \item{window}{window to consider events in.}
+
+\item{targetDate}{Target date in tableName.}
 
 \item{order}{which record is considered in case of multiple records (only
 required for date and days options).}

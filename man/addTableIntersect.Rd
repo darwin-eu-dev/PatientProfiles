@@ -41,7 +41,7 @@ or a column date of x.}
 required for date and days options).}
 
 \item{overlap}{Whether to consider end date or only end date for the
-insersection.}
+intersection.}
 
 \item{flag}{TRUE or FALSE. If TRUE, flag will calculated for this
 intersection}

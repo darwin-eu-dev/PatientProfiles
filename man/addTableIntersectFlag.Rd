@@ -10,7 +10,6 @@ addTableIntersectFlag(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = list(c(0, Inf)),
-  order = "first",
   overlap = TRUE,
   nameStyle = "{table_name}_{window_name}"
 )
@@ -30,11 +29,8 @@ or a column date of x.}
 
 \item{window}{window to consider events in.}
 
-\item{order}{which record is considered in case of multiple records (only
-required for date and days options).}
-
 \item{overlap}{Whether to consider end date or only end date for the
-insersection.}
+intersection..}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters}
