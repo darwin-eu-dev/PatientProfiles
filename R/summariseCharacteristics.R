@@ -56,7 +56,7 @@
 #' )
 #' }
 summariseCharacteristics <- function(cohort,
-                                     cdm = attr(cohort, "cdm_reference"),
+                                     cdm = lifecycle::deprecated(),
                                      strata = list(),
                                      demographics = TRUE,
                                      ageGroup = NULL,
@@ -65,6 +65,7 @@ summariseCharacteristics <- function(cohort,
                                      conceptIntersect = list(),
                                      otherVariables = character()) {
   # check initial tables
+  cdm <- omopgenerics::cdmReference(cohort)
   checkX(cohort)
   checkmate::assertLogical(demographics, any.missing = FALSE, len = 1)
   checkCdm(cdm)
@@ -253,18 +254,17 @@ summariseCharacteristics <- function(cohort,
     shortNamesCohort <- uniqueVariableName(length(fullNamesCohort))
 
     # update cohort_set
-    originalCohortSet <- attr(cdm[[arguments$targetCohortTable]], "cohort_set")
+    originalCohortSet <- omopgenerics::settings(cdm[[arguments$targetCohortTable]])
     newCohortSet <- originalCohortSet %>%
       dplyr::rename(old_cohort_name = "cohort_name") %>%
       dplyr::inner_join(
         dplyr::tibble(
           old_cohort_name = fullNamesCohort, cohort_name = shortNamesCohort
         ),
-        by = "old_cohort_name",
-        copy = TRUE
-      ) %>%
-      dplyr::compute()
-    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- newCohortSet
+        by = "old_cohort_name"
+      )
+    newCohortSet <- newCohortSet |>
+      omopgenerics::newCohortTable(cohortSetRef = newCohortSet)
 
     # update dictionary
     addDic <- updateDic(

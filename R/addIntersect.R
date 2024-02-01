@@ -53,7 +53,7 @@
 #' }
 #'
 addIntersect <- function(x,
-                         cdm = attr(x, "cdm_reference"),
+                         cdm = lifecycle::deprecated(),
                          tableName,
                          value,
                          filterVariable = NULL,
@@ -69,6 +69,8 @@ addIntersect <- function(x,
   if (!is.list(window)) {
     window <- list(window)
   }
+
+  cdm <- omopgenerics::cdmReference(x)
 
   # initial checks
   personVariable <- checkX(x)

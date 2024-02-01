@@ -6,7 +6,7 @@
 \usage{
 addIntersect(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   tableName,
   value,
   filterVariable = NULL,

@@ -7,7 +7,7 @@ cohort}
 \usage{
 addCohortIntersectCount(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   targetCohortTable,
   targetCohortId = NULL,
   indexDate = "cohort_start_date",

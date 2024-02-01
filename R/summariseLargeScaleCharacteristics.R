@@ -50,10 +50,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                includeSource = FALSE,
                                                minimumFrequency = 0.005,
                                                excludedCodes = NULL,
-                                               cdm = attr(cohort, "cdm_reference")) {
+                                               cdm = lifecycle::deprecated()) {
   if (!is.list(window)) {
     window <- list(window)
   }
+
+  cdm <- omopgenerics::cdmReference(cohort)
 
   # initial checks
   checkX(cohort)
@@ -196,6 +198,8 @@ addLargeScaleCharacteristics <- function(cohort,
     window <- list(window)
   }
 
+  cdm <- omopgenerics::cdmReference(cohort)
+
   # initial checks
   checkX(cohort)
   checkWindow(window)
@@ -211,7 +215,6 @@ addLargeScaleCharacteristics <- function(cohort,
   checkmate::assertTRUE(indexDate %in% colnames(cohort))
   checkmate::assertTRUE(is.null(censorDate) || censorDate %in% colnames(cohort))
   checkmate::assert_integerish(excludedCodes, any.missing = FALSE, null.ok = TRUE)
-  cdm <- attr(cohort, "cdm_reference")
   checkCdm(cdm)
 
   # add names to windows
@@ -354,7 +357,7 @@ getInitialTable <- function(cohort, tablePrefix, indexDate, censorDate) {
   return(x)
 }
 getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, excludedCodes) {
-  cdm <- attr(x, "cdm_reference")
+  cdm <- omopgenerics::cdmReference(x)
   toSelect <- c(
     "subject_id" = "person_id",
     "start_diff" = startDateColumn(tab),
@@ -411,9 +414,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
       overwrite = TRUE
     )
 }
-writeSchema <- function(x) {
-  attr(attr(x, "cdm_reference"), "write_schema")
-}
+
 summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
   result <- NULL
   cohortNames <- omopgenerics::settings(cohort)$cohort_name
@@ -542,7 +543,7 @@ getTableAnalysis <- function(table, type, analysis, tablePrefix) {
   return(table)
 }
 getCodesGroup <- function(table, analysis, tablePrefix) {
-  cdm <- attr(table, "cdm_reference")
+  cdm <- omopgenerics::cdmReference(table)
   if (analysis %in% c("ATC 1st", "ATC 2nd", "ATC 3rd", "ATC 4th", "ATC 5h")) {
     codes <- cdm[["concept"]] %>%
       dplyr::filter(.data$vocabulary_id == "ATC") %>%

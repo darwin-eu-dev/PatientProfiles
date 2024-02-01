@@ -70,7 +70,7 @@ addConceptIntersect <- function(x,
                                 date = TRUE,
                                 days = TRUE,
                                 nameStyle = "{value}_{concept_name}_{window_name}") {
-  cdm <- attr(x, "cdm_reference")
+  cdm <- omopgenerics::cdmReference(x)
   nameCohort <- "add_intersect_concept_set"
   individuals <- x %>%
     dplyr::select("person_id" = dplyr::any_of(c("subject_id", "person_id"))) %>%

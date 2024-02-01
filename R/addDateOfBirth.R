@@ -38,7 +38,7 @@
 #'   addDateOfBirth()
 #' }
 addDateOfBirth <- function(x,
-                           cdm = attr(x, "cdm_reference"),
+                           cdm = lifecycle::deprecated(),
                            name = "date_of_birth",
                            missingDay = 1,
                            missingMonth = 1,
@@ -48,6 +48,7 @@ addDateOfBirth <- function(x,
   # checkInputs(
   #   x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
   # )
+  cdm <- omopgenerics::cdmReference(x)
 
   personVariable <- checkX(x)
 

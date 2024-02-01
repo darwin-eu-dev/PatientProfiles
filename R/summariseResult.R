@@ -174,7 +174,7 @@ summariseResult <- function(table,
   if (is.null(attr(table, "cdm_reference"))) {
     cdm_name <- "unknown"
   } else {
-    cdm_name <- omopgenerics::cdmName(attr(table, "cdm_reference"))
+    cdm_name <- omopgenerics::cdmName(omopgenerics::cdmReference(table))
   }
 
   result <- result |>

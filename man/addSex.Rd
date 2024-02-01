@@ -4,7 +4,7 @@
 \alias{addSex}
 \title{Compute the sex of the individuals}
 \usage{
-addSex(x, cdm = attr(x, "cdm_reference"), sexName = "sex")
+addSex(x, cdm = lifecycle::deprecated(), sexName = "sex")
 }
 \arguments{
 \item{x}{Table with individuals in the cdm}

@@ -57,7 +57,7 @@
 #' }
 #'
 addCohortIntersect <- function(x,
-                               cdm = attr(x, "cdm_reference"),
+                               cdm = lifecycle::deprecated(),
                                targetCohortTable,
                                targetCohortId = NULL,
                                indexDate = "cohort_start_date",
@@ -71,6 +71,7 @@ addCohortIntersect <- function(x,
                                date = TRUE,
                                days = TRUE,
                                nameStyle = "{value}_{cohort_name}_{window_name}") {
+  cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -135,7 +136,7 @@ addCohortIntersect <- function(x,
 #' }
 #'
 addCohortIntersectFlag <- function(x,
-                                   cdm = attr(x, "cdm_reference"),
+                                   cdm = lifecycle::deprecated(),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -144,6 +145,7 @@ addCohortIntersectFlag <- function(x,
                                    targetEndDate = "cohort_end_date",
                                    window = list(c(0, Inf)),
                                    nameStyle = "{cohort_name}_{window_name}") {
+  cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -202,7 +204,7 @@ addCohortIntersectFlag <- function(x,
 #' }
 #'
 addCohortIntersectCount <- function(x,
-                                    cdm = attr(x, "cdm_reference"),
+                                    cdm = lifecycle::deprecated(),
                                     targetCohortTable,
                                     targetCohortId = NULL,
                                     indexDate = "cohort_start_date",
@@ -211,6 +213,7 @@ addCohortIntersectCount <- function(x,
                                     targetEndDate = "cohort_end_date",
                                     window = list(c(0, Inf)),
                                     nameStyle = "{cohort_name}_{window_name}") {
+  cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -272,7 +275,7 @@ addCohortIntersectCount <- function(x,
 #' }
 #'
 addCohortIntersectDays <- function(x,
-                                   cdm = attr(x, "cdm_reference"),
+                                   cdm = lifecycle::deprecated(),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -281,6 +284,7 @@ addCohortIntersectDays <- function(x,
                                    order = "first",
                                    window = c(0, Inf),
                                    nameStyle = "{cohort_name}_{window_name}") {
+  cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -343,7 +347,7 @@ addCohortIntersectDays <- function(x,
 #' }
 #'
 addCohortIntersectDate <- function(x,
-                                   cdm = attr(x, "cdm_reference"),
+                                   cdm = lifecycle::deprecated(),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -352,6 +356,7 @@ addCohortIntersectDate <- function(x,
                                    order = "first",
                                    window = c(0, Inf),
                                    nameStyle = "{cohort_name}_{window_name}") {
+  cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)

@@ -6,7 +6,7 @@
 \usage{
 addAge(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   ageName = "age",
   ageGroup = NULL,

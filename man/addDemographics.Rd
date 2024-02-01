@@ -6,7 +6,7 @@
 \usage{
 addDemographics(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   age = TRUE,
   ageName = "age",

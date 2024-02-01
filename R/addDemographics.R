@@ -54,7 +54,7 @@
 #' }
 #'
 addDemographics <- function(x,
-                            cdm = attr(x, "cdm_reference"),
+                            cdm = lifecycle::deprecated(),
                             indexDate = "cohort_start_date",
                             age = TRUE,
                             ageName = "age",
@@ -70,6 +70,8 @@ addDemographics <- function(x,
                             futureObservation = TRUE,
                             futureObservationName = "future_observation") {
   ## change ageDefaultMonth, ageDefaultDay to integer
+
+  cdm <- omopgenerics::cdmReference(x)
 
   if (typeof(ageDefaultMonth) == "character") {
     ageDefaultMonth <- as.integer(ageDefaultMonth)
@@ -333,7 +335,7 @@ futureObservationQuery <- function(indexDate, name) {
 #'   addAge()
 #' }
 addAge <- function(x,
-                   cdm = attr(x, "cdm_reference"),
+                   cdm = lifecycle::deprecated(),
                    indexDate = "cohort_start_date",
                    ageName = "age",
                    ageGroup = NULL,
@@ -343,7 +345,6 @@ addAge <- function(x,
                    ageImposeDay = FALSE) {
   x <- x %>%
     addDemographics(
-      cdm = cdm,
       indexDate = indexDate,
       age = TRUE,
       ageName = ageName,
@@ -384,12 +385,11 @@ addAge <- function(x,
 #'   addFutureObservation()
 #' }
 addFutureObservation <- function(x,
-                                 cdm = attr(x, "cdm_reference"),
+                                 cdm = lifecycle::deprecated(),
                                  indexDate = "cohort_start_date",
                                  futureObservationName = "future_observation") {
   x <- x %>%
     addDemographics(
-      cdm = cdm,
       indexDate = indexDate,
       age = FALSE,
       ageGroup = NULL,
@@ -430,12 +430,11 @@ addFutureObservation <- function(x,
 #'   addPriorObservation()
 #' }
 addPriorObservation <- function(x,
-                                cdm = attr(x, "cdm_reference"),
+                                cdm = lifecycle::deprecated(),
                                 indexDate = "cohort_start_date",
                                 priorObservationName = "prior_observation") {
   x <- x %>%
     addDemographics(
-      cdm = cdm,
       indexDate = indexDate,
       age = FALSE,
       ageGroup = NULL,
@@ -475,10 +474,11 @@ addPriorObservation <- function(x,
 #' }
 #'
 addInObservation <- function(x,
-                             cdm = attr(x, "cdm_reference"),
+                             cdm = lifecycle::deprecated(),
                              indexDate = "cohort_start_date",
                              name = "in_observation") {
   ## check for standard types of user error
+  cdm <- omopgenerics::cdmReference(x)
   personVariable <- checkX(x)
   checkCdm(cdm, c("observation_period"))
   checkVariableInX(indexDate, x)
@@ -490,7 +490,6 @@ addInObservation <- function(x,
 
   x <- x %>%
     addDemographics(
-      cdm = cdm,
       indexDate = indexDate,
       age = FALSE,
       sex = FALSE,
@@ -528,11 +527,10 @@ addInObservation <- function(x,
 #' }
 #'
 addSex <- function(x,
-                   cdm = attr(x, "cdm_reference"),
+                   cdm = lifecycle::deprecated(),
                    sexName = "sex") {
   x <- x %>%
     addDemographics(
-      cdm = cdm,
       indexDate = NULL,
       age = FALSE,
       ageGroup = NULL,
