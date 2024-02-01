@@ -27,6 +27,14 @@ reference:
   desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a concept.
 - contents:
   - '`addConceptIntersect`'
+- subtitle: Add a value from an omop standard table intersection
+  desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a standard omop table.
+- contents:
+  - matches("addTableIntersectFlag|addTableIntersectCount|addTableIntersectDays|addTableIntersectDate|addTableIntersectExtraValue")
+- subtitle: Add multiple values from an omop standard table intersection
+  desc: Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a standard omop table.
+- contents:
+  - '`addTableIntersect`'
 - subtitle: Add multiple values from table intersection
   desc: Add multiple variables indicating the intersection between two tablea in the OMOP Common Data Model.
 - contents:
