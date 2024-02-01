@@ -521,12 +521,14 @@ test_that("age at cohort end, no missing, check age computation", {
 
   # check if exact age is computed, ie, dob 2000-01-01, target date 2000-12-01  --> age 0
   # dob 2000-01-01, target date 2001-01-02  --> age 1
-  result <- addAge(
-    x = cdm[["cohort1"]], cdm = cdm,
-    ageImposeMonth = FALSE,
-    ageImposeDay = FALSE
-  ) %>%
-    dplyr::collect()
+  expect_warning(
+    result <- addAge(
+      x = cdm[["cohort1"]], cdm = cdm,
+      ageImposeMonth = FALSE,
+      ageImposeDay = FALSE
+    ) %>%
+      dplyr::collect()
+  )
   expect_true(result %>%
     dplyr::filter(subject_id == 1) %>%
     dplyr::pull("age") == 0)

@@ -229,7 +229,7 @@ test_that("checkNameStyle", {
   )
 
   expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% addIntersect(
-    cdm = cdm, tableName = "cohort2",
-    value = c("flag", "count"), nameStyle = "{value}_{id_name}"
+    tableName = "cohort2", value = c("flag", "count"),
+    nameStyle = "{value}_{id_name}"
   ))))
 })

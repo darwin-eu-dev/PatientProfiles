@@ -150,7 +150,6 @@ test_that("basic functionality summarise large scale characteristics", {
         ageGroup = list(c(0, 24), c(25, 150))
       ) %>%
       summariseLargeScaleCharacteristics(
-        cdm = cdm,
         strata = list("age" = "age_group", "age & sex" = c("age_group", "sex")),
         episodeInWindow = c("condition_occurrence", "drug_exposure"),
         minimumFrequency = 0

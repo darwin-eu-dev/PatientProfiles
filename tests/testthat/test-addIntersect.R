@@ -53,7 +53,7 @@ test_that("working examples", {
   cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
   result <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", nameStyle = "xx")
+    addIntersect(tableName = "cohort2", value = "date", nameStyle = "xx")
 
   expect_true(length(attributes(cdm$cohort1)) == length(attributes(result)))
   for (i in names(attributes(cdm$cohort1))) {
@@ -80,9 +80,9 @@ test_that("working examples", {
   expect_true(all(result %>% dplyr::pull("xx") == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
 
   result1 <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "count") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "days") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "flag") %>%
+    addIntersect(tableName = "cohort2", value = "count") %>%
+    addIntersect(tableName = "cohort2", value = "days") %>%
+    addIntersect(tableName = "cohort2", value = "flag") %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -92,16 +92,16 @@ test_that("working examples", {
 
   result2 <-
     cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "count", order = "last") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "flag", order = "last") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", order = "last") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "days", order = "last") %>%
+    addIntersect(tableName = "cohort2", value = "count", order = "last") %>%
+    addIntersect(tableName = "cohort2", value = "flag", order = "last") %>%
+    addIntersect(tableName = "cohort2", value = "date", order = "last") %>%
+    addIntersect(tableName = "cohort2", value = "days", order = "last") %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result6 <-
     cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = c("date", "count", "days", "flag"), order = "last") %>%
+    addIntersect(tableName = "cohort2", value = c("date", "count", "days", "flag"), order = "last") %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -125,22 +125,18 @@ test_that("working examples", {
   result3 <-
     cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm,
       tableName = "cohort2",
       window = list(c(-Inf, 0)), value = "date"
     ) %>%
     addIntersect(
-      cdm = cdm,
       tableName = "cohort2",
       window = list(c(-Inf, 0)), value = "days"
     ) %>%
     addIntersect(
-      cdm = cdm,
       tableName = "cohort2",
       window = list(c(-Inf, 0)), value = "count"
     ) %>%
     addIntersect(
-      cdm = cdm,
       tableName = "cohort2",
       window = list(c(-Inf, 0)), value = "flag"
     ) %>%
@@ -155,10 +151,10 @@ test_that("working examples", {
   expect_true(all(result3$flag_all_minf_to_0 == c(0, 1, 1, 0, 1)))
 
   result4 <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "date") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "days") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "count") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "flag") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "date") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "days") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "count") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "flag") %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -176,10 +172,10 @@ test_that("working examples", {
   expect_true(all(result4$flag_all_m30_to_30 == c(1, 1, 1, 1, 1)))
 
   result5 <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "date", order = "last") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "days", order = "last") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "count", order = "last") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", window = list(c(-30, 30)), value = "flag", order = "last") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "date", order = "last") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "days", order = "last") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "count", order = "last") %>%
+    addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "flag", order = "last") %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
@@ -254,8 +250,7 @@ test_that("working examples with cohort_end_date", {
 
   result <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", value = "date",
-      indexDate = "cohort_end_date"
+      tableName = "cohort2", value = "date", indexDate = "cohort_end_date"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
@@ -455,7 +450,7 @@ test_that("working examples with multiple cohort Ids", {
 
   result <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
+      tableName = "cohort2", filterVariable = "cohort_definition_id",
       filterId = 1, value = "date"
     ) %>%
     dplyr::collect() |>
@@ -465,7 +460,7 @@ test_that("working examples with multiple cohort Ids", {
 
   result1 <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
+      tableName = "cohort2", filterVariable = "cohort_definition_id",
       filterId = 2, value = "count"
     ) %>%
     dplyr::collect() |>
@@ -475,15 +470,15 @@ test_that("working examples with multiple cohort Ids", {
 
   result2 <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
+      tableName = "cohort2", filterVariable = "cohort_definition_id",
       filterId = c(1, 3), value = "flag"
     ) %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
+      tableName = "cohort2", filterVariable = "cohort_definition_id",
       filterId = c(1, 3), value = "count"
     ) %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
+      tableName = "cohort2", filterVariable = "cohort_definition_id",
       filterId = c(1, 3), value = "days"
     ) %>%
     dplyr::collect() |>
@@ -491,7 +486,7 @@ test_that("working examples with multiple cohort Ids", {
 
   result3 <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", filterVariable = "cohort_definition_id",
+      tableName = "cohort2", filterVariable = "cohort_definition_id",
       filterId = c(1, 3), value = c("count", "days", "flag")
     ) %>%
     dplyr::collect() |>
@@ -550,12 +545,12 @@ test_that("working examples calculating as incidence target cohort", {
   }
 
   result <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", nameStyle = "test_{id_name}_{window_name}") %>%
+    addIntersect(tableName = "cohort2", value = "date", nameStyle = "test_{id_name}_{window_name}") %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result1 <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", targetEndDate = NULL) %>%
+    addIntersect(tableName = "cohort2", value = "date", targetEndDate = NULL) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -624,13 +619,13 @@ test_that("working examples with more than one window", {
   }
 
   result <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date") %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", window = list(c(-Inf, 0))) %>%
+    addIntersect(tableName = "cohort2", value = "date") %>%
+    addIntersect(tableName = "cohort2", value = "date", window = list(c(-Inf, 0))) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result1 <- cdm$cohort1 %>%
-    addIntersect(cdm = cdm, tableName = "cohort2", value = "date", window = list(c(0, Inf), c(-Inf, 0))) %>%
+    addIntersect(tableName = "cohort2", value = "date", window = list(c(0, Inf), c(-Inf, 0))) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -715,7 +710,7 @@ test_that("working examples with tables, not cohorts", {
 
   result <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "condition_occurrence", value = "date",
+      tableName = "condition_occurrence", value = "date",
       targetStartDate = "condition_start_date",
       targetEndDate = "condition_end_date",
       window = list(c(0, Inf), c(-Inf, 0))
@@ -726,7 +721,7 @@ test_that("working examples with tables, not cohorts", {
 
   result1 <- cdm$condition_occurrence %>%
     addIntersect(
-      cdm = cdm, tableName = "drug_exposure", value = "count",
+      tableName = "drug_exposure", value = "count",
       indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf), c(-Inf, 0)), filterVariable = "drug_concept_id",
@@ -743,7 +738,7 @@ test_that("working examples with tables, not cohorts", {
 
   result2 <- cdm$condition_occurrence %>%
     addIntersect(
-      cdm = cdm, tableName = "drug_exposure", value = "count",
+      tableName = "drug_exposure", value = "count",
       indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf), c(-Inf, 0))
@@ -756,7 +751,7 @@ test_that("working examples with tables, not cohorts", {
 
   result3 <- cdm$condition_occurrence %>%
     addIntersect(
-      cdm = cdm, tableName = "drug_exposure", value = "date",
+      tableName = "drug_exposure", value = "date",
       indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf)), filterVariable = "drug_concept_id",
@@ -769,7 +764,7 @@ test_that("working examples with tables, not cohorts", {
 
   result4 <- cdm$condition_occurrence %>%
     addIntersect(
-      cdm = cdm, tableName = "drug_exposure", value = "days",
+      tableName = "drug_exposure", value = "days",
       indexDate = "condition_start_date",
       targetStartDate = "drug_exposure_start_date", targetEndDate = NULL,
       window = list(c(0, Inf)), filterVariable = "drug_concept_id",
@@ -858,7 +853,6 @@ test_that("test checkWindow function", {
 
   expect_error(cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm,
       value = "days",
       filterId = 1,
       filterVariable = "cohort_definition_id",
@@ -926,7 +920,7 @@ test_that("test if column exist, overwrite", {
 
   result <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2",
+      tableName = "cohort2",
       value = c("flag", "date", "days", "count"), window = list(c(0, 30))
     ) %>%
     dplyr::collect()
@@ -1014,7 +1008,7 @@ test_that("overlapTable is empty, check return columns", {
 
   result <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2", value = c("date", "days", "count", "flag"),
+      tableName = "cohort2", value = c("date", "days", "count", "flag"),
       filterVariable = "cohort_definition_id",
       filterId = 2
     ) %>%
@@ -1099,7 +1093,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   result <- cdm$cohort1 %>%
     addCohortIntersectCount(
-      cdm = cdm, targetCohortTable = "cohort2"
+      targetCohortTable = "cohort2"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
@@ -1110,7 +1104,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   result <- cdm$cohort1 %>%
     addCohortIntersectFlag(
-      cdm = cdm, targetCohortTable = "cohort2"
+      targetCohortTable = "cohort2"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
@@ -1121,7 +1115,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   result <- cdm$cohort1 %>%
     addCohortIntersectDate(
-      cdm = cdm, targetCohortTable = "cohort2"
+      targetCohortTable = "cohort2"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
@@ -1132,7 +1126,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   result <- cdm$cohort1 %>%
     addCohortIntersectDays(
-      cdm = cdm, targetCohortTable = "cohort2"
+      targetCohortTable = "cohort2"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
@@ -1143,7 +1137,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   result <- cdm$cohort1 %>%
     addIntersect(
-      cdm = cdm, tableName = "cohort2",
+      tableName = "cohort2",
       value = c("flag", "date"),
       filterVariable = "cohort_definition_id",
       filterId = c(1, 2, 3),
@@ -1178,7 +1172,6 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   expect_error(cdm$cohort1 %>%
     addCohortIntersectDate(
-      cdm = cdm,
       targetCohortTable = "cohort2",
       targetCohortId = c(1, 2, 3),
       window = list(c(0, Inf), c(-30, -1))
@@ -1188,7 +1181,6 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   result <- cdm$cohort1 %>%
     addCohortIntersectDate(
-      cdm = cdm,
       targetCohortTable = "cohort2",
       targetCohortId = c(1, 3),
       window = list(c(0, Inf), c(-30, -1))
