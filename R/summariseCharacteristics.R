@@ -198,7 +198,6 @@ summariseCharacteristics <- function(cohort,
     # add intersect
     cohort <- cohort %>%
       PatientProfiles::addTableIntersect(
-        cdm = cdm,
         tableName = arguments$tableName,
         window = arguments$window,
         indexDate = arguments$indexDate,
