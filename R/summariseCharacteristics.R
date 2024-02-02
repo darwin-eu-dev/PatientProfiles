@@ -261,7 +261,7 @@ summariseCharacteristics <- function(cohort,
         ),
         by = "old_cohort_name"
       )
-    newCohortSet <- newCohortSet |>
+    cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
       omopgenerics::newCohortTable(cohortSetRef = newCohortSet)
 
     # update dictionary
@@ -298,7 +298,8 @@ summariseCharacteristics <- function(cohort,
     )
 
     # restore cohort_set
-    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- originalCohortSet
+    cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
+      omopgenerics::newCohortTable(cohortSetRef = originalCohortSet)
   }
 
   # conceptIntersect

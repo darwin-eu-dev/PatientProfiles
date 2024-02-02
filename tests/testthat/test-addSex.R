@@ -1,7 +1,7 @@
 test_that("addSex, check imput length and type", {
   cdm <- mockPatientProfiles(connectionDetails)
   expect_error(addSex("cdm$cohort1", cdm))
-  expect_error(addSex(cdm$cohort1, "cdm"))
+  expect_warning(addSex(cdm$cohort1, cdm = "cdm"))
   expect_error(addSex(cdm$drug_strength, cdm))
   expect_error(addSex(cdm$cohort1, cdm, name = 2))
   expect_error(addSex(cdm$cohort1, cdm, name = c("name1", "name2")))

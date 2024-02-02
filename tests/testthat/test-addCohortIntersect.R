@@ -356,22 +356,6 @@ test_that("output names", {
 test_that("expected errors ", {
   cdm <- mockPatientProfiles(connectionDetails)
 
-  # not a cdm
-  expect_error(cdm$cohort1 %>%
-    addCohortIntersectDays(
-      cdm = "a",
-      targetCohortId = 1,
-      indexDate = "cohort_start_date",
-      targetCohortTable = "cohort2"
-    ))
-  expect_error(cdm$cohort1 %>%
-    addCohortIntersectDate(
-      cdm = "a",
-      targetCohortId = 1,
-      indexDate = "cohort_start_date",
-      targetCohortTable = "cohort2"
-    ))
-
   # missing outcome table
   expect_error(cdm$cohort1 %>%
     addCohortIntersectDays(

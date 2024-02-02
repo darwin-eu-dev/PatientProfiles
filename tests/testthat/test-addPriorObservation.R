@@ -3,7 +3,7 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addPriorObservation("cdm$cohort1", cdm))
 
-  expect_error(addPriorObservation(cdm$cohort1, "cdm"))
+  expect_warning(addPriorObservation(cdm$cohort1, "cdm"))
 
   expect_error(addPriorObservation(cdm$cohort1, cdm, indexDate = "end_date"))
 })

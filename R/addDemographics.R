@@ -356,7 +356,6 @@ addAge <- function(x,
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "addAge(cdm)")
   }
-
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
