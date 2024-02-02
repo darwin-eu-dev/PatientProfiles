@@ -128,14 +128,14 @@ test_that("addDemographics, parameters", {
   expect_true(s$age == 94)
   expect_true(s$sex == "Female")
   expect_true(s$prior_observation == 5255)
-  expect_true(s$age_group == "41 to 120")
+  expect_true(s$age_group == "41 or above")
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 3) %>%
     dplyr::collect()
   expect_true(s$age == 52)
   expect_true(s$sex == "Female")
   expect_true(s$prior_observation == 3972)
-  expect_true(s$age_group == "41 to 120")
+  expect_true(s$age_group == "41 or above")
 })
 
 test_that("partial demographics - cohorts", {
