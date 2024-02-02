@@ -32,9 +32,11 @@
 #' will be considered as missing for all the individuals.
 #' @param ageImposeDay TRUE or FALSE. Whether the day of the date of birth
 #' will be considered as missing for all the individuals.
-#' @param ageGroup if not NULL, a list of ageGroup vectors
+#' @param ageGroup if not NULL, a list of ageGroup vectors.
+#' @param missingAgeGroupValue Value to include if missing age.
 #' @param sex TRUE or FALSE. If TRUE, sex will be identified
 #' @param sexName Sex variable name
+#' @param missingSexValue Value to include if missing sex.
 #' @param priorObservation TRUE or FALSE. If TRUE, days of between the start
 #' of the current observation period and the indexDate will be calculated
 #' @param priorObservationName Prior observation variable name
@@ -63,8 +65,10 @@ addDemographics <- function(x,
                             ageImposeMonth = FALSE,
                             ageImposeDay = FALSE,
                             ageGroup = NULL,
+                            missingAgeGroupValue = "None",
                             sex = TRUE,
                             sexName = "sex",
+                            missingSexValue = "None",
                             priorObservation = TRUE,
                             priorObservationName = "prior_observation",
                             futureObservation = TRUE,
@@ -107,6 +111,8 @@ addDemographics <- function(x,
   if (!(age | sex | priorObservation | futureObservation)) {
     cli::cli_abort("age, sex, priorObservation, futureObservation can not be FALSE")
   }
+  checkmate::assertCharacter(missingAgeGroupValue, len = 1, any.missing = FALSE)
+  checkmate::assertCharacter(missingSexValue, len = 1, any.missing = FALSE)
 
   # check variable names
   if (age) {
@@ -216,7 +222,7 @@ addDemographics <- function(x,
   }
 
   if (sex == TRUE) {
-    sQ <- sexQuery(name = sexName)
+    sQ <- sexQuery(name = sexName, missingValue = missingSexValue)
   } else {
     sQ <- NULL
   }
@@ -266,7 +272,7 @@ addDemographics <- function(x,
       x = x,
       variable = ageName,
       categories = ageGroup,
-      missingCategoryValue = "None"
+      missingCategoryValue = missingAgeGroupValue
     )
   }
 
@@ -287,11 +293,11 @@ ageQuery <- function(indexDate, name) {
     rlang::set_names(glue::glue(name)))
 }
 
-sexQuery <- function(name) {
+sexQuery <- function(name, missingValue) {
   return(glue::glue('dplyr::case_when(
       .data$gender_concept_id == 8507 ~ "Male",
       .data$gender_concept_id == 8532 ~ "Female",
-      TRUE ~ as.character(NA))') %>%
+      TRUE ~ "{missingValue}")') %>%
     rlang::parse_exprs() %>%
     rlang::set_names(glue::glue(name)))
 }
@@ -325,6 +331,7 @@ futureObservationQuery <- function(indexDate, name) {
 #' considered as missing for all the individuals.
 #' @param ageImposeDay Whether the day of the date of birth will be considered
 #' as missing for all the individuals.
+#' @param missingAgeGroupValue Value to include if missing age.
 #'
 #' @return tibble with the age column added
 #' @export
@@ -344,10 +351,12 @@ addAge <- function(x,
                    ageDefaultMonth = 1,
                    ageDefaultDay = 1,
                    ageImposeMonth = FALSE,
-                   ageImposeDay = FALSE) {
+                   ageImposeDay = FALSE,
+                   missingAgeGroupValue = "None") {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "addAge(cdm)")
   }
+
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -358,6 +367,7 @@ addAge <- function(x,
       ageDefaultMonth = ageDefaultMonth,
       ageImposeDay = ageImposeDay,
       ageImposeMonth = ageImposeMonth,
+      missingAgeGroupValue = missingAgeGroupValue,
       sex = FALSE,
       priorObservation = FALSE,
       futureObservation = FALSE,
@@ -528,7 +538,8 @@ addInObservation <- function(x,
 #'
 #' @param x Table with individuals in the cdm
 #' @param cdm A cdm_reference object.
-#' @param sexName name of the new column to be added
+#' @param sexName name of the new column to be added.
+#' @param missingSexValue Value to include if missing sex.
 #'
 #' @return table x with the added column with sex information
 #' @export
@@ -542,7 +553,8 @@ addInObservation <- function(x,
 #'
 addSex <- function(x,
                    cdm = lifecycle::deprecated(),
-                   sexName = "sex") {
+                   sexName = "sex",
+                   missingSexValue = "None") {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "addSex(cdm)")
   }
@@ -557,6 +569,7 @@ addSex <- function(x,
       ageImposeMonth = FALSE,
       sex = TRUE,
       sexName = sexName,
+      missingSexValue = missingSexValue,
       priorObservation = FALSE,
       futureObservation = FALSE,
       ageName = NULL,

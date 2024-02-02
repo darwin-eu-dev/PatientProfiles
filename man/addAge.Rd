@@ -13,7 +13,8 @@ addAge(
   ageDefaultMonth = 1,
   ageDefaultDay = 1,
   ageImposeMonth = FALSE,
-  ageImposeDay = FALSE
+  ageImposeDay = FALSE,
+  missingAgeGroupValue = "None"
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ considered as missing for all the individuals.}
 
 \item{ageImposeDay}{Whether the day of the date of birth will be considered
 as missing for all the individuals.}
+
+\item{missingAgeGroupValue}{Value to include if missing age.}
 }
 \value{
 tibble with the age column added

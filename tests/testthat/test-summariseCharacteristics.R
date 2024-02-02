@@ -298,4 +298,19 @@ test_that("test empty cohort", {
         )
       ))
   )
+  expect_no_error(
+    x1 <- cdm$cohort1 %>%
+      summariseCharacteristics(tableIntersect = list("Visits" = list(
+        tableName = "visit_occurrence", value = "flag", window = c(-365, 0)
+      )))
+  )
+
+  # NOT WORKING
+  expect_no_error(
+    x3 <- cdm$cohort1 %>%
+      summariseCharacteristics(tableIntersect = list("Visits" = list(
+        tableName = "visit_occurrence", value = "visit_concept_id",
+        window = c(-Inf, Inf)
+      )))
+  )
 })

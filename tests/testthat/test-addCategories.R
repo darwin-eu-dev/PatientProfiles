@@ -38,9 +38,9 @@ test_that("addCategories with infinity", {
       "2020-01-01", NA, "2020-12-21", "2020-08-01", "2025-01-01", "2020-01-18"
     ))
   )
-  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
-  DBI::dbWriteTable(connectionDetails$con, name = name, value = table)
-  table <- dplyr::tbl(connectionDetails$con, name) %>%
+  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- CDMConnector::insertTable(cdm = cdm, name = "table", table = table)
+  table <- cdm$table %>%
     addCategories(
       variable = "prior_history", categories = list(
         "prior_group" = list(c(1, 10), c(11, Inf))
@@ -60,7 +60,7 @@ test_that("addCategories with infinity", {
   expect_true("prior_group" %in% colnames(table))
   expect_true(is.na(table$prior_group[6]))
   xx <- table$prior_group[!is.na(table$prior_group)]
-  expect_true(all(xx == c("1 to 10", "1 to 10", "11 to Inf", "None", "11 to Inf")))
+  expect_true(all(xx == c("1 to 10", "1 to 10", "11 or above", "None", "11 or above")))
   # check date worked
   expect_true("period1" %in% colnames(table))
   expect_true(is.na(table$period1[2]))
@@ -70,5 +70,5 @@ test_that("addCategories with infinity", {
     "2019-01-01 to 2019-01-01", "2023-01-01 to 2023-01-01",
     "2019-01-01 to 2019-01-01"
   )))
-  DBI::dbRemoveTable(connectionDetails$con, name = name)
+  CDMConnector::dropTable(cdm = cdm, name = "table")
 })
