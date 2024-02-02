@@ -178,8 +178,7 @@ summariseCharacteristics <- function(cohort,
   # tableIntersect
   for (k in seq_along(tableIntersect)) {
     cli::cli_alert_info(
-      "adding table intersect columns for table:
-      {tableIntersect[[k]]$table_name}"
+      "adding table intersect columns for table: {tableIntersect[[k]]$tableName}"
     )
     # prepare arguments
     arguments <- formals(addTableIntersect)
@@ -208,7 +207,8 @@ summariseCharacteristics <- function(cohort,
         date = arguments$date,
         days = arguments$days,
         field = arguments$field,
-        overlap = arguments$overlap
+        overlap = arguments$overlap,
+        nameStyle = "{value}_{table_name}_{window_name}"
       )
 
     # update summary settings
@@ -223,8 +223,7 @@ summariseCharacteristics <- function(cohort,
   # cohortIntersect
   for (k in seq_along(cohortIntersect)) {
     cli::cli_alert_info(
-      "adding cohort intersect columns for table:
-      {cohortIntersect[[k]]$targetCohortTable}"
+      "adding cohort intersect columns for table: {cohortIntersect[[k]]$targetCohortTable}"
     )
     # prepare arguments
     arguments <- formals(addCohortIntersect)
@@ -303,8 +302,7 @@ summariseCharacteristics <- function(cohort,
   # conceptIntersect
   for (k in seq_along(conceptIntersect)) {
     cli::cli_alert_info(
-      "adding concept intersect columns for conceptSet
-      {k}/{length(conceptIntersect)}"
+      "adding concept intersect columns for conceptSet {k}/{length(conceptIntersect)}"
     )
     # prepare arguments
     arguments <- formals(addConceptIntersect)
@@ -349,7 +347,10 @@ summariseCharacteristics <- function(cohort,
       variables = variables,
       date = addDic$short_name[grepl("date_", addDic$short_name)],
       numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
-      binary = addDic$short_name[grepl("flag_", addDic$short_name)]
+      binary = addDic$short_name[grepl("flag_", addDic$short_name)],
+      categorical = addDic$short_name[
+        !grepl("flag_|count_|time_|date_", addDic$short_name)
+      ]
     )
   }
 
@@ -499,7 +500,7 @@ updateArguments <- function(arguments, def) {
     arguments$days <- FALSE
     arguments[arguments$value] <- TRUE
     arguments$field <- arguments$value[
-      arguments$value != c("flag", "count", "date", "days")
+      !arguments$value %in% c("flag", "count", "date", "days")
     ]
   }
   names(arguments[["window"]]) <- getWindowNames(arguments[["window"]])
