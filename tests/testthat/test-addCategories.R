@@ -60,7 +60,7 @@ test_that("addCategories with infinity", {
   expect_true("prior_group" %in% colnames(table))
   expect_true(is.na(table$prior_group[6]))
   xx <- table$prior_group[!is.na(table$prior_group)]
-  expect_true(all(xx == c("1 to 10", "1 to 10", "11 to Inf", "None", "11 to Inf")))
+  expect_true(all(xx == c("1 to 10", "1 to 10", "11 or above", "None", "11 or above")))
   # check date worked
   expect_true("period1" %in% colnames(table))
   expect_true(is.na(table$period1[2]))

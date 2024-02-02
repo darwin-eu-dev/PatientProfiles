@@ -111,7 +111,12 @@ checkCategory <- function(category, overlap = FALSE, type = "numeric") {
     dplyr::mutate(category_label = names(.env$category)) %>%
     dplyr::mutate(category_label = dplyr::if_else(
       .data$category_label == "",
-      paste0(.data$lower_bound, " to ", .data$upper_bound),
+      dplyr::case_when(
+        is.infinite(.data$lower_bound) & is.infinite(.data$upper_bound) ~ "any",
+        is.infinite(.data$lower_bound) ~ paste(.data$upper_bound, "or below"),
+        is.infinite(.data$upper_bound) ~ paste(.data$lower_bound, "or above"),
+        TRUE ~ paste(.data$lower_bound, "to", .data$upper_bound)
+      ),
       .data$category_label
     )) %>%
     dplyr::arrange(.data$lower_bound)
@@ -139,6 +144,10 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
     }
     for (k in seq_along(ageGroup)) {
       invisible(checkCategory(ageGroup[[k]], overlap))
+      if (any(ageGroup[[k]] |> unlist() |> unique() < 0)) {
+        cli::cli_abort("ageGroup can't contain negative values")
+      }
+
     }
     if (is.null(names(ageGroup))) {
       names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))

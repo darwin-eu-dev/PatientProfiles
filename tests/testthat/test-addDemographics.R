@@ -98,7 +98,7 @@ test_that("addDemographics, parameters", {
   cdm$cohort1 <- cdm$cohort1 %>%
     addDemographics(
       indexDate = "cohort_end_date",
-      ageGroup = list("age_group" = list(c(0, 40), c(41, 120))),
+      ageGroup = list("age_group" = list(c(0, 40), c(41, Inf))),
       ageImposeMonth = TRUE,
       ageImposeDay = TRUE
     )
@@ -128,14 +128,14 @@ test_that("addDemographics, parameters", {
   expect_true(s$age == 94)
   expect_true(s$sex == "Female")
   expect_true(s$prior_observation == 5255)
-  expect_true(s$age_group == "41 to 120")
+  expect_true(s$age_group == "41 or above")
   s <- cdm$cohort1 %>%
     dplyr::filter(.data$subject_id == 3) %>%
     dplyr::collect()
   expect_true(s$age == 52)
   expect_true(s$sex == "Female")
   expect_true(s$prior_observation == 3972)
-  expect_true(s$age_group == "41 to 120")
+  expect_true(s$age_group == "41 or above")
 })
 
 test_that("partial demographics - cohorts", {
@@ -849,8 +849,6 @@ test_that("expected errors", {
     indexDate = "cohort_start_date",
     ageImposeDay = "TRUE"
   ))
-
-
 
   cdm <- mockPatientProfiles(connectionDetails)
 
