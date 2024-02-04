@@ -2,7 +2,7 @@ test_that("addInObservation, input length and type", {
   cdm <- mockPatientProfiles(connectionDetails)
   expect_error(addInObservation(2, cdm))
   expect_warning(addInObservation(cdm$cohort2, "cdm"))
-  expect_warning(addInObservation(cdm$concept_ancestor, cdm))
+  expect_error(addInObservation(cdm$concept_ancestor))
   expect_error(addInObservation(cdm$cohort1, cdm, indexDate = 3))
   expect_error(addInObservation(cdm$cohort1, cdm, indexDate = "2002-01-02"))
   expect_error(addInObservation(cdm$cohort1, cdm, indexDate = c("cohort", "cohort_end")))

@@ -241,19 +241,14 @@ summariseCharacteristics <- function(cohort,
     # rename cohorts
     fullNamesCohort <- omopgenerics::settings(
       cdm[[arguments$targetCohortTable]]
-    )
-    if (!is.null(arguments$targetCohortId)) {
-      fullNamesCohort <- fullNamesCohort %>%
-        dplyr::filter(
-          .data$cohort_definition_id %in% !!arguments$targetCohortId
-        )
-    }
-    fullNamesCohort <- fullNamesCohort %>% dplyr::pull("cohort_name")
+    ) |>
+      dplyr::pull("cohort_name")
     shortNamesCohort <- uniqueVariableName(length(fullNamesCohort))
 
     # update cohort_set
     originalCohortSet <- omopgenerics::settings(cdm[[arguments$targetCohortTable]])
     newCohortSet <- originalCohortSet %>%
+      dplyr::select("cohort_definition_id", "cohort_name") |>
       dplyr::rename(old_cohort_name = "cohort_name") %>%
       dplyr::inner_join(
         dplyr::tibble(
@@ -262,7 +257,9 @@ summariseCharacteristics <- function(cohort,
         by = "old_cohort_name"
       )
     cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
-      omopgenerics::newCohortTable(cohortSetRef = newCohortSet)
+      omopgenerics::newCohortTable(
+        cohortSetRef = newCohortSet, cohortAttritionRef = NULL
+      )
 
     # update dictionary
     addDic <- updateDic(
@@ -299,7 +296,9 @@ summariseCharacteristics <- function(cohort,
 
     # restore cohort_set
     cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
-      omopgenerics::newCohortTable(cohortSetRef = originalCohortSet)
+      omopgenerics::newCohortTable(
+        cohortSetRef = originalCohortSet, cohortAttritionRef = NULL
+      )
   }
 
   # conceptIntersect
