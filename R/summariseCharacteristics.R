@@ -255,11 +255,21 @@ summariseCharacteristics <- function(cohort,
           old_cohort_name = fullNamesCohort, cohort_name = shortNamesCohort
         ),
         by = "old_cohort_name"
-      )
+      ) |>
+      dplyr::select(-"old_cohort_name")
     cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
       omopgenerics::newCohortTable(
         cohortSetRef = newCohortSet, cohortAttritionRef = NULL
       )
+
+    if (!is.null(arguments$targetCohortId)) {
+      id <- originalCohortSet |>
+        dplyr::filter(.data$cohort_definition_id %in% arguments$targetCohortId) |>
+        dplyr::pull("cohort_name")
+      id <- which(id %in% fullNamesCohort)
+      fullNamesCohort <- fullNamesCohort[id]
+      shortNamesCohort <- shortNamesCohort[id]
+    }
 
     # update dictionary
     addDic <- updateDic(
