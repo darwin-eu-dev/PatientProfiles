@@ -12,11 +12,11 @@ test_that("check condition_occurrence and cohort1 work", {
   # mock data
   cdm <- mockPatientProfiles(connectionDetails)
   # check it works with cohort1 table in mockdb
-  expect_true(typeof(cdm$cohort1 %>% addFutureObservation(cdm) %>% dplyr::collect()) == "list")
-  expect_true("future_observation" %in% colnames(cdm$cohort1 %>% addFutureObservation(cdm)))
+  expect_true(typeof(cdm$cohort1 %>% addFutureObservation() %>% dplyr::collect()) == "list")
+  expect_true("future_observation" %in% colnames(cdm$cohort1 %>% addFutureObservation()))
   # check it works with condition_occurrence table in mockdb
-  expect_true(typeof(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
-  expect_true("future_observation" %in% colnames(cdm$condition_occurrence %>% addFutureObservation(cdm, indexDate = "condition_start_date")))
+  expect_true(typeof(cdm$condition_occurrence %>% addFutureObservation(indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
+  expect_true("future_observation" %in% colnames(cdm$condition_occurrence %>% addFutureObservation(indexDate = "condition_start_date")))
 })
 
 test_that("check working example with cohort1", {
@@ -62,7 +62,7 @@ test_that("check working example with cohort1", {
     )
 
   result <- cdm$cohort1 %>%
-    addFutureObservation(cdm) %>%
+    addFutureObservation() %>%
     dplyr::collect()
 
   expect_true(all(colnames(cohort1) %in% colnames(result)))
@@ -133,7 +133,7 @@ test_that("check working example with condition_occurrence", {
     )
 
   result <- cdm$condition_occurrence %>%
-    addFutureObservation(cdm,
+    addFutureObservation(
       indexDate = "condition_start_date"
     ) %>%
     dplyr::collect()
@@ -207,7 +207,7 @@ test_that("different name", {
 
   cdm$condition_occurrence <-
     cdm$condition_occurrence %>%
-    addFutureObservation(cdm,
+    addFutureObservation(
       indexDate = "condition_start_date",
       futureObservationName = "fh"
     )
@@ -307,7 +307,7 @@ test_that("multiple observation periods", {
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addFutureObservation(cdm,
+    addFutureObservation(
       indexDate = "cohort_start_date"
     )
 
@@ -320,7 +320,7 @@ test_that("multiple observation periods", {
 
   # from cohort end date
   cdm$cohort1a <- cdm$cohort1 %>%
-    addFutureObservation(cdm,
+    addFutureObservation(
       indexDate = "cohort_end_date",
       futureObservationName = "fh_from_c_end"
     )

@@ -321,12 +321,12 @@ test_that("working examples with extra column", {
     dplyr::compute()
 
   result <- cdm$cohort1 %>%
-    addIntersect(cdm, "cohort2", c("flag", "measurment_result"), "cohort_definition_id", 1, "covid", list(c(0, Inf))) %>%
+    addIntersect(tableName = "cohort2", value = c("flag", "measurment_result"), filterVariable = "cohort_definition_id", filterId = 1, idName = "covid", window = list(c(0, Inf))) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result1 <- cdm$cohort1 %>%
-    addIntersect(cdm, "cohort2", "measurment_result", "cohort_definition_id", 2, "covid", list(c(0, Inf))) %>%
+    addIntersect("cohort2", "measurment_result", "cohort_definition_id", 2, "covid", list(c(0, Inf))) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -368,14 +368,14 @@ test_that("working examples with extra column", {
     dplyr::compute()
 
   result2 <- cdm$cohort1 %>%
-    addIntersect(cdm, "cohort2", "measurment_result",
+    addIntersect("cohort2", "measurment_result",
       nameStyle = "{value}_{window_name}"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result3 <- cdm$cohort1 %>%
-    addIntersect(cdm, "cohort2", c("flag", "measurment_result"),
+    addIntersect("cohort2", c("flag", "measurment_result"),
       nameStyle = "{value}_{window_name}",
       window = list(c(-400, -200))
     ) %>%
@@ -829,23 +829,23 @@ test_that("check input length and type for each of the arguments", {
 
   cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
-  expect_error(addIntersect("cdm$cohort1", cdm))
+  expect_error(addIntersect("cdm$cohort1"))
 
-  expect_error(addIntersect(cdm$cohort1, "cdm"))
+  expect_error(addIntersect(cdm$cohort1))
 
-  expect_error(addIntersect(cdm$cohort1, "cdm", tableName = "drug"))
+  expect_error(addIntersect(cdm$cohort1, tableName = "drug"))
 
-  expect_error(addIntersect(cdm$cohort1, cdm, tableName = "cohort2", value = "end_date"))
+  expect_error(addIntersect(cdm$cohort1, tableName = "cohort2", value = "end_date"))
 
-  expect_error(addIntersect(cdm$cohort1, cdm, tableName = "cohort2", value = "flag", cohortId = "3"))
+  expect_error(addIntersect(cdm$cohort1, tableName = "cohort2", value = "flag", cohortId = "3"))
 
-  expect_error(addIntersect(cdm$cohort1, cdm, tableName = "cohort2", value = "flag", indexDate = 3))
+  expect_error(addIntersect(cdm$cohort1, tableName = "cohort2", value = "flag", indexDate = 3))
 
-  expect_error(addIntersect(cdm$cohort1, cdm, tableName = "cohort2", value = "flag", targetStartDate = "no"))
+  expect_error(addIntersect(cdm$cohort1, tableName = "cohort2", value = "flag", targetStartDate = "no"))
 
-  expect_error(addIntersect(cdm$cohort1, cdm, tableName = "cohort2", value = "flag", targetEndDate = NA))
+  expect_error(addIntersect(cdm$cohort1, tableName = "cohort2", value = "flag", targetEndDate = NA))
 
-  expect_error(addIntersect(cdm$cohort1, cdm, tableName = "cohort2", value = "flag", nameStyle = "test_{nowindow}_{cohortName}"))
+  expect_error(addIntersect(cdm$cohort1, tableName = "cohort2", value = "flag", nameStyle = "test_{nowindow}_{cohortName}"))
 })
 
 test_that("test checkWindow function", {
@@ -1205,7 +1205,7 @@ test_that("non snake columns not repeated in output", {
   cdm <- mockPatientProfiles()
   attr(cdm$cohort1, "cohort_set") <- attr(cdm$cohort1, "cohort_set") %>% dplyr::mutate(cohort_name = toupper(cohort_name))
   cdm$cohort2 <- cdm$cohort2 %>%
-    addCohortIntersectFlag(cdm, "cohort1")
+    addCohortIntersectFlag(targetCohortTable = "cohort1")
 
   expect_true("cohort_1_0_to_inf" %in% colnames(cdm$cohort2))
   expect_false("COHORT_1_0_to_inf" %in% colnames(cdm$cohort2))

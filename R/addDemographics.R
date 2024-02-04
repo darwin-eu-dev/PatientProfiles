@@ -52,7 +52,7 @@
 #' \donttest{
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#' cdm$cohort1 %>% addDemographics(cdm)
+#' cdm$cohort1 %>% addDemographics()
 #' }
 #'
 addDemographics <- function(x,

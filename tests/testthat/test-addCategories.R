@@ -9,7 +9,7 @@ test_that("addCategories, functionality", {
     dplyr::arrange(subject_id, cohort_start_date)
 
   agegroupOverlap <- cdm$cohort1 %>%
-    addAge(cdm) %>%
+    addAge() %>%
     addCategories(
       variable = "age",
       categories = list("age_group" = list(c(0, 55), c(50, 120))),

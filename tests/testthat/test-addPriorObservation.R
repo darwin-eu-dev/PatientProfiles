@@ -1,22 +1,22 @@
 test_that("check input length and type for each of the arguments", {
   cdm <- mockPatientProfiles(connectionDetails)
 
-  expect_error(addPriorObservation("cdm$cohort1", cdm))
+  expect_error(addPriorObservation("cdm$cohort1"))
 
   expect_warning(addPriorObservation(cdm$cohort1, "cdm"))
 
-  expect_error(addPriorObservation(cdm$cohort1, cdm, indexDate = "end_date"))
+  expect_error(addPriorObservation(cdm$cohort1, indexDate = "end_date"))
 })
 
 test_that("check condition_occurrence and cohort1 work", {
   # mock data
   cdm <- mockPatientProfiles(connectionDetails)
   # check it works with cohort1 table in mockdb
-  expect_true(typeof(cdm$cohort1 %>% addPriorObservation(cdm) %>% dplyr::collect()) == "list")
-  expect_true("prior_observation" %in% colnames(cdm$cohort1 %>% addPriorObservation(cdm)))
+  expect_true(typeof(cdm$cohort1 %>% addPriorObservation() %>% dplyr::collect()) == "list")
+  expect_true("prior_observation" %in% colnames(cdm$cohort1 %>% addPriorObservation()))
   # check it works with condition_occurrence table in mockdb
-  expect_true(typeof(cdm$condition_occurrence %>% addPriorObservation(cdm, indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
-  expect_true("prior_observation" %in% colnames(cdm$condition_occurrence %>% addPriorObservation(cdm, indexDate = "condition_start_date")))
+  expect_true(typeof(cdm$condition_occurrence %>% addPriorObservation(indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
+  expect_true("prior_observation" %in% colnames(cdm$condition_occurrence %>% addPriorObservation(indexDate = "condition_start_date")))
 })
 
 test_that("check working example with cohort1", {
@@ -60,7 +60,7 @@ test_that("check working example with cohort1", {
     )
 
   result <- cdm$cohort1 %>%
-    addPriorObservation(cdm) %>%
+    addPriorObservation() %>%
     dplyr::collect()
 
   expect_true(all(colnames(cohort1) %in% colnames(result)))
@@ -112,7 +112,7 @@ test_that("check working example with condition_occurrence", {
 
   result <-
     cdm$condition_occurrence %>%
-    addPriorObservation(cdm, indexDate = "condition_start_date") %>%
+    addPriorObservation(indexDate = "condition_start_date") %>%
     dplyr::collect()
 
   expect_true(all(
@@ -164,7 +164,7 @@ test_that("different name", {
 
   cdm$condition_occurrence <-
     cdm$condition_occurrence %>%
-    addPriorObservation(cdm,
+    addPriorObservation(
       indexDate = "condition_start_date",
       priorObservationName = "ph"
     )
@@ -213,7 +213,7 @@ test_that("multiple observation periods", {
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addPriorObservation(cdm,
+    addPriorObservation(
       indexDate = "cohort_start_date"
     )
 
