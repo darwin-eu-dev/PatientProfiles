@@ -937,19 +937,24 @@ test_that("addCategories input", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 1, patient_size = 5)
 
   # overwrite when categories named same as variable, throw warning
-  expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
-    addCategories(
-      variable = "age",
-      categories = list("age" = list(c(1, 30), c(31, 99)))
-    ))
+  expect_warning(
+    cdm$cohort1 %>%
+      addAge() %>%
+      addCategories(
+        variable = "age",
+        categories = list("age" = list(c(1, 30), c(31, 99)))
+      )
+  )
 
-  expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
-    addDemographics(
-      sex = FALSE,
-      priorObservation = FALSE,
-      futureObservation = FALSE,
-      ageGroup = list("age" = list(c(1, 30), c(31, 40)))
-    ))
+  expect_warning(
+    cdm$cohort1 %>%
+      addDemographics(
+        sex = FALSE,
+        priorObservation = FALSE,
+        futureObservation = FALSE,
+        ageGroup = list("age" = list(c(1, 30), c(31, 40)))
+      )
+  )
 
   # default group name when no input
   expect_true("category_1" %in% colnames(cdm$cohort1 %>% addAge() %>%
@@ -985,16 +990,18 @@ test_that("addCategories input", {
       )
     ))
 
-  expect_error(cdm$cohort1 %>% addAge() %>%
-    addDemographics(
-      sex = FALSE,
-      priorObservation = FALSE,
-      futureObservation = FALSE,
-      ageGroup = list(
-        "age_A" = list(c(0, 30), c(31, 120)),
-        "age_A" = list(c(1, 18), c(19, 40))
+  expect_error(
+    cdm$cohort1 %>%
+      addDemographics(
+        sex = FALSE,
+        priorObservation = FALSE,
+        futureObservation = FALSE,
+        ageGroup = list(
+          "age_A" = list(c(0, 30), c(31, 120)),
+          "age_A" = list(c(1, 18), c(19, 40))
+        )
       )
-    ))
+  )
 
   # Error when x is not a cdm object
 })
@@ -1070,7 +1077,7 @@ test_that("test if column exist, overwrite", {
   expect_warning(
     result <- cdm$cohort1 %>%
       addDemographics() %>%
-      dplyr::collect(),
+      dplyr::collect()
   )
 
   expect_true(sum(colnames(result) == "age") == 1)

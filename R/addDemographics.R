@@ -116,23 +116,25 @@ addDemographics <- function(x,
   checkmate::assertCharacter(missingSexValue, len = 1, any.missing = FALSE)
 
   # check variable names
+  name <- character()
   if (age) {
     ageName <- checkSnakeCase(ageName)
+    name <- c(name, ageName)
   }
   if (sex) {
     sexName <- checkSnakeCase(sexName)
+    name <- c(name, sexName)
   }
   if (priorObservation) {
     priorObservationName <- checkSnakeCase(priorObservationName)
+    name <- c(name, priorObservationName)
   }
   if (futureObservation) {
     futureObservationName <- checkSnakeCase(futureObservationName)
+    name <- c(name, futureObservationName)
   }
 
-  checkNewName(ageName, x)
-  checkNewName(sexName, x)
-  checkNewName(priorObservationName, x)
-  checkNewName(futureObservationName, x)
+  checkNewName(name = name, x = x)
 
   if (age == TRUE || priorObservation == TRUE || futureObservation == TRUE) {
     checkmate::assert_true(

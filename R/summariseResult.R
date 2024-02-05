@@ -540,8 +540,9 @@ countSubjects <- function(x) {
   j <- "subject_id" %in% colnames(x)
   if (i) {
     if (j) {
-      cli::cli_alert_warning(
-        "person_id and subject_id present in table, `person_id` used as person identifier"
+      cli::cli_warn(
+        "person_id and subject_id present in table, `person_id` used as person
+        identifier"
       )
     }
     personVariable <- "person_id"

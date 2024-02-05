@@ -148,6 +148,12 @@ summariseCharacteristics <- function(cohort,
   # demographics
   if (demographics) {
     cli::cli_alert_info("adding demographics columns")
+
+    sex <- uniqueVariableName()
+    age <- uniqueVariableName()
+    priorObservation <- uniqueVariableName()
+    futureObservation <- uniqueVariableName()
+
     if (!is.null(ageGroup)) {
       # default names
       ageGroup <- checkAgeGroup(ageGroup)
@@ -156,25 +162,44 @@ summariseCharacteristics <- function(cohort,
       newNames <- uniqueVariableName(length(ageGroup))
       dic <- dic %>%
         dplyr::union_all(dplyr::tibble(
-          full_name = names(ageGroup), short_name = newNames,
+          full_name = c(
+            names(ageGroup), "sex", "age", "prior_observation",
+            "future_observation"
+          ),
+          short_name = c(
+            newNames, sex, age, priorObservation, futureObservation
+          ),
           value = as.character(NA), cohort = as.character(NA),
           window = as.character(NA), variable_group = as.character(NA)
         ))
       names(ageGroup) <- newNames
-      demographicsCategorical <- c("sex", newNames)
+      demographicsCategorical <- c(sex, newNames)
     } else {
-      demographicsCategorical <- "sex"
+      demographicsCategorical <- sex
+      dic <- dic %>%
+        dplyr::union_all(dplyr::tibble(
+          full_name = c("sex", "age", "prior_observation", "future_observation"),
+          short_name = c(sex, age, priorObservation, futureObservation),
+          value = as.character(NA), cohort = as.character(NA),
+          window = as.character(NA), variable_group = as.character(NA)
+        ))
     }
 
     # add demographics
     cohort <- cohort %>%
-      addDemographics(ageGroup = ageGroup)
+      addDemographics(
+        ageGroup = ageGroup,
+        sexName = sex,
+        ageName = age,
+        priorObservationName = priorObservation,
+        futureObservationName = futureObservation
+      )
 
     # update summary settings
     variables <- updateVariables(
       variables = variables,
       date = c("cohort_start_date", "cohort_end_date"),
-      numeric = c("prior_observation", "future_observation", "age"),
+      numeric = c(priorObservation, futureObservation, age),
       categorical = demographicsCategorical
     )
   }

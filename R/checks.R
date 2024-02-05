@@ -223,7 +223,7 @@ checkNewName <- function(name, x) {
       "The following columns will be overwritten: ",
       paste0(renamed, collapse = ", ")
     )
-    cli::cli_alert_warning(text = mes)
+    cli::cli_warn(message = mes)
   }
   invisible(name)
 }

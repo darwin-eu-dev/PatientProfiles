@@ -91,10 +91,15 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   )
 
   expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
-  expect_true(all(c("flag", "flag_1") %in% colnames(x)))
-  expect_true(all(c("flag", "flag_new") %in% colnames(addInObservation(cdm$cohort1, name = "flag_new"))))
-
-
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag"
+  ) == colnames(x)))
+  y <- addInObservation(cdm$cohort1, name = "flag_new")
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag", "flag_new"
+  ) == colnames(y)))
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
@@ -120,8 +125,21 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   )
 
   expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
-  expect_true(all(c("flag", "flag_1", "flag_2") %in% colnames(x)))
-  expect_true(all(c("flag", "flag_1", "flag_new") %in% colnames(addInObservation(cdm$cohort1, name = "flag_new"))))
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag", "flag_1"
+  ) == colnames(x)))
+  expect_true(x |> dplyr::pull("flag") |> unique() == 1)
+  expect_true(x |> dplyr::pull("flag_1") |> unique() == 0)
+  y <- addInObservation(cdm$cohort1, name = "flag_new")
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag", "flag_1", "flag_new"
+  ) == colnames(y)))
+  expect_true(y |> dplyr::pull("flag") |> unique() == 0)
+  expect_true(y |> dplyr::pull("flag_new") |> unique() == 1)
+  expect_true(y |> dplyr::pull("flag_1") |> unique() == 0)
+
 })
 
 test_that(" test checkWindow in addIntersect", {
