@@ -577,10 +577,7 @@ mockPatientProfiles <- function(connectionDetails = list(
       cdm = cdm, name = cohort, table = listTables[[cohort]], overwrite = TRUE
     )
     cdm[[cohort]] <- cdm[[cohort]] |>
-      omopgenerics::newCohortTable(
-        cohortSetRef = attr(x, "cohort_set"),
-        cohortAttritionRef = attr(x, "cohort_attrition")
-      )
+      omopgenerics::newCohortTable()
   }
 
   return(cdm)

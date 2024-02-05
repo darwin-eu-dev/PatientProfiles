@@ -6,7 +6,7 @@
 \usage{
 addSex(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   sexName = "sex",
   missingSexValue = "None"
 )

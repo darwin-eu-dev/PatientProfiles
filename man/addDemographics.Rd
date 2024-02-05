@@ -6,7 +6,7 @@
 \usage{
 addDemographics(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   age = TRUE,
   ageName = "age",
@@ -82,7 +82,8 @@ Compute demographic characteristics at a certain date
 \donttest{
 library(PatientProfiles)
 cdm <- mockPatientProfiles()
-cdm$cohort1 \%>\% addDemographics(cdm)
+cdm$cohort1 \%>\%
+  addDemographics()
 }
 
 }

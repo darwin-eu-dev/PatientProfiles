@@ -56,7 +56,7 @@
 #' )
 #' }
 summariseCharacteristics <- function(cohort,
-                                     cdm = attr(cohort, "cdm_reference"),
+                                     cdm = lifecycle::deprecated(),
                                      strata = list(),
                                      demographics = TRUE,
                                      ageGroup = NULL,
@@ -64,7 +64,11 @@ summariseCharacteristics <- function(cohort,
                                      cohortIntersect = list(),
                                      conceptIntersect = list(),
                                      otherVariables = character()) {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "summariseCharacteristics(cdm)")
+  }
   # check initial tables
+  cdm <- omopgenerics::cdmReference(cohort)
   checkX(cohort)
   checkmate::assertLogical(demographics, any.missing = FALSE, len = 1)
   checkCdm(cdm)
@@ -144,6 +148,12 @@ summariseCharacteristics <- function(cohort,
   # demographics
   if (demographics) {
     cli::cli_alert_info("adding demographics columns")
+
+    sex <- uniqueVariableName()
+    age <- uniqueVariableName()
+    priorObservation <- uniqueVariableName()
+    futureObservation <- uniqueVariableName()
+
     if (!is.null(ageGroup)) {
       # default names
       ageGroup <- checkAgeGroup(ageGroup)
@@ -152,25 +162,44 @@ summariseCharacteristics <- function(cohort,
       newNames <- uniqueVariableName(length(ageGroup))
       dic <- dic %>%
         dplyr::union_all(dplyr::tibble(
-          full_name = names(ageGroup), short_name = newNames,
+          full_name = c(
+            names(ageGroup), "sex", "age", "prior_observation",
+            "future_observation"
+          ),
+          short_name = c(
+            newNames, sex, age, priorObservation, futureObservation
+          ),
           value = as.character(NA), cohort = as.character(NA),
           window = as.character(NA), variable_group = as.character(NA)
         ))
       names(ageGroup) <- newNames
-      demographicsCategorical <- c("sex", newNames)
+      demographicsCategorical <- c(sex, newNames)
     } else {
-      demographicsCategorical <- "sex"
+      demographicsCategorical <- sex
+      dic <- dic %>%
+        dplyr::union_all(dplyr::tibble(
+          full_name = c("sex", "age", "prior_observation", "future_observation"),
+          short_name = c(sex, age, priorObservation, futureObservation),
+          value = as.character(NA), cohort = as.character(NA),
+          window = as.character(NA), variable_group = as.character(NA)
+        ))
     }
 
     # add demographics
     cohort <- cohort %>%
-      addDemographics(ageGroup = ageGroup)
+      addDemographics(
+        ageGroup = ageGroup,
+        sexName = sex,
+        ageName = age,
+        priorObservationName = priorObservation,
+        futureObservationName = futureObservation
+      )
 
     # update summary settings
     variables <- updateVariables(
       variables = variables,
       date = c("cohort_start_date", "cohort_end_date"),
-      numeric = c("prior_observation", "future_observation", "age"),
+      numeric = c(priorObservation, futureObservation, age),
       categorical = demographicsCategorical
     )
   }
@@ -237,29 +266,35 @@ summariseCharacteristics <- function(cohort,
     # rename cohorts
     fullNamesCohort <- omopgenerics::settings(
       cdm[[arguments$targetCohortTable]]
-    )
-    if (!is.null(arguments$targetCohortId)) {
-      fullNamesCohort <- fullNamesCohort %>%
-        dplyr::filter(
-          .data$cohort_definition_id %in% !!arguments$targetCohortId
-        )
-    }
-    fullNamesCohort <- fullNamesCohort %>% dplyr::pull("cohort_name")
+    ) |>
+      dplyr::pull("cohort_name")
     shortNamesCohort <- uniqueVariableName(length(fullNamesCohort))
 
     # update cohort_set
-    originalCohortSet <- attr(cdm[[arguments$targetCohortTable]], "cohort_set")
+    originalCohortSet <- omopgenerics::settings(cdm[[arguments$targetCohortTable]])
     newCohortSet <- originalCohortSet %>%
+      dplyr::select("cohort_definition_id", "cohort_name") |>
       dplyr::rename(old_cohort_name = "cohort_name") %>%
       dplyr::inner_join(
         dplyr::tibble(
           old_cohort_name = fullNamesCohort, cohort_name = shortNamesCohort
         ),
-        by = "old_cohort_name",
-        copy = TRUE
-      ) %>%
-      dplyr::compute()
-    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- newCohortSet
+        by = "old_cohort_name"
+      ) |>
+      dplyr::select(-"old_cohort_name")
+    cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
+      omopgenerics::newCohortTable(
+        cohortSetRef = newCohortSet, cohortAttritionRef = NULL
+      )
+
+    if (!is.null(arguments$targetCohortId)) {
+      id <- originalCohortSet |>
+        dplyr::filter(.data$cohort_definition_id %in% arguments$targetCohortId) |>
+        dplyr::pull("cohort_name")
+      id <- which(id %in% fullNamesCohort)
+      fullNamesCohort <- fullNamesCohort[id]
+      shortNamesCohort <- shortNamesCohort[id]
+    }
 
     # update dictionary
     addDic <- updateDic(
@@ -271,7 +306,6 @@ summariseCharacteristics <- function(cohort,
     # add intersect
     cohort <- cohort %>%
       PatientProfiles::addCohortIntersect(
-        cdm = cdm,
         targetCohortTable = arguments$targetCohortTable,
         targetCohortId = arguments$targetCohortId,
         indexDate = arguments$indexDate,
@@ -296,7 +330,10 @@ summariseCharacteristics <- function(cohort,
     )
 
     # restore cohort_set
-    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- originalCohortSet
+    cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
+      omopgenerics::newCohortTable(
+        cohortSetRef = originalCohortSet, cohortAttritionRef = NULL
+      )
   }
 
   # conceptIntersect

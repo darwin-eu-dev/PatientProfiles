@@ -7,7 +7,7 @@ occurrences, a flag of presence, a certain date and/or the time difference}
 \usage{
 addCohortIntersect(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   targetCohortTable,
   targetCohortId = NULL,
   indexDate = "cohort_start_date",

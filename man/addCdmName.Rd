@@ -4,7 +4,7 @@
 \alias{addCdmName}
 \title{Add cdm name}
 \usage{
-addCdmName(table, cdm = attr(table, "cdm_reference"))
+addCdmName(table, cdm = omopgenerics::cdmReference(table))
 }
 \arguments{
 \item{table}{Table in the cdm}

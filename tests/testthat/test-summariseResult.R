@@ -69,7 +69,7 @@ test_that("groups and strata", {
   )
 
   result <- cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
@@ -88,7 +88,7 @@ test_that("groups and strata", {
 
 
   result <- cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
@@ -115,7 +115,7 @@ test_that("groups and strata", {
     )))
 
   result <- cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
@@ -151,7 +151,7 @@ test_that("table in db or local", {
 
   # in db
   expect_no_error(cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
@@ -159,7 +159,7 @@ test_that("table in db or local", {
 
   # already collected
   expect_no_error(cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
@@ -176,7 +176,7 @@ test_that("with and with overall groups and strata", {
   )
 
   test_data <- cdm$condition_occurrence %>%
-    addDemographics(cdm,
+    addDemographics(
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%

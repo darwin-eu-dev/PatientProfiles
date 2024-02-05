@@ -17,7 +17,7 @@ summariseLargeScaleCharacteristics(
   includeSource = FALSE,
   minimumFrequency = 0.005,
   excludedCodes = NULL,
-  cdm = attr(cohort, "cdm_reference")
+  cdm = lifecycle::deprecated()
 )
 }
 \arguments{

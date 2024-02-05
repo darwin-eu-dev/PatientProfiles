@@ -53,7 +53,7 @@
 #' }
 #'
 addIntersect <- function(x,
-                         cdm = attr(x, "cdm_reference"),
+                         cdm = lifecycle::deprecated(),
                          tableName,
                          value,
                          filterVariable = NULL,
@@ -66,10 +66,13 @@ addIntersect <- function(x,
                          targetEndDate = endDateColumn(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addIntersect(cdm)")
+  }
   if (!is.list(window)) {
     window <- list(window)
   }
-
+  cdm <- omopgenerics::cdmReference(x)
   # initial checks
   personVariable <- checkX(x)
   checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
@@ -143,7 +146,6 @@ addIntersect <- function(x,
 
   result <- x %>%
     addFutureObservation(
-      cdm = cdm,
       indexDate = indexDate,
       futureObservationName = "days_to_add"
     ) %>%

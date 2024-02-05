@@ -39,7 +39,7 @@
 #'
 #' cdm <- mockPatientProfiles()
 #' x <- cdm$cohort1 %>%
-#'   addDemographics(cdm) %>%
+#'   addDemographics() %>%
 #'   collect()
 #' result <- summariseResult(x)
 #' }
@@ -63,6 +63,12 @@ summariseResult <- function(table,
                             )) {
   # initial checks
   checkTable(table)
+
+  if (inherits(table, "cdm_table")) {
+    cdm_name <- omopgenerics::cdmName(omopgenerics::cdmReference(table))
+  } else {
+    cdm_name <- "unknown"
+  }
 
   # create the summary for overall
   result <- list()
@@ -169,12 +175,6 @@ summariseResult <- function(table,
         result <- dplyr::bind_rows(result, workingResult)
       }
     }
-  }
-
-  if (is.null(attr(table, "cdm_reference"))) {
-    cdm_name <- "unknown"
-  } else {
-    cdm_name <- omopgenerics::cdmName(attr(table, "cdm_reference"))
   }
 
   result <- result |>
@@ -319,7 +319,7 @@ getBinaryValues <- function(x, variablesBinary) {
           dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(c(variablesFunction, "denominator")),
             .fns = list("sum" = function(x) {
-              sum(x)
+              sum(x, na.rm = TRUE)
             }),
             .names = "{.col}"
           )) %>%
@@ -540,8 +540,9 @@ countSubjects <- function(x) {
   j <- "subject_id" %in% colnames(x)
   if (i) {
     if (j) {
-      cli::cli_alert_warning(
-        "person_id and subject_id present in table, `person_id` used as person identifier"
+      cli::cli_warn(
+        "person_id and subject_id present in table, `person_id` used as person
+        identifier"
       )
     }
     personVariable <- "person_id"

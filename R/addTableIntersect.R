@@ -85,7 +85,6 @@ addTableIntersect <- function(x,
 
   x <- x %>%
     addIntersect(
-      cdm = cdm,
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -148,7 +147,6 @@ addTableIntersectFlag <- function(x,
 
   x <- x %>%
     addIntersect(
-      cdm = cdm,
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -211,7 +209,6 @@ addTableIntersectCount <- function(x,
 
   x <- x %>%
     addIntersect(
-      cdm = cdm,
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -271,7 +268,6 @@ addTableIntersectDate <- function(x,
 
   x <- x %>%
     addIntersect(
-      cdm = cdm,
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -331,7 +327,6 @@ addTableIntersectDays <- function(x,
 
   x <- x %>%
     addIntersect(
-      cdm = cdm,
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -399,7 +394,6 @@ addTableIntersectField <- function(x,
 
   x <- x %>%
     addIntersect(
-      cdm = cdm,
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
