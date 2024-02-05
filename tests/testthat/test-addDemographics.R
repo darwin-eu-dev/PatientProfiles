@@ -976,8 +976,8 @@ test_that("addCategories input", {
   expect_true(all(c("category_1", "category_2") %in% colnames(result)))
 
   # ERROR when repeat group name
-  expect_error(cdm$cohort1 %>% addAge(cdm) %>%
-    addCategories(cdm,
+  expect_error(cdm$cohort1 %>% addAge() %>%
+    addCategories(
       variable = "age",
       categories = list(
         "age_A" = list(c(0, 30), c(31, 120)),
