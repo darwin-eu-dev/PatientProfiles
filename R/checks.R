@@ -484,7 +484,8 @@ checkVariablesFunctions <- function(variables, functions, table) {
     dplyr::left_join(
       formats %>%
         dplyr::select("variable_type", "format_key"),
-      by = "variable_type"
+      by = "variable_type",
+      relationship = "many-to-many"
     )
   nonSuportedFunctions <- requiredFunctions %>%
     dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))

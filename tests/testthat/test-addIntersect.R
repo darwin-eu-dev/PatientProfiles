@@ -326,7 +326,7 @@ test_that("working examples with extra column", {
     dplyr::arrange(subject_id, cohort_start_date)
 
   result1 <- cdm$cohort1 %>%
-    addIntersect("cohort2", "measurment_result", "cohort_definition_id", 2, "covid", list(c(0, Inf))) %>%
+    addIntersect(tableName = "cohort2", value = "measurment_result", filterVariable = "cohort_definition_id", filterId = 2, idName = "covid", window = list(c(0, Inf))) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -368,14 +368,14 @@ test_that("working examples with extra column", {
     dplyr::compute()
 
   result2 <- cdm$cohort1 %>%
-    addIntersect("cohort2", "measurment_result",
+    addIntersect(tableName = "cohort2", value = "measurment_result",
       nameStyle = "{value}_{window_name}"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result3 <- cdm$cohort1 %>%
-    addIntersect("cohort2", c("flag", "measurment_result"),
+    addIntersect(tableName = "cohort2", value = c("flag", "measurment_result"),
       nameStyle = "{value}_{window_name}",
       window = list(c(-400, -200))
     ) %>%
@@ -918,12 +918,14 @@ test_that("test if column exist, overwrite", {
 
   cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
-  result <- cdm$cohort1 %>%
-    addIntersect(
-      tableName = "cohort2",
-      value = c("flag", "date", "days", "count"), window = list(c(0, 30))
-    ) %>%
-    dplyr::collect()
+  expect_warning(
+    result <- cdm$cohort1 %>%
+      addIntersect(
+        tableName = "cohort2",
+        value = c("flag", "date", "days", "count"), window = list(c(0, 30))
+      ) %>%
+      dplyr::collect()
+  )
 
   expect_true(sum(colnames(result) == "flag_all_0_to_30") == 1)
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
@@ -1024,7 +1026,7 @@ test_that("overlapTable is empty, check return columns", {
 
   expect_true(all(result$flag_id2_0_to_inf == 0))
 
-  expect_true(all(is.na(result$days_na_0_to_inf)))
+  expect_true(all(is.na(result$days_id2_0_to_inf)))
 
   expect_true(all(is.na(result$date_id2_0_to_inf)))
 })
@@ -1230,13 +1232,15 @@ test_that("no NA when overwrite column", {
 
 
   # Trying to overwrite the previous created variable, for example because the characteristics cohort has changed.
-  cdm$cohort1 <- cdm$cohort1 %>%
-    addCohortIntersectFlag(
-      targetCohortTable = "cohort2",
-      window = list(c(-180, -1)),
-      targetCohortId = 1,
-      nameStyle = "{cohort_name}"
-    )
+  expect_warning(
+    cdm$cohort1 <- cdm$cohort1 %>%
+      addCohortIntersectFlag(
+        targetCohortTable = "cohort2",
+        window = list(c(-180, -1)),
+        targetCohortId = 1,
+        nameStyle = "{cohort_name}"
+      )
+  )
 
   expect_true(!any(is.na(cdm$cohort1 %>% dplyr::pull("cohort_1"))))
 
@@ -1246,13 +1250,15 @@ test_that("no NA when overwrite column", {
   cdm$cohort2 <- cdm$cohort2 %>%
     dplyr::mutate(subject_id = dplyr::if_else(cohort_definition_id == 1 & subject_id == 1, 2, subject_id))
 
-  cdm$cohort1 <- cdm$cohort1 %>%
-    addCohortIntersectFlag(
-      targetCohortTable = "cohort2",
-      window = list(c(-180, -1)),
-      targetCohortId = 1,
-      nameStyle = "{cohort_name}"
-    )
+  expect_warning(
+    cdm$cohort1 <- cdm$cohort1 %>%
+      addCohortIntersectFlag(
+        targetCohortTable = "cohort2",
+        window = list(c(-180, -1)),
+        targetCohortId = 1,
+        nameStyle = "{cohort_name}"
+      )
+  )
 
   expect_true(!any(is.na(cdm$cohort1 %>% dplyr::pull("cohort_1"))))
 

@@ -1,7 +1,7 @@
 test_that("check input length and type for each of the arguments", {
   cdm <- mockPatientProfiles(connectionDetails)
 
-  expect_error(addFutureObservation("cdm$cohort1", cdm))
+  expect_error(addFutureObservation("cdm$cohort1"))
 
   expect_warning(addFutureObservation(cdm$cohort1, "cdm"))
 

@@ -319,7 +319,7 @@ getBinaryValues <- function(x, variablesBinary) {
           dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(c(variablesFunction, "denominator")),
             .fns = list("sum" = function(x) {
-              sum(x)
+              sum(x, na.rm = TRUE)
             }),
             .names = "{.col}"
           )) %>%

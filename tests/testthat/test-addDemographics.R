@@ -691,7 +691,7 @@ test_that("age group checks", {
   )
 
   x <- cdm$cohort1 %>%
-    addAge()
+    addAge(cdm)
 
   result1a <- x %>%
     addCategories(
@@ -720,7 +720,7 @@ test_that("age group checks", {
     dplyr::collect() %>%
     dplyr::arrange(age)
   result3a <- cdm$cohort1 %>%
-    addAge(ageGroup = list(c(1, 20), c(21, 30), c(31, 40))) %>%
+    addAge(cdm, ageGroup = list(c(1, 20), c(21, 30), c(31, 40))) %>%
     dplyr::collect() %>%
     dplyr::arrange(.data$age)
   expect_true(identical(result1a, result2a))
@@ -736,6 +736,7 @@ test_that("age group checks", {
     dplyr::arrange(age)
   result3b <- addDemographics(
     cdm$cohort1,
+    cdm,
     ageGroup = list("age_group" = list(c(1, 20), c(21, 30), c(31, 40))),
     sex = FALSE,
     priorObservation = FALSE, futureObservation = FALSE
@@ -830,9 +831,9 @@ test_that("expected errors", {
       patient_size = 5
     )
 
-  expect_error(addAge("cdm$cohort1", cdm))
+  expect_error(addAge("cdm$cohort1"))
   expect_warning(addAge(cdm$cohort1, "cdm"))
-  expect_error(addAge(cdm$cohort1, indexDate = "subject_id"))
+  expect_error(addAge(cdm$cohort1, cdm, indexDate = "subject_id"))
   expect_error(expect_error(addAge(cdm$cohort1,
     indexDate = "cohort_start_date",
     ageDefaultMonth = "1"
@@ -852,6 +853,7 @@ test_that("expected errors", {
 
   cdm <- mockPatientProfiles(connectionDetails)
 
+  expect_error(result <- addAge(cdm = "a"))
   expect_error(result <- addAge(
     x = cdm[["cohort1"]],
     ageImposeDay = 1
@@ -936,13 +938,13 @@ test_that("addCategories input", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 1, patient_size = 5)
 
   # overwrite when categories named same as variable, throw warning
-  expect_warning(cdm$cohort1 %>% addAge() %>%
+  expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
     addCategories(
       variable = "age",
       categories = list("age" = list(c(1, 30), c(31, 99)))
     ))
 
-  expect_warning(cdm$cohort1 %>% addAge() %>%
+  expect_warning(cdm$cohort1 %>% addAge(cdm) %>%
     addDemographics(
       sex = FALSE,
       priorObservation = FALSE,
@@ -951,7 +953,7 @@ test_that("addCategories input", {
     ))
 
   # default group name when no input
-  expect_true("category_1" %in% colnames(cdm$cohort1 %>% addAge() %>%
+  expect_true("category_1" %in% colnames(cdm$cohort1 %>% addAge(cdm) %>%
     addCategories(
       variable = "age",
       categories = list(list(c(1, 30), c(31, 40)))
@@ -963,7 +965,7 @@ test_that("addCategories input", {
   ))
 
   result <- cdm$cohort1 %>%
-    addAge() %>%
+    addAge(cdm) %>%
     addCategories(
       variable = "age",
       categories = list(
@@ -975,8 +977,8 @@ test_that("addCategories input", {
   expect_true(all(c("category_1", "category_2") %in% colnames(result)))
 
   # ERROR when repeat group name
-  expect_error(cdm$cohort1 %>% addAge() %>%
-    addCategories(
+  expect_error(cdm$cohort1 %>% addAge(cdm) %>%
+    addCategories(cdm,
       variable = "age",
       categories = list(
         "age_A" = list(c(0, 30), c(31, 120)),
@@ -984,7 +986,7 @@ test_that("addCategories input", {
       )
     ))
 
-  expect_error(cdm$cohort1 %>% addAge() %>%
+  expect_error(cdm$cohort1 %>% addAge(cdm) %>%
     addDemographics(
       sex = FALSE,
       priorObservation = FALSE,
@@ -1066,9 +1068,11 @@ test_that("test if column exist, overwrite", {
     observation_period = observation_period
   )
 
-  result <- cdm$cohort1 %>%
-    addDemographics() %>%
-    dplyr::collect()
+  expect_warning(
+    result <- cdm$cohort1 %>%
+      addDemographics() %>%
+      dplyr::collect(),
+  )
 
   expect_true(sum(colnames(result) == "age") == 1)
   expect_true(sum(colnames(result) == "sex") == 1)
