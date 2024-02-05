@@ -217,7 +217,7 @@ checkWindow <- function(window) {
 
 #' @noRd
 checkNewName <- function(name, x) {
-  renamed <- name[name %in% colnames(X)]
+  renamed <- name[name %in% colnames(x)]
   if (length(renamed) > 0) {
     mes <- paste0(
       "The following columns will be overwritten: ",
