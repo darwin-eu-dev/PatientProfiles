@@ -217,19 +217,13 @@ checkWindow <- function(window) {
 
 #' @noRd
 checkNewName <- function(name, x) {
-  for (k in seq_along(name)) {
-    if (name[k] %in% colnames(x)) {
-      id <- 1
-      newName <- paste0(name[k], "_", id)
-      while (newName %in% colnames(x)) {
-        id <- id + 1
-        newName <- paste0(name[k], "_", id)
-      }
-      warning(glue::glue(
-        "{name[k]} already exists in x, it was renamed to {newName}"
-      ))
-      name[k] <- newName
-    }
+  renamed <- name[name %in% colnames(X)]
+  if (length(renamed) > 0) {
+    mes <- paste0(
+      "The following columns will be overwritten: ",
+      paste0(renamed, collapse = ", ")
+    )
+    cli::cli_alert_warning(text = mes)
   }
   invisible(name)
 }
@@ -321,7 +315,7 @@ checkValue <- function(value, x, name) {
       paste0(valueOptions, collapse = ", "),
       " are also present in ",
       name,
-      ". But have theyr own functionality inside the package. If you want to
+      ". But have their own functionality inside the package. If you want to
       obtain that column please rename and run again."
     ))
   }
