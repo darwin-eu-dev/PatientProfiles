@@ -115,7 +115,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
               )
           )
       }
-      if (includeSource & analysis == "standard" & !is.na(sourceConceptIdColumn(tab))) {
+      if ("source" %in% colnames(table) & analysis == "standard") {
         tableAnalysis <- getTableAnalysis(table, type, "source", tablePrefix)
         for (win in seq_along(window)) {
           tableWindow <- getTableWindow(tableAnalysis, window[[win]], tablePrefix)
@@ -367,7 +367,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
     "standard" = standardConceptIdColumn(tab),
     "source" = sourceConceptIdColumn(tab)
   )
-  if (includeSource == FALSE) {
+  if (includeSource == FALSE || is.na(sourceConceptIdColumn(tab))) {
     toSelect <- toSelect["source" != names(toSelect)]
   }
   table <- cdm[[tab]] %>%
@@ -401,7 +401,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
     )
     table <- table |>
       dplyr::anti_join(cdm[[nm]], by = "standard")
-    if (includeSource) {
+    if ("source" %in% colnames(table)) {
       table <- table |>
         dplyr::anti_join(
           cdm[[nm]] |> dplyr::rename("source" = "standard"), by = "source"
