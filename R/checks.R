@@ -344,19 +344,23 @@ checkCohortNames <- function(x, targetCohortId, name) {
       idName <- paste0(name, "_", targetCohortId)
     } else {
       idName <- cohort %>%
-        dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
+        dplyr::filter(
+          as.integer(.data$cohort_definition_id) %in%
+            as.integer(.env$targetCohortId)
+        ) %>%
         dplyr::arrange(.data$cohort_definition_id) %>%
         dplyr::pull("cohort_name")
       if (length(idName) != length(targetCohortId)) {
         cli::cli_abort(
-          "some of the cohort ids given do not exist in the cohortSet of cdm[[targetCohortName]]"
+          "some of the cohort ids given do not exist in the cohortSet of
+          cdm[[targetCohortName]]"
         )
       }
     }
   }
   parameters <- list(
     "filter_variable" = filterVariable,
-    "filter_id" = targetCohortId,
+    "filter_id" = sort(targetCohortId),
     "id_name" = idName
   )
   invisible(parameters)
