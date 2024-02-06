@@ -88,7 +88,7 @@ addConceptIntersect <- function(x,
       "cohort_end_date" = "observation_period_end_date"
     ) |>
     dplyr::compute(temporary = FALSE, name = tempCohort) |>
-    omopgenerics::cohortTable()
+    omopgenerics::newCohortTable()
   if (!is.null(targetEndDate) && targetEndDate == "cohort_end_date") {
     end <- "event_end_date"
   } else {
