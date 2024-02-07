@@ -210,7 +210,7 @@ summariseCharacteristics <- function(cohort,
       "adding table intersect columns for table: {tableIntersect[[k]]$tableName}"
     )
     # prepare arguments
-    arguments <- formals(addTableIntersect)
+    arguments <- formals(.addTableIntersect)
     arguments <- updateArguments(arguments, tableIntersect[[k]])
     shortNames <- uniqueVariableName(length(arguments$window))
     fullNames <- names(arguments$window)
@@ -225,7 +225,7 @@ summariseCharacteristics <- function(cohort,
 
     # add intersect
     cohort <- cohort %>%
-      PatientProfiles::addTableIntersect(
+      .addTableIntersect(
         tableName = arguments$tableName,
         window = arguments$window,
         indexDate = arguments$indexDate,
@@ -255,7 +255,7 @@ summariseCharacteristics <- function(cohort,
       "adding cohort intersect columns for table: {cohortIntersect[[k]]$targetCohortTable}"
     )
     # prepare arguments
-    arguments <- formals(addCohortIntersect)
+    arguments <- formals(.addCohortIntersect)
     arguments <- updateArguments(arguments, cohortIntersect[[k]])
 
     # rename windows
@@ -305,7 +305,7 @@ summariseCharacteristics <- function(cohort,
 
     # add intersect
     cohort <- cohort %>%
-      PatientProfiles::addCohortIntersect(
+      .addCohortIntersect(
         targetCohortTable = arguments$targetCohortTable,
         targetCohortId = arguments$targetCohortId,
         indexDate = arguments$indexDate,
@@ -342,7 +342,7 @@ summariseCharacteristics <- function(cohort,
       "adding concept intersect columns for conceptSet {k}/{length(conceptIntersect)}"
     )
     # prepare arguments
-    arguments <- formals(addConceptIntersect)
+    arguments <- formals(.addConceptIntersect)
     arguments <- updateArguments(arguments, conceptIntersect[[k]])
 
     # rename windows
@@ -364,7 +364,7 @@ summariseCharacteristics <- function(cohort,
 
     # add intersect
     cohort <- cohort %>%
-      PatientProfiles::addConceptIntersect(
+      .addConceptIntersect(
         conceptSet = arguments$conceptSet,
         indexDate = arguments$indexDate,
         censorDate = arguments$censorDate,
