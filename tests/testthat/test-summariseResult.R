@@ -63,10 +63,7 @@ test_that("test all functions", {
 })
 
 test_that("groups and strata", {
-  cdm <- PatientProfiles::mockPatientProfiles(
-    patient_size = 1000,
-    drug_exposure_size = 1000
-  )
+  cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
 
   result <- cdm$condition_occurrence %>%
     addDemographics(
@@ -144,10 +141,7 @@ test_that("groups and strata", {
 })
 
 test_that("table in db or local", {
-  cdm <- PatientProfiles::mockPatientProfiles(
-    patient_size = 1000,
-    drug_exposure_size = 1000
-  )
+  cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
 
   # in db
   expect_no_error(cdm$condition_occurrence %>%
@@ -170,10 +164,7 @@ test_that("table in db or local", {
 })
 
 test_that("with and with overall groups and strata", {
-  cdm <- PatientProfiles::mockPatientProfiles(
-    patient_size = 1000,
-    drug_exposure_size = 1000
-  )
+  cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
 
   test_data <- cdm$condition_occurrence %>%
     addDemographics(
@@ -320,7 +311,7 @@ test_that("test empty cohort", {
 
 test_that("test summary table naming", {
 
-  cdm <- PatientProfiles::mockPatientProfiles(connectionDetails = connectionDetails)
+  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
 
   dat <-
     cdm$cohort1 %>% addDemographics() %>%

@@ -146,7 +146,7 @@ test_that("basic functionality summarise large scale characteristics", {
 
   expect_no_error(
     result <- cdm$cohort_interest %>%
-      PatientProfiles::addDemographics(
+      addDemographics(
         ageGroup = list(c(0, 24), c(25, 150))
       ) %>%
       summariseLargeScaleCharacteristics(

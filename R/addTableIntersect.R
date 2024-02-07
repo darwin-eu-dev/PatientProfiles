@@ -67,6 +67,36 @@ addTableIntersect <- function(x,
                               days = TRUE,
                               field = character(),
                               nameStyle = "{table_name}_{value}_{window_name}") {
+  lifecycle::deprecate_warn(
+    when = "0.6.0",
+    what = "addConceptIntersect()",
+    details = c(
+      "please use the specific functions instead:",
+      "*" = "addConceptIntersectFlag()", "*" = "addConceptIntersectCount()",
+      "*" = "addConceptIntersectDate()", "*" = "addConceptIntersectDays()"
+    )
+  )
+  .addTableIntersect(
+    x = x, tableName = tableName, indexDate = indexDate,
+    censorDate = censorDate, window = window, order = order, overlap = overlap,
+    flag = flag, count = count, date = date, days = days, field = field,
+    nameStyle = nameStyle
+  )
+}
+
+.addTableIntersect <- function(x,
+                               tableName,
+                               indexDate = "cohort_start_date",
+                               censorDate = NULL,
+                               window = list(c(0, Inf)),
+                               order = "first",
+                               overlap = TRUE,
+                               flag = TRUE,
+                               count = TRUE,
+                               date = TRUE,
+                               days = TRUE,
+                               field = character(),
+                               nameStyle = "{table_name}_{value}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)

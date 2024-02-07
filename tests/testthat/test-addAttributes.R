@@ -19,8 +19,10 @@ test_that("addAttributes, functionality", {
   }
 
   oldCohort <- cdm$cohort1
-  newCohort <- cdm$cohort1 %>%
-    addCohortIntersect(targetCohortTable = "cohort2")
+  expect_warning(
+    newCohort <- cdm$cohort1 %>%
+      addCohortIntersect(targetCohortTable = "cohort2")
+  )
 
   expect_true(length(attributes(newCohort)) == length(attributes(oldCohort)))
   for (i in names(attributes(newCohort))) {

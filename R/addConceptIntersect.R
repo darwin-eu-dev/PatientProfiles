@@ -70,6 +70,36 @@ addConceptIntersect <- function(x,
                                 date = TRUE,
                                 days = TRUE,
                                 nameStyle = "{value}_{concept_name}_{window_name}") {
+  lifecycle::deprecate_warn(
+    when = "0.6.0",
+    what = "addConceptIntersect()",
+    details = c(
+      "please use the specific functions instead:",
+      "*" = "addConceptIntersectFlag()", "*" = "addConceptIntersectCount()",
+      "*" = "addConceptIntersectDate()", "*" = "addConceptIntersectDays()"
+    )
+  )
+  .addConceptIntersect(
+    x = x, conceptSet = conceptSet, indexDate = indexDate,
+    censorDate = censorDate, window = window, targetStartDate = targetStartDate,
+    targetEndDate = targetEndDate, order = order, flag = flag, count = count,
+    date = date, days = days, nameStyle = nameStyle
+  )
+}
+
+.addConceptIntersect <- function(x,
+                                conceptSet,
+                                indexDate = "cohort_start_date",
+                                censorDate = NULL,
+                                window = list(c(0, Inf)),
+                                targetStartDate = "cohort_start_date",
+                                targetEndDate = NULL,
+                                order = "first",
+                                flag = TRUE,
+                                count = TRUE,
+                                date = TRUE,
+                                days = TRUE,
+                                nameStyle = "{value}_{concept_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   nameCohort <- "add_intersect_concept_set"
   individuals <- x %>%
