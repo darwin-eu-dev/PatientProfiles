@@ -88,6 +88,26 @@ formatCharacteristics <- function(result,
     dplyr::select(-c("result_type", "package_name", "package_version", "estimate_type")) |>
     visOmopResults::splitGroup(overall = FALSE) |>
     visOmopResults::splitAdditional(overall = FALSE)
+  if (!"table" %in% colnames(result)) {
+    result <- result |> dplyr::mutate("table" = NA_character_)
+  }
+  if (!"window" %in% colnames(result)) {
+    result <- result |> dplyr::mutate("window" = NA_character_)
+  }
+  result <- result |>
+    dplyr::mutate("variable_name" = dplyr::case_when(
+      is.na(.data$table) & is.na(.data$window) ~ .data$variable_name,
+      !is.na(.data$table) & is.na(.data$window) ~ paste(
+        .data$variable_name, "in", .data$window
+      ),
+      is.na(.data$table) & !is.na(.data$window) ~ paste0(
+        .data$variable_name, " [", .data$table, "]"
+      ),
+      !is.na(.data$table) & !is.na(.data$window) ~ paste0(
+        .data$variable_name, " [", .data$table, "] in ", .data$window
+      )
+    )) |>
+    dplyr::select(-c("table", "window"))
 
   colsStrata <- visOmopResults::strataColumns(result, overall = FALSE)
   if (length(colsStrata) > 0 & !splitStrata) {
