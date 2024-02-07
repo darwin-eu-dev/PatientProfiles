@@ -97,10 +97,10 @@ formatCharacteristics <- function(result,
   result <- result |>
     dplyr::mutate("variable_name" = dplyr::case_when(
       is.na(.data$table) & is.na(.data$window) ~ .data$variable_name,
-      !is.na(.data$table) & is.na(.data$window) ~ paste(
+      is.na(.data$table) & !is.na(.data$window) ~ paste(
         .data$variable_name, "in", .data$window
       ),
-      is.na(.data$table) & !is.na(.data$window) ~ paste0(
+      !is.na(.data$table) & is.na(.data$window) ~ paste0(
         .data$variable_name, " [", .data$table, "]"
       ),
       !is.na(.data$table) & !is.na(.data$window) ~ paste0(
@@ -153,14 +153,14 @@ formatCharacteristics <- function(result,
       title = .options$title, subtitle = .options$subtitle,
       caption = .options$caption, groupNameCol = .options$groupNameCol,
       groupNameAsColumn = .options$groupNameAsColumn,
-      groupOrder = .options$groupOrder
+      groupOrder = .options$groupOrder, colsToMergeRows = c("Variable", "Level")
     ),
     "flextable" = visOmopResults::fxTable(
       x = result, delim = "\n", style = style, na = .options$na,
       title = .options$title, subtitle = .options$subtitle,
       caption = .options$caption, groupNameCol = .options$groupNameCol,
       groupNameAsColumn = .options$groupNameAsColumn,
-      groupOrder = .options$groupOrder
+      groupOrder = .options$groupOrder, colsToMergeRows = c("Variable", "Level")
     )
   )
 

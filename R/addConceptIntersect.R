@@ -133,7 +133,8 @@ addConceptIntersect <- function(x,
     end = end,
     overwrite = TRUE
   )
-  x <- addCohortIntersect(
+  attr(x, "cdm_reference") <- cdm
+  x <- .addCohortIntersect(
     x = x,
     targetCohortTable = nameCohort,
     indexDate = indexDate,
