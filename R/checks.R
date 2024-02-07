@@ -586,7 +586,7 @@ checkConceptIntersect <- function(conceptIntersect, cdm) {
   checkmate::assertList(conceptIntersect, names = "named")
   arguments <- getArguments(addConceptIntersect)
   if (length(conceptIntersect) > 0) {
-    if (!is.list(conceptIntersect[[1]])) {
+    if (!identical(lapply(conceptIntersect, class) |> unlist() |> unname() |> unique(), "list")) {
       conceptIntersect <- list(conceptIntersect)
     }
   }
