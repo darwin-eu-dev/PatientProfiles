@@ -135,11 +135,10 @@ summariseCharacteristics <- function(cohort,
   }
 
   dic <- dplyr::tibble(
-    full_name = character(), short_name = character(), value = character(),
-    cohort = character(), window = character(), table = character()
+    short_name = character(), new_variable_name = character(),
+    new_variable_level = character(), table = character(), window = character()
   )
   variables <- list()
-  options(unique_variable_name = 0)
 
   # demographics
   if (demographics) {
@@ -149,6 +148,7 @@ summariseCharacteristics <- function(cohort,
     age <- uniqueVariableName()
     priorObservation <- uniqueVariableName()
     futureObservation <- uniqueVariableName()
+    demographicsCategorical <- sex
 
     if (!is.null(ageGroup)) {
       # default names
@@ -158,28 +158,25 @@ summariseCharacteristics <- function(cohort,
       newNames <- uniqueVariableName(length(ageGroup))
       dic <- dic %>%
         dplyr::union_all(dplyr::tibble(
-          full_name = c(
-            names(ageGroup), "sex", "age", "prior_observation",
-            "future_observation"
-          ),
-          short_name = c(
-            newNames, sex, age, priorObservation, futureObservation
-          ),
-          value = as.character(NA), cohort = as.character(NA),
+          short_name = newNames,
+          new_variable_name = names(ageGroup),
+          new_variable_level = as.character(NA),
+          table = as.character(NA),
           window = as.character(NA)
         ))
       names(ageGroup) <- newNames
-      demographicsCategorical <- c(sex, newNames)
-    } else {
-      demographicsCategorical <- sex
-      dic <- dic %>%
-        dplyr::union_all(dplyr::tibble(
-          full_name = c("sex", "age", "prior_observation", "future_observation"),
-          short_name = c(sex, age, priorObservation, futureObservation),
-          value = as.character(NA), cohort = as.character(NA),
-          window = as.character(NA)
-        ))
+      demographicsCategorical <- c(demographicsCategorical, newNames)
     }
+    dic <- dic %>%
+      dplyr::union_all(dplyr::tibble(
+        short_name = c(sex, age, priorObservation, futureObservation),
+        new_variable_name = c(
+          "sex", "age", "prior_observation", "future_observation"
+        ),
+        new_variable_level = as.character(NA),
+        table = as.character(NA),
+        window = as.character(NA)
+      ))
 
     # add demographics
     cohort <- cohort %>%
@@ -192,12 +189,12 @@ summariseCharacteristics <- function(cohort,
       )
 
     # update summary settings
-    variables <- updateVariables(
-      variables = variables,
-      date = c("cohort_start_date", "cohort_end_date"),
-      numeric = c(priorObservation, futureObservation, age),
-      categorical = demographicsCategorical
-    )
+    variables <- variables |>
+      updateVariables(
+        date = c("cohort_start_date", "cohort_end_date"),
+        numeric = c(priorObservation, futureObservation, age),
+        categorical = demographicsCategorical
+      )
   }
 
   # tableIntersect
@@ -214,10 +211,10 @@ summariseCharacteristics <- function(cohort,
 
     # update dictionary
     addDic <- updateDic(
-      tableIntersect[[k]]$value, shortNames, fullNames, arguments$tableName,
+      tableIntersect[[k]]$value, shortNames, fullNames,
+      arguments$tableName, paste("any", arguments$tableName),
       arguments$tableName
-    ) |>
-      dplyr::mutate("table" = arguments$tableName)
+    )
     dic <- dic %>% dplyr::union_all(addDic)
 
     # add intersect
@@ -243,14 +240,13 @@ summariseCharacteristics <- function(cohort,
     } else {
       cate <- NULL
     }
-    variables <- updateVariables(
-      variables = variables,
-      date = addDic$short_name[grepl("date_", addDic$short_name)],
-      numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
-      binary = addDic$short_name[grepl("flag_", addDic$short_name)],
-      categorical = cate
-    )
-
+    variables <- variables |>
+      updateVariables(
+        date = addDic$short_name[grepl("date_", addDic$short_name)],
+        numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
+        binary = addDic$short_name[grepl("flag_", addDic$short_name)],
+        categorical = cate
+      )
   }
 
   # cohortIntersect
@@ -303,9 +299,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       cohortIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesCohort, fullNamesCohort
-    ) |>
-      dplyr::mutate("table" = arguments$targetCohortTable)
+      shortNamesCohort, fullNamesCohort, arguments$targetCohortTable
+    )
     dic <- dic %>% dplyr::union_all(addDic)
 
     # add intersect
@@ -327,12 +322,12 @@ summariseCharacteristics <- function(cohort,
       )
 
     # update summary settings
-    variables <- updateVariables(
-      variables = variables,
-      date = addDic$short_name[grepl("date_", addDic$short_name)],
-      numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
-      binary = addDic$short_name[grepl("flag_", addDic$short_name)]
-    )
+    variables <- variables |>
+      updateVariables(
+        date = addDic$short_name[grepl("date_", addDic$short_name)],
+        numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
+        binary = addDic$short_name[grepl("flag_", addDic$short_name)]
+      )
 
     # restore cohort_set
     cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
@@ -363,9 +358,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       conceptIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesConcept, fullNamesConcept
-    ) |>
-      dplyr::mutate("table" = NA)
+      shortNamesConcept, fullNamesConcept, NA_character_
+    )
     dic <- dic %>% dplyr::union_all(addDic)
 
     # add intersect
@@ -386,15 +380,15 @@ summariseCharacteristics <- function(cohort,
       )
 
     # update summary settings
-    variables <- updateVariables(
-      variables = variables,
-      date = addDic$short_name[grepl("date_", addDic$short_name)],
-      numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
-      binary = addDic$short_name[grepl("flag_", addDic$short_name)],
-      categorical = addDic$short_name[
-        !grepl("flag_|count_|time_|date_", addDic$short_name)
-      ]
-    )
+    variables <- variables |>
+      updateVariables(
+        date = addDic$short_name[grepl("date_", addDic$short_name)],
+        numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
+        binary = addDic$short_name[grepl("flag_", addDic$short_name)],
+        categorical = addDic$short_name[
+          !grepl("flag_|count_|time_|date_", addDic$short_name)
+        ]
+      )
   }
 
   # update cohort_names
@@ -402,13 +396,13 @@ summariseCharacteristics <- function(cohort,
 
   # detect other variables
   x <- variableTypes(cohort %>% dplyr::select(dplyr::all_of(otherVariables)))
-  variables <- updateVariables(
-    variables = variables,
-    date = x %>% dplyr::filter(.data$variable_type == "date") %>% dplyr::pull("variable"),
-    numeric = x %>% dplyr::filter(.data$variable_type == "numeric") %>% dplyr::pull("variable"),
-    binary = x %>% dplyr::filter(.data$variable_type == "binary") %>% dplyr::pull("variable"),
-    categorical = x %>% dplyr::filter(.data$variable_type == "categorical") %>% dplyr::pull("variable")
-  )
+  variables <- variables |>
+    updateVariables(
+      date = x %>% dplyr::filter(.data$variable_type == "date") %>% dplyr::pull("variable"),
+      numeric = x %>% dplyr::filter(.data$variable_type == "numeric") %>% dplyr::pull("variable"),
+      binary = x %>% dplyr::filter(.data$variable_type == "binary") %>% dplyr::pull("variable"),
+      categorical = x %>% dplyr::filter(.data$variable_type == "categorical") %>% dplyr::pull("variable")
+    )
 
   cli::cli_alert_info("summarising data")
   # summarise results
@@ -423,30 +417,49 @@ summariseCharacteristics <- function(cohort,
     dplyr::mutate(result_type = "summarised_characteristics")
 
   # rename variables
-  # results <- results %>%
-  #   dplyr::left_join(
-  #     tidyDic(dic) |> dplyr::rename("variable_name" = "variable"),
-  #     by = "variable_name"
-  #   ) %>%
-  #   dplyr::mutate(
-  #     "variable_name" = dplyr::if_else(
-  #       is.na(.data$new_variable),
-  #       .data$variable_name,
-  #       .data$new_variable
-  #     ),
-  #     "variable_level" = dplyr::if_else(
-  #       is.na(.data$new_variable_level),
-  #       .data$variable_level,
-  #       .data$new_variable_level
-  #     )
-  #   ) %>%
-  #   dplyr::select(-"new_variable", -"new_variable_level") %>%
-  #   dplyr::mutate(dplyr::across(
-  #     c("variable_name", "variable_level"),
-  #     ~ stringr::str_to_sentence(gsub("_", " ", .x))
-  #   )) %>%
-  #   dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result"))) |>
-  #   dplyr::as_tibble()
+  results <- results %>%
+    dplyr::left_join(
+      dic |> dplyr::rename("variable_name" = "short_name"),
+      by = "variable_name"
+    ) %>%
+    dplyr::mutate(
+      "variable_name" = dplyr::if_else(
+        is.na(.data$new_variable_name),
+        .data$variable_name,
+        .data$new_variable_name
+      ),
+      "variable_level" = dplyr::if_else(
+        is.na(.data$new_variable_level),
+        .data$variable_level,
+        .data$new_variable_level
+      )
+    ) %>%
+    dplyr::select(-c(
+      "new_variable_name", "new_variable_level", "additional_name",
+      "additional_level"
+    )) %>%
+    dplyr::mutate(dplyr::across(
+      c("variable_name", "variable_level"),
+      ~ stringr::str_to_sentence(gsub("_", " ", .x))
+    )) %>%
+    dplyr::mutate(
+      "additional_name" = dplyr::case_when(
+        is.na(.data$table) & is.na(.data$window) ~ "overall",
+        !is.na(.data$table) & is.na(.data$window) ~ "table",
+        is.na(.data$table) & !is.na(.data$window) ~ "window",
+        !is.na(.data$table) & !is.na(.data$window) ~ "table and window"
+      ),
+      "additional_level" = dplyr::case_when(
+        is.na(.data$table) & is.na(.data$window) ~ "overall",
+        !is.na(.data$table) & is.na(.data$window) ~ .data$table,
+        is.na(.data$table) & !is.na(.data$window) ~ .data$window,
+        !is.na(.data$table) & !is.na(.data$window) ~ paste(
+          .data$table, "and", .data$window
+        )
+      )
+    ) |>
+    dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result"))) |>
+    dplyr::as_tibble()
 
   # correct integers
   integers <- results$estimate_value
@@ -480,29 +493,6 @@ correctWindowName <- function(windowName) {
     unlist()
   return(windowName)
 }
-tidyDic <- function(dic) {
-  dic %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::mutate("window" = correctWindowName(.data$window)) %>%
-    dplyr::mutate(
-      "new_variable" = dplyr::if_else(
-        .data$value %in% c("flag", "count", "date", "days"),
-        .data$cohort,
-        .data$value
-      ),
-      "new_variable_level" = dplyr::if_else(
-        .data$value %in% c("flag", "count", "date", "days"),
-        .data$value,
-        as.character(NA)
-      )
-    ) |>
-    dplyr::select("variable" = "short_name", "new_variable", "new") |>
-    dplyr::union_all(
-      dic %>%
-        dplyr::filter(is.na(.data$value)) %>%
-        dplyr::select("variable" = "short_name", "new_variable" = "full_name")
-    )
-}
 uniqueVariableName <- function(n = 1) {
   if (n != 0) {
     i <- getOption("unique_variable_name", 0) + 1:n
@@ -524,56 +514,65 @@ updateVariables <- function(variables,
   variables$categorical <- c(variables$categorical, categorical)
   return(variables)
 }
-updateArguments <- function(arguments, def) {
-  if (!is.list(def[["window"]])) {
-    def[["window"]] <- list(def[["window"]])
+updateArguments <- function(arguments, provided) {
+  for (nm in names(provided)) {
+    arguments[[nm]] <- provided[[nm]]
   }
-  for (nm in names(def)) {
-    arguments[[nm]] <- def[[nm]]
+  if (!is.list(arguments[["window"]])) {
+    arguments[["window"]] <- list(arguments[["window"]])
   }
-  if ("value" %in% names(arguments)) {
-    arguments$flag <- FALSE
-    arguments$count <- FALSE
-    arguments$date <- FALSE
-    arguments$days <- FALSE
-    arguments[arguments$value] <- TRUE
-    arguments$field <- arguments$value[
-      !arguments$value %in% c("flag", "count", "date", "days")
-    ]
+  values <- c("flag", "count", "date", "days")
+  arguments$flag <- FALSE
+  arguments$count <- FALSE
+  arguments$date <- FALSE
+  arguments$days <- FALSE
+  id <- arguments$value[arguments$value %in% values]
+  if (length(id) > 0) {
+    arguments[[id]] <- TRUE
   }
-  names(arguments[["window"]]) <- getWindowNames(arguments[["window"]])
+  arguments$field <- arguments$value[!arguments$value %in% values]
+  names(arguments$window) <- getWindowNames(arguments$window)
   return(arguments)
 }
 updateDic <- function(value,
                       shortWindow,
                       fullWindow,
                       shortCohort,
-                      fullCohort) {
+                      fullCohort,
+                      tableName) {
   expand.grid("value" = value, "short_window" = shortWindow) %>%
     dplyr::as_tibble() %>%
     dplyr::inner_join(
       dplyr::tibble("short_window" = shortWindow, "full_window" = fullWindow),
       by = "short_window"
     ) %>%
-      dplyr::inner_join(
-        expand.grid("short_window" = shortWindow, "short_cohort" = shortCohort) %>%
-          dplyr::as_tibble(),
-        by = "short_window"
-      ) %>%
-      dplyr::inner_join(
-        dplyr::tibble("short_cohort" = shortCohort, "full_cohort" = fullCohort),
-        by = "short_cohort"
-      ) %>%
-      dplyr::mutate(
-        "short_name" = paste0(
-          .data$value, "_", .data$short_cohort, "_", .data$short_window
-        ),
-        "full_name" = paste0(
-          .data$value, "_", .data$full_cohort, "_", .data$full_window
-        )
-      ) %>%
+    dplyr::inner_join(
+      expand.grid("short_window" = shortWindow, "short_cohort" = shortCohort) %>%
+        dplyr::as_tibble(),
+      by = "short_window"
+    ) %>%
+    dplyr::inner_join(
+      dplyr::tibble("short_cohort" = shortCohort, "full_cohort" = fullCohort),
+      by = "short_cohort"
+    ) %>%
+    dplyr::mutate("short_name" = paste0(
+      .data$value, "_", .data$short_cohort, "_", .data$short_window
+    )) %>%
+    dplyr::mutate(
+      "new_variable_name" = dplyr::if_else(
+        .data$value %in% c("flag", "count", "date", "days"),
+        .data$full_cohort,
+        .data$value
+      ),
+      "new_variable_level" = dplyr::if_else(
+        .data$value %in% c("flag", "count", "date", "days"),
+        .data$value,
+        as.character(NA)
+      ),
+      "table" = .env$tableName,
+      "window" = correctWindowName(.data$full_window)
+    ) |>
     dplyr::select(
-      "short_name", "full_name", "value", "cohort" = "full_cohort",
-      "window" = "full_window"
+      "short_name", "new_variable_name", "new_variable_level", "table", "window"
     )
 }
