@@ -91,7 +91,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Covid") %>%
+      dplyr::filter(variable_name == "Covid") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -100,7 +100,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Headache") %>%
+      dplyr::filter(variable_name == "Headache") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -109,7 +109,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Acetaminophen") %>%
+      dplyr::filter(variable_name == "Acetaminophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -118,7 +118,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Ibuprophen") %>%
+      dplyr::filter(variable_name == "Ibuprophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -127,7 +127,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Naloxone") %>%
+      dplyr::filter(variable_name == "Naloxone") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -136,7 +136,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Covid") %>%
+      dplyr::filter(variable_name == "Covid") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -145,7 +145,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Headache") %>%
+      dplyr::filter(variable_name == "Headache") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -154,7 +154,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Acetaminophen") %>%
+      dplyr::filter(variable_name == "Acetaminophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -163,7 +163,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Ibuprophen") %>%
+      dplyr::filter(variable_name == "Ibuprophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -172,7 +172,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Naloxone") %>%
+      dplyr::filter(variable_name == "Naloxone") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -198,28 +198,32 @@ test_that("test summariseCharacteristics", {
   ))
   expect_true(
     result %>%
-      dplyr::filter(grepl("short", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(window == "short") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       omopgenerics::settings(cdm$medication) |> nrow() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("long", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(window == "long") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       omopgenerics::settings(cdm$medication) |> nrow() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("Medications", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(table == "medication") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       omopgenerics::settings(cdm$medication) |> nrow() * 8 # 2 group_level 4 estimate type 2 window
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("Comorbidities", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(table == "comorbidities") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
       omopgenerics::settings(cdm$comorbidities) |> nrow() * 4 # 2 group_level 4 estimate type
@@ -307,7 +311,6 @@ test_that("test empty cohort", {
       )))
   )
 
-  # NOT WORKING
   expect_no_error(
     x3 <- cdm$cohort1 %>%
       summariseCharacteristics(tableIntersect = list("Visits" = list(

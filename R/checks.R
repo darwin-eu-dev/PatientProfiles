@@ -535,14 +535,19 @@ checkSignificantDecimals <- function(significantDecimals) {
 
 #' @noRd
 checkTableIntersect <- function(tableIntersect, cdm) {
-  checkmate::assertList(tableIntersect, names = "named")
-  arguments <- getArguments(addIntersect)
+  checkmate::assertList(tableIntersect)
+  arguments <- getArguments(addTableIntersect)
+  if (length(tableIntersect) > 0) {
+    if (!is.list(tableIntersect[[1]])) {
+      tableIntersect <- list(tableIntersect)
+    }
+  }
   lapply(tableIntersect, function(x) {
     checkmate::assertList(x, names = "named")
     checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
     checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
-  invisible(NULL)
+  return(tableIntersect)
 }
 
 getArguments <- function(fun) {
@@ -561,26 +566,36 @@ getArguments <- function(fun) {
 
 #' @noRd
 checkCohortIntersect <- function(cohortIntersect, cdm) {
-  checkmate::assertList(cohortIntersect, names = "named")
+  checkmate::assertList(cohortIntersect)
   arguments <- getArguments(addCohortIntersect)
+  if (length(cohortIntersect) > 0) {
+    if (!is.list(cohortIntersect[[1]])) {
+      cohortIntersect <- list(cohortIntersect)
+    }
+  }
   lapply(cohortIntersect, function(x) {
     checkmate::assertList(x, names = "named")
     checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
     checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
-  invisible(NULL)
+  return(cohortIntersect)
 }
 
 #' @noRd
 checkConceptIntersect <- function(conceptIntersect, cdm) {
   checkmate::assertList(conceptIntersect, names = "named")
   arguments <- getArguments(addConceptIntersect)
+  if (length(conceptIntersect) > 0) {
+    if (!is.list(conceptIntersect[[1]])) {
+      conceptIntersect <- list(conceptIntersect)
+    }
+  }
   lapply(conceptIntersect, function(x) {
     checkmate::assertList(x, names = "named")
     checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
     checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
-  invisible(NULL)
+  return(conceptIntersect)
 }
 
 #' @noRd
