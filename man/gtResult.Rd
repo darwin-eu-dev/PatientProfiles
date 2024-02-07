@@ -25,7 +25,7 @@ gtResult(
 
 \item{format}{formats and labels to use}
 
-\item{keepNotFormatted}{Wheather to keep not formated estimate types}
+\item{keepNotFormatted}{Whether to keep not formatted estimate types}
 
 \item{decimals}{Decimals per estimate_type}
 
