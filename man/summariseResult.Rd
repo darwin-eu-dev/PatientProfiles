@@ -50,7 +50,7 @@ library(dplyr)
 
 cdm <- mockPatientProfiles()
 x <- cdm$cohort1 \%>\%
-  addDemographics(cdm) \%>\%
+  addDemographics() \%>\%
   collect()
 result <- summariseResult(x)
 }

@@ -6,7 +6,7 @@
 \usage{
 summariseCharacteristics(
   cohort,
-  cdm = attr(cohort, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   strata = list(),
   demographics = TRUE,
   ageGroup = NULL,

@@ -28,6 +28,7 @@
 #' or a column date of x
 #' @param includeSource Whether to include source concepts.
 #' @param minimumFrequency Minimum frequency covariates to report.
+#' @param excludedCodes Codes excluded.
 #' @param cdm A cdm reference.
 #'
 #' @return The output of this function is a `ResultSummary` containing the
@@ -48,10 +49,15 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                censorDate = NULL,
                                                includeSource = FALSE,
                                                minimumFrequency = 0.005,
-                                               cdm = attr(cohort, "cdm_reference")) {
+                                               excludedCodes = NULL,
+                                               cdm = lifecycle::deprecated()) {
   if (!is.list(window)) {
     window <- list(window)
   }
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "summariseLargeScaleCharacteristics(cdm)")
+  }
+  cdm <- omopgenerics::cdmReference(cohort)
 
   # initial checks
   checkX(cohort)
@@ -67,6 +73,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
   }
   checkmate::assertLogical(includeSource, any.missing = FALSE, len = 1)
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
+  checkmate::assert_integerish(excludedCodes, any.missing = FALSE, null.ok = TRUE)
   checkCdm(cdm)
 
   # add names to windows
@@ -88,7 +95,9 @@ summariseLargeScaleCharacteristics <- function(cohort,
   lsc <- NULL
   for (tab in unique(analyses$table)) {
     analysesTable <- analyses %>% dplyr::filter(.data$table == .env$tab)
-    table <- getTable(tab, x, includeSource, minWindow, maxWindow, tablePrefix)
+    table <- getTable(
+      tab, x, includeSource, minWindow, maxWindow, tablePrefix, excludedCodes
+    )
     for (k in seq_len(nrow(analysesTable))) {
       type <- analysesTable$type[k]
       analysis <- analysesTable$analysis[k]
@@ -106,7 +115,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
               )
           )
       }
-      if (includeSource & analysis == "standard" & !is.na(getSourceConceptName(tab))) {
+      if ("source" %in% colnames(table) & analysis == "standard") {
         tableAnalysis <- getTableAnalysis(table, type, "source", tablePrefix)
         for (win in seq_along(window)) {
           tableWindow <- getTableWindow(tableAnalysis, window[[win]], tablePrefix)
@@ -145,16 +154,13 @@ summariseLargeScaleCharacteristics <- function(cohort,
         .data$estimate_type == "count", "numeric", "percentage"
       )
     ) |>
-    omopgenerics::uniteGroup(
-      cols = c("table_name", "type", "analysis", "concept"),
-      name = "additional_name",
-      level = "additional_level",
-      keep = FALSE
+    visOmopResults::uniteAdditional(
+      cols = c("table_name", "type", "analysis", "concept")
     ) |>
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
       "summarised_result"
     ))) |>
-    omopgenerics::summarisedResult()
+    omopgenerics::newSummarisedResult()
 
   # eliminate permanent tables
   cdm <- omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
@@ -175,6 +181,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x
 #' @param minimumFrequency Minimum frequency covariates to report.
+#' @param excludedCodes Codes excluded.
 #'
 #' @return The output of this function is the cohort with the new created
 #' columns
@@ -187,10 +194,13 @@ addLargeScaleCharacteristics <- function(cohort,
                                          episodeInWindow = NULL,
                                          indexDate = "cohort_start_date",
                                          censorDate = NULL,
-                                         minimumFrequency = 0.005) {
+                                         minimumFrequency = 0.005,
+                                         excludedCodes = NULL) {
   if (!is.list(window)) {
     window <- list(window)
   }
+
+  cdm <- omopgenerics::cdmReference(cohort)
 
   # initial checks
   checkX(cohort)
@@ -206,7 +216,7 @@ addLargeScaleCharacteristics <- function(cohort,
   checkmate::assertNumber(minimumFrequency, lower = 0, upper = 1)
   checkmate::assertTRUE(indexDate %in% colnames(cohort))
   checkmate::assertTRUE(is.null(censorDate) || censorDate %in% colnames(cohort))
-  cdm <- attr(cohort, "cdm_reference")
+  checkmate::assert_integerish(excludedCodes, any.missing = FALSE, null.ok = TRUE)
   checkCdm(cdm)
 
   # add names to windows
@@ -237,7 +247,9 @@ addLargeScaleCharacteristics <- function(cohort,
   lsc <- NULL
   for (tab in unique(analyses$table)) {
     analysesTable <- analyses %>% dplyr::filter(.data$table == .env$tab)
-    table <- getTable(tab, x, FALSE, minWindow, maxWindow, tablePrefix)
+    table <- getTable(
+      tab, x, FALSE, minWindow, maxWindow, tablePrefix, excludedCodes
+    )
     for (k in seq_len(nrow(analysesTable))) {
       type <- analysesTable$type[k]
       analysis <- analysesTable$analysis[k]
@@ -346,16 +358,16 @@ getInitialTable <- function(cohort, tablePrefix, indexDate, censorDate) {
     )
   return(x)
 }
-getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix) {
-  cdm <- attr(x, "cdm_reference")
+getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, excludedCodes) {
+  cdm <- omopgenerics::cdmReference(x)
   toSelect <- c(
     "subject_id" = "person_id",
-    "start_diff" = getStartName(tab),
-    "end_diff" = ifelse(is.na(getEndName(tab)), getStartName(tab), getEndName(tab)),
-    "standard" = getConceptName(tab),
-    "source" = getSourceConceptName(tab)
+    "start_diff" = startDateColumn(tab),
+    "end_diff" = ifelse(is.na(endDateColumn(tab)), startDateColumn(tab), endDateColumn(tab)),
+    "standard" = standardConceptIdColumn(tab),
+    "source" = sourceConceptIdColumn(tab)
   )
-  if (includeSource == FALSE) {
+  if (includeSource == FALSE || is.na(sourceConceptIdColumn(tab))) {
     toSelect <- toSelect["source" != names(toSelect)]
   }
   table <- cdm[[tab]] %>%
@@ -381,6 +393,21 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix) {
     table <- table %>%
       dplyr::filter(.data$start_diff <= .env$maxWindow)
   }
+  if (length(excludedCodes) > 0) {
+    nm <- paste0(tablePrefix, "concepts")
+    cdm <- omopgenerics::insertTable(
+      cdm = cdm, name = nm, table = dplyr::tibble("standard" = excludedCodes),
+      overwrite = TRUE
+    )
+    table <- table |>
+      dplyr::anti_join(cdm[[nm]], by = "standard")
+    if ("source" %in% colnames(table)) {
+      table <- table |>
+        dplyr::anti_join(
+          cdm[[nm]] |> dplyr::rename("source" = "standard"), by = "source"
+        )
+    }
+  }
   table <- table %>%
     dplyr::select(-"start_obs", -"end_obs") %>%
     dplyr::compute(
@@ -389,14 +416,12 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix) {
       overwrite = TRUE
     )
 }
-writeSchema <- function(x) {
-  attr(attr(x, "cdm_reference"), "write_schema")
-}
+
 summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
   result <- NULL
-  cohortNames <- CDMConnector::cohortSet(cohort)$cohort_name
+  cohortNames <- omopgenerics::settings(cohort)$cohort_name
   for (cohortName in cohortNames) {
-    cdi <- CDMConnector::cohortSet(cohort) %>%
+    cdi <- omopgenerics::settings(cohort) %>%
       dplyr::filter(.data$cohort_name == .env$cohortName) %>%
       dplyr::pull("cohort_definition_id")
     tableWindowCohort <- tableWindow %>%
@@ -520,7 +545,7 @@ getTableAnalysis <- function(table, type, analysis, tablePrefix) {
   return(table)
 }
 getCodesGroup <- function(table, analysis, tablePrefix) {
-  cdm <- attr(table, "cdm_reference")
+  cdm <- omopgenerics::cdmReference(table)
   if (analysis %in% c("ATC 1st", "ATC 2nd", "ATC 3rd", "ATC 4th", "ATC 5h")) {
     codes <- cdm[["concept"]] %>%
       dplyr::filter(.data$vocabulary_id == "ATC") %>%

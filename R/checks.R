@@ -111,7 +111,12 @@ checkCategory <- function(category, overlap = FALSE, type = "numeric") {
     dplyr::mutate(category_label = names(.env$category)) %>%
     dplyr::mutate(category_label = dplyr::if_else(
       .data$category_label == "",
-      paste0(.data$lower_bound, " to ", .data$upper_bound),
+      dplyr::case_when(
+        is.infinite(.data$lower_bound) & is.infinite(.data$upper_bound) ~ "any",
+        is.infinite(.data$lower_bound) ~ paste(.data$upper_bound, "or below"),
+        is.infinite(.data$upper_bound) ~ paste(.data$lower_bound, "or above"),
+        TRUE ~ paste(.data$lower_bound, "to", .data$upper_bound)
+      ),
       .data$category_label
     )) %>%
     dplyr::arrange(.data$lower_bound)
@@ -139,6 +144,10 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
     }
     for (k in seq_along(ageGroup)) {
       invisible(checkCategory(ageGroup[[k]], overlap))
+      if (any(ageGroup[[k]] |> unlist() |> unique() < 0)) {
+        cli::cli_abort("ageGroup can't contain negative values")
+      }
+
     }
     if (is.null(names(ageGroup))) {
       names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
@@ -208,19 +217,13 @@ checkWindow <- function(window) {
 
 #' @noRd
 checkNewName <- function(name, x) {
-  for (k in seq_along(name)) {
-    if (name[k] %in% colnames(x)) {
-      id <- 1
-      newName <- paste0(name[k], "_", id)
-      while (newName %in% colnames(x)) {
-        id <- id + 1
-        newName <- paste0(name[k], "_", id)
-      }
-      warning(glue::glue(
-        "{name[k]} already exists in x, it was renamed to {newName}"
-      ))
-      name[k] <- newName
-    }
+  renamed <- name[name %in% colnames(x)]
+  if (length(renamed) > 0) {
+    mes <- paste0(
+      "The following columns will be overwritten: ",
+      paste0(renamed, collapse = ", ")
+    )
+    cli::cli_warn(message = mes)
   }
   invisible(name)
 }
@@ -312,7 +315,7 @@ checkValue <- function(value, x, name) {
       paste0(valueOptions, collapse = ", "),
       " are also present in ",
       name,
-      ". But have theyr own functionality inside the package. If you want to
+      ". But have their own functionality inside the package. If you want to
       obtain that column please rename and run again."
     ))
   }
@@ -341,19 +344,23 @@ checkCohortNames <- function(x, targetCohortId, name) {
       idName <- paste0(name, "_", targetCohortId)
     } else {
       idName <- cohort %>%
-        dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
+        dplyr::filter(
+          as.integer(.data$cohort_definition_id) %in%
+            as.integer(.env$targetCohortId)
+        ) %>%
         dplyr::arrange(.data$cohort_definition_id) %>%
         dplyr::pull("cohort_name")
       if (length(idName) != length(targetCohortId)) {
         cli::cli_abort(
-          "some of the cohort ids given do not exist in the cohortSet of cdm[[targetCohortName]]"
+          "some of the cohort ids given do not exist in the cohortSet of
+          cdm[[targetCohortName]]"
         )
       }
     }
   }
   parameters <- list(
     "filter_variable" = filterVariable,
-    "filter_id" = targetCohortId,
+    "filter_id" = sort(targetCohortId),
     "id_name" = idName
   )
   invisible(parameters)
@@ -475,7 +482,8 @@ checkVariablesFunctions <- function(variables, functions, table) {
     dplyr::left_join(
       formats %>%
         dplyr::select("variable_type", "format_key"),
-      by = "variable_type"
+      by = "variable_type",
+      relationship = "many-to-many"
     )
   nonSuportedFunctions <- requiredFunctions %>%
     dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))

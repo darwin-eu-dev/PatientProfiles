@@ -56,15 +56,21 @@ test_that("test summariseCharacteristics", {
     cohort2 = emptyCohort
   )
 
-  attr(cdm$dus_cohort, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2), cohort_name = c("exposed", "unexposed")
-  )
-  attr(cdm$comorbidities, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2), cohort_name = c("covid", "headache")
-  )
-  attr(cdm$medication, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2, 3),
-    cohort_name = c("acetaminophen", "ibuprophen", "naloxone")
+  cdm$dus_cohort <- omopgenerics::newCohortTable(
+    table = cdm$dus_cohort, cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2), cohort_name = c("exposed", "unexposed")
+    ))
+  cdm$comorbidities <- omopgenerics::newCohortTable(
+    table = cdm$comorbidities, cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2), cohort_name = c("covid", "headache")
+    ))
+  cdm$medication <- omopgenerics::newCohortTable(
+    table = cdm$medication,
+    cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2, 3),
+      cohort_name = c("acetaminophen", "ibuprophen", "naloxone")
+    ),
+    cohortAttritionRef = NULL
   )
 
   expect_no_error(result <- summariseCharacteristics(
@@ -79,7 +85,7 @@ test_that("test summariseCharacteristics", {
   ) |>
     omopgenerics::suppress(minCellCount = 1))
   expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "tbl_df",
+    "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
     "tbl", "data.frame"
   ))
   expect_identical(
@@ -187,7 +193,7 @@ test_that("test summariseCharacteristics", {
   )|>
     omopgenerics::suppress(minCellCount = 1))
   expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "tbl_df",
+    "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
     "tbl", "data.frame"
   ))
   expect_true(
@@ -195,32 +201,28 @@ test_that("test summariseCharacteristics", {
       dplyr::filter(grepl("short", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 4 estimate type
+      omopgenerics::settings(cdm$medication) |> nrow() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
       dplyr::filter(grepl("long", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 4 estimate type
+      omopgenerics::settings(cdm$medication) |> nrow() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
       dplyr::filter(grepl("Medications", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 8 # 2 group_level 4 estimate type 2 window
+      omopgenerics::settings(cdm$medication) |> nrow() * 8 # 2 group_level 4 estimate type 2 window
   )
   expect_true(
     result %>%
       dplyr::filter(grepl("Comorbidities", variable_name)) %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$comorbidities, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 4 estimate type
+      omopgenerics::settings(cdm$comorbidities) |> nrow() * 4 # 2 group_level 4 estimate type
   )
 
   result_notables <- summariseCharacteristics(
@@ -229,7 +231,7 @@ test_that("test summariseCharacteristics", {
   )|>
     omopgenerics::suppress(minCellCount = 1)
   expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "tbl_df",
+    "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
     "tbl", "data.frame"
   ))
 
@@ -297,5 +299,20 @@ test_that("test empty cohort", {
           targetCohortTable = "cohort2", value = "flag", window = c(-Inf, 0)
         )
       ))
+  )
+  expect_no_error(
+    x1 <- cdm$cohort1 %>%
+      summariseCharacteristics(tableIntersect = list("Visits" = list(
+        tableName = "visit_occurrence", value = "flag", window = c(-365, 0)
+      )))
+  )
+
+  # NOT WORKING
+  expect_no_error(
+    x3 <- cdm$cohort1 %>%
+      summariseCharacteristics(tableIntersect = list("Visits" = list(
+        tableName = "visit_occurrence", value = "visit_concept_id",
+        window = c(-Inf, Inf)
+      )))
   )
 })

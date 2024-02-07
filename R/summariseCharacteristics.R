@@ -56,7 +56,7 @@
 #' )
 #' }
 summariseCharacteristics <- function(cohort,
-                                     cdm = attr(cohort, "cdm_reference"),
+                                     cdm = lifecycle::deprecated(),
                                      strata = list(),
                                      demographics = TRUE,
                                      ageGroup = NULL,
@@ -64,10 +64,17 @@ summariseCharacteristics <- function(cohort,
                                      cohortIntersect = list(),
                                      conceptIntersect = list(),
                                      otherVariables = character()) {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "summariseCharacteristics(cdm)")
+  }
   # check initial tables
+  cdm <- omopgenerics::cdmReference(cohort)
   checkX(cohort)
   checkmate::assertLogical(demographics, any.missing = FALSE, len = 1)
   checkCdm(cdm)
+  if (!is.list(strata)) {
+    strata <- list(strata)
+  }
   checkStrata(strata, cohort)
   checkAgeGroup(ageGroup)
   checkTableIntersect(tableIntersect, cdm)
@@ -127,7 +134,7 @@ summariseCharacteristics <- function(cohort,
       "additional_name" = "overall",
       "additional_level" = "overall"
     ) |>
-      omopgenerics::summarisedResult()
+      omopgenerics::newSummarisedResult()
     return(result)
   }
 
@@ -140,6 +147,13 @@ summariseCharacteristics <- function(cohort,
 
   # demographics
   if (demographics) {
+    cli::cli_alert_info("adding demographics columns")
+
+    sex <- uniqueVariableName()
+    age <- uniqueVariableName()
+    priorObservation <- uniqueVariableName()
+    futureObservation <- uniqueVariableName()
+
     if (!is.null(ageGroup)) {
       # default names
       ageGroup <- checkAgeGroup(ageGroup)
@@ -148,33 +162,55 @@ summariseCharacteristics <- function(cohort,
       newNames <- uniqueVariableName(length(ageGroup))
       dic <- dic %>%
         dplyr::union_all(dplyr::tibble(
-          full_name = names(ageGroup), short_name = newNames,
+          full_name = c(
+            names(ageGroup), "sex", "age", "prior_observation",
+            "future_observation"
+          ),
+          short_name = c(
+            newNames, sex, age, priorObservation, futureObservation
+          ),
           value = as.character(NA), cohort = as.character(NA),
           window = as.character(NA), variable_group = as.character(NA)
         ))
       names(ageGroup) <- newNames
-      demographicsCategorical <- c("sex", newNames)
+      demographicsCategorical <- c(sex, newNames)
     } else {
-      demographicsCategorical <- "sex"
+      demographicsCategorical <- sex
+      dic <- dic %>%
+        dplyr::union_all(dplyr::tibble(
+          full_name = c("sex", "age", "prior_observation", "future_observation"),
+          short_name = c(sex, age, priorObservation, futureObservation),
+          value = as.character(NA), cohort = as.character(NA),
+          window = as.character(NA), variable_group = as.character(NA)
+        ))
     }
 
     # add demographics
     cohort <- cohort %>%
-      addDemographics(ageGroup = ageGroup)
+      addDemographics(
+        ageGroup = ageGroup,
+        sexName = sex,
+        ageName = age,
+        priorObservationName = priorObservation,
+        futureObservationName = futureObservation
+      )
 
     # update summary settings
     variables <- updateVariables(
       variables = variables,
       date = c("cohort_start_date", "cohort_end_date"),
-      numeric = c("prior_observation", "future_observation", "age"),
+      numeric = c(priorObservation, futureObservation, age),
       categorical = demographicsCategorical
     )
   }
 
   # tableIntersect
   for (k in seq_along(tableIntersect)) {
+    cli::cli_alert_info(
+      "adding table intersect columns for table: {tableIntersect[[k]]$tableName}"
+    )
     # prepare arguments
-    arguments <- formals(addIntersect)
+    arguments <- formals(addTableIntersect)
     arguments <- updateArguments(arguments, tableIntersect[[k]])
     shortNames <- uniqueVariableName(length(arguments$window))
     fullNames <- names(arguments$window)
@@ -187,24 +223,21 @@ summariseCharacteristics <- function(cohort,
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
-    # TODO to implement addTableIntersect
-
     # add intersect
     cohort <- cohort %>%
-      PatientProfiles::addIntersect(
-        cdm = cdm,
+      PatientProfiles::addTableIntersect(
         tableName = arguments$tableName,
-        value = arguments$value,
-        filterVariable = arguments$filterVariable,
-        filterId = arguments$filterId,
-        idName = arguments$idName,
         window = arguments$window,
         indexDate = arguments$indexDate,
         censorDate = arguments$censorDate,
-        #targetStartDate = arguments$targetStartDate,
-        #targetEndDate = arguments$targetEndDate,
         order = arguments$order,
-        nameStyle = paste0("{value}_", arguments$tableName, "_{window_name}")
+        flag = arguments$flag,
+        count = arguments$count,
+        date = arguments$date,
+        days = arguments$days,
+        field = arguments$field,
+        overlap = arguments$overlap,
+        nameStyle = "{value}_{table_name}_{window_name}"
       )
 
     # update summary settings
@@ -218,9 +251,12 @@ summariseCharacteristics <- function(cohort,
 
   # cohortIntersect
   for (k in seq_along(cohortIntersect)) {
+    cli::cli_alert_info(
+      "adding cohort intersect columns for table: {cohortIntersect[[k]]$targetCohortTable}"
+    )
     # prepare arguments
     arguments <- formals(addCohortIntersect)
-    arguments <- updateArguments(arguments, cohortIntersect[[k]], TRUE)
+    arguments <- updateArguments(arguments, cohortIntersect[[k]])
 
     # rename windows
     fullNamesWindow <- names(arguments$window)
@@ -228,31 +264,37 @@ summariseCharacteristics <- function(cohort,
     names(arguments$window) <- shortNamesWindow
 
     # rename cohorts
-    fullNamesCohort <- CDMConnector::cohortSet(
+    fullNamesCohort <- omopgenerics::settings(
       cdm[[arguments$targetCohortTable]]
-    )
-    if (!is.null(arguments$targetCohortId)) {
-      fullNamesCohort <- fullNamesCohort %>%
-        dplyr::filter(
-          .data$cohort_definition_id %in% !!arguments$targetCohortId
-        )
-    }
-    fullNamesCohort <- fullNamesCohort %>% dplyr::pull("cohort_name")
+    ) |>
+      dplyr::pull("cohort_name")
     shortNamesCohort <- uniqueVariableName(length(fullNamesCohort))
 
     # update cohort_set
-    originalCohortSet <- attr(cdm[[arguments$targetCohortTable]], "cohort_set")
+    originalCohortSet <- omopgenerics::settings(cdm[[arguments$targetCohortTable]])
     newCohortSet <- originalCohortSet %>%
+      dplyr::select("cohort_definition_id", "cohort_name") |>
       dplyr::rename(old_cohort_name = "cohort_name") %>%
       dplyr::inner_join(
         dplyr::tibble(
           old_cohort_name = fullNamesCohort, cohort_name = shortNamesCohort
         ),
-        by = "old_cohort_name",
-        copy = TRUE
-      ) %>%
-      dplyr::compute()
-    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- newCohortSet
+        by = "old_cohort_name"
+      ) |>
+      dplyr::select(-"old_cohort_name")
+    cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
+      omopgenerics::newCohortTable(
+        cohortSetRef = newCohortSet, cohortAttritionRef = NULL
+      )
+
+    if (!is.null(arguments$targetCohortId)) {
+      id <- originalCohortSet |>
+        dplyr::filter(.data$cohort_definition_id %in% arguments$targetCohortId) |>
+        dplyr::pull("cohort_name")
+      id <- which(id %in% fullNamesCohort)
+      fullNamesCohort <- fullNamesCohort[id]
+      shortNamesCohort <- shortNamesCohort[id]
+    }
 
     # update dictionary
     addDic <- updateDic(
@@ -264,7 +306,6 @@ summariseCharacteristics <- function(cohort,
     # add intersect
     cohort <- cohort %>%
       PatientProfiles::addCohortIntersect(
-        cdm = cdm,
         targetCohortTable = arguments$targetCohortTable,
         targetCohortId = arguments$targetCohortId,
         indexDate = arguments$indexDate,
@@ -289,14 +330,20 @@ summariseCharacteristics <- function(cohort,
     )
 
     # restore cohort_set
-    attr(cdm[[arguments$targetCohortTable]], "cohort_set") <- originalCohortSet
+    cdm[[arguments$targetCohortTable]] <- cdm[[arguments$targetCohortTable]] |>
+      omopgenerics::newCohortTable(
+        cohortSetRef = originalCohortSet, cohortAttritionRef = NULL
+      )
   }
 
   # conceptIntersect
   for (k in seq_along(conceptIntersect)) {
+    cli::cli_alert_info(
+      "adding concept intersect columns for conceptSet {k}/{length(conceptIntersect)}"
+    )
     # prepare arguments
     arguments <- formals(addConceptIntersect)
-    arguments <- updateArguments(arguments, conceptIntersect[[k]], TRUE)
+    arguments <- updateArguments(arguments, conceptIntersect[[k]])
 
     # rename windows
     fullNamesWindow <- names(arguments$window)
@@ -337,7 +384,10 @@ summariseCharacteristics <- function(cohort,
       variables = variables,
       date = addDic$short_name[grepl("date_", addDic$short_name)],
       numeric = addDic$short_name[grepl("count_|time_", addDic$short_name)],
-      binary = addDic$short_name[grepl("flag_", addDic$short_name)]
+      binary = addDic$short_name[grepl("flag_", addDic$short_name)],
+      categorical = addDic$short_name[
+        !grepl("flag_|count_|time_|date_", addDic$short_name)
+      ]
     )
   }
 
@@ -354,6 +404,7 @@ summariseCharacteristics <- function(cohort,
     categorical = x %>% dplyr::filter(.data$variable_type == "categorical") %>% dplyr::pull("variable")
   )
 
+  cli::cli_alert_info("summarising data")
   # summarise results
   results <- cohort %>%
     summariseResult(
@@ -396,7 +447,9 @@ summariseCharacteristics <- function(cohort,
     results$estimate_type == "numeric" & integers == floor(integers)
   ] <- "integer"
 
-  results <- omopgenerics::summarisedResult(results)
+  results <- omopgenerics::newSummarisedResult(results)
+
+  cli::cli_alert_success("summariseCharacteristics finished!")
 
   return(results)
 }
@@ -470,19 +523,22 @@ updateVariables <- function(variables,
   variables$categorical <- c(variables$categorical, categorical)
   return(variables)
 }
-updateArguments <- function(arguments, settings, splitValues = FALSE) {
-  if (!is.list(settings[["window"]])) {
-    settings[["window"]] <- list(settings[["window"]])
+updateArguments <- function(arguments, def) {
+  if (!is.list(def[["window"]])) {
+    def[["window"]] <- list(def[["window"]])
   }
-  for (nm in names(settings)) {
-    arguments[[nm]] <- settings[[nm]]
+  for (nm in names(def)) {
+    arguments[[nm]] <- def[[nm]]
   }
-  if (splitValues) {
+  if ("value" %in% names(arguments)) {
     arguments$flag <- FALSE
     arguments$count <- FALSE
     arguments$date <- FALSE
     arguments$days <- FALSE
     arguments[arguments$value] <- TRUE
+    arguments$field <- arguments$value[
+      !arguments$value %in% c("flag", "count", "date", "days")
+    ]
   }
   names(arguments[["window"]]) <- getWindowNames(arguments[["window"]])
   return(arguments)

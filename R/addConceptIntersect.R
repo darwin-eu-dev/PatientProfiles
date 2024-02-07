@@ -70,7 +70,7 @@ addConceptIntersect <- function(x,
                                 date = TRUE,
                                 days = TRUE,
                                 nameStyle = "{value}_{concept_name}_{window_name}") {
-  cdm <- attr(x, "cdm_reference")
+  cdm <- omopgenerics::cdmReference(x)
   nameCohort <- paste0("concept_cohort_", sample(letters, 5) |> paste0(collapse = ""))
   tempCohort <- paste0("temp_cohort_", sample(letters, 5) |> paste0(collapse = ""))
   personVariable <- colnames(x)[colnames(x) %in% c("person_id", "subject_id")]
@@ -105,7 +105,6 @@ addConceptIntersect <- function(x,
   )
   x <- addCohortIntersect(
     x = x,
-    cdm = cdm,
     targetCohortTable = nameCohort,
     indexDate = indexDate,
     censorDate = censorDate,

@@ -3,7 +3,7 @@ test_that("addAttributes, functionality", {
 
   oldCohort <- cdm$cohort1
   newCohort <- cdm$cohort1 %>%
-    addDemographics(cdm)
+    addDemographics()
 
   expect_true(length(attributes(newCohort)) == length(attributes(oldCohort)))
   for (i in names(attributes(newCohort))) {

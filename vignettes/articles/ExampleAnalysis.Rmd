@@ -56,7 +56,7 @@ cdm$celecoxib <- cdm$drug_era %>%
   ) %>%
   addInObservation(indexDate = "drug_era_start_date") %>%
   filter(in_observation == 1) %>%
-  addAge(cdm, indexDate = "drug_era_start_date") %>%
+  addAge(indexDate = "drug_era_start_date") %>%
   filter(age >= 40 & age <= 50) %>%
   rename(
     "subject_id" = "person_id",
@@ -80,7 +80,7 @@ cdm$diclofenac <- cdm$drug_era %>%
   ) %>%
   addInObservation(indexDate = "drug_era_start_date") %>%
   filter(in_observation == 1) %>%
-  addAge(cdm, indexDate = "drug_era_start_date") %>%
+  addAge(indexDate = "drug_era_start_date") %>%
   filter(age >= 40 & age <= 50) %>%
   rename(
     "subject_id" = "person_id",
@@ -96,7 +96,7 @@ cdm$diclofenac <- cdm$drug_era %>%
 
 cdm$exposure_cohort <- union_all(cdm$celecoxib, cdm$diclofenac) %>%
   compute(name = "exposure_cohort", temporary = FALSE) |>
-  cohortTable(cohortSetRef = tibble(
+  newCohortTable(cohortSetRef = tibble(
     cohort_definition_id = c(1, 2), cohort_name = c("celecoxib", "diclofenac")
   ))
 ```
@@ -125,7 +125,7 @@ cdm$gi_bleed <- cdm$condition_occurrence %>%
     "cohort_start_date", "cohort_end_date"
   ) %>%
   compute(name = "gi_bleed", temporary = FALSE) |>
-  cohortTable(cohortSetRef = tibble(
+  newCohortTable(cohortSetRef = tibble(
     cohort_definition_id = 1, cohort_name = "gi_bleed"
   ))
 ```
@@ -136,7 +136,7 @@ We can use the `addDemographics` to help describe the characteristics of our coh
 
 ```{r}
 cdm$exposure_cohort %>%
-  addDemographics(cdm) %>%
+  addDemographics() %>%
   collect() %>%
   mutate(name = case_when(
     cohort_definition_id == 1 ~ "celecoxib",
@@ -156,7 +156,7 @@ cdm$exposure_cohort %>%
 
 ```{r}
 cdm$gi_bleed %>%
-  addDemographics(cdm) %>%
+  addDemographics() %>%
   collect() %>%
   mutate(name = case_when(
     cohort_definition_id == 1 ~ "gi_bleed",

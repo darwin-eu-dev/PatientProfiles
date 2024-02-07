@@ -53,23 +53,26 @@
 #' }
 #'
 addIntersect <- function(x,
-                         cdm = attr(x, "cdm_reference"),
+                         cdm = lifecycle::deprecated(),
                          tableName,
                          value,
                          filterVariable = NULL,
                          filterId = NULL,
                          idName = NULL,
-                         window = list(c(0, Inf)), # list
+                         window = list(c(0, Inf)),
                          indexDate = "cohort_start_date",
                          censorDate = NULL,
-                         targetStartDate = getStartName(tableName),
-                         targetEndDate = getEndName(tableName),
+                         targetStartDate = startDateColumn(tableName),
+                         targetEndDate = endDateColumn(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "addIntersect(cdm)")
+  }
   if (!is.list(window)) {
     window <- list(window)
   }
-
+  cdm <- omopgenerics::cdmReference(x)
   # initial checks
   personVariable <- checkX(x)
   checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
@@ -143,7 +146,6 @@ addIntersect <- function(x,
 
   result <- x %>%
     addFutureObservation(
-      cdm = cdm,
       indexDate = indexDate,
       futureObservationName = "days_to_add"
     ) %>%
@@ -432,10 +434,10 @@ addIntersect <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getStartName("condition_occurrence")
+#' startDateColumn("condition_occurrence")
 #' }
 #'
-getStartName <- function(tableName) {
+startDateColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$start_date_name[namesTable$table_name == tableName])
   } else {
@@ -454,10 +456,10 @@ getStartName <- function(tableName) {
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getEndName("condition_occurrence")
+#' endDateColumn("condition_occurrence")
 #' }
 #'
-getEndName <- function(tableName) {
+endDateColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$end_date_name[namesTable$table_name == tableName])
   } else {
@@ -465,7 +467,7 @@ getEndName <- function(tableName) {
   }
 }
 
-#' Get the name of the concept_id column for a certain table in the cdm
+#' Get the name of the standard concept_id column for a certain table in the cdm
 #'
 #' @param tableName Name of the table
 #'
@@ -476,10 +478,10 @@ getEndName <- function(tableName) {
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getConceptName("condition_occurrence")
+#' standardConceptIdColumn("condition_occurrence")
 #' }
 #'
-getConceptName <- function(tableName) {
+standardConceptIdColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$concept_id_name[namesTable$table_name == tableName])
   } else {
@@ -487,7 +489,7 @@ getConceptName <- function(tableName) {
   }
 }
 
-#' Get the name of the source_concept_id column for a certain table in the cdm
+#' Get the name of the source concept_id column for a certain table in the cdm
 #'
 #' @param tableName Name of the table
 #'
@@ -498,10 +500,10 @@ getConceptName <- function(tableName) {
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' getSourceConceptName("condition_occurrence")
+#' sourceConceptIdColumn("condition_occurrence")
 #' }
 #'
-getSourceConceptName <- function(tableName) {
+sourceConceptIdColumn <- function(tableName) {
   if (tableName %in% namesTable$table_name) {
     return(namesTable$source_concept_id_name[namesTable$table_name == tableName])
   } else {

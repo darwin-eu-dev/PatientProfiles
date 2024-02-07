@@ -6,7 +6,7 @@
 \usage{
 addIntersect(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   tableName,
   value,
   filterVariable = NULL,
@@ -15,8 +15,8 @@ addIntersect(
   window = list(c(0, Inf)),
   indexDate = "cohort_start_date",
   censorDate = NULL,
-  targetStartDate = getStartName(tableName),
-  targetEndDate = getEndName(tableName),
+  targetStartDate = startDateColumn(tableName),
+  targetEndDate = endDateColumn(tableName),
   order = "first",
   nameStyle = "{value}_{id_name}_{window_name}"
 )
