@@ -50,12 +50,13 @@ test_that("test class consistency across cohort operations", {
   )
 
   baseline_class <- class(cdm$cohort1)
-
+  baseline_class <- baseline_class[baseline_class != "GeneratedCohortSet"]
   # Apply each operation to cdm$cohort1 and check the class consistency
   for (op_name in names(operations)) {
     op <- operations[[op_name]]
     result <- op(cdm$cohort1)
-    expect_identical(sort(class(result)), sort(baseline_class),
+    class(result) <- class(result)[class(result) != "GeneratedCohortSet"]
+    expect_identical(class(result), baseline_class,
                      info = paste("Testing operation:", op_name))
   }
 
@@ -67,8 +68,9 @@ test_that("test class consistency across cohort operations", {
       categories = list("age_group" = list(c(0, 120))),
       overlap = TRUE
     )
+  class(result_with_sequence) <- class(result_with_sequence)[class(result_with_sequence) != "GeneratedCohortSet"]
 
-  expect_identical(sort(class(result_with_sequence)), sort(baseline_class),
+  expect_identical(class(result_with_sequence), baseline_class,
                    info = "Testing sequence with addSex, addAge, and addCategories")
 
 })
