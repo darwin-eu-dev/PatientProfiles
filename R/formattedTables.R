@@ -76,7 +76,7 @@ formatCharacteristics <- function(result,
   .options <- defaultOptions(.options)
 
   result <- result |>
-    omopgenerics::suppress(minCellCount = minCellCount) |>
+    suppress(minCellCount = minCellCount) |>
     visOmopResults::formatEstimateValue(
       decimals = .options$decimals,
       decimalMark = .options$decimalMark,

@@ -41,7 +41,7 @@ tidyCharacteristics <- function(result, minCellCount = 5) {
     cli::cli_abort("result is not a valid `summarised_characteristics` object.")
   }
   result |>
-    omopgenerics::suppress(minCellCount = minCellCount) |>
+    suppress(minCellCount = minCellCount) |>
     dplyr::select(-c("result_type", "package_name", "package_version")) |>
     visOmopResults::splitAll()
 }
