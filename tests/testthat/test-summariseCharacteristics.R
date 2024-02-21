@@ -83,7 +83,7 @@ test_that("test summariseCharacteristics", {
       )
     )
   ) |>
-    omopgenerics::suppress(minCellCount = 1))
+    suppress(minCellCount = 1))
   expect_identical(class(result), c(
     "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
     "tbl", "data.frame"
@@ -191,7 +191,7 @@ test_that("test summariseCharacteristics", {
       )
     )
   )|>
-    omopgenerics::suppress(minCellCount = 1))
+    suppress(minCellCount = 1))
   expect_identical(class(result), c(
     "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
     "tbl", "data.frame"
@@ -233,7 +233,7 @@ test_that("test summariseCharacteristics", {
     cdm$dus_cohort,
     cohortIntersect = list(), tableIntersect = list()
   )|>
-    omopgenerics::suppress(minCellCount = 1)
+    suppress(minCellCount = 1)
   expect_identical(class(result), c(
     "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
     "tbl", "data.frame"
