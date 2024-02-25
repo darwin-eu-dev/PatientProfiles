@@ -69,11 +69,11 @@ addTableIntersect <- function(x,
                               nameStyle = "{table_name}_{value}_{window_name}") {
   lifecycle::deprecate_warn(
     when = "0.6.0",
-    what = "addConceptIntersect()",
+    what = "addTableIntersect()",
     details = c(
       "please use the specific functions instead:",
-      "*" = "addConceptIntersectFlag()", "*" = "addConceptIntersectCount()",
-      "*" = "addConceptIntersectDate()", "*" = "addConceptIntersectDays()"
+      "*" = "addTableIntersectFlag()", "*" = "addTableIntersectCount()",
+      "*" = "addTableIntersectDate()", "*" = "addTableIntersectDays()"
     )
   )
   .addTableIntersect(
