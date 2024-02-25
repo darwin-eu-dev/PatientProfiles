@@ -402,11 +402,8 @@ addIntersect <- function(x,
 
     newTib <- dplyr::tibble(!!id := 1)
     newTib[, cols] <- valk
-    cdm <- omopgenerics::insertTable(
-      cdm = cdm,
-      name = omopgenerics::uniqueTableName(tablePrefix),
-      table = newTib
-    )
+    tmpName <- omopgenerics::uniqueTableName(tablePrefix)
+    cdm <- omopgenerics::insertTable(cdm = cdm, name = tmpName, table = newTib)
 
     x <- x |>
       dplyr::mutate(!!id := 1) |>
