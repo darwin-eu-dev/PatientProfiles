@@ -26,7 +26,7 @@ test_that("addInObservation, cohort and condition_occurrence", {
 
 
   expect_true("in_observation" %in% colnames(result2))
-  expect_true(all(result2 %>% dplyr::arrange(cohort_definition_id, cohort_start_date) %>% dplyr::select(in_observation) %>% dplyr::pull() == 1))
+  expect_true(all(result2 %>% dplyr::collect() |> dplyr::arrange(cohort_definition_id, cohort_start_date) %>% dplyr::select(in_observation) %>% dplyr::pull() == 1))
 
   result3 <- addInObservation(cdm$cohort1 %>% dplyr::rename(person_id = subject_id))
   expect_true("in_observation" %in% colnames(result3))
@@ -35,7 +35,7 @@ test_that("addInObservation, cohort and condition_occurrence", {
     dplyr::pull()))
   result4 <- addInObservation(cdm$condition_occurrence, indexDate = "condition_start_date")
   expect_true("in_observation" %in% colnames(result4))
-  expect_true(all(result4 %>% dplyr::arrange(condition_occurrence_id, condition_start_date) %>% dplyr::select(in_observation) %>% dplyr::pull() == 1))
+  expect_true(all(result4 %>% dplyr::collect() |> dplyr::arrange(condition_occurrence_id, condition_start_date) %>% dplyr::select(in_observation) %>% dplyr::pull() == 1))
 })
 
 test_that("addInObservation, parameters", {
@@ -45,5 +45,5 @@ test_that("addInObservation, parameters", {
   expect_true("observ" %in% colnames(result1))
   expect_false("in_observation" %in% colnames(result1))
 
-  expect_true(all(result1 %>% dplyr::arrange(condition_occurrence_id, condition_start_date) %>% dplyr::select(observ) %>% dplyr::pull() == 1))
+  expect_true(all(result1 %>% dplyr::collect() |> dplyr::arrange(condition_occurrence_id, condition_start_date) %>% dplyr::select(observ) %>% dplyr::pull() == 1))
 })

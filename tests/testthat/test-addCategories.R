@@ -6,6 +6,7 @@ test_that("addCategories, functionality", {
       variable = "age",
       categories = list("age_group" = list(c(0, 40), c(41, 120)))
     ) %>%
+    dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   agegroupOverlap <- cdm$cohort1 %>%
@@ -15,19 +16,17 @@ test_that("addCategories, functionality", {
       categories = list("age_group" = list(c(0, 55), c(50, 120))),
       overlap = TRUE
     ) %>%
+    dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(agegroup %>%
-    dplyr::select(age_group) %>%
-    dplyr::pull() ==
-    c("0 to 40", "41 to 120", "41 to 120", "0 to 40")))
+    dplyr::pull(age_group) ==
+    c("0 to 40", "0 to 40", "41 to 120", "41 to 120")))
 
   expect_true(all(agegroupOverlap %>%
-    dplyr::select(age_group) %>%
-    dplyr::pull() ==
-    c(
-      "0 to 55",  "50 to 120", "0 to 55 and 50 to 120", "0 to 55"
-    )))
+    dplyr::pull(age_group) ==
+    c("0 to 55", "0 to 55", "50 to 120", "0 to 55 and 50 to 120")
+  ))
 })
 
 test_that("addCategories with infinity", {

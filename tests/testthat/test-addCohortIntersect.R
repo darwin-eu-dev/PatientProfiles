@@ -234,6 +234,7 @@ test_that("multiple cohort entries per person", {
 
   expect_true(all(cdm$cohort1a %>%
     dplyr::filter(subject_id == 1) %>%
+    dplyr::collect() |>
     dplyr::arrange(cohort_start_date) %>%
     dplyr::pull(5) ==
     c(
@@ -262,6 +263,7 @@ test_that("multiple cohort entries per person", {
 
   expect_true(all(cdm$cohort1b %>%
     dplyr::filter(subject_id == 1) %>%
+    dplyr::collect() |>
     dplyr::arrange(cohort_start_date) %>%
     dplyr::pull(5) ==
     c(
