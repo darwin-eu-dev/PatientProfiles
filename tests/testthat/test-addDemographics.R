@@ -1088,24 +1088,28 @@ test_that("test if column exist, overwrite", {
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
     dplyr::select(age) !=
     cohort1 %>%
+      dplyr::collect() |>
       dplyr::arrange(cohort_start_date, subject_id) %>%
       dplyr::select(age), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
     dplyr::select(sex) !=
     cohort1 %>%
+      dplyr::collect() |>
       dplyr::arrange(cohort_start_date, subject_id) %>%
       dplyr::select(sex), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
     dplyr::select(prior_observation) !=
     cohort1 %>%
+      dplyr::collect() |>
       dplyr::arrange(cohort_start_date, subject_id) %>%
       dplyr::select(prior_observation), na.rm = TRUE))
 
   expect_true(all(result %>% dplyr::arrange(cohort_start_date, subject_id) %>%
     dplyr::select(future_observation) !=
     cohort1 %>%
+      dplyr::collect() |>
       dplyr::arrange(cohort_start_date, subject_id) %>%
       dplyr::select(future_observation), na.rm = TRUE))
 })
