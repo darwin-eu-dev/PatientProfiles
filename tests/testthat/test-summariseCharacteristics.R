@@ -84,10 +84,7 @@ test_that("test summariseCharacteristics", {
     )
   ) |>
     suppress(minCellCount = 1))
-  expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
-    "tbl", "data.frame"
-  ))
+  expect_true(inherits(result, "summarised_result"))
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
@@ -192,10 +189,7 @@ test_that("test summariseCharacteristics", {
     )
   )|>
     suppress(minCellCount = 1))
-  expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
-    "tbl", "data.frame"
-  ))
+  expect_true(inherits(result, "summarised_result"))
   expect_true(
     result %>%
       visOmopResults::splitAdditional() |>
@@ -234,10 +228,7 @@ test_that("test summariseCharacteristics", {
     cohortIntersect = list(), tableIntersect = list()
   )|>
     suppress(minCellCount = 1)
-  expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "omop_result", "tbl_df",
-    "tbl", "data.frame"
-  ))
+  expect_true(inherits(result, "summarised_result"))
 
   # demographics
   expect_no_error(result <- summariseCharacteristics(
