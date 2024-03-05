@@ -197,15 +197,24 @@ addDemographics <- function(x,
 
   # join if not the person table
   if (any(!c("person_id", "gender_concept_id") %in% colnames(x))) {
+
+    addCols <- colnames(personDetails)[
+      which(colnames(personDetails) != personVariable)]
+
+    if(any(addCols %in%
+       colnames(x))
+    ){
+      checkNewName(name = addCols, x = x)
+      x <- x %>%
+        dplyr::select(!dplyr::any_of(addCols))
+    }
+
     x <- x %>%
       dplyr::left_join(
         personDetails %>%
           dplyr::select(dplyr::any_of(c(
             personVariable,
-            "date_of_birth",
-            "gender_concept_id",
-            "observation_period_start_date",
-            "observation_period_end_date"
+            addCols
           ))),
         by = personVariable
       )

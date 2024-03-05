@@ -1223,3 +1223,14 @@ test_that("missing levels", {
     dplyr::collect()
   expect_true(all(!is.na(result$sex)))
 })
+
+test_that("age after dob", {
+  cdm <- mockPatientProfiles(connectionDetails)
+
+  cdm$cohort1 <- cdm$cohort1 %>%
+    PatientProfiles::addDateOfBirth()
+  expect_warning(cdm$cohort1 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics())
+  expect_true("date_of_birth" %in%   colnames(cdm$cohort1))
+
+})
