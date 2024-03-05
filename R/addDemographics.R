@@ -221,6 +221,18 @@ addDemographics <- function(x,
   }
 
   if (priorObservation == TRUE || futureObservation == TRUE) {
+
+    addCols <- colnames(obsPeriodDetails)[
+      which(!colnames(obsPeriodDetails) %in% c(personVariable, indexDate))]
+
+    if(any(addCols %in%
+           colnames(x))
+    ){
+      checkNewName(name = addCols, x = x)
+      x <- x %>%
+        dplyr::select(!dplyr::any_of(addCols))
+    }
+
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
         by = c(personVariable, indexDate)
