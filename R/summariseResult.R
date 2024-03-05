@@ -89,7 +89,7 @@ summariseResult <- function(table,
     if (!is.list(functions)) {
       functions <- list("all" = functions)
     }
-    checkStrata(group, table)
+    checkStrata(group, table, type = "group")
     checkStrata(strata, table)
     checkVariablesFunctions(variables, functions, table)
 

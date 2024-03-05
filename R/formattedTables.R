@@ -165,7 +165,7 @@ formatCharacteristics <- function(result,
   return(result)
 }
 
-defaultOptions <- function(.options) {
+defaultCharacteristicsOptions <- function(.options) {
   defaults <- list(
     "decimals" = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
     "decimalMark" = ".",
@@ -186,4 +186,193 @@ defaultOptions <- function(.options) {
     }
   }
   return(.options)
+}
+
+
+#' Format a summarised_characteristics object into a visual table.
+#'
+#' @param result A summarised_characteristics object.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", or "tibble".
+#' @param numberSubjects Whether to include the number of subjects.
+#' @param numberRecords Whether to include the number of records
+#' @param cdmName Whether to include the CDM name.
+#' @param minCellCount Counts below which results will be clouded.
+#' @param .options named list with additional formatting options.
+#' PatientProfiles::tableCohortOverlapOptions() shows allowed arguments and
+#' their default values.
+#'
+#' @examples
+#' \donttest{
+#' cdm_local <- omock::mockCdmReference() |>
+#'   omock::mockPerson(100) |>
+#'   omock::mockObservationPeriod() |>
+#'   omock::mockCohort(numberCohorts = 2)
+#'
+#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+#' cdm <- CDMConnector::copy_cdm_to(con = con,
+#'                                  cdm = cdm_local,
+#'                                  schema = "main"
+#' cdm$cohort |>
+#'   summariseCohortOverlap() |>
+#'   tableCohortOverlap()
+#' }
+#'
+#' @return A formatted table of the overlap_cohort summarised object.
+#'
+#' @export
+
+tableCohortOverlap  <- function(result,
+                                type = "gt",
+                                numberSubjects = TRUE,
+                                numberRecords = TRUE,
+                                cdmName = TRUE,
+                                minCellCount = 5,
+                                .options = list()) {
+  # initial checks
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "cohort_overlap")
+  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
+  checkmate::assertLogical(numberSubjects, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(numberRecords, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(cdmName, any.missing = FALSE, len = 1)
+  checkmate::assertList(.options)
+
+  # add default options
+  .options <- defaultOverlapOptions(.options)
+
+  # format table
+  columnsTable <- c("Database name", "cohort_name_reference", "cohort_name_comparator", "variable_name", "reference", "comparator", "overlap")
+  if (!cdmName) {columnsTable <- columnsTable[2:length(columnsTable)]}
+
+  x <- result |>
+    suppress(minCellCount = minCellCount) |>
+    visOmopResults::formatEstimateValue(
+      decimals = .options$decimals,
+      decimalMark = .options$decimalMark,
+      bigMark = .options$bigMark
+    ) |>
+    visOmopResults::splitAll() |>
+    dplyr::select(!c("result_type", "package_name", "package_version",
+                     "estimate_type", "estimate_name")) |>
+    getTidyOverlap() |>
+    dplyr::arrange(.data$cdm_name, .data$cohort_name_reference, .data$cohort_name_comparator) |>
+    dplyr::rename("Database name" = "cdm_name") |>
+    dplyr::select(dplyr::all_of(columnsTable))
+
+  if (!numberSubjects) {
+    x <- x |>
+      dplyr::filter(.data$variable_name != "number subjects")
+  }
+  if (!numberRecords) {
+    x <- x |>
+      dplyr::filter(.data$variable_name != "number records")
+  }
+
+  if (type == "gt") {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
+      visOmopResults::gtTable(
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  } else if (type == "flextable") {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
+      visOmopResults::fxTable(
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  } else if (type == "tibble") {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x)))
+  }
+
+  return(x)
+}
+
+defaultOverlapOptions <- function(userOptions) {
+  defaultOpts <- list(
+    decimals = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
+    decimalMark = ".",
+    bigMark = ",",
+    style = "default",
+    na = "-",
+    title = NULL,
+    subtitle = NULL,
+    caption = NULL,
+    groupNameCol = NULL,
+    groupNameAsColumn = FALSE,
+    groupOrder = NULL,
+    colsToMergeRows = "all_columns"
+  )
+
+  for (opt in names(userOptions)) {
+    defaultOpts[[opt]] <- userOptions[[opt]]
+  }
+
+  return(defaultOpts)
+}
+
+#' A formatted visualization of cohort_overlap objects.
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in
+#' tableCohortOverlap and their given default value.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' tableCohortOverlapOptions()
+#' }
+#'
+#'
+tableCohortOverlapOptions <- function() {
+  return(defaultOverlapOptions(NULL))
+}
+
+getTidyOverlap <- function(x) {
+  cohort_counts <- x |>
+    dplyr::filter(.data$cohort_name_reference == .data$cohort_name_comparator)
+
+  x <- x |>
+    dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) |>
+    dplyr::mutate(variable_level = "overlap") |>
+    tidyr::pivot_wider(names_from = c("variable_level"),
+                       values_from = "estimate_value") |>
+    dplyr::left_join(
+      cohort_counts |>
+        dplyr::mutate(variable_level = "reference") |>
+        tidyr::pivot_wider(names_from = c("variable_level"),
+                           values_from = "estimate_value") |>
+        dplyr::select(!"cohort_name_comparator"),
+      by = c("cdm_name" , "cohort_name_reference", "variable_name")
+    ) |>
+    dplyr::left_join(
+      cohort_counts |>
+        dplyr::mutate(variable_level = "comparator") |>
+        tidyr::pivot_wider(names_from = c("variable_level"),
+                           values_from = "estimate_value") |>
+        dplyr::select(!"cohort_name_reference"),
+      by = c("cdm_name" , "cohort_name_comparator", "variable_name")
+    )
+  return(x)
 }
