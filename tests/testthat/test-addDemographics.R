@@ -1223,3 +1223,35 @@ test_that("missing levels", {
     dplyr::collect()
   expect_true(all(!is.na(result$sex)))
 })
+
+test_that("overwriting obs period variables", {
+  cdm <- mockPatientProfiles(connectionDetails)
+
+  cdm$cohort1 <- cdm$cohort1 %>%
+    PatientProfiles::addDateOfBirth()
+  expect_warning(cdm$cohort1 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics())
+  expect_true("date_of_birth" %in%   colnames(cdm$cohort1))
+
+  cdm <- mockPatientProfiles(connectionDetails)
+  cdm$cohort1 <- cdm$cohort1 %>%
+    dplyr::mutate(observation_period_start_date = "a")
+  expect_warning(cdm$cohort1 %>%
+    PatientProfiles::addPriorObservation())
+  expect_warning(cdm$cohort1 %>%
+                   PatientProfiles::addFutureObservation())
+  expect_warning(cdm$cohort1 %>%
+                   PatientProfiles::addInObservation())
+
+  cdm <- mockPatientProfiles(connectionDetails)
+  cdm$cohort1 <- cdm$cohort1 %>%
+    dplyr::mutate(observation_period_start_date = "a",
+                  observation_period_end_date = "b")
+  expect_warning(cdm$cohort1 %>%
+                   PatientProfiles::addPriorObservation())
+  expect_warning(cdm$cohort1 %>%
+                   PatientProfiles::addFutureObservation())
+  expect_warning(cdm$cohort1 %>%
+    PatientProfiles::addInObservation())
+
+})
