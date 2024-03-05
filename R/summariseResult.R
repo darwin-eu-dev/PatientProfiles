@@ -205,8 +205,11 @@ summariseResult <- function(table,
       "additional_name" = "overall",
       "additional_level" = "overall"
     ) |>
-    dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
-      "summarised_result"
+    dplyr::select(dplyr::all_of(c(
+      "cdm_name", "result_type", "package_name", "package_version",
+      "group_name", "group_level", "strata_name", "strata_level",
+      "variable_name", "variable_level", "estimate_name", "estimate_type",
+      "estimate_value", "additional_name", "additional_level"
     ))) |>
     omopgenerics::newSummarisedResult()
 

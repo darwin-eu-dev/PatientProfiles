@@ -200,7 +200,7 @@ addConceptIntersectFlag <- function(x,
                                     targetEndDate = NULL,
                                     order = "first",
                                     nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,
@@ -260,7 +260,7 @@ addConceptIntersectCount <- function(x,
                                     targetEndDate = NULL,
                                     order = "first",
                                     nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,
@@ -316,7 +316,7 @@ addConceptIntersectDate <- function(x,
                                      targetDate = "cohort_start_date",
                                      order = "first",
                                      nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,
@@ -372,7 +372,7 @@ addConceptIntersectDays <- function(x,
                                     targetDate = "cohort_start_date",
                                     order = "first",
                                     nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,

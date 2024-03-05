@@ -458,7 +458,7 @@ summariseCharacteristics <- function(cohort,
         )
       )
     ) |>
-    dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result"))) |>
+    dplyr::select(-dplyr::any_of(c("table", "window"))) |>
     dplyr::as_tibble()
 
   # correct integers

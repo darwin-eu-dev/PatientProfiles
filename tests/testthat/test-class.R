@@ -46,7 +46,7 @@ test_that("test class consistency across cohort operations", {
     "addDateOfBirth" = addDateOfBirth,
     "addDemographics" = addDemographics,
     "addFutureObservation" = addFutureObservation,
-    "addTableIntersect" = function(x) addTableIntersect(x, tableName = "drug_exposure")
+    "addTableIntersectCount" = function(x) addTableIntersectCount(x, tableName = "drug_exposure")
   )
 
   baseline_class <- class(cdm$cohort1)

@@ -60,10 +60,8 @@ formatCharacteristics <- function(result,
                                   minCellCount = 5,
                                   .options = list()) {
   # check input
-  result <- omopgenerics::newSummarisedResult(result)
-  if (!inherits(result, "summarised_characteristics")) {
-    cli::cli_abort("result is not a valid `summarised_characteristics` object.")
-  }
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "summarised_characteristics")
   checkmate::assertChoice(type, c("gt", "flextable"))
   checkmate::assertLogical(splitStrata, any.missing = FALSE, len = 1)
   checkmate::assertCharacter(format, any.missing = FALSE)
