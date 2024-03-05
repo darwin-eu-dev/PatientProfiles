@@ -26,11 +26,11 @@
 #' @param options Other plot options in a list
 #' @return A ggplot
 #' @export
-plotSummarisedLargeScaleCharacteristics <- function(data, cohort_name, compare_cohorts = FALSE,
-                                                    cohort_2_name = NULL,
-                                                    facet_vars = c("estimate_type"),
-                                                    color_vars = c("variable_level", "group_level"),
-                                                    color_names = NULL, options = list()) {
+plotSummariseLargeScaleCharacteristics <- function(data, cohort_name, compare_cohorts = FALSE,
+                                                   cohort_2_name = NULL,
+                                                   facet_vars = c("estimate_type"),
+                                                   color_vars = c("variable_level", "group_level"),
+                                                   color_names = NULL, options = list()) {
   if (nrow(data) == 0) {
     stop("Input data is empty. Please provide a non-empty data frame.")
   }

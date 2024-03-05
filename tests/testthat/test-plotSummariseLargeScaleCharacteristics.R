@@ -42,7 +42,7 @@ test_that("Function returns a ggplot object", {
   cdm$concept <- dplyr::tbl(connectionDetails$con, name)
 
   test_data <- summariseLargeScaleCharacteristics(cdm$cohort1, eventInWindow = "drug_exposure")
-  plot <- plotSummarisedLargeScaleCharacteristics(
+  plot <- plotSummariseLargeScaleCharacteristics(
     data =  test_data,
     cohort_name = "cohort_1",
     compare_cohorts = FALSE,
