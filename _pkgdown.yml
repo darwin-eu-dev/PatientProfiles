@@ -52,7 +52,15 @@ reference:
 - contents:
   - '`summariseCharacteristics`'
 - subtitle: Summarise patient large scale characteristics
-  desc: Summarise large scale characteristics
+  desc: Summarise large scale characteristics´
+  - contents:
+  - '`summariseCohortOverlap`'
+- subtitle: Summarise cohort overlap
+  desc: Summarises overlap between cohorts in the same table
+  - contents:
+  - '`summariseCohortTiming`'
+- subtitle: Summarise time between cohorts
+  desc: Summarise time between patients entry dates in cohorts
 - contents:
   - '`summariseLargeScaleCharacteristics`'
 - subtitle: Tidy functions to display results in a more easy to manage table
@@ -63,7 +71,16 @@ reference:
   desc: Functions to format the summarised_result objects into gt and flextables object that latter can be exported as html, docx, pdf, ... Ideal for shinyapps and reports.
 - contents:
   - matches("format")
-
+- subtitle: Format summarised_result into a more visual and exportable format (gt, flextables, ...)
+  desc: Functions to format the summarised_result objects into gt and flextables object that latter can be exported as html, docx, pdf, ... Ideal for shinyapps and reports.
+- contents:
+  - matches("table")
+- subtitle: Format summarised_result into a more visual and exportable format (gt, flextables, ...)
+  desc: Functions to format the summarised_result objects into gt and flextables object that latter can be exported as html, docx, pdf, ... Ideal for shinyapps and reports.
+- contents:
+  - matches("plot")
+- subtitle: Generates a ggplot from a summarised_result object
+  desc: Functions to generate ggplots from the different summarised_result objects.
 - subtitle: Other functions
   desc: Helper functions
 - contents:
