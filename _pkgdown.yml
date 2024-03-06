@@ -74,8 +74,8 @@ reference:
   - subtitle: Generate ggplots from summarised_result objects
   desc: Functions to generate ggplots from the different summarised_result objects.
 - contents:
-  - matches("format")
+  - matches("plot")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCohortName|addCdmName|addCategories|variableTypes|availableFunctions|detectVariables|endDateColumn|sourceConceptIdColumn|standardConceptIdColumn|startDateColumn|mockPatientProfiles|gt|suppress|option")
+  - matches("addCohortName|addCdmName|addCategories|variableTypes|availableFunctions|detectVariables|endDateColumn|sourceConceptIdColumn|standardConceptIdColumn|startDateColumn|mockPatientProfiles|gt|suppress|options")
