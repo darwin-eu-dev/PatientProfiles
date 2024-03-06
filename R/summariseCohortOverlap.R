@@ -45,7 +45,6 @@ summariseCohortOverlap <- function(cohort) {
       "number subjects" = as.character((dplyr::n_distinct("subject_id"))),
       .groups = "drop") |>
     dplyr::collect() |>
-    getUniqueCombinations(order = cohortOrder) |>
     tidyr::pivot_longer(cols = dplyr::starts_with("number"),
                         names_to = "variable_name",
                         values_to = "estimate_value") |>
@@ -73,15 +72,15 @@ summariseCohortOverlap <- function(cohort) {
   return(overlap)
 }
 
-getUniqueCombinations <- function(x, order) {
-  for (i in 2:length(order)) {
-    x <- x |>
-      dplyr::anti_join(
-        x |>
-          dplyr::filter(.data$cohort_name_reference == .env$order[i],
-                        .data$cohort_name_comparator %in% .env$order[1:(i-1)]),
-        by = colnames(x)
-      )
-  }
-  return(x)
-}
+# getUniqueCombinations <- function(x, order) {
+#   for (i in 2:length(order)) {
+#     x <- x |>
+#       dplyr::anti_join(
+#         x |>
+#           dplyr::filter(.data$cohort_name_reference == .env$order[i],
+#                         .data$cohort_name_comparator %in% .env$order[1:(i-1)]),
+#         by = colnames(x)
+#       )
+#   }
+#   return(x)
+# }

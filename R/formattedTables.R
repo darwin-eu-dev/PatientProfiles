@@ -211,51 +211,72 @@ defaultCharacteristicsOptions <- function(.options) {
 #' @export
 
 tableCohortOverlap  <- function(result,
+                                cohortNameReference = NULL,
+                                cohortNameComparator = NULL,
+                                cdmName = NULL,
                                 type = "gt",
-                                numberSubjects = TRUE,
-                                numberRecords = TRUE,
-                                cdmName = TRUE,
+                                variableName = c("number records", "number subjects"),
                                 minCellCount = 5,
                                 .options = list()) {
   # initial checks
-  result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type == "cohort_overlap")
-  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
-  checkmate::assertLogical(numberSubjects, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(numberRecords, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(cdmName, any.missing = FALSE, len = 1)
-  checkmate::assertList(.options)
+  # result <- omopgenerics::newSummarisedResult(result) |>
+  #   dplyr::filter(.data$result_type == "cohort_overlap")
+  # checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
+  # checkmate::assertLogical(numberSubjects, any.missing = FALSE, len = 1)
+  # checkmate::assertLogical(numberRecords, any.missing = FALSE, len = 1)
+  # checkmate::assertLogical(cdmName, any.missing = FALSE, len = 1)
+  # checkmate::assertList(.options)
 
-  # add default options
-  .options <- defaultOverlapOptions(.options)
-
-  # format table
-  columnsTable <- c("Database name", "cohort_name_reference", "cohort_name_comparator", "variable_name", "reference", "comparator", "overlap")
-  if (!cdmName) {columnsTable <- columnsTable[2:length(columnsTable)]}
-
+  # split table and supress
   x <- result |>
-    suppress(minCellCount = minCellCount) |>
-    visOmopResults::formatEstimateValue(
-      decimals = .options$decimals,
-      decimalMark = .options$decimalMark,
-      bigMark = .options$bigMark
-    ) |>
-    visOmopResults::splitAll() |>
-    dplyr::select(!c("result_type", "package_name", "package_version",
-                     "estimate_type", "estimate_name")) |>
-    getTidyOverlap() |>
-    dplyr::arrange(.data$cdm_name, .data$cohort_name_reference, .data$cohort_name_comparator) |>
-    dplyr::rename("Database name" = "cdm_name") |>
-    dplyr::select(dplyr::all_of(columnsTable))
+    visOmopResults::splitAll()
 
-  if (!numberSubjects) {
-    x <- x |>
-      dplyr::filter(.data$variable_name != "number subjects")
+  # add default values
+  .options <- defaultOverlapOptions(.options)
+  if (is.null(cohortNameReference)) {
+    cohortNameReference <- unique(x$cohort_name_reference)
   }
-  if (!numberRecords) {
-    x <- x |>
-      dplyr::filter(.data$variable_name != "number records")
+  if (is.null(cohortNameComparator)) {
+    cohortNameComparator <- unique(x$cohort_name_comparator)
   }
+  if (is.null(cdmName)) {
+    cdmName <- unique(x$cdm_name)
+  }
+
+  x <- x |>
+    dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
+    dplyr::filter(.data$variable_name == .env$variableName) |>
+    dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
+    getTidyOverlap() |>
+    dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
+    dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
+    dplyr::arrange(dplyr::across(
+      dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator")))) |>
+    dplyr::mutate(
+      total = .data$reference + .data$comparator,
+      reference = .data$reference - .data$overlap,
+      comparator = .data$comparator - .data$overlap
+    ) |>
+    dplyr::mutate(
+      only_in_reference = dplyr::if_else(
+        (.data$reference < .env$minCellCount) | is.na(.data$reference),
+        paste0("<", niceNum(.env$minCellCount, .options, "integer")),
+        formatOverlap(.data$reference, .data$reference/.data$total * 100, .env$.options)
+      ),
+      only_in_comparator = dplyr::if_else(
+        (.data$comparator < .env$minCellCount) | is.na(.data$comparator),
+        paste0("<", niceNum(.env$minCellCount, .options, "integer")),
+        formatOverlap(.data$comparator, .data$comparator/.data$total * 100, .env$.options)
+      ),
+      overlap = dplyr::if_else(
+        (.data$overlap < .env$minCellCount) | is.na(.data$overlap),
+        paste0("<",niceNum(.env$minCellCount, .options, "integer")),
+        formatOverlap(.data$overlap, .data$overlap*2/.data$total * 100, .env$.options)),
+      estimate_name = "N (%)"
+    ) |>
+    dplyr::select(c("cdm_name", "cohort_name_reference", "cohort_name_comparator",
+                    "variable_name", "estimate_name", "only_in_reference",
+                    "only_in_comparator", "overlap"))
 
   if (type == "gt") {
     x <- x |>
@@ -293,9 +314,26 @@ tableCohortOverlap  <- function(result,
   return(x)
 }
 
+formatOverlap <- function(count, percentage, .options) {
+  paste0(
+    niceNum(count, .options, "integer"),
+    " (",
+    niceNum(percentage, .options, "percentage"),
+    "%)"
+  )
+
+}
+niceNum <- function(num, .options, type) {
+  trimws(format(round(num, .options$decimals[[type]]),
+                big.mark = .options$bigMark,
+                decimal.mark = .options$decimalMark,
+                nsmall = .options$decimals[[type]],
+                scientific = FALSE))
+}
+
 defaultOverlapOptions <- function(userOptions) {
   defaultOpts <- list(
-    decimals = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
+    decimals = c(integer = 0, percentage = 1),
     decimalMark = ".",
     bigMark = ",",
     style = "default",
@@ -340,7 +378,7 @@ optionsTableCohortOverlap <- function() {
 getTidyOverlap <- function(x) {
   cohort_counts <- x |>
     dplyr::filter(.data$cohort_name_reference == .data$cohort_name_comparator)
-
+  byCol <- colnames(x)
   x <- x |>
     dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) |>
     dplyr::mutate(variable_level = "overlap") |>
@@ -352,7 +390,7 @@ getTidyOverlap <- function(x) {
         tidyr::pivot_wider(names_from = c("variable_level"),
                            values_from = "estimate_value") |>
         dplyr::select(!"cohort_name_comparator"),
-      by = c("cdm_name" , "cohort_name_reference", "variable_name")
+      by = byCol[! byCol %in% c("cohort_name_comparator", "variable_level", "estimate_value")]
     ) |>
     dplyr::left_join(
       cohort_counts |>
@@ -360,7 +398,7 @@ getTidyOverlap <- function(x) {
         tidyr::pivot_wider(names_from = c("variable_level"),
                            values_from = "estimate_value") |>
         dplyr::select(!"cohort_name_reference"),
-      by = c("cdm_name" , "cohort_name_comparator", "variable_name")
+      by = byCol[! byCol %in% c("cohort_name_reference", "variable_level", "estimate_value")]
     )
   return(x)
 }
@@ -370,8 +408,10 @@ getTidyOverlap <- function(x) {
 #' @param result A cohort_timing object.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", or "tibble".
-#' @param numberSubjects Whether to include the number of subjects.
-#' @param numberRecords Whether to include the number of records
+#' @param formatEstimateName Whether to include the number of subjects.
+#' @param header Whether to include the number of records
+#' @param splitGroup description
+#' @param splitStrata description
 #' @param cdmName Whether to include the CDM name.
 #' @param minCellCount Counts below which results will be clouded.
 #' @param .options named list with additional formatting options.
@@ -409,12 +449,25 @@ tableCohortTiming <- function(result,
                               splitGroup = TRUE,
                               splitStrata = TRUE,
                               cdmName = TRUE,
+                              minCellCount = 5,
                               .options = list()) {
   # initial checks
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "cohort_timing")
+  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
+  checkmate::assertCharacter(formatEstimateName, any.missing = FALSE)
+  checkmate::assertCharacter(header, any.missing = FALSE)
+  checkmate::assertLogical(splitGroup, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(splitStrata, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(cdmName, any.missing = FALSE, len = 1)
+  checkmate::assertIntegerish(minCellCount, any.missing = FALSE, len = 1)
+  checkmate::assertList(.options)
 
+  # options
   .options <- defaultTimingOptions(.options)
 
   result <- result |>
+    omopgenerics::suppress(minCellCount = minCellCount) |>
     visOmopResults::formatEstimateValue(
       decimals = .options$decimals,
       decimalMark = .options$decimalMark,

@@ -52,11 +52,11 @@ summariseCohortTiming <- function(cohort,
                       by = "subject_id")
 
   cohort_timings <- cdm[[name]] %>%
+    dplyr::filter(.data$cohort_name_reference == .data$cohort_name_comparator)
     dplyr::mutate(diff_days = !!CDMConnector::datediff("cohort_start_date",
                                                        "cohort_start_date_comparator",
                                                        interval = "day")) |>
     dplyr::collect()|>
-    getUniqueCombinations(order = cohortOrder) |>
     dplyr::mutate("cohort_name_reference and cohort_name_comparator" = as.character(
       paste0(as.character(.data$cohort_name_reference),
              as.character(" and "),

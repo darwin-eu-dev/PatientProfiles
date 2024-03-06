@@ -16,7 +16,7 @@ test_that("expected output", {
                colnames(overlap1))
   expect_equal(overlap1$group_name |> unique(),
                "cohort_name_reference and cohort_name_comparator")
-  expect_true(nrow(overlap1) == 6)
+  expect_true(nrow(overlap1) == 8)
   expect_equal(cdm$table1 |>
                  dplyr::filter(cohort_definition_id == 1) |>
                  dplyr::distinct(subject_id) |>
@@ -36,7 +36,7 @@ test_that("expected output", {
   )
 
   overlap2 <- summariseCohortOverlap(cdm$table2)
-  expect_true(nrow(overlap2) == 30)
+  expect_true(nrow(overlap2) == 50)
   expect_equal(omopgenerics::resultColumns("summarised_result"),
                colnames(overlap2))
 
@@ -56,21 +56,21 @@ test_that("tableCohortOverlap", {
 
   overlap <- summariseCohortOverlap(cdm$table)
 
-  gtResult1 <- tableCohortOverlap(overlap)
+  gtResult1 <- tableCohortOverlap(overlap, cohortNameReference = "cohort_1")
   expect_true("gt_tbl" %in% class(gtResult1))
   expect_equal(gtResult1$`_data`$`Database name`,
                c("mock database", rep("", nrow(gtResult1$`_data`)-1)))
+  expect_equal(unique(gtResult1$`_data`$`Cohort name reference`)[1], "cohort_1")
+  expect_equal(unique(gtResult1$`_data`$`Cohort name comparator`),
+               c("cohort_2", "", "cohort_3", "cohort_4", "cohort_5"))
 
   fxResult1 <- tableCohortOverlap(overlap,
                                   type = "flextable",
-                                  cdmName = FALSE,
-                                  numberRecords = FALSE,
-                                  .options = list(groupNameCol = "Cohort name reference"))
+                                  minCellCount = 1000,
+                                  variableName = "number records")
   expect_true("flextable" %in% class(fxResult1))
-  expect_equal(fxResult1$body$dataset$`Cohort name reference` |> levels(),
-               paste0("cohort_", 1:4))
-  expect_false("Database name" %in% colnames(fxResult1$body$dataset))
-  expect_false("number records" %in% fxResult1$body$dataset$`Variable name`)
+  expect_true(all(grepl("<1000", fxResult1$body$dataset$Overlap)))
+  expect_false("number subjects" %in% fxResult1$body$dataset$`Variable name`)
 
   tibbleResult1 <-  tableCohortOverlap(overlap, type = "tibble")
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(tibbleResult1)))
