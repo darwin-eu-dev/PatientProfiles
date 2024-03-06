@@ -316,7 +316,7 @@ defaultOverlapOptions <- function(userOptions) {
   return(defaultOpts)
 }
 
-#' A formatted visualization of cohort_overlap objects.
+#' Additional arguments for the function tableCohortOverlap.
 #'
 #' @description
 #' It provides a list of allowed inputs for .option argument in

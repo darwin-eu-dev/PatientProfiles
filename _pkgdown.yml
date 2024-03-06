@@ -55,11 +55,11 @@ reference:
   desc: Summarise large scale characteristics
 - contents:
   - '`summariseLargeScaleCharacteristics`'
-  - subtitle: Summarise overlap between cohorts
+- subtitle: Summarise overlap between cohorts
   desc: Summarise overlap between cohorts in the same table
 - contents:
   - '`summariseCohortOverlap`'
-   - subtitle: Summarise time between cohorts
+- subtitle: Summarise time between cohorts
   desc: Summarise time between patients entry dates in cohorts
 - contents:
   - '`summariseCohortTiming`'
@@ -71,7 +71,7 @@ reference:
   desc: Functions to format the summarised_result objects into gt and flextables object that latter can be exported as html, docx, pdf, ... Ideal for shinyapps and reports.
 - contents:
   - matches("format|table")
-  - subtitle: Generate ggplots from summarised_result objects
+- subtitle: Generate ggplots from summarised_result objects
   desc: Functions to generate ggplots from the different summarised_result objects.
 - contents:
   - matches("plot")
