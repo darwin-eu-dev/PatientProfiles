@@ -199,23 +199,11 @@ defaultCharacteristicsOptions <- function(.options) {
 #' @param cdmName Whether to include the CDM name.
 #' @param minCellCount Counts below which results will be clouded.
 #' @param .options named list with additional formatting options.
-#' PatientProfiles::tableCohortOverlapOptions() shows allowed arguments and
+#' PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
 #' their default values.
 #'
 #' @examples
 #' \donttest{
-#' cdm_local <- omock::mockCdmReference() |>
-#'   omock::mockPerson(100) |>
-#'   omock::mockObservationPeriod() |>
-#'   omock::mockCohort(numberCohorts = 2)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-#' cdm <- CDMConnector::copy_cdm_to(con = con,
-#'                                  cdm = cdm_local,
-#'                                  schema = "main"
-#' cdm$cohort |>
-#'   summariseCohortOverlap() |>
-#'   tableCohortOverlap()
 #' }
 #'
 #' @return A formatted table of the overlap_cohort summarised object.
@@ -341,7 +329,7 @@ defaultOverlapOptions <- function(userOptions) {
 #'
 #' @examples
 #' {
-#' tableCohortOverlapOptions()
+#' optionsTableCohortOverlap()
 #' }
 #'
 #'
@@ -377,60 +365,3 @@ getTidyOverlap <- function(x) {
   return(x)
 }
 
-#' Format a cohort_timing object into a visual table.
-#'
-#' @param result A cohort_timing object.
-#' @param type Type of desired formatted table, possibilities: "gt",
-#' "flextable", or "tibble".
-#' @param numberSubjects Whether to include the number of subjects.
-#' @param numberRecords Whether to include the number of records
-#' @param cdmName Whether to include the CDM name.
-#' @param minCellCount Counts below which results will be clouded.
-#' @param .options named list with additional formatting options.
-#' PatientProfiles::tableCohortOverlapOptions() shows allowed arguments and
-#' their default values.
-#'
-#' @examples
-#' \donttest{
-#' cdm_local <- omock::mockCdmReference() |>
-#'   omock::mockPerson(100) |>
-#'   omock::mockObservationPeriod() |>
-#'   omock::mockCohort(numberCohorts = 2)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-#' cdm <- CDMConnector::copy_cdm_to(con = con,
-#'                                  cdm = cdm_local,
-#'                                  schema = "main"
-#' cdm$cohort |>
-#'   summariseCohortOverlap() |>
-#'   tableCohortOverlap()
-#' }
-#'
-#' @return A formatted table of the cohort_timing summarised object.
-#'
-#' @export
-#'
-tableCohortTiming <- function(result,
-                              formatEstimateName = c(
-                                "N" = "<count>",
-                                "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
-                                "Range" = "<min> - <max>"
-                              ),
-                              formatHeader = NULL,
-                              splitGroup = TRUE,
-                              cdmName =) {
-result |>
-    visOmopResults::formatEstimateValue(
-
-    ) |>
-    visOmopResults::formatEstimateName(
-      estimateNameFormat = formatEstimateName,
-      keepNotFormatted = TRUE,
-      useFormatOrder = TRUE
-    ) |>
-    visOmopResults::formatHeader(
-
-    ) |>
-
-
-}

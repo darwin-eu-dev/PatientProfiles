@@ -7,17 +7,6 @@
 #'
 #' @examples
 #' \donttest{
-#' cdm_local <- omock::mockCdmReference() |>
-#'   omock::mockPerson(100) |>
-#'   omock::mockObservationPeriod() |>
-#'   omock::mockCohort(numberCohorts = 2)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-#' cdm <- CDMConnector::copy_cdm_to(con = con,
-#'                                  cdm = cdm_local,
-#'                                  schema = "main")
-#'
-#' overlap <- summariseCohortOverlap(cdm$cohort)
 #' }
 
 summariseCohortOverlap <- function(cohort) {
@@ -30,7 +19,7 @@ summariseCohortOverlap <- function(cohort) {
   cdm <- omopgenerics::cdmReference(cohort)
   name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
 
-  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(cohort_name)
+  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(.data$cohort_name)
   cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]])
 
   overlap <- cdm[[name]] |>
@@ -89,8 +78,8 @@ getUniqueCombinations <- function(x, order) {
     x <- x |>
       dplyr::anti_join(
         x |>
-          dplyr::filter(cohort_name_reference == order[i],
-                        cohort_name_comparator %in% order[1:(i-1)]),
+          dplyr::filter(.data$cohort_name_reference == .env$order[i],
+                        .data$cohort_name_comparator %in% .env$order[1:(i-1)]),
         by = colnames(x)
       )
   }

@@ -4,7 +4,13 @@
 \alias{plotCohortOverlap}
 \title{Summarise cohort timing}
 \usage{
-plotCohortOverlap(result, percentage = TRUE, subjects = TRUE, facetBy = NULL)
+plotCohortOverlap(
+  result,
+  percentage = TRUE,
+  subjects = TRUE,
+  facetBy = NULL,
+  cohortLabels = "{cohort_name_reference}; {cohort_name_comparator}"
+)
 }
 \arguments{
 \item{result}{A cohort_overlap object.}
@@ -15,8 +21,11 @@ otherwise it will present counts.}
 \item{subjects}{If TRUE the overlap plot will display number of subjects,
 otherwise it will present number of records.}
 
-\item{facetBy}{names of columns in the result dataframe for faceting the
+\item{facetBy}{Names of columns in the result dataframe for faceting the
 ggplot object.}
+
+\item{cohortLabels}{A glue expression to identify each plotted cohort
+overlap.}
 }
 \value{
 A summarised result
@@ -26,17 +35,6 @@ Summarise cohort timing
 }
 \examples{
 \donttest{
-cdm_local <- omock::mockCdmReference() |>
-  omock::mockPerson(100) |>
-  omock::mockObservationPeriod() |>
-  omock::mockCohort(numberCohorts = 2)
-
-con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-cdm <- CDMConnector::copy_cdm_to(con = con,
-                                 cdm = cdm_local,
-                                 schema = "main")
-
-timing <- summariseCohortTiming(cdm$cohort)
 }
 
 }

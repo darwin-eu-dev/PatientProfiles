@@ -42,6 +42,6 @@ tidyCharacteristics <- function(result, minCellCount = 5) {
   }
   result |>
     suppress(minCellCount = minCellCount) |>
-    dplyr::select(-c("result_type", "package_name", "package_version")) |>
-    visOmopResults::splitAll()
+    visOmopResults::splitAll() |>
+    dplyr::select(-c("result_type", "package_name", "package_version"))
 }

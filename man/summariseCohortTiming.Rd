@@ -27,17 +27,6 @@ Summarise cohort timing
 }
 \examples{
 \donttest{
-cdm_local <- omock::mockCdmReference() |>
-  omock::mockPerson(100) |>
-  omock::mockObservationPeriod() |>
-  omock::mockCohort(numberCohorts = 2)
-
-con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-cdm <- CDMConnector::copy_cdm_to(con = con,
-                                 cdm = cdm_local,
-                                 schema = "main")
-
-timing <- summariseCohortTiming(cdm$cohort)
 }
 
 }

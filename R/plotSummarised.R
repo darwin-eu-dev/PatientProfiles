@@ -5,25 +5,16 @@
 #' otherwise it will present counts.
 #' @param subjects If TRUE the overlap plot will display number of subjects,
 #' otherwise it will present number of records.
-#' @param facetBy names of columns in the result dataframe for faceting the
+#' @param facetBy Names of columns in the result dataframe for faceting the
 #' ggplot object.
+#' @param cohortLabels A glue expression to identify each plotted cohort
+#' overlap.
 #'
 #' @return A summarised result
 #' @export
 #'
 #' @examples
 #' \donttest{
-#' cdm_local <- omock::mockCdmReference() |>
-#'   omock::mockPerson(100) |>
-#'   omock::mockObservationPeriod() |>
-#'   omock::mockCohort(numberCohorts = 2)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-#' cdm <- CDMConnector::copy_cdm_to(con = con,
-#'                                  cdm = cdm_local,
-#'                                  schema = "main")
-#'
-#' timing <- summariseCohortTiming(cdm$cohort)
 #' }
 #'
 plotCohortOverlap <- function(result,
@@ -32,8 +23,8 @@ plotCohortOverlap <- function(result,
                               facetBy = NULL,
                               cohortLabels = "{cohort_name_reference}; {cohort_name_comparator}") {
   x <- result |>
-    dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
     visOmopResults::splitAll() |>
+    dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
     dplyr::select(!dplyr::all_of(c("result_type", "package_name", "package_version",
                                    "estimate_type", "estimate_name"))) |>
     getTidyOverlap() |>

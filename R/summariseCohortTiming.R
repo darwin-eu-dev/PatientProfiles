@@ -11,17 +11,6 @@
 #'
 #' @examples
 #' \donttest{
-#' cdm_local <- omock::mockCdmReference() |>
-#'   omock::mockPerson(100) |>
-#'   omock::mockObservationPeriod() |>
-#'   omock::mockCohort(numberCohorts = 2)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-#' cdm <- CDMConnector::copy_cdm_to(con = con,
-#'                                  cdm = cdm_local,
-#'                                  schema = "main")
-#'
-#' timing <- summariseCohortTiming(cdm$cohort)
 #' }
 #'
 summariseCohortTiming <- function(cohort,
@@ -40,7 +29,7 @@ summariseCohortTiming <- function(cohort,
   cdm <- omopgenerics::cdmReference(cohort)
   name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
 
-  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(cohort_name)
+  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(.data$cohort_name)
   cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]])
 
   if(isTRUE(restrictToFirstEntry)){

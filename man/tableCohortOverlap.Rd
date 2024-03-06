@@ -2,7 +2,7 @@
 % Please edit documentation in R/formattedTables.R
 \name{tableCohortOverlap}
 \alias{tableCohortOverlap}
-\title{Format a summarised_characteristics object into a visual table.}
+\title{Format a cohort_overlap object into a visual table.}
 \usage{
 tableCohortOverlap(
   result,
@@ -15,7 +15,7 @@ tableCohortOverlap(
 )
 }
 \arguments{
-\item{result}{A summarised_characteristics object.}
+\item{result}{A cohort_overlap object.}
 
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", or "tibble".}
@@ -29,29 +29,17 @@ tableCohortOverlap(
 \item{minCellCount}{Counts below which results will be clouded.}
 
 \item{.options}{named list with additional formatting options.
-PatientProfiles::tableCohortOverlapOptions() shows allowed arguments and
+PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
 their default values.}
 }
 \value{
 A formatted table of the overlap_cohort summarised object.
 }
 \description{
-Format a summarised_characteristics object into a visual table.
+Format a cohort_overlap object into a visual table.
 }
 \examples{
 \donttest{
-cdm_local <- omock::mockCdmReference() |>
-  omock::mockPerson(100) |>
-  omock::mockObservationPeriod() |>
-  omock::mockCohort(numberCohorts = 2)
-
-con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-cdm <- CDMConnector::copy_cdm_to(con = con,
-                                 cdm = cdm_local,
-                                 schema = "main"
-cdm$cohort |>
-  summariseCohortOverlap() |>
-  tableCohortOverlap()
 }
 
 }

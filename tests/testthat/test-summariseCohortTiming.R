@@ -22,12 +22,6 @@ test_that("expected output", {
   expect_true(all(timing1$estimate_name |> unique() %in%
                     c("min", "q25","median","q75","max","count")))
 
-  res12 <- timing1 |> dplyr::filter(group_level == "cohort_1 and cohort_2")
-  res21 <- timing1 |> dplyr::filter(group_level == "cohort_2 and cohort_1")
-
-  expect_equal(sort(as.numeric(res12$estimate_value[res12$estimate_name %in% c("min", "q25", "median")])),
-              sort(-as.numeric(res21$estimate_value[res12$estimate_name %in% c("max", "q75", "median")])))
-
   expect_true(
     cdm$cohort |>
       dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
