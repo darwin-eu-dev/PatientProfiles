@@ -16,7 +16,7 @@ test_that("expected output", {
                colnames(overlap1))
   expect_equal(overlap1$group_name |> unique(),
                "cohort_name_reference and cohort_name_comparator")
-  expect_true(nrow(overlap1) == 8)
+  expect_true(nrow(overlap1) == 6)
   expect_equal(cdm$table1 |>
                  dplyr::filter(cohort_definition_id == 1) |>
                  dplyr::distinct(subject_id) |>
@@ -36,7 +36,7 @@ test_that("expected output", {
   )
 
   overlap2 <- summariseCohortOverlap(cdm$table2)
-  expect_true(nrow(overlap2) == 50)
+  expect_true(nrow(overlap2) == 30)
   expect_equal(omopgenerics::resultColumns("summarised_result"),
                colnames(overlap2))
 
@@ -59,7 +59,7 @@ test_that("tableCohortOverlap", {
   gtResult1 <- tableCohortOverlap(overlap)
   expect_true("gt_tbl" %in% class(gtResult1))
   expect_equal(gtResult1$`_data`$`Database name`,
-               c("mock database", rep("", nrow(gtResult$`_data`)-1)))
+               c("mock database", rep("", nrow(gtResult1$`_data`)-1)))
 
   fxResult1 <- tableCohortOverlap(overlap,
                                   type = "flextable",
@@ -68,7 +68,7 @@ test_that("tableCohortOverlap", {
                                   .options = list(groupNameCol = "Cohort name reference"))
   expect_true("flextable" %in% class(fxResult1))
   expect_equal(fxResult1$body$dataset$`Cohort name reference` |> levels(),
-               paste0("cohort_", 1:5))
+               paste0("cohort_", 1:4))
   expect_false("Database name" %in% colnames(fxResult1$body$dataset))
   expect_false("number records" %in% fxResult1$body$dataset$`Variable name`)
 
@@ -91,7 +91,7 @@ test_that("plotCohortOverlap", {
 
   overlap <- summariseCohortOverlap(cdm$table)
 
-  gg1 <- plotCohortOverlap(overlap)
+  gg1 <- plotCohortOverlap(overlap, cohortLabels = "{cdm_name}; {cohort_name_reference}; {cohort_name_comparator}")
   expect_true("ggplot" %in% class(gg1))
   expect_true(gg1$data$total |> unique() == 100)
   expect_true(gg1$data |> dplyr::filter(variable_name == "number records") |> nrow() == 0)

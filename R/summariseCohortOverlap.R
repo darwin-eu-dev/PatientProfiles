@@ -30,6 +30,7 @@ summariseCohortOverlap <- function(cohort) {
   cdm <- omopgenerics::cdmReference(cohort)
   name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
 
+  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(cohort_name)
   cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]])
 
   overlap <- cdm[[name]] |>
@@ -54,11 +55,8 @@ summariseCohortOverlap <- function(cohort) {
       "number records" = as.character(dplyr::n()),
       "number subjects" = as.character((dplyr::n_distinct("subject_id"))),
       .groups = "drop") |>
-    dplyr::collect()
-
-
-
-  overlap <- overlap |>
+    dplyr::collect() |>
+    getUniqueCombinations(order = cohortOrder) |>
     tidyr::pivot_longer(cols = dplyr::starts_with("number"),
                         names_to = "variable_name",
                         values_to = "estimate_value") |>
@@ -86,3 +84,15 @@ summariseCohortOverlap <- function(cohort) {
   return(overlap)
 }
 
+getUniqueCombinations <- function(x, order) {
+  for (i in 2:length(order)) {
+    x <- x |>
+      dplyr::anti_join(
+        x |>
+          dplyr::filter(cohort_name_reference == order[i],
+                        cohort_name_comparator %in% order[1:(i-1)]),
+        by = colnames(x)
+      )
+  }
+  return(x)
+}

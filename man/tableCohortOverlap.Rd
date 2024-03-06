@@ -33,8 +33,7 @@ PatientProfiles::tableCohortOverlapOptions() shows allowed arguments and
 their default values.}
 }
 \value{
-A tibble with a tidy version of the summarised_characteristics
-object.
+A formatted table of the overlap_cohort summarised object.
 }
 \description{
 Format a summarised_characteristics object into a visual table.

@@ -40,6 +40,7 @@ summariseCohortTiming <- function(cohort,
   cdm <- omopgenerics::cdmReference(cohort)
   name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
 
+  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(cohort_name)
   cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]])
 
   if(isTRUE(restrictToFirstEntry)){
@@ -55,26 +56,20 @@ summariseCohortTiming <- function(cohort,
 
   # should we use addCohortIntersectDate instead to avoid potentially large number of rows?
   cdm[[name]] <- cdm[[name]] |>
+    dplyr::rename("cohort_name_reference" = "cohort_name") |>
     dplyr::inner_join(cdm[[name]] |>
                         dplyr::rename_with(~ paste0(.x, "_comparator"),
                                            .cols = c("cohort_definition_id", "cohort_start_date", "cohort_end_date", "cohort_name")),
                       by = "subject_id")
-
-  # to change when summarised_result accepts cohorts
-  # name_overlap <- paste0(omopgenerics::uniqueTableName(), "_", name, "_overlap")
-  #
-  # cdm[[name_overlap]] <- cdm[[name]] |>
-  #   dplyr::compute(temporary = FALSE,
-  #                  name = name_overlap) |>
-  #   omopgenerics::newCohortTable(.softValidation = TRUE)
 
   cohort_timings <- cdm[[name]] %>%
     dplyr::mutate(diff_days = !!CDMConnector::datediff("cohort_start_date",
                                                        "cohort_start_date_comparator",
                                                        interval = "day")) |>
     dplyr::collect()|>
+    getUniqueCombinations(order = cohortOrder) |>
     dplyr::mutate("cohort_name_reference and cohort_name_comparator" = as.character(
-      paste0(as.character(.data$cohort_name),
+      paste0(as.character(.data$cohort_name_reference),
              as.character(" and "),
              as.character(.data$cohort_name_comparator)))) |>
     summariseResult(group = list("cohort_name_reference and cohort_name_comparator"),

@@ -29,16 +29,18 @@
 plotCohortOverlap <- function(result,
                               percentage = TRUE,
                               subjects = TRUE,
-                              facetBy = NULL) {
+                              facetBy = NULL,
+                              cohortLabels = "{cohort_name_reference}; {cohort_name_comparator}") {
   x <- result |>
     dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
     visOmopResults::splitAll() |>
     dplyr::select(!dplyr::all_of(c("result_type", "package_name", "package_version",
                                    "estimate_type", "estimate_name"))) |>
     getTidyOverlap() |>
-    dplyr:::mutate(
+    dplyr::arrange(dplyr::across(dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator")),dplyr::desc)) |>
+    dplyr::mutate(
       total = .data$reference + .data$comparator - .data$overlap,
-      comparison_name = paste0(.data$cohort_name_reference, "; ", .data$cohort_name_comparator)
+      comparison_name = glue::glue(cohortLabels)
     )
 
   if (percentage) {

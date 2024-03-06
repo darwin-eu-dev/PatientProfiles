@@ -7,13 +7,16 @@
 plotCohortOverlap(result, percentage = TRUE, subjects = TRUE, facetBy = NULL)
 }
 \arguments{
-\item{cohort}{A cohort table in a cdm reference}
+\item{result}{A cohort_overlap object.}
 
-\item{restrictToFirstEntry}{If TRUE only an individual's first entry per
-cohort will be considered. If FALSE all entries per individual will be
-considered}
+\item{percentage}{If TRUE the overlap plot will display percentages,
+otherwise it will present counts.}
 
-\item{timing}{Summary statistics for timing.}
+\item{subjects}{If TRUE the overlap plot will display number of subjects,
+otherwise it will present number of records.}
+
+\item{facetBy}{names of columns in the result dataframe for faceting the
+ggplot object.}
 }
 \value{
 A summarised result
