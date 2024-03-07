@@ -1,5 +1,4 @@
-test_that("expected output", {
-
+test_that("summariseCohortOverlap", {
   cdm_local <- omock::mockCdmReference() |>
     omock::mockPerson(100) |>
     omock::mockObservationPeriod() |>
@@ -69,11 +68,16 @@ test_that("tableCohortOverlap", {
                                   minCellCount = 1000,
                                   variableName = "number records")
   expect_true("flextable" %in% class(fxResult1))
-  expect_true(all(grepl("<1000", fxResult1$body$dataset$Overlap)))
+  expect_true(all(grepl("<1,000", fxResult1$body$dataset$Overlap)))
   expect_false("number subjects" %in% fxResult1$body$dataset$`Variable name`)
 
   tibbleResult1 <-  tableCohortOverlap(overlap, type = "tibble")
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(tibbleResult1)))
+
+  expect_warning(
+    tibbleResult2 <-  tableCohortOverlap(overlap, type = "tibble", cohortNameReference = c("hola"))
+  )
+  expect_true(nrow(tibbleResult2) == 0)
 
   CDMConnector::cdm_disconnect(cdm)
 })

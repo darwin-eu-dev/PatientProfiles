@@ -215,34 +215,44 @@ tableCohortOverlap  <- function(result,
                                 cohortNameComparator = NULL,
                                 cdmName = NULL,
                                 type = "gt",
-                                variableName = c("number records", "number subjects"),
+                                variableName = c("number records",
+                                                 "number subjects"),
                                 minCellCount = 5,
                                 .options = list()) {
   # initial checks
-  # result <- omopgenerics::newSummarisedResult(result) |>
-  #   dplyr::filter(.data$result_type == "cohort_overlap")
-  # checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
-  # checkmate::assertLogical(numberSubjects, any.missing = FALSE, len = 1)
-  # checkmate::assertLogical(numberRecords, any.missing = FALSE, len = 1)
-  # checkmate::assertLogical(cdmName, any.missing = FALSE, len = 1)
-  # checkmate::assertList(.options)
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "cohort_overlap")
+  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
+  checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
+  checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
+  checkmate::assertCharacter(cdmName, null.ok = TRUE)
+  checkmate::assertCharacter(variableName, null.ok = TRUE)
+  checkmate::assertList(.options)
 
-  # split table and supress
+  # split table
   x <- result |>
     visOmopResults::splitAll()
 
   # add default values
+  cohortNameReference <- defaultColumnSelector(
+    cohortNameReference,
+    x$cohort_name_reference,
+    "cohort_name_reference"
+  )
+  cohortNameReference <- defaultColumnSelector(
+    cohortNameComparator,
+    x$cohort_name_comparator,
+    "cohort_name_comparator"
+  )
+  variableName <- defaultColumnSelector(
+    variableName,
+    x$variable_name,
+    "variable_name"
+  )
+  cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
   .options <- defaultOverlapOptions(.options)
-  if (is.null(cohortNameReference)) {
-    cohortNameReference <- unique(x$cohort_name_reference)
-  }
-  if (is.null(cohortNameComparator)) {
-    cohortNameComparator <- unique(x$cohort_name_comparator)
-  }
-  if (is.null(cdmName)) {
-    cdmName <- unique(x$cdm_name)
-  }
 
+  # format table
   x <- x |>
     dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
     dplyr::filter(.data$variable_name == .env$variableName) |>
@@ -352,6 +362,19 @@ defaultOverlapOptions <- function(userOptions) {
   }
 
   return(defaultOpts)
+}
+
+defaultColumnSelector <- function(input, column, column_name) {
+  if (is.null(input)) {
+    input <- unique(column)
+  } else {
+    notIn <- which(!input %in% unique(column))
+    if (length(notIn) > 0) {
+      cli::cli_warn("The following are not in {column_name} and will not be included:
+                    {paste0(input[notIn], collapse = ', ')}")
+    }
+  }
+  return(input)
 }
 
 #' Additional arguments for the function tableCohortOverlap.
