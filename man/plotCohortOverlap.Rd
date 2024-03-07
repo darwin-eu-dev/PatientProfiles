@@ -2,36 +2,45 @@
 % Please edit documentation in R/plotSummarised.R
 \name{plotCohortOverlap}
 \alias{plotCohortOverlap}
-\title{Summarise cohort timing}
+\title{Plot cohort_overlap objects.}
 \usage{
 plotCohortOverlap(
   result,
-  percentage = TRUE,
-  subjects = TRUE,
+  cohortNameReference = NULL,
+  cohortNameComparator = NULL,
+  cdmName = NULL,
+  variableName = c("number subjects"),
   facetBy = NULL,
-  cohortLabels = "{cohort_name_reference}; {cohort_name_comparator}"
+  overlapLabel =
+    "{cohort_name_reference};\\n                              {cohort_name_comparator}",
+  uniqueCombinations = TRUE
 )
 }
 \arguments{
 \item{result}{A cohort_overlap object.}
 
-\item{percentage}{If TRUE the overlap plot will display percentages,
-otherwise it will present counts.}
+\item{cohortNameReference}{Names of the reference cohorts to include.}
 
-\item{subjects}{If TRUE the overlap plot will display number of subjects,
-otherwise it will present number of records.}
+\item{cohortNameComparator}{Names of the comparator cohorts to include.}
 
-\item{facetBy}{Names of columns in the result dataframe for faceting the
+\item{cdmName}{Name of the databases to include.}
+
+\item{variableName}{Name of the variable names to include.}
+
+\item{facetBy}{Names of columns in the cohort_overlap table for faceting the
 ggplot object.}
 
-\item{cohortLabels}{A glue expression to identify each plotted cohort
+\item{overlapLabel}{A glue expression to identify each plotted cohort
 overlap.}
+
+\item{uniqueCombinations}{If TRUE, only unique combinations of reference and
+comparator plots will be plotted.}
 }
 \value{
-A summarised result
+A ggplot2.
 }
 \description{
-Summarise cohort timing
+Plot cohort_overlap objects.
 }
 \examples{
 \donttest{

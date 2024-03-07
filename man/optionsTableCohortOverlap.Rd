@@ -2,7 +2,7 @@
 % Please edit documentation in R/formattedTables.R
 \name{optionsTableCohortOverlap}
 \alias{optionsTableCohortOverlap}
-\title{A formatted visualization of cohort_overlap objects.}
+\title{Additional arguments for the function tableCohortOverlap.}
 \usage{
 optionsTableCohortOverlap()
 }

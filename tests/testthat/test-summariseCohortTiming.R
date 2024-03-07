@@ -1,16 +1,37 @@
 test_that("summariseCohortTiming", {
+  person <- dplyr::tibble(
+    person_id = 1:20,
+    gender_concept_id = 8532,
+    year_of_birth = runif(n=20, min=1950, max=2000),
+    month_of_birth = runif(n=20, min=1, max=12),
+    day_of_birth = runif(n=20, min=1, max=30),
+    race_concept_id= 0,
+    ethnicity_concept_id = 0
+  )
 
-  cdm_local <- omock::mockCdmReference() |>
-    omock::mockPerson(100) |>
-    omock::mockObservationPeriod() |>
-    omock::mockCohort(numberCohorts = 2, recordPerson = 2)
+  table <- dplyr::tibble(
+    cohort_definition_id = c(rep(1, 15), rep(2, 10), rep(3, 15), rep(4, 5)),
+    subject_id = c(sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5),
+                   sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5)),
+    cohort_start_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
+                                  rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
+                                  rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5))),
+    cohort_end_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
+                                rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
+                                rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5)))
+  )
 
-  con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-  cdm <- CDMConnector::copy_cdm_to(con = con,
-                                   cdm = cdm_local,
-                                   schema = "main")
+  obs <- dplyr::tibble(
+    observation_period_id = 1:20,
+    person_id = 1:20,
+    observation_period_start_date = as.Date("1930-01-01"),
+    observation_period_end_date =  as.Date("2025-01-01"),
+    period_type_concept_id = NA
+  )
 
-  timing1 <- summariseCohortTiming(cdm$cohort,
+  cdm <- mockPatientProfiles(person = person, observation_period = obs, table = table)
+
+  timing1 <- summariseCohortTiming(cdm$table,
                                     restrictToFirstEntry = TRUE,
                                     timing = c("min", "q25",
                                                "median","q75",
@@ -21,188 +42,16 @@ test_that("summariseCohortTiming", {
 
   expect_true(all(timing1$estimate_name |> unique() %in%
                     c("min", "q25","median","q75","max","count")))
+  expect_equal(timing1$estimate_value[1], timing1$estimate_value[2])
 
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() ==
-      unique(timing1 |>
-               dplyr::filter(group_level == "cohort_1 and cohort_1" & estimate_name == "count") |>
-               dplyr::pull(estimate_value))
-  )
-
-
-  timing2 <- summariseCohortTiming(cdm$cohort,
+  timing2 <- summariseCohortTiming(cdm$table,
                                     restrictToFirstEntry = FALSE,
-                                    timing = c("min", "q25",
-                                               "median","q75",
-                                               "max"))
-  expect_equal(omopgenerics::resultColumns("summarised_result"),
-               colnames(timing2))
-
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() !=
-      timing2 |> dplyr::filter(group_level == "cohort_1 and cohort_1" & variable_name == "number records") |>
-               dplyr::pull(estimate_value)
-  )
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() ==
-      timing2 |> dplyr::filter(group_level == "cohort_1 and cohort_1" & variable_name == "number subjects") |>
-      dplyr::pull(estimate_value)
-  )
-
-  timing3 <- summariseCohortTiming(cdm$cohort,
-                                    restrictToFirstEntry = TRUE,
                                     timing = c("min",
                                                "max"))
   expect_equal(omopgenerics::resultColumns("summarised_result"),
-               colnames(timing3))
-
-  expect_true(all(timing3$estimate_name |> unique() %in%
-                    c("min","max","count")))
-
-  CDMConnector::cdm_disconnect(cdm)
-
-})
-test_that("summariseCohortTiming", {
-
-  cdm_local <- omock::mockCdmReference() |>
-    omock::mockPerson(100) |>
-    omock::mockObservationPeriod() |>
-    omock::mockCohort(numberCohorts = 2, recordPerson = 2)
-
-  con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-  cdm <- CDMConnector::copy_cdm_to(con = con,
-                                   cdm = cdm_local,
-                                   schema = "main")
-
-  timing1 <- summariseCohortTiming(cdm$cohort,
-                                   restrictToFirstEntry = TRUE,
-                                   timing = c("min", "q25",
-                                              "median","q75",
-                                              "max"))
-
-  expect_equal(omopgenerics::resultColumns("summarised_result"),
-               colnames(timing1))
-
-  expect_true(all(timing1$estimate_name |> unique() %in%
-                    c("min", "q25","median","q75","max","count")))
-
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() ==
-      unique(timing1 |>
-               dplyr::filter(group_level == "cohort_1 and cohort_1" & estimate_name == "count") |>
-               dplyr::pull(estimate_value))
-  )
-
-
-  timing2 <- summariseCohortTiming(cdm$cohort,
-                                   restrictToFirstEntry = FALSE,
-                                   timing = c("min", "q25",
-                                              "median","q75",
-                                              "max"))
-  expect_equal(omopgenerics::resultColumns("summarised_result"),
                colnames(timing2))
-
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() !=
-      timing2 |> dplyr::filter(group_level == "cohort_1 and cohort_1" & variable_name == "number records") |>
-      dplyr::pull(estimate_value)
-  )
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() ==
-      timing2 |> dplyr::filter(group_level == "cohort_1 and cohort_1" & variable_name == "number subjects") |>
-      dplyr::pull(estimate_value)
-  )
-
-  timing3 <- summariseCohortTiming(cdm$cohort,
-                                   restrictToFirstEntry = TRUE,
-                                   timing = c("min",
-                                              "max"))
-  expect_equal(omopgenerics::resultColumns("summarised_result"),
-               colnames(timing3))
-
-  expect_true(all(timing3$estimate_name |> unique() %in%
-                    c("min","max","count")))
-
-  CDMConnector::cdm_disconnect(cdm)
-
-})
-test_that("tableCohortTiming", {
-
-  cdm_local <- omock::mockCdmReference() |>
-    omock::mockPerson(100) |>
-    omock::mockObservationPeriod() |>
-    omock::mockCohort(numberCohorts = 2, recordPerson = 2)
-
-  con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-  cdm <- CDMConnector::copy_cdm_to(con = con,
-                                   cdm = cdm_local,
-                                   schema = "main")
-
-  timing1 <- summariseCohortTiming(cdm$cohort,
-                                   restrictToFirstEntry = TRUE,
-                                   timing = c("min", "q25",
-                                              "median","q75",
-                                              "max"))
-
-  expect_equal(omopgenerics::resultColumns("summarised_result"),
-               colnames(timing1))
-
-  expect_true(all(timing1$estimate_name |> unique() %in%
-                    c("min", "q25","median","q75","max","count")))
-
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() ==
-      unique(timing1 |>
-               dplyr::filter(group_level == "cohort_1 and cohort_1" & estimate_name == "count") |>
-               dplyr::pull(estimate_value))
-  )
-
-
-  timing2 <- summariseCohortTiming(cdm$cohort,
-                                   restrictToFirstEntry = FALSE,
-                                   timing = c("min", "q25",
-                                              "median","q75",
-                                              "max"))
-  expect_equal(omopgenerics::resultColumns("summarised_result"),
-               colnames(timing2))
-
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() !=
-      timing2 |> dplyr::filter(group_level == "cohort_1 and cohort_1" & variable_name == "number records") |>
-      dplyr::pull(estimate_value)
-  )
-  expect_true(
-    cdm$cohort |>
-      dplyr::filter(cohort_definition_id == 1) |> dplyr::distinct(subject_id) |>
-      dplyr::tally() |> dplyr::pull() ==
-      timing2 |> dplyr::filter(group_level == "cohort_1 and cohort_1" & variable_name == "number subjects") |>
-      dplyr::pull(estimate_value)
-  )
-
-  timing3 <- summariseCohortTiming(cdm$cohort,
-                                   restrictToFirstEntry = TRUE,
-                                   timing = c("min",
-                                              "max"))
-  expect_equal(omopgenerics::resultColumns("summarised_result"),
-               colnames(timing3))
-
-  expect_true(all(timing3$estimate_name |> unique() %in%
+  expect_false(timing2$estimate_value[5] == timing2$estimate_value[6])
+  expect_true(all(timing2$estimate_name |> unique() %in%
                     c("min","max","count")))
 
   CDMConnector::cdm_disconnect(cdm)

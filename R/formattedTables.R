@@ -115,7 +115,7 @@ formatCharacteristics <- function(result,
       )
     colsStrata <- "strata"
   } else {
-    result <- result |>
+      result <- result |>
       visOmopResults::splitStrata(overall = FALSE)
   }
 
@@ -192,11 +192,12 @@ defaultCharacteristicsOptions <- function(.options) {
 #' Format a cohort_overlap object into a visual table.
 #'
 #' @param result A cohort_overlap object.
+#' @param cohortNameReference Names of the reference cohorts to include.
+#' @param cohortNameComparator Names of the comparator cohorts to include.
+#' @param cdmName Name of the databases to include.
+#' @param variableName Name of the variable names to include.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", or "tibble".
-#' @param numberSubjects Whether to include the number of subjects.
-#' @param numberRecords Whether to include the number of records
-#' @param cdmName Whether to include the CDM name.
 #' @param minCellCount Counts below which results will be clouded.
 #' @param .options named list with additional formatting options.
 #' PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
@@ -214,9 +215,9 @@ tableCohortOverlap  <- function(result,
                                 cohortNameReference = NULL,
                                 cohortNameComparator = NULL,
                                 cdmName = NULL,
-                                type = "gt",
                                 variableName = c("number records",
                                                  "number subjects"),
+                                type = "gt",
                                 minCellCount = 5,
                                 .options = list()) {
   # initial checks
@@ -239,7 +240,7 @@ tableCohortOverlap  <- function(result,
     x$cohort_name_reference,
     "cohort_name_reference"
   )
-  cohortNameReference <- defaultColumnSelector(
+  cohortNameComparator <- defaultColumnSelector(
     cohortNameComparator,
     x$cohort_name_comparator,
     "cohort_name_comparator"
@@ -426,169 +427,3 @@ getTidyOverlap <- function(x) {
   return(x)
 }
 
-#' Format a cohort_timing object into a visual table.
-#'
-#' @param result A cohort_timing object.
-#' @param type Type of desired formatted table, possibilities: "gt",
-#' "flextable", or "tibble".
-#' @param formatEstimateName Whether to include the number of subjects.
-#' @param header Whether to include the number of records
-#' @param splitGroup description
-#' @param splitStrata description
-#' @param cdmName Whether to include the CDM name.
-#' @param minCellCount Counts below which results will be clouded.
-#' @param .options named list with additional formatting options.
-#' PatientProfiles::tableCohortOverlapOptions() shows allowed arguments and
-#' their default values.
-#'
-#' @examples
-#' \donttest{
-#' cdm_local <- omock::mockCdmReference() |>
-#'   omock::mockPerson(100) |>
-#'   omock::mockObservationPeriod() |>
-#'   omock::mockCohort(numberCohorts = 2)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-#' cdm <- CDMConnector::copy_cdm_to(con = con,
-#'                                  cdm = cdm_local,
-#'                                  schema = "main"
-#' cdm$cohort |>
-#'   summariseCohortOverlap() |>
-#'   tableCohortOverlap()
-#' }
-#'
-#' @return A formatted table of the cohort_timing summarised object.
-#'
-#' @export
-#'
-tableCohortTiming <- function(result,
-                              type = "gt",
-                              formatEstimateName = c(
-                                "N" = "<count>",
-                                "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
-                                "Range" = "<min> - <max>"
-                              ),
-                              header = character(),
-                              splitGroup = TRUE,
-                              splitStrata = TRUE,
-                              cdmName = TRUE,
-                              minCellCount = 5,
-                              .options = list()) {
-  # initial checks
-  result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type == "cohort_timing")
-  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
-  checkmate::assertCharacter(formatEstimateName, any.missing = FALSE)
-  checkmate::assertCharacter(header, any.missing = FALSE)
-  checkmate::assertLogical(splitGroup, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(splitStrata, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(cdmName, any.missing = FALSE, len = 1)
-  checkmate::assertIntegerish(minCellCount, any.missing = FALSE, len = 1)
-  checkmate::assertList(.options)
-
-  # options
-  .options <- defaultTimingOptions(.options)
-
-  result <- result |>
-    omopgenerics::suppress(minCellCount = minCellCount) |>
-    visOmopResults::formatEstimateValue(
-      decimals = .options$decimals,
-      decimalMark = .options$decimalMark,
-      bigMark = .options$bigMark
-    ) |>
-    visOmopResults::formatEstimateName(
-      estimateNameFormat = formatEstimateName,
-      keepNotFormatted = .options$keepNotFormatted,
-      useFormatOrder = .options$useFormatOrder
-    ) |>
-    visOmopResults::formatTable(
-      header = header,
-      delim = .options$delim,
-      includeHeaderName = .options$includeHeaderName,
-      includeHeaderKey = .options$includeHeaderKey
-    ) |>
-    dplyr::select(!c("result_type", "package_name", "package_version",
-                     "additional_name", "additional_level", "estimate_type",
-                     "variable_level"))
-  if (splitGroup) {
-    result <- result |>
-      visOmopResults::splitGroup()
-  }
-  if (splitStrata) {
-    result <- result |>
-      visOmopResults::splitStrata()
-  }
-
-  if (!cdmName) {
-    result <- result |>
-      dplyr::select(!"cdm_name")
-  } else {
-    result <- result |>
-      dplyr::rename("Database name" = "cdm_name")
-  }
-
-  if (type == "gt") {
-    result <- result |>
-      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
-      visOmopResults::gtTable(
-        delim = .options$delim,
-        style = .options$style,
-        na = .options$na,
-        title = .options$title,
-        subtitle = .options$subtitle,
-        caption = .options$caption,
-        groupNameCol = .options$groupNameCol,
-        groupNameAsColumn = .options$groupNameAsColumn,
-        groupOrder = .options$groupOrder,
-        colsToMergeRows = .options$colsToMergeRows
-      )
-  } else if (type == "flextable") {
-    result <- result |>
-      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
-      visOmopResults::fxTable(
-        delim = .options$delim,
-        style = .options$style,
-        na = .options$na,
-        title = .options$title,
-        subtitle = .options$subtitle,
-        caption = .options$caption,
-        groupNameCol = .options$groupNameCol,
-        groupNameAsColumn = .options$groupNameAsColumn,
-        groupOrder = .options$groupOrder,
-        colsToMergeRows = .options$colsToMergeRows
-      )
-  } else if (type == "tibble") {
-    result <- result |>
-      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x)))
-  }
-  return(result)
-}
-
-
-defaultTimingOptions <- function(userOptions) {
-  defaultOpts <- list(
-    decimals = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
-    decimalMark = ".",
-    bigMark = ",",
-    keepNotFormatted = TRUE,
-    useFormatOrder = TRUE,
-    includeHeaderName = TRUE,
-    includeHeaderKey = TRUE,
-    delim = "\n",
-    style = "default",
-    na = "-",
-    title = NULL,
-    subtitle = NULL,
-    caption = NULL,
-    groupNameCol = NULL,
-    groupNameAsColumn = FALSE,
-    groupOrder = NULL,
-    colsToMergeRows = "all_columns"
-  )
-
-  for (opt in names(userOptions)) {
-    defaultOpts[[opt]] <- userOptions[[opt]]
-  }
-
-  return(defaultOpts)
-}

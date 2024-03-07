@@ -72,15 +72,3 @@ summariseCohortOverlap <- function(cohort) {
   return(overlap)
 }
 
-# getUniqueCombinations <- function(x, order) {
-#   for (i in 2:length(order)) {
-#     x <- x |>
-#       dplyr::anti_join(
-#         x |>
-#           dplyr::filter(.data$cohort_name_reference == .env$order[i],
-#                         .data$cohort_name_comparator %in% .env$order[1:(i-1)]),
-#         by = colnames(x)
-#       )
-#   }
-#   return(x)
-# }

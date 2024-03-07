@@ -6,10 +6,11 @@
 \usage{
 tableCohortOverlap(
   result,
+  cohortNameReference = NULL,
+  cohortNameComparator = NULL,
+  cdmName = NULL,
+  variableName = c("number records", "number subjects"),
   type = "gt",
-  numberSubjects = TRUE,
-  numberRecords = TRUE,
-  cdmName = TRUE,
   minCellCount = 5,
   .options = list()
 )
@@ -17,14 +18,16 @@ tableCohortOverlap(
 \arguments{
 \item{result}{A cohort_overlap object.}
 
+\item{cohortNameReference}{Names of the reference cohorts to include.}
+
+\item{cohortNameComparator}{Names of the comparator cohorts to include.}
+
+\item{cdmName}{Name of the databases to include.}
+
+\item{variableName}{Name of the variable names to include.}
+
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", or "tibble".}
-
-\item{numberSubjects}{Whether to include the number of subjects.}
-
-\item{numberRecords}{Whether to include the number of records}
-
-\item{cdmName}{Whether to include the CDM name.}
 
 \item{minCellCount}{Counts below which results will be clouded.}
 

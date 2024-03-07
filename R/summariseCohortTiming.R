@@ -44,15 +44,13 @@ summariseCohortTiming <- function(cohort,
   }
 
   # should we use addCohortIntersectDate instead to avoid potentially large number of rows?
-  cdm[[name]] <- cdm[[name]] |>
+  cohort_timings <- cdm[[name]] |>
     dplyr::rename("cohort_name_reference" = "cohort_name") |>
     dplyr::inner_join(cdm[[name]] |>
                         dplyr::rename_with(~ paste0(.x, "_comparator"),
                                            .cols = c("cohort_definition_id", "cohort_start_date", "cohort_end_date", "cohort_name")),
-                      by = "subject_id")
-
-  cohort_timings <- cdm[[name]] %>%
-    dplyr::filter(.data$cohort_name_reference == .data$cohort_name_comparator)
+                      by = "subject_id") |>
+    dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) %>%
     dplyr::mutate(diff_days = !!CDMConnector::datediff("cohort_start_date",
                                                        "cohort_start_date_comparator",
                                                        interval = "day")) |>
