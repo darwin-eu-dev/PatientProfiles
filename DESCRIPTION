@@ -45,7 +45,8 @@ Suggests:
     DT,
     cowplot,
     DiagrammeRsvg,
-    DBI
+    DBI,
+    ggpubr
 Imports: 
     magrittr,
     CDMConnector (>= 1.3.0),
