@@ -621,3 +621,62 @@ checkOtherVariables <- function(otherVariables, cohort, call = rlang::env_parent
   }
   invisible(otherVariables)
 }
+
+#' Assert whether a nameStyle contains the needed information.
+#'
+#' @param nameStyle nameStyle object to check.
+#' @param values Parameters options that must be contained.
+#' @param call An environment for cli functions.
+#'
+#' @return An error if nameStyle is not properly formatted.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' assertNameStyle("my_name", values = list(
+#'   "variable1" = 1, "variable2" = c("a", "b", "c")
+#' ))
+#'
+#' assertNameStyle("my_name_{variable2}", values = list(
+#'   "variable1" = 1, "variable2" = c("a", "b", "c")
+#' ))
+#'
+#' assertNameStyle("my_name_{variable2}", values = list(
+#'   "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+#' ))
+#'
+#' assertNameStyle("my_name_{variable1}_{variable2}", values = list(
+#'   "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+#' ))
+#' }
+#'
+assertNameStyle <- function(nameStyle,
+                            values = list(),
+                            call = parent.frame()) {
+  # initial checks
+  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
+  checkmate::assertList(values, any.missing = FALSE, names = "named")
+  checkmate::assertClass(call, "environment")
+
+  # check name style
+  err <- character()
+  for (k in seq_along(values)) {
+    valk <- values[[k]]
+    nm <- paste0("\\{", names(values)[k], "\\}")
+    if (length(valk) > 1 & !grepl(pattern = nm, x = nameStyle)) {
+      err <- c(err, paste0("{{", names(values)[k], "}}"))
+    }
+  }
+
+  # error
+  if (length(err) > 0) {
+    names(err) <- rep("*", length(err))
+    cli::cli_abort(
+      message = c("The following elements are not present in nameStyle:", err),
+      call = call
+    )
+  }
+
+  return(invisible(nameStyle))
+}
