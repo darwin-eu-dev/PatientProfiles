@@ -251,3 +251,29 @@ test_that("checkNameStyle", {
     nameStyle = "{value}_{id_name}"
   ))))
 })
+
+test_that("test assertNameStyle", {
+  expect_error(
+    assertNameStyle("my_name", values = list(
+      "variable1" = 1, "variable2" = c("a", "b", "c")
+    ))
+  )
+
+  expect_no_error(
+    assertNameStyle("my_name_{variable2}", values = list(
+      "variable1" = 1, "variable2" = c("a", "b", "c")
+    ))
+  )
+
+  expect_error(
+    assertNameStyle("my_name_{variable2}", values = list(
+      "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+    ))
+  )
+
+  expect_no_error(
+    assertNameStyle("my_name_{variable1}_{variable2}", values = list(
+      "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+    ))
+  )
+})
