@@ -163,7 +163,7 @@ test_that("plotCohortOverlap", {
   person <- dplyr::tibble(
     person_id = 1:20,
     gender_concept_id = 8532,
-    year_of_birth = runif(n=20, min=1950, max=2000),
+    year_of_birth = runif(n=20, min=1950, max=1980),
     month_of_birth = runif(n=20, min=1, max=12),
     day_of_birth = runif(n=20, min=1, max=30),
     race_concept_id= 0,
@@ -230,7 +230,7 @@ test_that("plotCohortOverlap", {
                            facetBy = "strata_level",
                            uniqueCombinations = FALSE)
   expect_true("ggplot" %in% class(gg3))
-  expect_true(all(c("0 to 40 and Female", "41 to 100 and Female") %in%
+  expect_true(all(c("0 to 40 and Female", "41 to 150 and Female") %in%
                     gg3$data$facet_var |> unique()))
 
   CDMConnector::cdm_disconnect(cdm)
