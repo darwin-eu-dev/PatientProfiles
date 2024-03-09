@@ -167,3 +167,31 @@ getUniqueCombinations <- function(x, order) {
   }
   return(x)
 }
+
+getTidyOverlap <- function(x) {
+  cohort_counts <- x |>
+    dplyr::filter(.data$cohort_name_reference == .data$cohort_name_comparator)
+  byCol <- colnames(x)
+  x <- x |>
+    dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) |>
+    dplyr::mutate(variable_level = "overlap") |>
+    tidyr::pivot_wider(names_from = c("variable_level"),
+                       values_from = "estimate_value") |>
+    dplyr::left_join(
+      cohort_counts |>
+        dplyr::mutate(variable_level = "reference") |>
+        tidyr::pivot_wider(names_from = c("variable_level"),
+                           values_from = "estimate_value") |>
+        dplyr::select(!"cohort_name_comparator"),
+      by = byCol[! byCol %in% c("cohort_name_comparator", "variable_level", "estimate_value")]
+    ) |>
+    dplyr::left_join(
+      cohort_counts |>
+        dplyr::mutate(variable_level = "comparator") |>
+        tidyr::pivot_wider(names_from = c("variable_level"),
+                           values_from = "estimate_value") |>
+        dplyr::select(!"cohort_name_reference"),
+      by = byCol[! byCol %in% c("cohort_name_reference", "variable_level", "estimate_value")]
+    )
+  return(x)
+}
