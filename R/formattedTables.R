@@ -26,7 +26,7 @@
 #' @param cohortName .
 #' @param style .
 #' @param minCellCount .
-#' @param .options .
+#' @param .options See optionsTableCharacteristics() for default values.
 #'
 #' @examples
 #' \donttest{
@@ -200,11 +200,11 @@ defaultCharacteristicsOptions <- function(.options) {
 #'
 #' @examples
 #' {
-#' optionsFormatCharacteristics()
+#' optionsTableCharacteristics()
 #' }
 #'
 #'
-optionsFormatCharacteristics <- function() {
+optionsTableCharacteristics <- function() {
   return(defaultCharacteristicsOptions(NULL))
 }
 
