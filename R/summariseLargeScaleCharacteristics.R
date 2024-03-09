@@ -495,7 +495,7 @@ formatLscResult <- function(lsc, den, cdm, minimumFrequency) {
         "window_name"
       )
     ) %>%
-    dplyr::mutate(percentage = 100 * .data$count / .data$denominator) %>%
+    dplyr::mutate(percentage = round(100 * .data$count / .data$denominator, 2)) %>%
     dplyr::select(-"denominator") %>%
     dplyr::filter(.data$percentage >= 100 * .env$minimumFrequency) %>%
     tidyr::pivot_longer(

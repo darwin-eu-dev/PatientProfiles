@@ -97,7 +97,7 @@ test_that("basic functionality summarise large scale characteristics", {
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(NA, 2, NA, 1, NA, 2)
   den <- c(3, 3, 3, 3, 3, 3)
-  percentage <- as.character(100 * count / den)
+  percentage <- as.character(round((100 * count / den),2))
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
@@ -127,7 +127,7 @@ test_that("basic functionality summarise large scale characteristics", {
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(1, 2, 1, 1, 2, 2)
   den <- c(3, 3, 3, 3, 3, 3)
-  percentage <- as.character(100 * count / den)
+  percentage <- as.character(round(100 * count / den, 2))
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
@@ -169,7 +169,7 @@ test_that("basic functionality summarise large scale characteristics", {
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(NA, 1, 1, NA, NA, NA)
   den <- c(1, 1, 1, 1, 1, 1)
-  percentage <- as.character(100 * count / den)
+  percentage <- as.character(round(100 * count / den, 2))
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
