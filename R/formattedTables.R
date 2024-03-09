@@ -261,8 +261,8 @@ tableCohortOverlap  <- function(result,
     getTidyOverlap() |>
     dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
     dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
-    dplyr::arrange(dplyr::across(
-      dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator")))) |>
+    # dplyr::arrange(dplyr::across(
+    #   dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator")))) |>
     dplyr::mutate(
       total = .data$reference + .data$comparator,
       reference = .data$reference - .data$overlap,
@@ -272,17 +272,17 @@ tableCohortOverlap  <- function(result,
       only_in_reference = dplyr::if_else(
         (.data$reference < .env$minCellCount) | is.na(.data$reference),
         paste0("<", niceNum(.env$minCellCount, .options, "integer")),
-        formatOverlap(.data$reference, .data$reference/.data$total * 100, .env$.options)
+        formatOverlapEstimate(.data$reference, .data$reference/.data$total * 100, .env$.options)
       ),
       only_in_comparator = dplyr::if_else(
         (.data$comparator < .env$minCellCount) | is.na(.data$comparator),
         paste0("<", niceNum(.env$minCellCount, .options, "integer")),
-        formatOverlap(.data$comparator, .data$comparator/.data$total * 100, .env$.options)
+        formatOverlapEstimate(.data$comparator, .data$comparator/.data$total * 100, .env$.options)
       ),
       overlap = dplyr::if_else(
         (.data$overlap < .env$minCellCount) | is.na(.data$overlap),
         paste0("<",niceNum(.env$minCellCount, .options, "integer")),
-        formatOverlap(.data$overlap, .data$overlap*2/.data$total * 100, .env$.options)),
+        formatOverlapEstimate(.data$overlap, .data$overlap*2/.data$total * 100, .env$.options)),
       estimate_name = "N (%)"
     ) |>
     dplyr::select(c("cdm_name", "cohort_name_reference", "cohort_name_comparator",
@@ -325,7 +325,7 @@ tableCohortOverlap  <- function(result,
   return(x)
 }
 
-formatOverlap <- function(count, percentage, .options) {
+formatOverlapEstimate <- function(count, percentage, .options) {
   paste0(
     niceNum(count, .options, "integer"),
     " (",
@@ -425,5 +425,172 @@ getTidyOverlap <- function(x) {
       by = byCol[! byCol %in% c("cohort_name_reference", "variable_level", "estimate_value")]
     )
   return(x)
+}
+
+#' Format a cohort_timing object into a visual table.
+#'
+#' @param result A cohort_overlap object.
+#' @param cohortNameReference Names of the reference cohorts to include.
+#' @param cohortNameComparator Names of the comparator cohorts to include.
+#' @param cdmName Name of the databases to include.
+#' @param variableName Name of the variable names to include.
+#' @param formatEstimateName Whether to include the number of subjects.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", or "tibble".
+#' @param minCellCount Counts below which results will be clouded.
+#' @param .options named list with additional formatting options.
+#' PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
+#' their default values.
+#'
+#' @examples
+#' \donttest{
+#' cdm_local <- omock::mockCdmReference() |>
+#'   omock::mockPerson(100) |>
+#'   omock::mockObservationPeriod() |>
+#'   omock::mockCohort(numberCohorts = 2)
+#'
+#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+#' cdm <- CDMConnector::copy_cdm_to(con = con,
+#'                                  cdm = cdm_local,
+#'                                  schema = "main"
+#' cdm$cohort |>
+#'   summariseCohortOverlap() |>
+#'   tableCohortOverlap()
+#' }
+#'
+#' @return A formatted table of the cohort_timing summarised object.
+#'
+#' @export
+#'
+tableCohortTiming <- function(result,
+                              cohortNameReference = NULL,
+                              cohortNameComparator = NULL,
+                              cdmName = NULL,
+                              variableName = c("number records",
+                                               "number subjects",
+                                               "diff_days"),
+                              formatEstimateName = c(
+                                "N" = "<count>",
+                                "Mean (SD)" = "<mean> (<sd>)",
+                                "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                "Range" = "<min> - <max>"
+                              ),
+                              type = "gt",
+                              minCellCount = 5,
+                              .options = list()) {
+  # initial checks
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "cohort_timing")
+  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
+  checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
+  checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
+  checkmate::assertCharacter(cdmName, null.ok = TRUE)
+  checkmate::assertCharacter(variableName, null.ok = TRUE)
+  checkmate::assertCharacter(formatEstimateName, any.missing = FALSE)
+  checkmate::assertCharacter(header, any.missing = FALSE)
+  checkmate::assertList(.options)
+
+  # split table
+  x <- result |>
+    visOmopResults::splitAll()
+
+  # add default values
+  cohortNameReference <- defaultColumnSelector(
+    cohortNameReference,
+    x$cohort_name_reference,
+    "cohort_name_reference"
+  )
+  cohortNameComparator <- defaultColumnSelector(
+    cohortNameComparator,
+    x$cohort_name_comparator,
+    "cohort_name_comparator"
+  )
+  variableName <- defaultColumnSelector(
+    variableName,
+    x$variable_name,
+    "variable_name"
+  )
+  cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
+  .options <- defaultTimingOptions(.options)
+
+  x <- result |>
+    dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
+    dplyr::filter(.data$variable_name %in% .env$variableName) |>
+    omopgenerics::suppress(minCellCount = minCellCount) |>
+    visOmopResults::formatEstimateValue(
+      decimals = .options$decimals,
+      decimalMark = .options$decimalMark,
+      bigMark = .options$bigMark
+    ) |>
+    visOmopResults::formatEstimateName(
+      estimateNameFormat = formatEstimateName,
+      keepNotFormatted = .options$keepNotFormatted,
+      useFormatOrder = .options$useFormatOrder
+    ) |>
+    visOmopResults::splitAll() |> # to change after new release of visOmopGenerics
+    dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
+    dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
+    dplyr::select(!c("result_id", "result_type", "package_name", "package_version",
+                     "estimate_type", "variable_level"))
+
+  if (type == "gt") {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
+      visOmopResults::gtTable(
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  } else if (type == "flextable") {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
+      visOmopResults::fxTable(
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  } else if (type == "tibble") {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x)))
+  }
+  return(x)
+}
+
+
+defaultTimingOptions <- function(userOptions) {
+  defaultOpts <- list(
+    decimals = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
+    decimalMark = ".",
+    bigMark = ",",
+    keepNotFormatted = TRUE,
+    useFormatOrder = TRUE,
+    style = "default",
+    na = "-",
+    title = NULL,
+    subtitle = NULL,
+    caption = NULL,
+    groupNameCol = NULL,
+    groupNameAsColumn = FALSE,
+    groupOrder = NULL,
+    colsToMergeRows = "all_columns"
+  )
+
+  for (opt in names(userOptions)) {
+    defaultOpts[[opt]] <- userOptions[[opt]]
+  }
+
+  return(defaultOpts)
 }
 

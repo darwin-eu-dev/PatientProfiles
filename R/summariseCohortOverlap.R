@@ -1,6 +1,10 @@
 #' Summarise cohort overlap
 #'
 #' @param cohort  A cohort table in a cdm reference
+#' @param cohortId  Vector of cohort definition ids to include, if NULL, all
+#' cohort definition ids will be used.
+#' @param strata List of the stratifications within each group to be considered.
+#' Must be column names in the cohort table provided.
 #'
 #' @return A summarised_result
 #' @export
@@ -9,7 +13,9 @@
 #' \donttest{
 #' }
 
-summariseCohortOverlap <- function(cohort) {
+summariseCohortOverlap <- function(cohort,
+                                   cohortId = NULL,
+                                   strata = list()) {
 
   # validate inputs
   assertClass(cohort, "cohort_table")
@@ -19,24 +25,31 @@ summariseCohortOverlap <- function(cohort) {
   cdm <- omopgenerics::cdmReference(cohort)
   name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
 
-  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(.data$cohort_name)
-  cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]])
+  if (is.null(cohortId)) {
+    cohortId <- cdm[[name]] |>
+      omopgenerics::settings() |>
+      dplyr::pull(.data$cohort_definition_id)
+  }
+
+  cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]]) |>
+    dplyr::filter(.data$cohort_definition_id %in% .env$cohortId)
 
   overlap <- cdm[[name]] |>
     dplyr::group_by(.data$subject_id, .data$cohort_name) |>
     dplyr::mutate(record_id = dplyr::row_number()) |>
     dplyr::ungroup() |>
-    dplyr::select("subject_id",
-                  "record_id",
-                  "cohort_name_reference" = "cohort_name") |>
+    dplyr::rename("cohort_name_reference" = "cohort_name") |>
+    dplyr::select(dplyr::all_of("subject_id", # add strata
+                                "record_id",
+                                "cohort_name_reference")) |>
     dplyr::inner_join(cdm[[name]] |>
                         dplyr::group_by(.data$subject_id, .data$cohort_name) |>
                         dplyr::mutate(record_id = dplyr::row_number()) |>
                         dplyr::ungroup() |>
-                        dplyr::select("subject_id",
-                                      "record_id",
-                                      "cohort_name_comparator" = "cohort_name") |>
-                        dplyr::distinct(),
+                        dplyr::rename("cohort_name_comparator" = "cohort_name") |>
+                        dplyr::select(dplyr::all_of("subject_id", # add strata
+                                                    "record_id",
+                                                    "cohort_name_comparator")),
                       by = c("subject_id", "record_id"))  |>
     dplyr::group_by(.data$cohort_name_reference,
                     .data$cohort_name_comparator) |>

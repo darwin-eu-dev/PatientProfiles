@@ -1,6 +1,10 @@
 #' Summarise cohort timing
 #'
 #' @param cohort  A cohort table in a cdm reference
+#' @param cohortId  Vector of cohort definition ids to include, if NULL, all
+#' cohort definition ids will be used.
+#' @param strata List of the stratifications within each group to be considered.
+#' Must be column names in the cohort table provided.
 #' @param restrictToFirstEntry If TRUE only an individual's first entry per
 #' cohort will be considered. If FALSE all entries per individual will be
 #' considered
@@ -14,13 +18,17 @@
 #' }
 #'
 summariseCohortTiming <- function(cohort,
+                                  cohortId = NULL,
+                                  strata = list(),
                                   restrictToFirstEntry = TRUE,
                                   timing = c("min", "q25",
                                              "median","q75",
-                                             "max")){
+                                             "max","mean", "sd")){
 
   # validate inputs
   assertClass(cohort, "cohort_table")
+  checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
+  checkStrata(strata, cohort)
   checkmate::assertTRUE(all(c("cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date") %in% colnames(cohort)))
   checkmate::assertLogical(restrictToFirstEntry, any.missing = FALSE, len = 1, null.ok = FALSE)
   checkmate::assertCharacter(timing, any.missing = FALSE, null.ok = FALSE)
@@ -29,14 +37,25 @@ summariseCohortTiming <- function(cohort,
   cdm <- omopgenerics::cdmReference(cohort)
   name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
 
-  cohortOrder <- cdm[[name]] |> omopgenerics::settings() |> dplyr::pull(.data$cohort_name)
-  cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]])
+  ids <- cdm[[name]] |>
+    omopgenerics::settings() |>
+    dplyr::pull(.data$cohort_definition_id)
+
+  if (is.null(cohortId)) {
+    cohortId <- ids
+  } else {
+    indNot <- which(!cohortId %in% ids)
+    if (length(indNot)>0) {
+      cli::cli_warn("{cohortId[indNot]} {?is/are} not in the cohort table.")
+    }
+  }
+  cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]]) |>
+    dplyr::filter(.data$cohort_definition_id %in% .env$cohortId)
 
   if(isTRUE(restrictToFirstEntry)){
     # to use cohortConstructor once released
     # cdm[[name]] <- cdm[[name]] |>
     #   restrictToFirstEntry()
-
     cdm[[name]] <- cdm[[name]]  |>
       dplyr::group_by(.data$subject_id,.data$cohort_definition_id) |>
       dplyr::filter(.data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE)) |>
@@ -60,6 +79,7 @@ summariseCohortTiming <- function(cohort,
              as.character(" and "),
              as.character(.data$cohort_name_comparator)))) |>
     summariseResult(group = list("cohort_name_reference and cohort_name_comparator"),
+                    strata = strata,
                     variables = list(diff_days = "diff_days"),
                     functions = list(diff_days = timing)) |>
     dplyr::mutate(result_type = "cohort_timing",

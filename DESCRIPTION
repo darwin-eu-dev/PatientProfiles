@@ -45,8 +45,7 @@ Suggests:
     DT,
     cowplot,
     DiagrammeRsvg,
-    DBI,
-    omock
+    DBI
 Imports: 
     magrittr,
     CDMConnector (>= 1.3.0),
@@ -68,5 +67,3 @@ Depends:
     R (>= 2.10)
 Config/testthat/edition: 3
 Config/testthat/parallel: true
-Remotes: 
-    oxford-pharmacoepi/omock
