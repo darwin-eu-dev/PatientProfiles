@@ -8,6 +8,9 @@ tableCohortOverlap(
   result,
   cohortNameReference = NULL,
   cohortNameComparator = NULL,
+  strataName = "overall",
+  strataLevel = "overall",
+  splitStrata = TRUE,
   cdmName = NULL,
   variableName = c("number records", "number subjects"),
   type = "gt",
@@ -21,6 +24,12 @@ tableCohortOverlap(
 \item{cohortNameReference}{Names of the reference cohorts to include.}
 
 \item{cohortNameComparator}{Names of the comparator cohorts to include.}
+
+\item{strataName}{Names of the strata names to include.}
+
+\item{strataLevel}{Names of the strata levels to include.}
+
+\item{splitStrata}{If TRUE strata name-levle columns will be splitted.}
 
 \item{cdmName}{Name of the databases to include.}
 

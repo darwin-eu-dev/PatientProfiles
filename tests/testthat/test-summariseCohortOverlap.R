@@ -55,6 +55,27 @@ test_that("summariseCohortOverlap", {
                ])
   )
 
+  # strata and cohortID ----
+  overlap2 <- summariseCohortOverlap(cdm$table,
+                                     cohortId = 1:2)
+  expect_true(nrow(overlap2) == 8)
+  expect_true(all(
+    c("cohort_2 and cohort_2", "cohort_2 and cohort_1", "cohort_1 and cohort_2", "cohort_1 and cohort_1") %in%
+    unique(overlap2$group_level)))
+
+  cdm$table <- cdm$table |>
+    addAge(ageGroup = list(c(0,40), c(41,100))) |>
+    addSex() |>
+    dplyr::compute(name = "table", temporary = FALSE) |>
+    omopgenerics::newCohortTable()
+
+  overlap3 <- summariseCohortOverlap(cdm$table,
+                                     strata = list("age_group", c("age_group", "sex")))
+  expect_true(all(unique(overlap3$group_level) %in%
+                    unique(overlap1$group_level)))
+  expect_true(all(c("overall", "age_group", "age_group and sex") %in%
+                    unique(overlap3$strata_name)))
+
   CDMConnector::cdm_disconnect(cdm)
 })
 
@@ -98,8 +119,9 @@ test_that("tableCohortOverlap", {
   expect_equal(gtResult1$`_data`$`Cdm name`,
                c("PP_MOCK", rep("", nrow(gtResult1$`_data`)-1)))
   expect_equal(unique(gtResult1$`_data`$`Cohort name reference`)[1], "cohort_1")
-  expect_equal(unique(gtResult1$`_data`$`Cohort name comparator`),
-               c("cohort_2", "", "cohort_3", "cohort_4"))
+  expect_true(all(c("cohort_2", "", "cohort_3", "cohort_4") %in%
+                    unique(gtResult1$`_data`$`Cohort name comparator`)))
+  expect_false(any(c("strata_name", "strata_level") %in% colnames(gtResult1$`_data`)))
 
   fxResult1 <- tableCohortOverlap(overlap,
                                   type = "flextable",
@@ -109,8 +131,25 @@ test_that("tableCohortOverlap", {
   expect_true(all(grepl("<1,000", fxResult1$body$dataset$Overlap)))
   expect_false("number subjects" %in% fxResult1$body$dataset$`Variable name`)
 
-  tibbleResult1 <-  tableCohortOverlap(overlap, type = "tibble")
+  cdm$table <- cdm$table |>
+    addAge(ageGroup = list(c(0,40), c(41,100))) |>
+    addSex() |>
+    dplyr::compute(name = "table", temporary = FALSE) |>
+    omopgenerics::newCohortTable()
+
+  overlap3 <- summariseCohortOverlap(cdm$table,
+                                     strata = list("age_group", c("age_group", "sex")))
+  tibbleResult1 <-  tableCohortOverlap(overlap3, type = "tibble",
+                                       strataName = "age_group",
+                                       strataLevel = c("0 to 40", "41 to 100"))
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(tibbleResult1)))
+  expect_true("Age group" %in% colnames(tibbleResult1))
+
+  tibbleResult2 <-  tableCohortOverlap(overlap3, type = "tibble",
+                                       strataName = "age_group",
+                                       strataLevel = c("0 to 40", "41 to 100"),
+                                       splitStrata = FALSE)
+  expect_true(all(c("strata_name", "strata_level") %in% colnames(tibbleResult2)))
 
   expect_warning(
     tibbleResult2 <-  tableCohortOverlap(overlap, type = "tibble", cohortNameReference = c("hola"))
@@ -174,5 +213,25 @@ test_that("plotCohortOverlap", {
   expect_true(nrow(gg2$data |>
                 dplyr::filter(.data$cohort_name_reference %in% c("cohort_1", "cohort_2") &
                                 .data$cohort_name_comparator %in% c("cohort_1", "cohort_2"))) == 2)
+  # strata ----
+  cdm$table <- cdm$table |>
+    addAge(ageGroup = list(c(0,40), c(41,100))) |>
+    addSex() |>
+    dplyr::compute(name = "table", temporary = FALSE) |>
+    omopgenerics::newCohortTable()
+
+  overlap3 <- summariseCohortOverlap(cdm$table,
+                                     strata = list("age_group", c("age_group", "sex")))
+  gg3 <- plotCohortOverlap(overlap3,
+                           cohortNameReference = c("cohort_1", "cohort_2"),
+                           variableName = "number subjects",
+                           strataName = "age_group and sex",
+                           strataLevel = unique(overlap3$strata_level),
+                           facetBy = "strata_level",
+                           uniqueCombinations = FALSE)
+  expect_true("ggplot" %in% class(gg3))
+  expect_true(all(c("0 to 40 and Female", "None and Female", "41 to 100 and Female") %in%
+                    gg3$data$facet_var |> unique()))
+
   CDMConnector::cdm_disconnect(cdm)
 })

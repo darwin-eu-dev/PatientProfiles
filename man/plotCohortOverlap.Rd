@@ -8,11 +8,12 @@ plotCohortOverlap(
   result,
   cohortNameReference = NULL,
   cohortNameComparator = NULL,
+  strataName = "overall",
+  strataLevel = "overall",
   cdmName = NULL,
-  variableName = c("number subjects"),
+  variableName = "number subjects",
   facetBy = NULL,
-  overlapLabel =
-    "{cohort_name_reference};\\n                              {cohort_name_comparator}",
+  overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
   uniqueCombinations = TRUE
 )
 }
@@ -22,6 +23,10 @@ plotCohortOverlap(
 \item{cohortNameReference}{Names of the reference cohorts to include.}
 
 \item{cohortNameComparator}{Names of the comparator cohorts to include.}
+
+\item{strataName}{Names of the strata names to include.}
+
+\item{strataLevel}{Names of the strata levels to include.}
 
 \item{cdmName}{Name of the databases to include.}
 

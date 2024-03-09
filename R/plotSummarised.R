@@ -3,6 +3,8 @@
 #' @param result A cohort_overlap object.
 #' @param cohortNameReference Names of the reference cohorts to include.
 #' @param cohortNameComparator Names of the comparator cohorts to include.
+#' @param strataName Names of the strata names to include.
+#' @param strataLevel Names of the strata levels to include.
 #' @param cdmName Name of the databases to include.
 #' @param variableName Name of the variable names to include.
 #' @param facetBy Names of columns in the cohort_overlap table for faceting the
@@ -22,17 +24,20 @@
 plotCohortOverlap <- function(result,
                               cohortNameReference = NULL,
                               cohortNameComparator = NULL,
+                              strataName = "overall",
+                              strataLevel = "overall",
                               cdmName = NULL,
-                              variableName = c("number subjects"),
+                              variableName = "number subjects",
                               facetBy = NULL,
-                              overlapLabel = "{cohort_name_reference};
-                              {cohort_name_comparator}",
+                              overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
                               uniqueCombinations = TRUE) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type == "cohort_overlap")
   checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
   checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
+  checkmate::assertCharacter(strataName, null.ok = TRUE)
+  checkmate::assertCharacter(strataLevel, null.ok = TRUE)
   checkmate::assertCharacter(cdmName, null.ok = TRUE)
   checkmate::assertCharacter(variableName, null.ok = TRUE)
   checkmate::assertCharacter(facetBy, null.ok = TRUE)
@@ -41,7 +46,7 @@ plotCohortOverlap <- function(result,
 
   # split table
   x <- result |>
-    visOmopResults::splitAll()
+    visOmopResults::splitGroup()
 
   # add default values
   cohortNameReference <- defaultColumnSelector(
@@ -59,10 +64,18 @@ plotCohortOverlap <- function(result,
     x$variable_name,
     "variable_name"
   )
+  strataName <- defaultColumnSelector(
+    strataName,
+    result$strata_name,
+    "strata_name"
+  )
+  strataLevel <- defaultColumnSelector(
+    strataLevel,
+    result$strata_level,
+    "strata_level"
+  )
   cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
 
-  x <- result |>
-    visOmopResults::splitAll()
   if (uniqueCombinations) {
     x <- x |>
       getUniqueCombinations(order = sort(unique(x$cohort_name_reference)))
@@ -70,6 +83,8 @@ plotCohortOverlap <- function(result,
   x <- x |>
     dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
     dplyr::filter(.data$variable_name == .env$variableName) |>
+    dplyr::filter(.data$strata_name %in% .env$strataName) |>
+    dplyr::filter(.data$strata_level %in% .env$strataLevel) |>
     dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
     getTidyOverlap() |>
     dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>

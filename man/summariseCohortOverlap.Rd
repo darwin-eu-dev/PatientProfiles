@@ -4,10 +4,16 @@
 \alias{summariseCohortOverlap}
 \title{Summarise cohort overlap}
 \usage{
-summariseCohortOverlap(cohort)
+summariseCohortOverlap(cohort, cohortId = NULL, strata = list())
 }
 \arguments{
 \item{cohort}{A cohort table in a cdm reference}
+
+\item{cohortId}{Vector of cohort definition ids to include, if NULL, all
+cohort definition ids will be used.}
+
+\item{strata}{List of the stratifications within each group to be considered.
+Must be column names in the cohort table provided.}
 }
 \value{
 A summarised_result

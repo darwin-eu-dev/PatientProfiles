@@ -180,20 +180,42 @@ defaultCharacteristicsOptions <- function(.options) {
     "groupNameAsColumn" = FALSE,
     "groupOrder" = NULL
   )
-  for (nm in names(defaults)) {
-    if (!nm %in% names(.options)) {
-      .options[[nm]] <- defaults[[nm]]
-    }
+
+  for (opt in names(.options)) {
+    defaults[[opt]] <- .options[[opt]]
   }
-  return(.options)
+  return(defaults)
 }
 
+#' Additional arguments for the function formatCharacteristics.
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in
+#' formatCharacteristics. and their given default values.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' optionsFormatCharacteristics()
+#' }
+#'
+#'
+optionsFormatCharacteristics <- function() {
+  return(defaultCharacteristicsOptions(NULL))
+}
 
 #' Format a cohort_overlap object into a visual table.
 #'
 #' @param result A cohort_overlap object.
 #' @param cohortNameReference Names of the reference cohorts to include.
 #' @param cohortNameComparator Names of the comparator cohorts to include.
+#' @param strataName Names of the strata names to include.
+#' @param strataLevel Names of the strata levels to include.
+#' @param splitStrata If TRUE strata name-levle columns will be splitted.
 #' @param cdmName Name of the databases to include.
 #' @param variableName Name of the variable names to include.
 #' @param type Type of desired formatted table, possibilities: "gt",
@@ -214,6 +236,9 @@ defaultCharacteristicsOptions <- function(.options) {
 tableCohortOverlap  <- function(result,
                                 cohortNameReference = NULL,
                                 cohortNameComparator = NULL,
+                                strataName = "overall",
+                                strataLevel = "overall",
+                                splitStrata = TRUE,
                                 cdmName = NULL,
                                 variableName = c("number records",
                                                  "number subjects"),
@@ -226,13 +251,15 @@ tableCohortOverlap  <- function(result,
   checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
   checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
   checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
+  checkmate::assertCharacter(strataName, null.ok = TRUE)
+  checkmate::assertCharacter(strataLevel, null.ok = TRUE)
   checkmate::assertCharacter(cdmName, null.ok = TRUE)
   checkmate::assertCharacter(variableName, null.ok = TRUE)
   checkmate::assertList(.options)
 
   # split table
   x <- result |>
-    visOmopResults::splitAll()
+    visOmopResults::splitGroup()
 
   # add default values
   cohortNameReference <- defaultColumnSelector(
@@ -250,6 +277,16 @@ tableCohortOverlap  <- function(result,
     x$variable_name,
     "variable_name"
   )
+  strataName <- defaultColumnSelector(
+    strataName,
+    x$strata_name,
+    "strata_name"
+  )
+  strataLevel <- defaultColumnSelector(
+    strataLevel,
+    x$strata_level,
+    "strata_level"
+  )
   cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
   .options <- defaultOverlapOptions(.options)
 
@@ -257,12 +294,13 @@ tableCohortOverlap  <- function(result,
   x <- x |>
     dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
     dplyr::filter(.data$variable_name == .env$variableName) |>
+    dplyr::filter(.data$strata_name %in% .env$strataName) |>
+    dplyr::filter(.data$strata_level %in% .env$strataLevel) |>
     dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
     getTidyOverlap() |>
     dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
     dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
-    # dplyr::arrange(dplyr::across(
-    #   dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator")))) |>
+    # to support header in visOmopResults 0.1.0
     dplyr::mutate(
       total = .data$reference + .data$comparator,
       reference = .data$reference - .data$overlap,
@@ -286,8 +324,13 @@ tableCohortOverlap  <- function(result,
       estimate_name = "N (%)"
     ) |>
     dplyr::select(c("cdm_name", "cohort_name_reference", "cohort_name_comparator",
-                    "variable_name", "estimate_name", "only_in_reference",
-                    "only_in_comparator", "overlap"))
+                    "strata_name", "strata_level", "variable_name", "estimate_name",
+                    "only_in_reference", "only_in_comparator", "overlap"))
+
+  if (splitStrata) {
+    x <- x |>
+      visOmopResults::splitStrata()
+  }
 
   if (type == "gt") {
     x <- x |>
@@ -397,200 +440,5 @@ defaultColumnSelector <- function(input, column, column_name) {
 #'
 optionsTableCohortOverlap <- function() {
   return(defaultOverlapOptions(NULL))
-}
-
-getTidyOverlap <- function(x) {
-  cohort_counts <- x |>
-    dplyr::filter(.data$cohort_name_reference == .data$cohort_name_comparator)
-  byCol <- colnames(x)
-  x <- x |>
-    dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) |>
-    dplyr::mutate(variable_level = "overlap") |>
-    tidyr::pivot_wider(names_from = c("variable_level"),
-                       values_from = "estimate_value") |>
-    dplyr::left_join(
-      cohort_counts |>
-        dplyr::mutate(variable_level = "reference") |>
-        tidyr::pivot_wider(names_from = c("variable_level"),
-                           values_from = "estimate_value") |>
-        dplyr::select(!"cohort_name_comparator"),
-      by = byCol[! byCol %in% c("cohort_name_comparator", "variable_level", "estimate_value")]
-    ) |>
-    dplyr::left_join(
-      cohort_counts |>
-        dplyr::mutate(variable_level = "comparator") |>
-        tidyr::pivot_wider(names_from = c("variable_level"),
-                           values_from = "estimate_value") |>
-        dplyr::select(!"cohort_name_reference"),
-      by = byCol[! byCol %in% c("cohort_name_reference", "variable_level", "estimate_value")]
-    )
-  return(x)
-}
-
-#' Format a cohort_timing object into a visual table.
-#'
-#' @param result A cohort_overlap object.
-#' @param cohortNameReference Names of the reference cohorts to include.
-#' @param cohortNameComparator Names of the comparator cohorts to include.
-#' @param cdmName Name of the databases to include.
-#' @param variableName Name of the variable names to include.
-#' @param formatEstimateName Whether to include the number of subjects.
-#' @param type Type of desired formatted table, possibilities: "gt",
-#' "flextable", or "tibble".
-#' @param minCellCount Counts below which results will be clouded.
-#' @param .options named list with additional formatting options.
-#' PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
-#' their default values.
-#'
-#' @examples
-#' \donttest{
-#' cdm_local <- omock::mockCdmReference() |>
-#'   omock::mockPerson(100) |>
-#'   omock::mockObservationPeriod() |>
-#'   omock::mockCohort(numberCohorts = 2)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-#' cdm <- CDMConnector::copy_cdm_to(con = con,
-#'                                  cdm = cdm_local,
-#'                                  schema = "main"
-#' cdm$cohort |>
-#'   summariseCohortOverlap() |>
-#'   tableCohortOverlap()
-#' }
-#'
-#' @return A formatted table of the cohort_timing summarised object.
-#'
-#' @export
-#'
-tableCohortTiming <- function(result,
-                              cohortNameReference = NULL,
-                              cohortNameComparator = NULL,
-                              cdmName = NULL,
-                              variableName = c("number records",
-                                               "number subjects",
-                                               "diff_days"),
-                              formatEstimateName = c(
-                                "N" = "<count>",
-                                "Mean (SD)" = "<mean> (<sd>)",
-                                "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
-                                "Range" = "<min> - <max>"
-                              ),
-                              type = "gt",
-                              minCellCount = 5,
-                              .options = list()) {
-  # initial checks
-  result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type == "cohort_timing")
-  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
-  checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
-  checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
-  checkmate::assertCharacter(cdmName, null.ok = TRUE)
-  checkmate::assertCharacter(variableName, null.ok = TRUE)
-  checkmate::assertCharacter(formatEstimateName, any.missing = FALSE)
-  checkmate::assertCharacter(header, any.missing = FALSE)
-  checkmate::assertList(.options)
-
-  # split table
-  x <- result |>
-    visOmopResults::splitAll()
-
-  # add default values
-  cohortNameReference <- defaultColumnSelector(
-    cohortNameReference,
-    x$cohort_name_reference,
-    "cohort_name_reference"
-  )
-  cohortNameComparator <- defaultColumnSelector(
-    cohortNameComparator,
-    x$cohort_name_comparator,
-    "cohort_name_comparator"
-  )
-  variableName <- defaultColumnSelector(
-    variableName,
-    x$variable_name,
-    "variable_name"
-  )
-  cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
-  .options <- defaultTimingOptions(.options)
-
-  x <- result |>
-    dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
-    dplyr::filter(.data$variable_name %in% .env$variableName) |>
-    omopgenerics::suppress(minCellCount = minCellCount) |>
-    visOmopResults::formatEstimateValue(
-      decimals = .options$decimals,
-      decimalMark = .options$decimalMark,
-      bigMark = .options$bigMark
-    ) |>
-    visOmopResults::formatEstimateName(
-      estimateNameFormat = formatEstimateName,
-      keepNotFormatted = .options$keepNotFormatted,
-      useFormatOrder = .options$useFormatOrder
-    ) |>
-    visOmopResults::splitAll() |> # to change after new release of visOmopGenerics
-    dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
-    dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
-    dplyr::select(!c("result_id", "result_type", "package_name", "package_version",
-                     "estimate_type", "variable_level"))
-
-  if (type == "gt") {
-    x <- x |>
-      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
-      visOmopResults::gtTable(
-        style = .options$style,
-        na = .options$na,
-        title = .options$title,
-        subtitle = .options$subtitle,
-        caption = .options$caption,
-        groupNameCol = .options$groupNameCol,
-        groupNameAsColumn = .options$groupNameAsColumn,
-        groupOrder = .options$groupOrder,
-        colsToMergeRows = .options$colsToMergeRows
-      )
-  } else if (type == "flextable") {
-    x <- x |>
-      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
-      visOmopResults::fxTable(
-        style = .options$style,
-        na = .options$na,
-        title = .options$title,
-        subtitle = .options$subtitle,
-        caption = .options$caption,
-        groupNameCol = .options$groupNameCol,
-        groupNameAsColumn = .options$groupNameAsColumn,
-        groupOrder = .options$groupOrder,
-        colsToMergeRows = .options$colsToMergeRows
-      )
-  } else if (type == "tibble") {
-    x <- x |>
-      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x)))
-  }
-  return(x)
-}
-
-
-defaultTimingOptions <- function(userOptions) {
-  defaultOpts <- list(
-    decimals = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
-    decimalMark = ".",
-    bigMark = ",",
-    keepNotFormatted = TRUE,
-    useFormatOrder = TRUE,
-    style = "default",
-    na = "-",
-    title = NULL,
-    subtitle = NULL,
-    caption = NULL,
-    groupNameCol = NULL,
-    groupNameAsColumn = FALSE,
-    groupOrder = NULL,
-    colsToMergeRows = "all_columns"
-  )
-
-  for (opt in names(userOptions)) {
-    defaultOpts[[opt]] <- userOptions[[opt]]
-  }
-
-  return(defaultOpts)
 }
 

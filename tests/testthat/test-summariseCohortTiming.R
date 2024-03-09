@@ -51,6 +51,21 @@ test_that("summariseCohortTiming", {
   expect_true(all(timing2$estimate_name |> unique() %in%
                     c("min","max","count")))
 
+  ## Strata and cohortId----
+  cdm$table <- cdm$table |>
+    addAge() |>
+    addSex() |>
+    dplyr::compute(name = "table", temporary = FALSE) |>
+    omopgenerics::newCohortTable()
+  timing3 <- summariseCohortTiming(cdm$table,
+                                   strata = list("age", c("age", "sex")))
+  expect_true(all(c("overall", "age", "age and sex") %in%
+                    unique(timing3$strata_name)))
+
+  timing4 <- summariseCohortTiming(cdm$table,
+                                   cohortId = 1)
+  expect_true(nrow(timing4) == 0)
+
   CDMConnector::cdm_disconnect(cdm)
 
 })
@@ -101,6 +116,8 @@ test_that("tableCohortTiming", {
 
   gt1 <- tableCohortTiming(timing1, type = "gt", cohortNameReference = "cohort_1")
   expect_true("gt_tbl" %in% class(gt1))
+
+
 
   CDMConnector::cdm_disconnect(cdm)
 

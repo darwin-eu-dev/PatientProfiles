@@ -6,12 +6,20 @@
 \usage{
 summariseCohortTiming(
   cohort,
+  cohortId = NULL,
+  strata = list(),
   restrictToFirstEntry = TRUE,
-  timing = c("min", "q25", "median", "q75", "max")
+  timing = c("min", "q25", "median", "q75", "max", "mean", "sd")
 )
 }
 \arguments{
 \item{cohort}{A cohort table in a cdm reference}
+
+\item{cohortId}{Vector of cohort definition ids to include, if NULL, all
+cohort definition ids will be used.}
+
+\item{strata}{List of the stratifications within each group to be considered.
+Must be column names in the cohort table provided.}
 
 \item{restrictToFirstEntry}{If TRUE only an individual's first entry per
 cohort will be considered. If FALSE all entries per individual will be

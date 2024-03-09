@@ -27,7 +27,7 @@ summariseCohortTiming <- function(cohort,
 
   # validate inputs
   assertClass(cohort, "cohort_table")
-  checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
+  checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)
   checkStrata(strata, cohort)
   checkmate::assertTRUE(all(c("cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date") %in% colnames(cohort)))
   checkmate::assertLogical(restrictToFirstEntry, any.missing = FALSE, len = 1, null.ok = FALSE)
@@ -68,22 +68,27 @@ summariseCohortTiming <- function(cohort,
     dplyr::inner_join(cdm[[name]] |>
                         dplyr::rename_with(~ paste0(.x, "_comparator"),
                                            .cols = c("cohort_definition_id", "cohort_start_date", "cohort_end_date", "cohort_name")),
-                      by = "subject_id") |>
+                      by = c("subject_id", unique(unlist(strata)))) |>
     dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) %>%
     dplyr::mutate(diff_days = !!CDMConnector::datediff("cohort_start_date",
                                                        "cohort_start_date_comparator",
                                                        interval = "day")) |>
-    dplyr::collect()|>
-    dplyr::mutate("cohort_name_reference and cohort_name_comparator" = as.character(
-      paste0(as.character(.data$cohort_name_reference),
-             as.character(" and "),
-             as.character(.data$cohort_name_comparator)))) |>
-    summariseResult(group = list("cohort_name_reference and cohort_name_comparator"),
-                    strata = strata,
-                    variables = list(diff_days = "diff_days"),
-                    functions = list(diff_days = timing)) |>
-    dplyr::mutate(result_type = "cohort_timing",
-                  cdm_name = CDMConnector::cdmName(cdm))
+    dplyr::collect()
+
+  if (nrow(cohort_timings) > 0) {
+    cohort_timings <- cohort_timings |>
+      dplyr::mutate("cohort_name_reference and cohort_name_comparator" = as.character(
+        paste0(as.character(.data$cohort_name_reference),
+               as.character(" and "),
+               as.character(.data$cohort_name_comparator)))) |>
+      summariseResult(group = list("cohort_name_reference and cohort_name_comparator"),
+                      includeOverallGroup = FALSE,
+                      strata = strata,
+                      variables = list(diff_days = "diff_days"),
+                      functions = list(diff_days = timing)) |>
+      dplyr::mutate(result_type = "cohort_timing",
+                    cdm_name = CDMConnector::cdmName(cdm))
+  }
 
   return(cohort_timings)
 }
