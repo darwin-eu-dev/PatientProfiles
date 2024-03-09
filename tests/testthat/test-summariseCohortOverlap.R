@@ -149,7 +149,7 @@ test_that("tableCohortOverlap", {
                                        strataName = "age_group",
                                        strataLevel = c("0 to 40", "41 to 100"),
                                        splitStrata = FALSE)
-  expect_true(all(c("strata_name", "strata_level") %in% colnames(tibbleResult2)))
+  expect_true(all(c("Strata name", "Strata level") %in% colnames(tibbleResult2)))
 
   expect_warning(
     tibbleResult2 <-  tableCohortOverlap(overlap, type = "tibble", cohortNameReference = c("hola"))
@@ -215,7 +215,7 @@ test_that("plotCohortOverlap", {
                                 .data$cohort_name_comparator %in% c("cohort_1", "cohort_2"))) == 2)
   # strata ----
   cdm$table <- cdm$table |>
-    addAge(ageGroup = list(c(0,40), c(41,100))) |>
+    addAge(ageGroup = list(c(0,40), c(41,150))) |>
     addSex() |>
     dplyr::compute(name = "table", temporary = FALSE) |>
     omopgenerics::newCohortTable()
@@ -230,7 +230,7 @@ test_that("plotCohortOverlap", {
                            facetBy = "strata_level",
                            uniqueCombinations = FALSE)
   expect_true("ggplot" %in% class(gg3))
-  expect_true(all(c("0 to 40 and Female", "None and Female", "41 to 100 and Female") %in%
+  expect_true(all(c("0 to 40 and Female", "41 to 100 and Female") %in%
                     gg3$data$facet_var |> unique()))
 
   CDMConnector::cdm_disconnect(cdm)
