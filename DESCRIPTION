@@ -62,6 +62,7 @@ Imports:
     lifecycle
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
+BugReports: https://github.com/darwin-eu-dev/PatientProfiles/issues
 Language: en-US
 Depends: 
     R (>= 2.10)
