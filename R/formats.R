@@ -38,54 +38,42 @@ variableTypes <- function(table) {
   checkTable(table)
   if (ncol(table) > 0) {
     x <- dplyr::tibble(
-      "variable" = colnames(table),
-      "type_sum" = lapply(colnames(table), function(x) {
+      "variable_name" = colnames(table),
+      "variable_type" = lapply(colnames(table), function(x) {
         table %>%
           dplyr::select(dplyr::all_of(x)) %>%
           utils::head(1) %>%
           dplyr::pull() %>%
-          dplyr::type_sum()
+          dplyr::type_sum() |>
+          assertClassification()
       }) %>% unlist()
-    ) %>%
-      dplyr::mutate("variable_type" = assertClassification(
-        .data$type_sum, .env$table
-      ))
+    )
   } else {
     x <- dplyr::tibble(
-      "variable" = character(),
-      "type_sum" = character(),
-      "variable_type" = character()
+      "variable_name" = character(),
+      "variable_type" = character(),
+      "binary" = logical()
     )
   }
   return(x)
 }
 
 #' @noRd
-assertClassification <- function(x, tib) {
-  lapply(seq_along(x), function(i) {
-    if (x[i] == "lgl") {
-      return("binary")
-    } else if (x[i] %in% c("chr", "fct", "ord")) {
-      return("categorical")
-    } else if (x[i] %in% c("date", "dttm")) {
-      return("date")
-    } else if (x[i] == "drtn") {
-      return("numeric")
-    } else if (x[i] %in% c("int", "dbl", "int64")) {
-      lab <- tib %>%
-        dplyr::select(dplyr::all_of(colnames(tib)[i])) %>%
-        dplyr::distinct() %>%
-        dplyr::pull()
-      if (length(lab) <= 2 && all(lab %in% c(0, 1))) {
-        return("binary")
-      } else {
-        return("numeric")
-      }
-    } else {
-      return(as.character(NA))
-    }
-  }) %>%
-    unlist()
+assertClassification <- function(x) {
+  switch (
+    x,
+    "chr" = "categorical",
+    "fct" = "categorical",
+    "ord" = "categorical",
+    "date" = "date",
+    "dttm" = "date",
+    "lgl" = "numeric",
+    "drtn" = "numeric",
+    "dbl" = "numeric",
+    "int" = "integer",
+    "int64" = "integer",
+    NA_character_
+  )
 }
 
 #' Show the available functions for the 4 classifications of data that are
@@ -242,9 +230,6 @@ getFunctions <- function(f) {
     },
     "q95" = function(x) {
       stats::quantile(x, 0.95, na.rm = TRUE)
-    },
-    "missing" = function(x) {
-      base::sum(base::as.numeric(base::is.na(x)), na.rm = TRUE)
     }
   )
   return(estimatesFunc[f])
