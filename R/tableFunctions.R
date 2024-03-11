@@ -84,8 +84,8 @@ formatCharacteristics <- function(result,
       estimateNameFormat = format, keepNotFormatted = .options$keepNotFormatted
     ) |>
     dplyr::select(-c("result_type", "package_name", "package_version", "estimate_type")) |>
-    visOmopResults::splitGroup(overall = FALSE) |>
-    visOmopResults::splitAdditional(overall = FALSE)
+    visOmopResults::splitGroup() |>
+    visOmopResults::splitAdditional()
   if (!"table" %in% colnames(result)) {
     result <- result |> dplyr::mutate("table" = NA_character_)
   }
@@ -107,7 +107,7 @@ formatCharacteristics <- function(result,
     )) |>
     dplyr::select(-c("table", "window"))
 
-  colsStrata <- visOmopResults::strataColumns(result, overall = FALSE)
+  colsStrata <- visOmopResults::strataColumns(result)
   if (length(colsStrata) > 0 & !splitStrata) {
     result <- result |>
       dplyr::mutate(
@@ -116,7 +116,7 @@ formatCharacteristics <- function(result,
     colsStrata <- "strata"
   } else {
     result <- result |>
-      visOmopResults::splitStrata(overall = FALSE)
+      visOmopResults::splitStrata()
   }
 
   headers <- character()
