@@ -66,7 +66,7 @@ reference:
 - subtitle: Plot summariseLargeScaleCharacteristics result
   desc: return a ggplot for the result from summariseLargeScaleCharacteristics, user can define which variable/column to facet and color by
 - contents:
-  - '`plotSummariseLargeScaleCharacteristics`'
+  - matches("plotLargeScaleCharacteristics|plotCharacteristics")
 - subtitle: Other functions
   desc: Helper functions
 - contents:
