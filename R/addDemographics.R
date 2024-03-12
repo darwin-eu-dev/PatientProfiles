@@ -571,7 +571,7 @@ addInObservation <- function(x,
   x <- x %>%
     dplyr::mutate(
       !!name := as.numeric(dplyr::if_else(
-        is.na(.data$prior_observation) | is.na(.data$future_observation) | .data$prior_observation < 0 + lower |
+        is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation < 0 + lower |
           .data$future_observation < 0 + upper, 0, 1
       ))
     )
@@ -581,7 +581,7 @@ addInObservation <- function(x,
       x <- x %>%
         dplyr::mutate(
           !!name := as.numeric(dplyr::if_else(
-            is.na(.data$prior_observation) | is.na(.data$future_observation) | .data$prior_observation < 0 + lower &
+            is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation < 0 + lower &
               .data$future_observation < 0 + upper, 0, 1
           ))
         )
