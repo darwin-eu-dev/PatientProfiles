@@ -505,7 +505,7 @@ addPriorObservation <- function(x,
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
 #' @param window window to consider events of
-#' @param CompleteInterval If the individuals are in observation for the full window
+#' @param completeInterval If the individuals are in observation for the full window
 #' @param name name of the column to hold the result of the query:
 #' 1 if the individual is in observation, 0 if not
 #'
@@ -571,9 +571,12 @@ addInObservation <- function(x,
   x <- x %>%
     dplyr::mutate(
       !!name := as.numeric(dplyr::if_else(
-        is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation < 0 + lower |
-          .data$future_observation < 0 + upper, 0, 1
+        is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation >= 0 + lower |
+          .data$future_observation <= 0 + upper, 0, 1
       ))
+    ) %>%
+    dplyr::select(
+      -"prior_observation", -"future_observation"
     )
 
     } else {
@@ -581,9 +584,12 @@ addInObservation <- function(x,
       x <- x %>%
         dplyr::mutate(
           !!name := as.numeric(dplyr::if_else(
-            is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation < 0 + lower &
-              .data$future_observation < 0 + upper, 0, 1
+            is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation >= 0 + lower &
+              .data$future_observation <= 0 + upper, 0, 1
           ))
+        ) %>%
+        dplyr::select(
+          -"prior_observation", -"future_observation"
         )
 
 
