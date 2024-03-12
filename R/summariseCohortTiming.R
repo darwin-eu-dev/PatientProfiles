@@ -46,7 +46,7 @@ summariseCohortTiming <- function(cohort,
   } else {
     indNot <- which(!cohortId %in% ids)
     if (length(indNot)>0) {
-      cli::cli_warn("{cohortId[indNot]} {?is/are} not in the cohort table.")
+      cli::cli_warn("{paste0(cohortId[indNot], collapse = ', ')} {?is/are} not in the cohort table.")
     }
   }
   cdm[[name]] <- PatientProfiles::addCohortName(cdm[[name]]) |>
