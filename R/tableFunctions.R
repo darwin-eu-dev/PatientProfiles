@@ -60,10 +60,8 @@ formatCharacteristics <- function(result,
                                   minCellCount = 5,
                                   .options = list()) {
   # check input
-  result <- omopgenerics::summarisedResult(result)
-  if (!inherits(result, "summarised_characteristics")) {
-    cli::cli_abort("result is not a valid `summarised_characteristics` object.")
-  }
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "summarised_characteristics")
   checkmate::assertChoice(type, c("gt", "flextable"))
   checkmate::assertLogical(splitStrata, any.missing = FALSE, len = 1)
   checkmate::assertCharacter(format, any.missing = FALSE)
@@ -76,7 +74,7 @@ formatCharacteristics <- function(result,
   .options <- defaultOptions(.options)
 
   result <- result |>
-    omopgenerics::suppress(minCellCount = minCellCount) |>
+    suppress(minCellCount = minCellCount) |>
     visOmopResults::formatEstimateValue(
       decimals = .options$decimals,
       decimalMark = .options$decimalMark,
@@ -86,10 +84,30 @@ formatCharacteristics <- function(result,
       estimateNameFormat = format, keepNotFormatted = .options$keepNotFormatted
     ) |>
     dplyr::select(-c("result_type", "package_name", "package_version", "estimate_type")) |>
-    visOmopResults::splitGroup(overall = FALSE) |>
-    visOmopResults::splitAdditional(overall = FALSE)
+    visOmopResults::splitGroup() |>
+    visOmopResults::splitAdditional()
+  if (!"table" %in% colnames(result)) {
+    result <- result |> dplyr::mutate("table" = NA_character_)
+  }
+  if (!"window" %in% colnames(result)) {
+    result <- result |> dplyr::mutate("window" = NA_character_)
+  }
+  result <- result |>
+    dplyr::mutate("variable_name" = dplyr::case_when(
+      is.na(.data$table) & is.na(.data$window) ~ .data$variable_name,
+      is.na(.data$table) & !is.na(.data$window) ~ paste(
+        .data$variable_name, "in", .data$window
+      ),
+      !is.na(.data$table) & is.na(.data$window) ~ paste0(
+        .data$variable_name, " [", .data$table, "]"
+      ),
+      !is.na(.data$table) & !is.na(.data$window) ~ paste0(
+        .data$variable_name, " [", .data$table, "] in ", .data$window
+      )
+    )) |>
+    dplyr::select(-c("table", "window"))
 
-  colsStrata <- visOmopResults::strataColumns(result, overall = FALSE)
+  colsStrata <- visOmopResults::strataColumns(result)
   if (length(colsStrata) > 0 & !splitStrata) {
     result <- result |>
       dplyr::mutate(
@@ -98,7 +116,7 @@ formatCharacteristics <- function(result,
     colsStrata <- "strata"
   } else {
     result <- result |>
-      visOmopResults::splitStrata(overall = FALSE)
+      visOmopResults::splitStrata()
   }
 
   headers <- character()
@@ -133,14 +151,14 @@ formatCharacteristics <- function(result,
       title = .options$title, subtitle = .options$subtitle,
       caption = .options$caption, groupNameCol = .options$groupNameCol,
       groupNameAsColumn = .options$groupNameAsColumn,
-      groupOrder = .options$groupOrder
+      groupOrder = .options$groupOrder, colsToMergeRows = c("Variable", "Level")
     ),
     "flextable" = visOmopResults::fxTable(
       x = result, delim = "\n", style = style, na = .options$na,
       title = .options$title, subtitle = .options$subtitle,
       caption = .options$caption, groupNameCol = .options$groupNameCol,
       groupNameAsColumn = .options$groupNameAsColumn,
-      groupOrder = .options$groupOrder
+      groupOrder = .options$groupOrder, colsToMergeRows = c("Variable", "Level")
     )
   )
 

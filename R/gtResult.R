@@ -5,7 +5,7 @@
 #' @param summarisedCharacteristics Summary characteristics long table.
 #' @param pivotWide variables to pivot wide
 #' @param format formats and labels to use
-#' @param keepNotFormatted Wheather to keep not formated estimate types
+#' @param keepNotFormatted Whether to keep not formatted estimate types
 #' @param decimals Decimals per estimate_type
 #' @param decimalMark decimal mark
 #' @param bigMark big mark
@@ -79,7 +79,7 @@ gtCharacteristics <- function(summarisedCharacteristics,
 #' @param long List of variables and specification to long
 #' @param wide List of variables and specification to wide
 #' @param format formats and labels to use
-#' @param keepNotFormatted Wheather to keep not formated estimate types
+#' @param keepNotFormatted Whether to keep not formatted estimate types
 #' @param decimals Decimals per estimate_type
 #' @param decimalMark decimal mark
 #' @param bigMark big mark

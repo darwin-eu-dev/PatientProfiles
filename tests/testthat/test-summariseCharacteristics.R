@@ -56,15 +56,21 @@ test_that("test summariseCharacteristics", {
     cohort2 = emptyCohort
   )
 
-  attr(cdm$dus_cohort, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2), cohort_name = c("exposed", "unexposed")
-  )
-  attr(cdm$comorbidities, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2), cohort_name = c("covid", "headache")
-  )
-  attr(cdm$medication, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2, 3),
-    cohort_name = c("acetaminophen", "ibuprophen", "naloxone")
+  cdm$dus_cohort <- omopgenerics::newCohortTable(
+    table = cdm$dus_cohort, cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2), cohort_name = c("exposed", "unexposed")
+    ))
+  cdm$comorbidities <- omopgenerics::newCohortTable(
+    table = cdm$comorbidities, cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2), cohort_name = c("covid", "headache")
+    ))
+  cdm$medication <- omopgenerics::newCohortTable(
+    table = cdm$medication,
+    cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2, 3),
+      cohort_name = c("acetaminophen", "ibuprophen", "naloxone")
+    ),
+    cohortAttritionRef = NULL
   )
 
   expect_no_error(result <- summariseCharacteristics(
@@ -77,15 +83,12 @@ test_that("test summariseCharacteristics", {
       )
     )
   ) |>
-    omopgenerics::suppress(minCellCount = 1))
-  expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "tbl_df",
-    "tbl", "data.frame"
-  ))
+    suppress(minCellCount = 1))
+  expect_true(inherits(result, "summarised_result"))
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Covid") %>%
+      dplyr::filter(variable_name == "Covid") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -94,7 +97,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Headache") %>%
+      dplyr::filter(variable_name == "Headache") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -103,7 +106,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Acetaminophen") %>%
+      dplyr::filter(variable_name == "Acetaminophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -112,7 +115,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Ibuprophen") %>%
+      dplyr::filter(variable_name == "Ibuprophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -121,7 +124,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_level == "Naloxone") %>%
+      dplyr::filter(variable_name == "Naloxone") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -130,7 +133,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Covid") %>%
+      dplyr::filter(variable_name == "Covid") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -139,7 +142,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Headache") %>%
+      dplyr::filter(variable_name == "Headache") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -148,7 +151,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Acetaminophen") %>%
+      dplyr::filter(variable_name == "Acetaminophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -157,7 +160,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Ibuprophen") %>%
+      dplyr::filter(variable_name == "Ibuprophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -166,7 +169,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_level == "Naloxone") %>%
+      dplyr::filter(variable_name == "Naloxone") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -185,53 +188,47 @@ test_that("test summariseCharacteristics", {
       )
     )
   )|>
-    omopgenerics::suppress(minCellCount = 1))
-  expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "tbl_df",
-    "tbl", "data.frame"
-  ))
+    suppress(minCellCount = 1))
+  expect_true(inherits(result, "summarised_result"))
   expect_true(
     result %>%
-      dplyr::filter(grepl("short", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(window == "short") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 4 estimate type
+      omopgenerics::settings(cdm$medication) |> nrow() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("long", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(window == "long") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 4 estimate type
+      omopgenerics::settings(cdm$medication) |> nrow() * 4 # 2 group_level 4 estimate type
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("Medications", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(table == "medication") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$medication, "cohort_set") %>%
-        dplyr::tally() * 8 # 2 group_level 4 estimate type 2 window
+      omopgenerics::settings(cdm$medication) |> nrow() * 8 # 2 group_level 4 estimate type 2 window
   )
   expect_true(
     result %>%
-      dplyr::filter(grepl("Comorbidities", variable_name)) %>%
+      visOmopResults::splitAdditional() |>
+      dplyr::filter(table == "comorbidities") %>%
       dplyr::tally() %>%
       dplyr::pull() ==
-      attr(cdm$comorbidities, "cohort_set") %>%
-        dplyr::tally() * 4 # 2 group_level 4 estimate type
+      omopgenerics::settings(cdm$comorbidities) |> nrow() * 4 # 2 group_level 4 estimate type
   )
 
   result_notables <- summariseCharacteristics(
     cdm$dus_cohort,
     cohortIntersect = list(), tableIntersect = list()
   )|>
-    omopgenerics::suppress(minCellCount = 1)
-  expect_identical(class(result), c(
-    "summarised_characteristics", "summarised_result", "tbl_df",
-    "tbl", "data.frame"
-  ))
+    suppress(minCellCount = 1)
+  expect_true(inherits(result, "summarised_result"))
 
   # demographics
   expect_no_error(result <- summariseCharacteristics(
@@ -297,5 +294,19 @@ test_that("test empty cohort", {
           targetCohortTable = "cohort2", value = "flag", window = c(-Inf, 0)
         )
       ))
+  )
+  expect_no_error(
+    x1 <- cdm$cohort1 %>%
+      summariseCharacteristics(tableIntersect = list("Visits" = list(
+        tableName = "visit_occurrence", value = "flag", window = c(-365, 0)
+      )))
+  )
+
+  expect_no_error(
+    x3 <- cdm$cohort1 %>%
+      summariseCharacteristics(tableIntersect = list("Visits" = list(
+        tableName = "visit_occurrence", value = "visit_concept_id",
+        window = c(-Inf, Inf)
+      )))
   )
 })

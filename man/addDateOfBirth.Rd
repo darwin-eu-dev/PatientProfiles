@@ -6,7 +6,7 @@
 \usage{
 addDateOfBirth(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   name = "date_of_birth",
   missingDay = 1,
   missingMonth = 1,

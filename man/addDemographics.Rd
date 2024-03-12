@@ -6,7 +6,7 @@
 \usage{
 addDemographics(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   age = TRUE,
   ageName = "age",
@@ -15,8 +15,10 @@ addDemographics(
   ageImposeMonth = FALSE,
   ageImposeDay = FALSE,
   ageGroup = NULL,
+  missingAgeGroupValue = "None",
   sex = TRUE,
   sexName = "sex",
+  missingSexValue = "None",
   priorObservation = TRUE,
   priorObservationName = "prior_observation",
   futureObservation = TRUE,
@@ -49,11 +51,15 @@ will be considered as missing for all the individuals.}
 \item{ageImposeDay}{TRUE or FALSE. Whether the day of the date of birth
 will be considered as missing for all the individuals.}
 
-\item{ageGroup}{if not NULL, a list of ageGroup vectors}
+\item{ageGroup}{if not NULL, a list of ageGroup vectors.}
+
+\item{missingAgeGroupValue}{Value to include if missing age.}
 
 \item{sex}{TRUE or FALSE. If TRUE, sex will be identified}
 
 \item{sexName}{Sex variable name}
+
+\item{missingSexValue}{Value to include if missing sex.}
 
 \item{priorObservation}{TRUE or FALSE. If TRUE, days of between the start
 of the current observation period and the indexDate will be calculated}
@@ -76,7 +82,8 @@ Compute demographic characteristics at a certain date
 \donttest{
 library(PatientProfiles)
 cdm <- mockPatientProfiles()
-cdm$cohort1 \%>\% addDemographics(cdm)
+cdm$cohort1 \%>\%
+  addDemographics()
 }
 
 }

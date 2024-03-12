@@ -39,7 +39,7 @@
 #'
 #' cdm <- mockPatientProfiles()
 #' x <- cdm$cohort1 %>%
-#'   addDemographics(cdm) %>%
+#'   addDemographics() %>%
 #'   collect()
 #' result <- summariseResult(x)
 #' }
@@ -63,6 +63,12 @@ summariseResult <- function(table,
                             )) {
   # initial checks
   checkTable(table)
+
+  if (inherits(table, "cdm_table")) {
+    cdm_name <- omopgenerics::cdmName(omopgenerics::cdmReference(table))
+  } else {
+    cdm_name <- "unknown"
+  }
 
   # create the summary for overall
   result <- list()
@@ -171,12 +177,6 @@ summariseResult <- function(table,
     }
   }
 
-  if (is.null(attr(table, "cdm_reference"))) {
-    cdm_name <- "unknown"
-  } else {
-    cdm_name <- omopgenerics::cdmName(attr(table, "cdm_reference"))
-  }
-
   result <- result |>
     dplyr::rename(
       "variable_name" = "variable", "estimate_name" = "estimate_type",
@@ -205,10 +205,13 @@ summariseResult <- function(table,
       "additional_name" = "overall",
       "additional_level" = "overall"
     ) |>
-    dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
-      "summarised_result"
+    dplyr::select(dplyr::all_of(c(
+      "cdm_name", "result_type", "package_name", "package_version",
+      "group_name", "group_level", "strata_name", "strata_level",
+      "variable_name", "variable_level", "estimate_name", "estimate_type",
+      "estimate_value", "additional_name", "additional_level"
     ))) |>
-    omopgenerics::summarisedResult()
+    omopgenerics::newSummarisedResult()
 
   return(result)
 }
@@ -319,7 +322,7 @@ getBinaryValues <- function(x, variablesBinary) {
           dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(c(variablesFunction, "denominator")),
             .fns = list("sum" = function(x) {
-              sum(x)
+              sum(x, na.rm = TRUE)
             }),
             .names = "{.col}"
           )) %>%
@@ -540,8 +543,9 @@ countSubjects <- function(x) {
   j <- "subject_id" %in% colnames(x)
   if (i) {
     if (j) {
-      cli::cli_alert_warning(
-        "person_id and subject_id present in table, `person_id` used as person identifier"
+      cli::cli_warn(
+        "person_id and subject_id present in table, `person_id` used as person
+        identifier"
       )
     }
     personVariable <- "person_id"

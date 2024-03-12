@@ -91,15 +91,13 @@ test_that("basic functionality summarise large scale characteristics", {
         minimumFrequency = 0
       )
   )
-  result <- result |> omopgenerics::splitGroup(
-    name = "additional_name", level = "additional_level"
-  )
+  result <- result |> visOmopResults::splitAdditional()
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(NA, 2, NA, 1, NA, 2)
   den <- c(3, 3, 3, 3, 3, 3)
-  percentage <- as.character(100 * count / den)
+  percentage <- as.character(round((100 * count / den),2))
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
@@ -123,15 +121,13 @@ test_that("basic functionality summarise large scale characteristics", {
         minimumFrequency = 0
       )
   )
-  result <- result |> omopgenerics::splitGroup(
-    name = "additional_name", level = "additional_level"
-  )
+  result <- result |> visOmopResults::splitAdditional()
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(1, 2, 1, 1, 2, 2)
   den <- c(3, 3, 3, 3, 3, 3)
-  percentage <- as.character(100 * count / den)
+  percentage <- as.character(round(100 * count / den, 2))
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
@@ -150,12 +146,11 @@ test_that("basic functionality summarise large scale characteristics", {
 
   expect_no_error(
     result <- cdm$cohort_interest %>%
-      PatientProfiles::addDemographics(
+      addDemographics(
         ageGroup = list(c(0, 24), c(25, 150))
       ) %>%
       summariseLargeScaleCharacteristics(
-        cdm = cdm,
-        strata = list("age" = "age_group", "age & sex" = c("age_group", "sex")),
+        strata = list("age_group", c("age_group", "sex")),
         episodeInWindow = c("condition_occurrence", "drug_exposure"),
         minimumFrequency = 0
       )
@@ -168,15 +163,13 @@ test_that("basic functionality summarise large scale characteristics", {
   ) %in% result$strata_level))
   result <- result %>%
     dplyr::filter(strata_level == "0 to 24 and Female")
-  result <- result |> omopgenerics::splitGroup(
-    name = "additional_name", level = "additional_level"
-  )
+  result <- result |> visOmopResults::splitAdditional()
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)
   count <- c(NA, 1, 1, NA, NA, NA)
   den <- c(1, 1, 1, 1, 1, 1)
-  percentage <- as.character(100 * count / den)
+  percentage <- as.character(round(100 * count / den, 2))
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
@@ -193,10 +186,7 @@ test_that("basic functionality summarise large scale characteristics", {
     }
   }
 
-  expect_equal(class(result), c(
-    "summarised_large_scale_characteristics", "summarised_result", "tbl_df",
-    "tbl", "data.frame"
-  ))
+  expect_true(inherits(result, "summarised_result"))
 
   expect_no_error(
     result <- cdm$cohort_interest %>%

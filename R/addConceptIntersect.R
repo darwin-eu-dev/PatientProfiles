@@ -63,6 +63,36 @@ addConceptIntersect <- function(x,
                                 censorDate = NULL,
                                 window = list(c(0, Inf)),
                                 targetStartDate = "cohort_start_date",
+                                targetEndDate = "cohort_end_date",
+                                order = "first",
+                                flag = TRUE,
+                                count = TRUE,
+                                date = TRUE,
+                                days = TRUE,
+                                nameStyle = "{value}_{concept_name}_{window_name}") {
+  lifecycle::deprecate_warn(
+    when = "0.6.0",
+    what = "addConceptIntersect()",
+    details = c(
+      "please use the specific functions instead:",
+      "*" = "addConceptIntersectFlag()", "*" = "addConceptIntersectCount()",
+      "*" = "addConceptIntersectDate()", "*" = "addConceptIntersectDays()"
+    )
+  )
+  .addConceptIntersect(
+    x = x, conceptSet = conceptSet, indexDate = indexDate,
+    censorDate = censorDate, window = window, targetStartDate = targetStartDate,
+    targetEndDate = targetEndDate, order = order, flag = flag, count = count,
+    date = date, days = days, nameStyle = nameStyle
+  )
+}
+
+.addConceptIntersect <- function(x,
+                                conceptSet,
+                                indexDate = "cohort_start_date",
+                                censorDate = NULL,
+                                window = list(c(0, Inf)),
+                                targetStartDate = "cohort_start_date",
                                 targetEndDate = NULL,
                                 order = "first",
                                 flag = TRUE,
@@ -70,18 +100,25 @@ addConceptIntersect <- function(x,
                                 date = TRUE,
                                 days = TRUE,
                                 nameStyle = "{value}_{concept_name}_{window_name}") {
-  cdm <- attr(x, "cdm_reference")
-  nameCohort <- "add_intersect_concept_set"
-  individuals <- x %>%
-    dplyr::select("person_id" = dplyr::any_of(c("subject_id", "person_id"))) %>%
-    dplyr::distinct()
-  for (tab in c(
-    "condition_occurrence", "drug_exposure", "procedure_occurrence",
-    "observation", "measurement", "device_exposure"
-  )) {
-    cdm[[tab]] <- cdm[[tab]] %>%
-      dplyr::inner_join(individuals, by = "person_id")
-  }
+  cdm <- omopgenerics::cdmReference(x)
+  nameCohort <- paste0("concept_cohort_", sample(letters, 5) |> paste0(collapse = ""))
+  tempCohort <- paste0("temp_cohort_", sample(letters, 5) |> paste0(collapse = ""))
+  personVariable <- colnames(x)[colnames(x) %in% c("person_id", "subject_id")]
+  cdm[[tempCohort]] <- cdm[["observation_period"]] |>
+    dplyr::inner_join(
+      x |>
+        dplyr::select("person_id" = dplyr::all_of(personVariable)) |>
+        dplyr::distinct(),
+      by = "person_id"
+    ) |>
+    dplyr::mutate("cohort_definition_id" = 1) |>
+    dplyr::select(
+      "cohort_definition_id", "subject_id" = "person_id",
+      "cohort_start_date" = "observation_period_start_date",
+      "cohort_end_date" = "observation_period_end_date"
+    ) |>
+    dplyr::compute(temporary = FALSE, name = tempCohort) |>
+    omopgenerics::newCohortTable()
   if (!is.null(targetEndDate) && targetEndDate == "cohort_end_date") {
     end <- "event_end_date"
   } else {
@@ -90,14 +127,15 @@ addConceptIntersect <- function(x,
   cdm <- CDMConnector::generateConceptCohortSet(
     cdm = cdm,
     conceptSet = conceptSet,
+    subsetCohort = tempCohort,
     name = nameCohort,
     limit = "all",
     end = end,
     overwrite = TRUE
   )
-  x <- addCohortIntersect(
+  attr(x, "cdm_reference") <- cdm
+  x <- .addCohortIntersect(
     x = x,
-    cdm = cdm,
     targetCohortTable = nameCohort,
     indexDate = indexDate,
     censorDate = censorDate,
@@ -111,10 +149,11 @@ addConceptIntersect <- function(x,
     days = days,
     nameStyle = gsub("\\{concept_name\\}", "\\{cohort_name\\}", nameStyle)
   )
-  cdm <- omopgenerics::dropTable(
-    cdm = cdm,
-    name = paste0(nameCohort, c("", "_set", "_count", "_attrition"))
+  toDrop <- c(
+    paste0(nameCohort, c("", "_set", "_attrition")),
+    paste0(tempCohort, c("", "_set", "_attrition"))
   )
+  cdm <- omopgenerics::dropTable(cdm = cdm, name = dplyr::any_of(toDrop))
   return(x)
 }
 
@@ -161,7 +200,7 @@ addConceptIntersectFlag <- function(x,
                                     targetEndDate = NULL,
                                     order = "first",
                                     nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,
@@ -221,7 +260,7 @@ addConceptIntersectCount <- function(x,
                                     targetEndDate = NULL,
                                     order = "first",
                                     nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,
@@ -277,7 +316,7 @@ addConceptIntersectDate <- function(x,
                                      targetDate = "cohort_start_date",
                                      order = "first",
                                      nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,
@@ -333,7 +372,7 @@ addConceptIntersectDays <- function(x,
                                     targetDate = "cohort_start_date",
                                     order = "first",
                                     nameStyle = "{concept_name}_{window_name}") {
-  addConceptIntersect(
+  .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
     indexDate = indexDate,

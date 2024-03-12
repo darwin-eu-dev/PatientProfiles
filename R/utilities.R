@@ -44,7 +44,7 @@ addCohortName <- function(cohort) {
 #'   addCdmName()
 #' }
 #'
-addCdmName <- function(table, cdm = attr(table, "cdm_reference")) {
+addCdmName <- function(table, cdm = omopgenerics::cdmReference(table)) {
   if (is.null(cdm)) {
     name <- NA_character_
   } else {

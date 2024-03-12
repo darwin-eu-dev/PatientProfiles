@@ -49,10 +49,7 @@ addCategories <- function(x,
                           categories,
                           missingCategoryValue = "None",
                           overlap = FALSE) {
-  # if (!isTRUE(inherits(x, "tbl_dbi"))) {
-  #   cli::cli_abort("x is not a table")
-  # }
-
+  checkmate::assertClass(x, "cdm_table")
   checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)
   checkmate::assertTRUE(variable %in% colnames(x))
   checkmate::assertNumeric(dplyr::pull(utils::head(x, 1), variable))

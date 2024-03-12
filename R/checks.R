@@ -111,7 +111,12 @@ checkCategory <- function(category, overlap = FALSE, type = "numeric") {
     dplyr::mutate(category_label = names(.env$category)) %>%
     dplyr::mutate(category_label = dplyr::if_else(
       .data$category_label == "",
-      paste0(.data$lower_bound, " to ", .data$upper_bound),
+      dplyr::case_when(
+        is.infinite(.data$lower_bound) & is.infinite(.data$upper_bound) ~ "any",
+        is.infinite(.data$lower_bound) ~ paste(.data$upper_bound, "or below"),
+        is.infinite(.data$upper_bound) ~ paste(.data$lower_bound, "or above"),
+        TRUE ~ paste(.data$lower_bound, "to", .data$upper_bound)
+      ),
       .data$category_label
     )) %>%
     dplyr::arrange(.data$lower_bound)
@@ -139,6 +144,10 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
     }
     for (k in seq_along(ageGroup)) {
       invisible(checkCategory(ageGroup[[k]], overlap))
+      if (any(ageGroup[[k]] |> unlist() |> unique() < 0)) {
+        cli::cli_abort("ageGroup can't contain negative values")
+      }
+
     }
     if (is.null(names(ageGroup))) {
       names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
@@ -208,19 +217,13 @@ checkWindow <- function(window) {
 
 #' @noRd
 checkNewName <- function(name, x) {
-  for (k in seq_along(name)) {
-    if (name[k] %in% colnames(x)) {
-      id <- 1
-      newName <- paste0(name[k], "_", id)
-      while (newName %in% colnames(x)) {
-        id <- id + 1
-        newName <- paste0(name[k], "_", id)
-      }
-      warning(glue::glue(
-        "{name[k]} already exists in x, it was renamed to {newName}"
-      ))
-      name[k] <- newName
-    }
+  renamed <- name[name %in% colnames(x)]
+  if (length(renamed) > 0) {
+    mes <- paste0(
+      "The following columns will be overwritten: ",
+      paste0(renamed, collapse = ", ")
+    )
+    cli::cli_warn(message = mes)
   }
   invisible(name)
 }
@@ -312,7 +315,7 @@ checkValue <- function(value, x, name) {
       paste0(valueOptions, collapse = ", "),
       " are also present in ",
       name,
-      ". But have theyr own functionality inside the package. If you want to
+      ". But have their own functionality inside the package. If you want to
       obtain that column please rename and run again."
     ))
   }
@@ -341,19 +344,23 @@ checkCohortNames <- function(x, targetCohortId, name) {
       idName <- paste0(name, "_", targetCohortId)
     } else {
       idName <- cohort %>%
-        dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId) %>%
+        dplyr::filter(
+          as.integer(.data$cohort_definition_id) %in%
+            as.integer(.env$targetCohortId)
+        ) %>%
         dplyr::arrange(.data$cohort_definition_id) %>%
         dplyr::pull("cohort_name")
       if (length(idName) != length(targetCohortId)) {
         cli::cli_abort(
-          "some of the cohort ids given do not exist in the cohortSet of cdm[[targetCohortName]]"
+          "some of the cohort ids given do not exist in the cohortSet of
+          cdm[[targetCohortName]]"
         )
       }
     }
   }
   parameters <- list(
     "filter_variable" = filterVariable,
-    "filter_id" = targetCohortId,
+    "filter_id" = sort(targetCohortId),
     "id_name" = idName
   )
   invisible(parameters)
@@ -475,7 +482,8 @@ checkVariablesFunctions <- function(variables, functions, table) {
     dplyr::left_join(
       formats %>%
         dplyr::select("variable_type", "format_key"),
-      by = "variable_type"
+      by = "variable_type",
+      relationship = "many-to-many"
     )
   nonSuportedFunctions <- requiredFunctions %>%
     dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))
@@ -527,14 +535,19 @@ checkSignificantDecimals <- function(significantDecimals) {
 
 #' @noRd
 checkTableIntersect <- function(tableIntersect, cdm) {
-  checkmate::assertList(tableIntersect, names = "named")
-  arguments <- getArguments(addIntersect)
+  checkmate::assertList(tableIntersect)
+  arguments <- getArguments(addTableIntersect)
+  if (length(tableIntersect) > 0) {
+    if (!is.list(tableIntersect[[1]])) {
+      tableIntersect <- list(tableIntersect)
+    }
+  }
   lapply(tableIntersect, function(x) {
     checkmate::assertList(x, names = "named")
     checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
     checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
-  invisible(NULL)
+  return(tableIntersect)
 }
 
 getArguments <- function(fun) {
@@ -553,26 +566,36 @@ getArguments <- function(fun) {
 
 #' @noRd
 checkCohortIntersect <- function(cohortIntersect, cdm) {
-  checkmate::assertList(cohortIntersect, names = "named")
+  checkmate::assertList(cohortIntersect)
   arguments <- getArguments(addCohortIntersect)
+  if (length(cohortIntersect) > 0) {
+    if (!is.list(cohortIntersect[[1]])) {
+      cohortIntersect <- list(cohortIntersect)
+    }
+  }
   lapply(cohortIntersect, function(x) {
     checkmate::assertList(x, names = "named")
     checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
     checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
-  invisible(NULL)
+  return(cohortIntersect)
 }
 
 #' @noRd
 checkConceptIntersect <- function(conceptIntersect, cdm) {
   checkmate::assertList(conceptIntersect, names = "named")
   arguments <- getArguments(addConceptIntersect)
+  if (length(conceptIntersect) > 0) {
+    if (!identical(lapply(conceptIntersect, class) |> unlist() |> unname() |> unique(), "list")) {
+      conceptIntersect <- list(conceptIntersect)
+    }
+  }
   lapply(conceptIntersect, function(x) {
     checkmate::assertList(x, names = "named")
     checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
     checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
   })
-  invisible(NULL)
+  return(conceptIntersect)
 }
 
 #' @noRd
@@ -597,4 +620,63 @@ checkOtherVariables <- function(otherVariables, cohort, call = rlang::env_parent
     cli::cli_abort(errorMessage, call = call)
   }
   invisible(otherVariables)
+}
+
+#' Assert whether a nameStyle contains the needed information.
+#'
+#' @param nameStyle nameStyle object to check.
+#' @param values Parameters options that must be contained.
+#' @param call An environment for cli functions.
+#'
+#' @return An error if nameStyle is not properly formatted.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' assertNameStyle("my_name", values = list(
+#'   "variable1" = 1, "variable2" = c("a", "b", "c")
+#' ))
+#'
+#' assertNameStyle("my_name_{variable2}", values = list(
+#'   "variable1" = 1, "variable2" = c("a", "b", "c")
+#' ))
+#'
+#' assertNameStyle("my_name_{variable2}", values = list(
+#'   "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+#' ))
+#'
+#' assertNameStyle("my_name_{variable1}_{variable2}", values = list(
+#'   "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+#' ))
+#' }
+#'
+assertNameStyle <- function(nameStyle,
+                            values = list(),
+                            call = parent.frame()) {
+  # initial checks
+  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
+  checkmate::assertList(values, any.missing = FALSE, names = "named")
+  checkmate::assertClass(call, "environment")
+
+  # check name style
+  err <- character()
+  for (k in seq_along(values)) {
+    valk <- values[[k]]
+    nm <- paste0("\\{", names(values)[k], "\\}")
+    if (length(valk) > 1 & !grepl(pattern = nm, x = nameStyle)) {
+      err <- c(err, paste0("{{", names(values)[k], "}}"))
+    }
+  }
+
+  # error
+  if (length(err) > 0) {
+    names(err) <- rep("*", length(err))
+    cli::cli_abort(
+      message = c("The following elements are not present in nameStyle:", err),
+      call = call
+    )
+  }
+
+  return(invisible(nameStyle))
 }

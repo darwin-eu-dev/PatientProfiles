@@ -12,7 +12,7 @@ addConceptIntersect(
   censorDate = NULL,
   window = list(c(0, Inf)),
   targetStartDate = "cohort_start_date",
-  targetEndDate = NULL,
+  targetEndDate = "cohort_end_date",
   order = "first",
   flag = TRUE,
   count = TRUE,

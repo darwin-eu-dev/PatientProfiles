@@ -7,7 +7,7 @@ certain date}
 \usage{
 addFutureObservation(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   futureObservationName = "future_observation"
 )

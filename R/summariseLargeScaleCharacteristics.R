@@ -50,10 +50,14 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                includeSource = FALSE,
                                                minimumFrequency = 0.005,
                                                excludedCodes = NULL,
-                                               cdm = attr(cohort, "cdm_reference")) {
+                                               cdm = lifecycle::deprecated()) {
   if (!is.list(window)) {
     window <- list(window)
   }
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn("0.6.0", "summariseLargeScaleCharacteristics(cdm)")
+  }
+  cdm <- omopgenerics::cdmReference(cohort)
 
   # initial checks
   checkX(cohort)
@@ -111,7 +115,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
               )
           )
       }
-      if (includeSource & analysis == "standard" & !is.na(getSourceConceptName(tab))) {
+      if ("source" %in% colnames(table) & analysis == "standard") {
         tableAnalysis <- getTableAnalysis(table, type, "source", tablePrefix)
         for (win in seq_along(window)) {
           tableWindow <- getTableWindow(tableAnalysis, window[[win]], tablePrefix)
@@ -150,16 +154,16 @@ summariseLargeScaleCharacteristics <- function(cohort,
         .data$estimate_type == "count", "numeric", "percentage"
       )
     ) |>
-    omopgenerics::uniteGroup(
-      cols = c("table_name", "type", "analysis", "concept"),
-      name = "additional_name",
-      level = "additional_level",
-      keep = FALSE
+    visOmopResults::uniteAdditional(
+      cols = c("table_name", "type", "analysis", "concept")
     ) |>
-    dplyr::select(dplyr::all_of(omopgenerics::resultColumns(
-      "summarised_result"
+    dplyr::select(dplyr::all_of(c(
+      "cdm_name", "result_type", "package_name", "package_version",
+      "group_name", "group_level", "strata_name", "strata_level",
+      "variable_name", "variable_level", "estimate_name", "estimate_type",
+      "estimate_value", "additional_name", "additional_level"
     ))) |>
-    omopgenerics::summarisedResult()
+    omopgenerics::newSummarisedResult()
 
   # eliminate permanent tables
   cdm <- omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
@@ -199,6 +203,8 @@ addLargeScaleCharacteristics <- function(cohort,
     window <- list(window)
   }
 
+  cdm <- omopgenerics::cdmReference(cohort)
+
   # initial checks
   checkX(cohort)
   checkWindow(window)
@@ -214,7 +220,6 @@ addLargeScaleCharacteristics <- function(cohort,
   checkmate::assertTRUE(indexDate %in% colnames(cohort))
   checkmate::assertTRUE(is.null(censorDate) || censorDate %in% colnames(cohort))
   checkmate::assert_integerish(excludedCodes, any.missing = FALSE, null.ok = TRUE)
-  cdm <- attr(cohort, "cdm_reference")
   checkCdm(cdm)
 
   # add names to windows
@@ -357,15 +362,15 @@ getInitialTable <- function(cohort, tablePrefix, indexDate, censorDate) {
   return(x)
 }
 getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, excludedCodes) {
-  cdm <- attr(x, "cdm_reference")
+  cdm <- omopgenerics::cdmReference(x)
   toSelect <- c(
     "subject_id" = "person_id",
-    "start_diff" = getStartName(tab),
-    "end_diff" = ifelse(is.na(getEndName(tab)), getStartName(tab), getEndName(tab)),
-    "standard" = getConceptName(tab),
-    "source" = getSourceConceptName(tab)
+    "start_diff" = startDateColumn(tab),
+    "end_diff" = ifelse(is.na(endDateColumn(tab)), startDateColumn(tab), endDateColumn(tab)),
+    "standard" = standardConceptIdColumn(tab),
+    "source" = sourceConceptIdColumn(tab)
   )
-  if (includeSource == FALSE) {
+  if (includeSource == FALSE || is.na(sourceConceptIdColumn(tab))) {
     toSelect <- toSelect["source" != names(toSelect)]
   }
   table <- cdm[[tab]] %>%
@@ -399,7 +404,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
     )
     table <- table |>
       dplyr::anti_join(cdm[[nm]], by = "standard")
-    if (includeSource) {
+    if ("source" %in% colnames(table)) {
       table <- table |>
         dplyr::anti_join(
           cdm[[nm]] |> dplyr::rename("source" = "standard"), by = "source"
@@ -414,14 +419,12 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
       overwrite = TRUE
     )
 }
-writeSchema <- function(x) {
-  attr(attr(x, "cdm_reference"), "write_schema")
-}
+
 summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
   result <- NULL
-  cohortNames <- CDMConnector::cohortSet(cohort)$cohort_name
+  cohortNames <- omopgenerics::settings(cohort)$cohort_name
   for (cohortName in cohortNames) {
-    cdi <- CDMConnector::cohortSet(cohort) %>%
+    cdi <- omopgenerics::settings(cohort) %>%
       dplyr::filter(.data$cohort_name == .env$cohortName) %>%
       dplyr::pull("cohort_definition_id")
     tableWindowCohort <- tableWindow %>%
@@ -492,7 +495,7 @@ formatLscResult <- function(lsc, den, cdm, minimumFrequency) {
         "window_name"
       )
     ) %>%
-    dplyr::mutate(percentage = 100 * .data$count / .data$denominator) %>%
+    dplyr::mutate(percentage = round(100 * .data$count / .data$denominator, 2)) %>%
     dplyr::select(-"denominator") %>%
     dplyr::filter(.data$percentage >= 100 * .env$minimumFrequency) %>%
     tidyr::pivot_longer(
@@ -545,7 +548,7 @@ getTableAnalysis <- function(table, type, analysis, tablePrefix) {
   return(table)
 }
 getCodesGroup <- function(table, analysis, tablePrefix) {
-  cdm <- attr(table, "cdm_reference")
+  cdm <- omopgenerics::cdmReference(table)
   if (analysis %in% c("ATC 1st", "ATC 2nd", "ATC 3rd", "ATC 4th", "ATC 5h")) {
     codes <- cdm[["concept"]] %>%
       dplyr::filter(.data$vocabulary_id == "ATC") %>%

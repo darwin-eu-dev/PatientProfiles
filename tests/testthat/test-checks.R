@@ -37,7 +37,7 @@ test_that("test checkCategory with length 1 ", {
   categories <- list("age_group" = list(c(0, 69), c(70)))
 
   a <- cdm$cohort1 %>%
-    addAge(cdm, indexDate = "cohort_start_date") %>%
+    addAge(indexDate = "cohort_start_date") %>%
     addCategories("age", categories) %>%
     dplyr::collect()
   expect_true(a[a$subject_id == 2, ]$age_group == "70 to 70")
@@ -46,7 +46,7 @@ test_that("test checkCategory with length 1 ", {
 
   categories <- list("age_group" = list(c(69, 0), c(70)))
 
-  expect_error(cdm$cohort1 %>% addAge(cdm, indexDate = "cohort_start_date") %>%
+  expect_error(cdm$cohort1 %>% addAge(indexDate = "cohort_start_date") %>%
     addCategories("age", categories))
 })
 
@@ -90,11 +90,16 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     observation_period = op
   )
 
-  expect_warning(x <- addInObservation(cdm$cohort1, cdm, name = "flag"))
-  expect_true(all(c("flag", "flag_1") %in% colnames(x)))
-  expect_true(all(c("flag", "flag_new") %in% colnames(addInObservation(cdm$cohort1, cdm, name = "flag_new"))))
-
-
+  expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag"
+  ) == colnames(x)))
+  y <- addInObservation(cdm$cohort1, name = "flag_new")
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag", "flag_new"
+  ) == colnames(y)))
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
@@ -119,21 +124,34 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     observation_period = op
   )
 
-  expect_warning(x <- addInObservation(cdm$cohort1, cdm, name = "flag"))
-  expect_true(all(c("flag", "flag_1", "flag_2") %in% colnames(x)))
-  expect_true(all(c("flag", "flag_1", "flag_new") %in% colnames(addInObservation(cdm$cohort1, cdm, name = "flag_new"))))
+  expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag", "flag_1"
+  ) == colnames(x)))
+  expect_true(x |> dplyr::pull("flag") |> unique() == 1)
+  expect_true(x |> dplyr::pull("flag_1") |> unique() == 0)
+  y <- addInObservation(cdm$cohort1, name = "flag_new")
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag", "flag_1", "flag_new"
+  ) == colnames(y)))
+  expect_true(y |> dplyr::pull("flag") |> unique() == 0)
+  expect_true(y |> dplyr::pull("flag_new") |> unique() == 1)
+  expect_true(y |> dplyr::pull("flag_1") |> unique() == 0)
+
 })
 
 test_that(" test checkWindow in addIntersect", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 2)
 
-  expect_error(cdm$cohort1 %>% addIntersect(cdm, tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(cdm, tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
-  expect_warning(cdm$cohort1 %>% addIntersect(cdm, tableName = "cohort2", window = list(c(-365), -c(0), -c(30)), value = "date"))
+  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
+  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
+  expect_warning(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-365), -c(0), -c(30)), value = "date"))
 
-  expect_error(cdm$cohort1 %>% addIntersect(cdm, tableName = "cohort2", window = list(c(30, -365)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(cdm, tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(cdm, tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
+  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(30, -365)), value = "date"))
+  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
+  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
 })
 
 test_that("test checkSnakeCase", {
@@ -229,7 +247,33 @@ test_that("checkNameStyle", {
   )
 
   expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% addIntersect(
-    cdm = cdm, tableName = "cohort2",
-    value = c("flag", "count"), nameStyle = "{value}_{id_name}"
+    tableName = "cohort2", value = c("flag", "count"),
+    nameStyle = "{value}_{id_name}"
   ))))
+})
+
+test_that("test assertNameStyle", {
+  expect_error(
+    assertNameStyle("my_name", values = list(
+      "variable1" = 1, "variable2" = c("a", "b", "c")
+    ))
+  )
+
+  expect_no_error(
+    assertNameStyle("my_name_{variable2}", values = list(
+      "variable1" = 1, "variable2" = c("a", "b", "c")
+    ))
+  )
+
+  expect_error(
+    assertNameStyle("my_name_{variable2}", values = list(
+      "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+    ))
+  )
+
+  expect_no_error(
+    assertNameStyle("my_name_{variable1}_{variable2}", values = list(
+      "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
+    ))
+  )
 })
