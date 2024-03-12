@@ -28,9 +28,9 @@ plotCohortOverlap(
 
 \item{strataLevel}{Names of the strata levels to include.}
 
-\item{cdmName}{Name of the databases to include.}
+\item{cdmName}{Names of the databases to include.}
 
-\item{variableName}{Name of the variable names to include.}
+\item{variableName}{Names of the variable names to include.}
 
 \item{facetBy}{Names of columns in the cohort_overlap table for faceting the
 ggplot object.}

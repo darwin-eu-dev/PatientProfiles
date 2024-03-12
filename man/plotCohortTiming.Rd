@@ -29,18 +29,20 @@ plotCohortTiming(
 
 \item{strataLevel}{Names of the strata levels to include.}
 
-\item{cdmName}{Name of the databases to include.}
+\item{cdmName}{Names of the databases to include.}
 
-\item{facetBy}{Names of columns in the cohort_overlap table for faceting the
+\item{facetBy}{Vector of column names  in the cohort_overlap table for faceting the
 ggplot object.}
+
+\item{color}{Vector of column names to distict by colors.}
+
+\item{timingLabel}{A glue expression to identify each plotted cohort
+overlap.}
 
 \item{uniqueCombinations}{If TRUE, only unique combinations of reference and
 comparator plots will be plotted.}
 
-\item{variableName}{Name of the variable names to include.}
-
-\item{overlapLabel}{A glue expression to identify each plotted cohort
-overlap.}
+\item{variableName}{Names of the variable names to include.}
 }
 \value{
 A ggplot2.

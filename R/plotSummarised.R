@@ -168,12 +168,12 @@ plotCohortOverlap <- function(result,
 #' Plot cohort_overlap objects.
 #'
 #' @param result A cohort_overlap object.
+#' @param type .
 #' @param cohortNameReference Names of the reference cohorts to include.
 #' @param cohortNameComparator Names of the comparator cohorts to include.
 #' @param strataName Names of the strata names to include.
 #' @param strataLevel Names of the strata levels to include.
 #' @param cdmName Names of the databases to include.
-#' @param variableName Names of the variable names to include.
 #' @param facetBy Vector of column names  in the cohort_overlap table for faceting the
 #' ggplot object.
 #' @param color Vector of column names to distict by colors.
@@ -272,10 +272,10 @@ plotCohortTiming <- function(result,
       gg <- x |>
         tidyr::unite("group",
                      dplyr::all_of(.env$color), remove = FALSE, sep = "; ") |>
-        ggplot2::ggplot(ggplot2::aes(x = timingLabel, fill = group))
+        ggplot2::ggplot(ggplot2::aes(x = .data$timingLabel, fill = .data$group))
     } else (
       gg <- x |>
-        ggplot2::ggplot(ggplot2::aes(x = timingLabel))
+        ggplot2::ggplot(ggplot2::aes(x = .data$timingLabel))
     )
     # plot
     gg <- gg +
