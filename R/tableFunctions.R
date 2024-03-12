@@ -115,6 +115,7 @@ formatCharacteristics <- function(result,
       )
     colsStrata <- "strata"
   } else {
+
     result <- result |>
       visOmopResults::splitStrata()
   }

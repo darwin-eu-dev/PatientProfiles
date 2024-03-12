@@ -57,13 +57,16 @@ Imports:
     cli,
     stringr,
     gt,
-    omopgenerics (>= 0.0.2),
-    visOmopResults,
+    omopgenerics (>= 0.1.2),
+    visOmopResults (>= 0.1.0),
     lifecycle
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
+BugReports: https://github.com/darwin-eu-dev/PatientProfiles/issues
 Language: en-US
 Depends: 
     R (>= 2.10)
 Config/testthat/edition: 3
 Config/testthat/parallel: true
+Remotes:
+    oxford-pharmacoepi/visOmopResults
