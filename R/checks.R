@@ -395,7 +395,7 @@ checkSnakeCase <- function(name, verbose = TRUE) {
 
 #' @noRd
 checkVariableType <- function(variableType) {
-  assertChoice()
+  assertChoice(x = variableType, choices = formats$variable_type |> unique())
 }
 
 #' @noRd
@@ -429,75 +429,36 @@ checkStrata <- function(strata, table) {
 }
 
 #' @noRd
-checkVariablesFunctions <- function(variables, functions, table) {
+checkVariablesFunctions <- function(variables, estimates, table) {
   errorMessage <- "variables should be a unique named list that point to columns in table"
-  if (!is.list(variables)) {
-    cli::cli_abort(errorMessage)
+  assertList(x = variables, class = "character")
+  assertList(x = estimates, class = "character")
+  if (length(variables) != length(estimates)) {
+    cli::cli_abort("Variables and estimates must have the same length")
   }
-  if (length(names(variables)) != length(variables)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!is.character(unlist(variables))) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!all(unlist(variables) %in% colnames(table))) {
-    cli::cli_abort(errorMessage)
-  }
-  errorMessage <- "functions should be a unique named list that point to functions. Check suported functions using availableFunctions()."
-  if (!is.list(functions)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (length(names(functions)) != length(functions)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!is.character(unlist(functions))) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!all(unlist(functions) %in% unique(formats$format_key))) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!identical(sort(names(variables)), sort(names(functions)))) {
-    cli::cli_abort("Names from variables and functions must be the same")
-  }
-  vt <- variableTypes(table)
-  requiredFunctions <- NULL
-  for (nam in names(variables)) {
-    requiredFunctions <- requiredFunctions %>%
-      dplyr::union_all(
-        tidyr::expand_grid(
-          variable = variables[[nam]],
-          format_key = functions[[nam]]
-        )
-      )
-  }
-  suportedFunctions <- vt %>%
-    dplyr::select("variable", "variable_type") %>%
-    dplyr::left_join(
-      formats %>%
-        dplyr::select("variable_type", "format_key"),
-      by = "variable_type",
-      relationship = "many-to-many"
-    )
-  nonSuportedFunctions <- requiredFunctions %>%
-    dplyr::anti_join(suportedFunctions, by = c("variable", "format_key"))
-  if (nrow(nonSuportedFunctions) > 0) {
-    nonSuportedFunctions <- nonSuportedFunctions %>%
-      dplyr::left_join(vt, by = "variable")
-    errorMessage <- "Non supported functions found."
-    vars <- unique(nonSuportedFunctions$variable)
-    for (v in vars) {
-      errorMessage <- paste0(
-        errorMessage, " '", v, "' is `",
-        vt$variable_type[vt$variable == v], "` and formats: ",
-        paste0(
-          nonSuportedFunctions$format_key[nonSuportedFunctions$variable == v],
-          collapse = ", "
-        ),
-        " are not suported."
-      )
+  if (!is.null(names(variables)) & !is.null(names(estimates))) {
+    if (!identical(sort(names(variables)), sort(names(estimates)))) {
+      cli::cli_abort("Names from variables and estimates must be the same")
     }
-    cli::cli_abort(errorMessage)
+    variables <- variables[order(names(variables))]
+    estimates <- estimates[order(names(estimates))]
   }
+
+  vt <- variableTypes(table)
+  functions <- lapply(seq_along(variables), function(k){
+    tidyr::expand_grid(
+      variable_name = variables[[k]],
+      estimate_name = estimates[[k]]
+    )
+  }) |>
+    dplyr::bind_rows() |>
+    dplyr::inner_join(vt, by = "variable_name") |>
+    dplyr::inner_join(
+      formats |>
+        dplyr::select("variable_type", "estimate_name", "estimate_type"),
+      by = c("variable_type", "estimate_name")
+    )
+  return(functions)
 }
 
 #' @noRd

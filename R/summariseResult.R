@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Summarise the characteristics of different individuals
+#' Summarise variables using a set of estimate functions. The output will be
+#' a formatted summaried_result object.
 #'
 #' @param table Table with different records
 #' @param group List of groups to be considered.
@@ -23,12 +24,14 @@
 #' @param strata List of the stratifications within each group to be considered.
 #' @param includeOverallStrata TRUE or FALSE. If TRUE, results for an overall
 #' strata will be reported when a list of strata has been specified.
-#' @param variables List of the different groups of variables, by default they
-#' are automatically classified.
-#' @param functions List of functions to be applied to each one of the group of
-#' variables.
+#' @param variables Variables to summarise, it can be a list to point to different
+#' set of estimate names.
+#' @param estimates Estimates to obtain, it can be a list to point to different
+#' set of variables.
+#' @param functions deprecated.
+#' @param verbose Whether to print progress.
 #'
-#' @return Table that summarises the characteristics of the individual.
+#' @return A summarised_result object with the summarised data of interest.
 #'
 #' @export
 #'
@@ -49,20 +52,29 @@ summariseResult <- function(table,
                             includeOverallGroup = FALSE,
                             strata = list(),
                             includeOverallStrata = TRUE,
-                            variables = list(
-                              numericVariables = detectVariables(table, "numeric"),
-                              dateVariables = detectVariables(table, "date"),
-                              binaryVariables = detectVariables(table, "binary"),
-                              categoricalVariables = detectVariables(table, "categorical")
-                            ),
-                            functions = list(
-                              numericVariables = c("median", "min", "q25", "q75", "max"),
-                              dateVariables = c("median", "min", "q25", "q75", "max"),
-                              binaryVariables = c("count", "percentage"),
-                              categoricalVariables = c("count", "percentage")
-                            )) {
+                            variables = NULL,
+                            functions = lifecycle::deprecated(),
+                            estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
+                            verbose = TRUE) {
+  if (!lifecycle::is_present(functions)) {
+    lifecycle::deprecate_warn(
+      when = "0.7.0",
+      what = "summariseResult(functions)",
+      with = "summariseResult(estimates)"
+    )
+    if (missing(estimates)) {
+      estimates <- functions
+    }
+    rm(functions)
+  }
+
   # initial checks
   checkTable(table)
+
+  if (is.null(variables)) {
+    variables <- colnames(table)
+    variables <- variables[!grepl("_id", variables)]
+  }
 
   if (inherits(table, "cdm_table")) {
     cdm_name <- omopgenerics::cdmName(omopgenerics::cdmReference(table))
@@ -84,14 +96,30 @@ summariseResult <- function(table,
     )
   } else {
     if (!is.list(variables)) {
-      variables <- list("all" = variables)
+      variables <- list(variables)
     }
     if (!is.list(functions)) {
-      functions <- list("all" = functions)
+      functions <- list(functions)
     }
     checkStrata(group, table)
     checkStrata(strata, table)
-    checkVariablesFunctions(variables, functions, table)
+    functions <- checkVariablesFunctions(variables, estimates, table)
+
+    if (nrow(functions) == 0) {
+      cli::cli_alert_warning(
+        "No estimate can be computed with the current arguments, check `availableEstimates()` for the estimates that this function supports"
+      )
+      return(omopgenerics::emptySummarisedResult())
+    } else {
+      mes <- c("i" = "The following estimates will be computed:")
+      variables <- functions$variable_name |> unique()
+      for (vark in variables) {
+        mes <- c(mes, "*" = paste0(
+          vark, ": ", paste0(functions$estimate_name[functions$variable_name == vark], collapse = ", ")
+        ))
+      }
+      cli::cli_inform(message = mes)
+    }
 
     # get which are the estimates that are needed
     requiredFunctions <- NULL

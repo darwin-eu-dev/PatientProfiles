@@ -66,7 +66,7 @@ assertClassification <- function(x) {
     "ord" = "categorical",
     "date" = "date",
     "dttm" = "date",
-    "lgl" = "numeric",
+    "lgl" = "logical",
     "drtn" = "numeric",
     "dbl" = "numeric",
     "int" = "integer",
@@ -99,15 +99,80 @@ assertClassification <- function(x) {
 #' @export
 #'
 availableFunctions <- function(variableType = NULL) {
+  lifecycle::deprecate_warn("0.7.0", what = "availableFunctions()", with = "availableEstimates()")
 
+  availableEstimates()
+}
+
+#' Show the available estimates that can be used for the different variable_type
+#' supported.
+#'
+#' @param variableType A set of variable types.
+#' @param fullQuantiles Whether to display the exact quantiles that can be
+#' computed or only the qXX to summarise all of them.
+#'
+#' @return A tibble with the available estimates.
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#'
+#' availableEstimates()
+#' availableEstimates("numeric")
+#' availableEstimates(c("numeric", "categorical"))
+#' }
+#'
+#' @export
+#'
+availableEstimates <- function(variableType = NULL, fullQuantiles = FALSE){
+  opts <- unique(formats$variable_type)
   if (is.null(variableType)) {
-    return(formats)
-  } else {
-    checkVariableType(variableType)
-    x <- formats %>%
-      dplyr::filter(.data$variable_type == .env$variableType)
-    return(x)
+    variableType <- opts
   }
+  assertChoice(variableType, choices = opts, null = TRUE)
+  assertChoice(fullQuantiles, c(TRUE, FALSE))
+
+  if (fullQuantiles) {
+    x <- formats |>
+      dplyr::select("estimate_name", "estimate_description") |>
+      dplyr::filter(.data$estimate_name == "qXX") |>
+      dplyr::distinct()
+    quantiles <- lapply(c(1:49, 51:99), function(k) {
+      x |>
+        dplyr::mutate(
+          "new_estimate_name" = gsub(
+            "XX", stringr::str_pad(k, width = 2, pad = "0"), .data$estimate_name
+          ),
+          "new_estimate_description" = gsub(
+            "XX", stringr::str_pad(k, width = 2, pad = "0"), .data$estimate_description
+          )
+        )
+    }) |>
+      dplyr::bind_rows()
+    x <- formats |>
+      dplyr::left_join(
+        quantiles,
+        by = c("estimate_name", "estimate_description"),
+        relationship = "many-to-many"
+      ) |>
+      dplyr::mutate(
+        "estimate_name" = dplyr::if_else(
+          is.na(.data$new_estimate_name),
+          .data$estimate_name,
+          .data$new_estimate_name
+        ),
+        "estimate_description" = dplyr::if_else(
+          is.na(.data$new_estimate_description),
+          .data$estimate_description,
+          .data$new_estimate_description
+        )
+      ) |>
+      dplyr::select(!c("new_estimate_name", "new_estimate_description"))
+  } else {
+    x <- formats
+  }
+
+  x |> dplyr::filter(.data$variable_type %in% .env$variableType)
 }
 
 #' Detect automatically variables with a certain classification
