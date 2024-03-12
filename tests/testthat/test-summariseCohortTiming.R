@@ -53,12 +53,12 @@ test_that("summariseCohortTiming", {
 
   ## Strata and cohortId----
   cdm$table <- cdm$table |>
-    addAge() |>
+    addAge(ageGroup = list(c(0,40), c(41, 150))) |>
     addSex() |>
     dplyr::compute(name = "table", temporary = FALSE) |>
     omopgenerics::newCohortTable()
   timing3 <- summariseCohortTiming(cdm$table,
-                                   strata = list("age", c("age", "sex")))
+                                   strata = list("age_group", c("age_group", "sex")))
   expect_true(all(c("overall", "age", "age and sex") %in%
                     unique(timing3$strata_name)))
 

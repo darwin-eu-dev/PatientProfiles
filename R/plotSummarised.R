@@ -5,8 +5,8 @@
 #' @param cohortNameComparator Names of the comparator cohorts to include.
 #' @param strataName Names of the strata names to include.
 #' @param strataLevel Names of the strata levels to include.
-#' @param cdmName Name of the databases to include.
-#' @param variableName Name of the variable names to include.
+#' @param cdmName Names of the databases to include.
+#' @param variableName Names of the variable names to include.
 #' @param facetBy Names of columns in the cohort_overlap table for faceting the
 #' ggplot object.
 #' @param overlapLabel A glue expression to identify each plotted cohort
@@ -69,11 +69,9 @@ plotCohortOverlap <- function(result,
     result$strata_name,
     "strata_name"
   )
-  strataLevel <- defaultColumnSelector(
-    strataLevel,
-    result$strata_level,
-    "strata_level"
-  )
+  if (is.null(strataLevel)) {
+    strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
+  }
   cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
 
   if (uniqueCombinations) {
@@ -237,11 +235,9 @@ plotCohortTiming <- function(result,
     result$strata_name,
     "strata_name"
   )
-  strataLevel <- defaultColumnSelector(
-    strataLevel,
-    result$strata_level,
-    "strata_level"
-  )
+  if (is.null(strataLevel)) {
+    strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
+  }
   cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
 
   if (uniqueCombinations) {

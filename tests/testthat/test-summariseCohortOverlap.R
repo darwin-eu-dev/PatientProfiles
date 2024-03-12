@@ -214,8 +214,8 @@ test_that("plotCohortOverlap", {
   expect_true(gg2$data |> dplyr::filter(variable_name == "number subjects") |> nrow() == 0)
   expect_true(gg2$data$facet_var |> unique() == "PP_MOCK")
   expect_true(nrow(gg2$data |>
-                dplyr::filter(.data$cohort_name_reference %in% c("cohort_1", "cohort_2") &
-                                .data$cohort_name_comparator %in% c("cohort_1", "cohort_2"))) == 2)
+                dplyr::filter(.data$cohort_name_reference %in% c("Cohort 1", "Cohort 2") &
+                                .data$cohort_name_comparator %in% c("Cohort 1", "Cohort 2"))) == 2)
   # strata ----
   cdm$table <- cdm$table |>
     addAge(ageGroup = list(c(0,40), c(41,150))) |>

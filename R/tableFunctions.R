@@ -379,6 +379,7 @@ tableCohortOverlap  <- function(result,
   return(x)
 }
 
+
 formatOverlapEstimate <- function(count, percentage, .options) {
   paste0(
     niceNum(count, .options, "integer"),

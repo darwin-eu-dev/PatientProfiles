@@ -77,11 +77,8 @@ summariseCohortTiming <- function(cohort,
 
   if (nrow(cohort_timings) > 0) {
     cohort_timings <- cohort_timings |>
-      dplyr::mutate("cohort_name_reference and cohort_name_comparator" = as.character(
-        paste0(as.character(.data$cohort_name_reference),
-               as.character(" and "),
-               as.character(.data$cohort_name_comparator)))) |>
-      summariseResult(group = list("cohort_name_reference and cohort_name_comparator"),
+      visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator")) |>
+      summariseResult(group = list("cohort_name_reference &&& cohort_name_comparator"),
                       includeOverallGroup = FALSE,
                       strata = strata,
                       variables = list(diff_days = "diff_days"),
