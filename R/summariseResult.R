@@ -29,6 +29,7 @@
 #' @param estimates Estimates to obtain, it can be a list to point to different
 #' set of variables.
 #' @param functions deprecated.
+#' @param counts Whether to compute number of records and number of subjects.
 #' @param verbose Whether to print progress.
 #'
 #' @return A summarised_result object with the summarised data of interest.
@@ -55,6 +56,7 @@ summariseResult <- function(table,
                             variables = NULL,
                             functions = lifecycle::deprecated(),
                             estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
+                            counts = TRUE,
                             verbose = TRUE) {
   if (!lifecycle::is_present(functions)) {
     lifecycle::deprecate_warn(
@@ -83,23 +85,27 @@ summariseResult <- function(table,
   }
 
   # create the summary for overall
-  result <- list()
   if (table %>%
     dplyr::count() %>%
     dplyr::pull() == 0) {
-    result <- dplyr::tibble(
-      "estimate" = "0", "variable" = "number records",
-      "variable_type" = "categorical", "estimate_type" = "count",
-      "group_name" = "overall", "group_level" = "overall",
-      "strata_name" = "overall", "strata_level" = "overall",
-      "variable_level" = NA_character_
-    )
+    if (counts) {
+      result <- dplyr::tibble(
+        "group_name" = "overall", "group_level" = "overall",
+        "strata_name" = "overall", "strata_level" = "overall",
+        "variable_name" = c("number_records", "number_subjects"),
+        "variable_level" = NA_character_, "estimate_name" = "count",
+        "estimate_type" = "integer", "estimate_value" = "0"
+      )
+    } else {
+      result <- omopgenerics::emptySummarisedResult()
+      return(result)
+    }
   } else {
     if (!is.list(variables)) {
       variables <- list(variables)
     }
-    if (!is.list(functions)) {
-      functions <- list(functions)
+    if (!is.list(estimates)) {
+      estimates <- list(estimates)
     }
     checkStrata(group, table)
     checkStrata(strata, table)
@@ -110,7 +116,7 @@ summariseResult <- function(table,
         "No estimate can be computed with the current arguments, check `availableEstimates()` for the estimates that this function supports"
       )
       return(omopgenerics::emptySummarisedResult())
-    } else {
+    } else if (verbose) {
       mes <- c("i" = "The following estimates will be computed:")
       variables <- functions$variable_name |> unique()
       for (vark in variables) {
@@ -121,88 +127,47 @@ summariseResult <- function(table,
       cli::cli_inform(message = mes)
     }
 
-    # get which are the estimates that are needed
-    requiredFunctions <- NULL
-    for (nam in names(variables)) {
-      requiredFunctions <- requiredFunctions %>%
-        dplyr::union_all(
-          tidyr::expand_grid(
-            variable = variables[[nam]],
-            estimate_type = functions[[nam]]
-          )
-        )
-    }
-    requiredFunctions <- requiredFunctions %>%
-      dplyr::left_join(
-        table %>%
-          dplyr::ungroup() %>%
-          variableTypes() %>%
-          dplyr::select(-"type_sum"),
-        by = "variable"
-      )
+    # only required variables
+    table <- table |>
+      dplyr::select(dplyr::any_of(unique(c(
+        unlist(strata), unlist(group), functions$variable_name, "person_id",
+        "subject_id"
+      ))))
 
-    #collect if necessary
-    collectFlag <- requiredFunctions %>%
-      dplyr::filter(!.data$variable_type %in% c("binary","numeric")) %>%
+    # collect if necessary
+    collectFlag <- functions %>%
+      dplyr::filter(grepl("q", .data$estimate_name)) %>%
       nrow() > 0
     if (collectFlag) {
       table <- table %>% dplyr::collect()
     }
 
-    if (isTRUE(includeOverallGroup) || length(group) == 0) {
-      result <- table %>%
-        summaryValuesStrata(
-          strata, requiredFunctions,
-          includeOverall = includeOverallStrata
-        ) %>%
-        dplyr::mutate(
-          group_name = "overall",
-          group_level = "overall"
-        ) %>%
-        dplyr::select(
-          "group_name", "group_level", "strata_name", "strata_level",
-          "variable", "variable_level", "variable_type", "estimate_type",
-          "estimate"
-        ) %>%
-        arrangeStrata(strata)
-    }
+    # correct dates and logicals
+    dates <- functions |>
+      dplyr::filter(.data$variable_type %in% c("date", "logical")) |>
+      dplyr::distinct(.data$variable_name) |>
+      dplyr::pull()
+    table <- table |>
+      dplyr::mutate(dplyr::across(
+        .cols = dplyr::all_of(dates),
+        .fns = as.integer
+      ))
 
-    # add results for each group
-    for (i in seq_along(group)) {
+    # correct strata and group
+    group <- correctStrata(group, includeOverallGroup)
+    strata <- correctStrata(strata, includeOverallStrata)
 
-      table <- table %>%
-        dplyr::mutate(
-          group_var = !!rlang::parse_expr(uniteStrata(group[[i]]))
+    resultk <- 1
+    result <- list()
+    for (groupk in group) {
+      for (stratak in strata) {
+        result[[resultk]] <- summariseInternal(
+          table, groupk, stratak, functions, counts
         )
-      workingGroupLevels <- table %>%
-        dplyr::select("group_var") %>%
-        dplyr::distinct() %>%
-        dplyr::pull() %>%
-        sort()
-
-      for (j in seq_along(workingGroupLevels)) {
-        workingResult <- table %>%
-          dplyr::filter(
-            .data[["group_var"]] == !!workingGroupLevels[j]
-          ) %>%
-          summaryValuesStrata(
-            strata, requiredFunctions,
-            includeOverall = includeOverallStrata
-          ) %>%
-          dplyr::mutate(
-            group_name = !!paste0(group[[i]], collapse = " and "),
-            group_level = !!workingGroupLevels[j]
-          ) %>%
-          dplyr::select(
-            "group_name", "group_level", "strata_name", "strata_level",
-            "variable", "variable_level", "variable_type", "estimate_type",
-            "estimate"
-          ) %>%
-          arrangeStrata(strata)
-
-        result <- dplyr::bind_rows(result, workingResult)
+        resultk <- resultk + 1
       }
     }
+    result <- result |> dplyr::bind_rows()
   }
 
   result <- result |>
@@ -242,6 +207,89 @@ summariseResult <- function(table,
     omopgenerics::newSummarisedResult()
 
   return(result)
+}
+
+summariseInternal <- function(table, groupk, stratak, functions, counts) {
+  result <- list()
+
+  # group by relevant variables
+  table <- table |> dplyr::group_by(dplyr::across(dplyr::all_of(unique(c(
+    groupk, stratak
+  )))))
+
+  # count subjects and records
+  if (counts) {
+    result$counts <- countSubjects(table)
+  }
+
+  # summariseNumeric
+  result$numeric <- summariseNumeric(table, functions)
+
+  # summariseBinary
+
+  # summariseCategories
+
+  # summariseMissings
+
+  # fomat group strata
+  result <- result |>
+    dplyr::bind_rows() |>
+    visOmopResults::uniteGroup(cols = groupk) |>
+    visOmopResults::uniteStrata(cols = stratak)
+
+  return(result)
+}
+
+summariseNumeric <- function(table, functions) {
+  funs <- functions |>
+    dplyr::filter(
+      .data$variable_type %in% c("date", "numeric", "integer") &
+        !grepl("count|percentage", .data$estimate_name)
+    )
+  res <- list()
+  uniqueEstimates <- funs$estimate_name |> unique()
+  uniqueVariables <- funs$variable_name |> unique()
+  if (length(uniqueEstimates) <= length(uniqueVariables)) {
+    for (est in uniqueEstimates) {
+      varEst <- funs |>
+        dplyr::filter(.data$estimate_name == .env$est) |>
+        dplyr::pull("variable_name")
+      res[[est]] <- table |>
+        dplyr::summarise(
+          dplyr::across(
+            .cols = dplyr::all_of(varEst),
+            .fns = getFunctions(est),
+            .names = "{.col}"
+          ),
+          .groups = "drop"
+        ) |>
+        dplyr::collect() |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(varEst), .fns = as.character
+        )) |>
+        tidyr::pivot_longer(
+          cols = varEst,
+          names_to = "variable_name",
+          values_to = "estimate_value"
+        )
+    }
+    res <- res |> dplyr::bind_rows()
+  } else {
+
+  }
+  for (k in seq_along(funGroups$fun)) {
+    funk <- getFunctions(funGroups$fun[[k]])
+    res[[k]] <- table |>
+      dplyr::summarise(
+        dplyr::across(
+          .cols = dplyr::all_of(funGroups$cols[[k]]),
+          .fns = funk
+        ),
+        .groups = "drop"
+      ) |>
+      dplyr::collect()
+  }
+
 }
 
 #' @noRd
@@ -583,14 +631,22 @@ countSubjects <- function(x) {
   if (i | j) {
     result <- x %>%
       dplyr::summarise(
-        estimate = as.character(dplyr::n_distinct(.data[[personVariable]])),
+        "number_records" = dplyr::n(),
+        "number_subjects" = dplyr::n_distinct(.data[[personVariable]]),
         .groups = "drop"
       ) %>%
+      dplyr::collect() |>
+      tidyr::pivot_longer(
+        cols = c("number_records", "number_subjects"),
+        names_to = "variable_name",
+        values_to = "estimate_value"
+      ) |>
       dplyr::mutate(
-        variable = "number subjects", variable_type = "categorical",
-        estimate_type = "count"
-      ) %>%
-      dplyr::collect()
+        "estimate_type" = "integer",
+        "estimate_name" = "count",
+        "variable_level" = NA_character_,
+        "estimate_value" = as.character(.data$estimate_value)
+      )
     return(result)
   } else {
     return(NULL)

@@ -2,7 +2,8 @@
 % Please edit documentation in R/summariseResult.R
 \name{summariseResult}
 \alias{summariseResult}
-\title{Summarise the characteristics of different individuals}
+\title{Summarise variables using a set of estimate functions. The output will be
+a formatted summaried_result object.}
 \usage{
 summariseResult(
   table,
@@ -10,12 +11,11 @@ summariseResult(
   includeOverallGroup = FALSE,
   strata = list(),
   includeOverallStrata = TRUE,
-  variables = list(numericVariables = detectVariables(table, "numeric"), dateVariables =
-    detectVariables(table, "date"), binaryVariables = detectVariables(table, "binary"),
-    categoricalVariables = detectVariables(table, "categorical")),
-  functions = list(numericVariables = c("median", "min", "q25", "q75", "max"),
-    dateVariables = c("median", "min", "q25", "q75", "max"), binaryVariables = c("count",
-    "percentage"), categoricalVariables = c("count", "percentage"))
+  variables = NULL,
+  functions = lifecycle::deprecated(),
+  estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
+  counts = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -31,17 +31,24 @@ group will be reported when a list of groups has been specified.}
 \item{includeOverallStrata}{TRUE or FALSE. If TRUE, results for an overall
 strata will be reported when a list of strata has been specified.}
 
-\item{variables}{List of the different groups of variables, by default they
-are automatically classified.}
+\item{variables}{Variables to summarise, it can be a list to point to different
+set of estimate names.}
 
-\item{functions}{List of functions to be applied to each one of the group of
-variables.}
+\item{functions}{deprecated.}
+
+\item{estimates}{Estimates to obtain, it can be a list to point to different
+set of variables.}
+
+\item{counts}{Whether to compute number of records and number of subjects.}
+
+\item{verbose}{Whether to print progress.}
 }
 \value{
-Table that summarises the characteristics of the individual.
+A summarised_result object with the summarised data of interest.
 }
 \description{
-Summarise the characteristics of different individuals
+Summarise variables using a set of estimate functions. The output will be
+a formatted summaried_result object.
 }
 \examples{
 \donttest{

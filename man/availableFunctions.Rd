@@ -25,9 +25,10 @@ library(PatientProfiles)
 
 availableFunctions()
 availableFunctions("numeric")
+availableFunctions("integer")
 availableFunctions("date")
-availableFunctions("binary")
 availableFunctions("categorical")
+availableFunctions("logical")
 }
 
 }

@@ -444,7 +444,6 @@ checkVariablesFunctions <- function(variables, estimates, table) {
     estimates <- estimates[order(names(estimates))]
   }
 
-  vt <- variableTypes(table)
   functions <- lapply(seq_along(variables), function(k){
     tidyr::expand_grid(
       variable_name = variables[[k]],
@@ -452,12 +451,44 @@ checkVariablesFunctions <- function(variables, estimates, table) {
     )
   }) |>
     dplyr::bind_rows() |>
-    dplyr::inner_join(vt, by = "variable_name") |>
+    dplyr::inner_join(variableTypes(table), by = "variable_name") |>
     dplyr::inner_join(
-      formats |>
-        dplyr::select("variable_type", "estimate_name", "estimate_type"),
+      availableEstimates(fullQuantiles = TRUE) |>
+        dplyr::select(-"estimate_description"),
       by = c("variable_type", "estimate_name")
     )
+
+  # check binary
+  binaryVars <- functions |>
+    dplyr::filter(
+      .data$variable_type %in% c("numeric", "integer") &
+        .data$estimate_name %in% c("count", "percentage")
+    ) |>
+    dplyr::select("variable_name") |>
+    dplyr::distinct() |>
+    dplyr::pull()
+  if (length(binaryVars) > 0) {
+    notBinary <- character()
+    for (binVar in binaryVars) {
+      x <- table |>
+        dplyr::select(dplyr::all_of(binVar)) |>
+        dplyr::distinct() |>
+        dplyr::pull()
+      if (length(x) <= 3) {
+        if (!all(as.numeric(x) %in% c(0, 1, NA))) {
+          notBinary <- c(notBinary, binVar)
+        }
+      } else {
+        notBinary <- c(notBinary, binVar)
+      }
+    }
+    functions <- functions |>
+      dplyr::filter(
+        !.data$variable_name %in% .env$notBinary |
+          !.data$estimate_name %in% c("count", "percentage")
+      )
+  }
+
   return(functions)
 }
 
@@ -574,6 +605,14 @@ checkOtherVariables <- function(otherVariables, cohort, call = rlang::env_parent
     cli::cli_abort(errorMessage, call = call)
   }
   invisible(otherVariables)
+}
+
+correctStrata <- function(strata, overall) {
+  if (length(strata) == 0 | overall) {
+    strata = c(list(character()), strata)
+  }
+  strata <- unique(strata)
+  return(strata)
 }
 
 #' Assert whether a nameStyle contains the needed information.
