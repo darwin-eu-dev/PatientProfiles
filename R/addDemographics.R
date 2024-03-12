@@ -461,6 +461,8 @@ addPriorObservation <- function(x,
 #' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
+#' @param window window to consider events of
+#' @param CompleteInterval If the individuals are in observation for the full window
 #' @param name name of the column to hold the result of the query:
 #' 1 if the individual is in observation, 0 if not
 #'
@@ -477,6 +479,8 @@ addPriorObservation <- function(x,
 addInObservation <- function(x,
                              cdm = attr(x, "cdm_reference"),
                              indexDate = "cohort_start_date",
+                             window = c(0,0),
+                             completeInterval = TRUE,
                              name = "in_observation") {
   ## check for standard types of user error
   personVariable <- checkX(x)
@@ -496,7 +500,11 @@ addInObservation <- function(x,
       sex = FALSE,
       priorObservation = TRUE,
       futureObservation = TRUE
-    ) %>%
+    )
+
+  if(all(window == c(0,0))) {
+
+  x <- x %>%
     dplyr::mutate(
       !!name := as.numeric(dplyr::if_else(
         is.na(.data$prior_observation) | is.na(.data$future_observation) | .data$prior_observation < 0 | .data$future_observation < 0, 0, 1
@@ -505,6 +513,38 @@ addInObservation <- function(x,
     dplyr::select(
       -"prior_observation", -"future_observation"
     )
+
+  } else {
+
+    lower <- window[1]
+    upper <- window[2]
+
+
+    if(completeInterval == T){
+
+  x <- x %>%
+    dplyr::mutate(
+      !!name := as.numeric(dplyr::if_else(
+        is.na(.data$prior_observation) | is.na(.data$future_observation) | .data$prior_observation < 0 + lower |
+          .data$future_observation < 0 + upper, 0, 1
+      ))
+    )
+
+    } else {
+
+      x <- x %>%
+        dplyr::mutate(
+          !!name := as.numeric(dplyr::if_else(
+            is.na(.data$prior_observation) | is.na(.data$future_observation) | .data$prior_observation < 0 + lower &
+              .data$future_observation < 0 + upper, 0, 1
+          ))
+        )
+
+
+
+}
+
+  }
 
   x <- x %>% dplyr::compute()
 
