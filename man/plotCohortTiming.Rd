@@ -21,6 +21,8 @@ plotCohortTiming(
 \arguments{
 \item{result}{A cohort_overlap object.}
 
+\item{type}{.}
+
 \item{cohortNameReference}{Names of the reference cohorts to include.}
 
 \item{cohortNameComparator}{Names of the comparator cohorts to include.}
@@ -41,8 +43,6 @@ overlap.}
 
 \item{uniqueCombinations}{If TRUE, only unique combinations of reference and
 comparator plots will be plotted.}
-
-\item{variableName}{Names of the variable names to include.}
 }
 \value{
 A ggplot2.
