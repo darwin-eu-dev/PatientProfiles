@@ -226,8 +226,14 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
     dplyr::select(dplyr::all_of(strataGroupk)) |>
     dplyr::distinct() |>
     dplyr::mutate("strata_id" = dplyr::row_number())
+  if (strataGroup |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull() == 1) {
+    table <- table |>
+      dplyr::mutate("strata_id" = as.integer(1))
+  } else {
+    table <- table |>
+      dplyr::inner_join(strataGroup, by = strataGroupk, copy = TRUE)
+  }
   table <- table |>
-    dplyr::inner_join(strataGroup, by = strataGroupk, copy = TRUE) |>
     dplyr::select(dplyr::any_of(c(
       "strata_id", "person_id", "subject_id", unique(functions$variable_name)
     ))) |>
