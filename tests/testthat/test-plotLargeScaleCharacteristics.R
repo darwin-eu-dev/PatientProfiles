@@ -79,15 +79,7 @@ test_that("Function returns a ggplot object", {
   ) %>%
     dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
 
-  name <- CDMConnector::inSchema(
-    schema = connectionDetails$write_schema, table = "concept"
-  )
-  DBI::dbWriteTable(
-    conn = connectionDetails$con, name = name, value = concept, overwrite = TRUE
-  )
-
-  cdm$concept <- dplyr::tbl(connectionDetails$con, name)
-
+  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 
 
   test_data <- cdm$cohort_interest %>%
@@ -109,6 +101,7 @@ test_that("Function returns a ggplot object", {
     yAxis = "estimate_value",
     facetVars = c("variable_level"),
     colorVars = c("group_level", "strata_level", "strata_name"),
+    vertical_x = TRUE,
     facetOrder = levels_ordered
   )
   expect_true(ggplot2::is.ggplot(plot))#

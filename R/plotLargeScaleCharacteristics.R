@@ -193,7 +193,7 @@ plotfunction <- function(data,
         group = .data$group_identifier,
         lower = .data$q25,
         upper = .data$q75,
-        middle =.data$median,
+        middle = .data$median,
         ymin = .data$min,
         ymax = .data$max
       ),
@@ -231,9 +231,6 @@ plotfunction <- function(data,
       ) +
       ggplot2::theme_minimal() +
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-
-    p <- ggpubr::ggarrange(p_dates, p_non_dates, nrow = 2)
-
   }
 
 
@@ -250,7 +247,7 @@ plotfunction <- function(data,
 
 
   if (!is.null(facetVars) && length(facetVars) > 0) {
-    if (plotStyle %in% c("scatterplot", "boxplot")) {
+    if (plotStyle == "scatterplot") {
       p <- p + ggplot2::facet_wrap(eval(parse(text = "~ facet_combined")),
         scales = "free_y"
       )
@@ -261,6 +258,28 @@ plotfunction <- function(data,
           vjust = 0.5
         ))
       }
+    } else if (plotStyle == "boxplot") {
+      p_dates <- p_dates + ggplot2::facet_wrap(eval(parse(text = "~ facet_combined")),
+        scales = "free"
+      )
+      if (vertical_x) {
+        p_dates <- p_dates + ggplot2::theme(axis.text.x = ggplot2::element_text(
+          angle = 90,
+          hjust = 1,
+          vjust = 0.5
+        ))
+      }
+      p_non_dates <- p_non_dates + ggplot2::facet_wrap(eval(parse(text = "~ facet_combined")),
+        scales = "free"
+      )
+      if (vertical_x) {
+        p_non_dates <- p_non_dates + ggplot2::theme(axis.text.x = ggplot2::element_text(
+          angle = 90,
+          hjust = 1,
+          vjust = 0.5
+        ))
+      }
+      p <- ggpubr::ggarrange(p_dates, p_non_dates, nrow = 2)
     } else if (plotStyle == "barplot") {
       split_data <- split(df_non_dates, f = df_non_dates[facetVars])
 
