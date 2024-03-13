@@ -489,7 +489,7 @@ summariseCategories <- function(table, functions) {
         dplyr::tally(name = "count") |>
         dplyr::collect() |>
         dplyr::ungroup() |>
-        dplyr::inner_join(den, by = c("strata_id", catVar)) |>
+        dplyr::inner_join(den, by = "strata_id") |>
         dplyr::mutate(
           "percentage" = as.character(100 * .data$count / .data$denominator),
           "count" = as.character(.data$count)
