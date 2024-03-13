@@ -64,6 +64,9 @@ summariseResult <- function(table,
       what = "summariseResult(functions)",
       with = "summariseResult(estimates)"
     )
+    if (missing(estimates)) {
+      estimates <- functions
+    }
   }
 
   # initial checks
@@ -401,7 +404,7 @@ summariseBinary <- function(table, functions) {
   if (length(binNum) > 0) {
     num <- table |>
       dplyr::summarise(dplyr::across(
-        .cols = dplyr::all_of(binVars),
+        .cols = dplyr::all_of(binNum),
         ~ sum(.x, na.rm = TRUE),
         .names = "counts_{.col}"
       )) |>
@@ -411,7 +414,7 @@ summariseBinary <- function(table, functions) {
       dplyr::pull("variable_name")
     res <- num |>
       tidyr::pivot_longer(
-        cols = dplyr::all_of(paste0("counts_", binVars)),
+        cols = dplyr::all_of(paste0("counts_", binNum)),
         names_to = "variable_name",
         values_to = "estimate_value"
       ) |>
@@ -430,12 +433,12 @@ summariseBinary <- function(table, functions) {
         dplyr::collect()
       percentages <- num |>
         tidyr::pivot_longer(
-          cols = dplyr::all_of(paste0("counts_", binVars)),
+          cols = dplyr::all_of(paste0("counts_", binNum)),
           names_to = "variable_name",
           values_to = "numerator"
         ) |>
         dplyr::mutate(
-          "numerator" = substr(.data$numerator, 8, nchar(.data$numerator))
+          "variable_name" = substr(.data$variable_name, 8, nchar(.data$variable_name))
         ) |>
         dplyr::inner_join(
           den |>
@@ -445,7 +448,7 @@ summariseBinary <- function(table, functions) {
               values_to = "denominator"
             ) |>
             dplyr::mutate(
-              "denominator" = substr(.data$denominator, 5, nchar(.data$denominator))
+              "variable_name" = substr(.data$variable_name, 5, nchar(.data$variable_name))
             ),
           by = c("strata_id", "variable_name")
         ) |>
@@ -537,7 +540,7 @@ summariseMissings <- function(table, functions) {
       ) |>
       dplyr::collect() |>
       tidyr::pivot_longer(
-        cols = dplyr::all_of(paste0("cm_", cmVars)),
+        cols = dplyr::all_of(paste0("cm_", mVars)),
         names_to = "variable_name",
         values_to = "count_missing"
       ) |>
