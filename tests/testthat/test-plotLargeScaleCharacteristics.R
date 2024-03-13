@@ -115,7 +115,7 @@ test_that("Function returns a ggplot object", {
 
   levels_ordered <- c("-inf to -366.cohort_1", "-inf to -366.cohort_2",
                       "-365 to -31.cohort_1", "-365 to -31.cohort_2")
-  plot_compare <- plotLargeScaleCharacteristics(
+  plot_multiple <- plotLargeScaleCharacteristics(
     data =  test_data %>% dplyr::filter(group_level  %in% c("cohort_1", "cohort_2")),
     xAxis = "variable_name",
     yAxis = "estimate_value",
@@ -123,4 +123,7 @@ test_that("Function returns a ggplot object", {
     colorVars = c("strata_level", "strata_name"),
     facetOrder = levels_ordered
   )
+
+  expect_true(ggplot2::is.ggplot(plot_multiple))#
+
 })

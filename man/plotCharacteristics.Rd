@@ -8,10 +8,12 @@ plotCharacteristics(
   data,
   xAxis = "variable_name",
   yAxis = "estimate_value",
+  plotStyle = "barplot",
   facetVars = NULL,
   colorVars = NULL,
   facetOrder = NULL,
   colorNames = NULL,
+  vertical_x = FALSE,
   options = list()
 )
 }
@@ -22,6 +24,8 @@ plotCharacteristics(
 
 \item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data}
 
+\item{plotStyle}{boxplot or barplot}
+
 \item{facetVars}{column in data to facet by}
 
 \item{colorVars}{column in data to color by}
@@ -29,6 +33,8 @@ plotCharacteristics(
 \item{facetOrder}{order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars}
 
 \item{colorNames}{A vector or pre-selected color}
+
+\item{vertical_x}{whether to display x axis string vertically}
 
 \item{options}{Other plot options in a list}
 }
