@@ -9,7 +9,8 @@ summariseCohortTiming(
   cohortId = NULL,
   strata = list(),
   restrictToFirstEntry = TRUE,
-  timing = c("min", "q25", "median", "q75", "max", "mean", "sd")
+  timing = c("min", "q25", "median", "q75", "max"),
+  densityEstimates = FALSE
 )
 }
 \arguments{

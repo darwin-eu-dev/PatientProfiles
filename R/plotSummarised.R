@@ -49,30 +49,17 @@ plotCohortOverlap <- function(result,
     visOmopResults::splitGroup()
 
   # add default values
-  cohortNameReference <- defaultColumnSelector(
-    cohortNameReference,
-    x$cohort_name_reference,
-    "cohort_name_reference"
-  )
-  cohortNameComparator <- defaultColumnSelector(
-    cohortNameComparator,
-    x$cohort_name_comparator,
-    "cohort_name_comparator"
-  )
-  variableName <- defaultColumnSelector(
-    variableName,
-    x$variable_name,
-    "variable_name"
-  )
-  strataName <- defaultColumnSelector(
-    strataName,
-    result$strata_name,
-    "strata_name"
-  )
+  # add default values
+  selectors <- defaultColumnSelectors(
+    x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
+            "strata_name" = strataName, "cdm_name" = cdmName, "variable_name" = variableName))
+  cohortNameReference <- selectors$cohort_name_reference
+  cohortNameComparator <- selectors$cohort_name_comparator
+  strataName <- selectors$strata_name
+  cdmName <- selectors$cdm_name
   if (is.null(strataLevel)) {
     strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
   }
-  cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
 
   if (uniqueCombinations) {
     x <- x |>
@@ -220,25 +207,16 @@ plotCohortTiming <- function(result,
     visOmopResults::splitAdditional()
 
   # add default values
-  cohortNameReference <- defaultColumnSelector(
-    cohortNameReference,
-    x$cohort_name_reference,
-    "cohort_name_reference"
-  )
-  cohortNameComparator <- defaultColumnSelector(
-    cohortNameComparator,
-    x$cohort_name_comparator,
-    "cohort_name_comparator"
-  )
-  strataName <- defaultColumnSelector(
-    strataName,
-    result$strata_name,
-    "strata_name"
-  )
+  selectors <- defaultColumnSelectors(
+    x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
+            "strata_name" = strataName, "cdm_name" = cdmName))
+  cohortNameReference <- selectors$cohort_name_reference
+  cohortNameComparator <- selectors$cohort_name_comparator
+  strataName <- selectors$strata_name
+  cdmName <- selectors$cdm_name
   if (is.null(strataLevel)) {
     strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
   }
-  cdmName <- defaultColumnSelector(cdmName, x$cdm_name, "cdm_name")
 
   if (uniqueCombinations) {
     x <- x |>
@@ -300,6 +278,8 @@ plotCohortTiming <- function(result,
 }
 
 getUniqueCombinations <- function(x, order) {
+  dataCohortRef <-  unique(x$cohort_name_reference)
+  order <- order[order %in% dataCohortRef]
   for (i in 2:length(order)) {
     x <- x |>
       dplyr::anti_join(

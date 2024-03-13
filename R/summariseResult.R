@@ -162,7 +162,7 @@ summariseResult <- function(table,
             includeOverall = includeOverallStrata
           ) %>%
           dplyr::mutate(
-            group_name = !!paste0(group[[i]], collapse = " and "),
+            group_name = !!paste0(group[[i]], collapse = " &&& "),
             group_level = !!workingGroupLevels[j]
           ) %>%
           dplyr::select(
@@ -592,7 +592,7 @@ summaryValuesStrata <- function(x,
       dplyr::bind_rows(
         xx %>%
           summaryValues(requiredFunctions) %>%
-          dplyr::mutate(strata_name = paste0(strata[[k]], collapse = " and "))
+          dplyr::mutate(strata_name = paste0(strata[[k]], collapse = " &&& "))
       )
   }
   result <- result %>%
@@ -601,7 +601,7 @@ summaryValuesStrata <- function(x,
 }
 
 uniteStrata <- function(columns,
-                        sepStrataLevel = " and ") {
+                        sepStrataLevel = " &&& ") {
   pasteStr <- paste0(
     "paste0(",
     paste0(
@@ -654,7 +654,7 @@ correctMissing <- function(result) {
 
 arrangeStrata <- function(result, strata) {
   namesStrata <- lapply(strata, function(x) {
-    paste0(x, collapse = " and ")
+    paste0(x, collapse = " &&& ")
   }) %>%
     unlist()
   namesStrata <- c("overall", namesStrata)

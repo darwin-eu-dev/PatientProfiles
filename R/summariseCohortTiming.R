@@ -23,7 +23,8 @@ summariseCohortTiming <- function(cohort,
                                   restrictToFirstEntry = TRUE,
                                   timing = c("min", "q25",
                                              "median","q75",
-                                             "max","mean", "sd")){
+                                             "max"),
+                                  densityEstimates = FALSE){
 
   # validate inputs
   assertClass(cohort, "cohort_table")
@@ -77,7 +78,8 @@ summariseCohortTiming <- function(cohort,
 
   if (nrow(cohort_timings) > 0) {
     cohort_timings <- cohort_timings |>
-      visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator")) |>
+      dplyr::mutate("cohort_name_reference &&& cohort_name_comparator" =
+                      paste0(.data$cohort_name_reference, " &&& ", .data$cohort_name_comparator)) |>
       summariseResult(group = list("cohort_name_reference &&& cohort_name_comparator"),
                       includeOverallGroup = FALSE,
                       strata = strata,
