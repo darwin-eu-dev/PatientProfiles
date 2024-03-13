@@ -95,10 +95,7 @@ addIntersect <- function(x,
     idName <- checkSnakeCase(idName)
   }
 
-  tablePrefix <- paste0(
-    "temp_",
-    c(sample(letters, 5, TRUE), "_") |> paste0(collapse = "")
-  )
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   startTibble <- x
 
@@ -163,7 +160,7 @@ addIntersect <- function(x,
     dplyr::distinct() %>%
     dplyr::inner_join(overlapTable, by = personVariable) %>%
     dplyr::compute(
-      name = paste0(tablePrefix, "individuals"),
+      name = omopgenerics::uniqueTableName(tablePrefix),
       temporary = FALSE,
       overwrite = TRUE
     )
@@ -196,7 +193,7 @@ addIntersect <- function(x,
     }
     resultW <- resultW %>%
       dplyr::compute(
-        name = paste0(tablePrefix, "window"),
+        name = omopgenerics::uniqueTableName(tablePrefix),
         temporary = FALSE,
         overwrite = TRUE
       )
@@ -219,7 +216,7 @@ addIntersect <- function(x,
       if (i == 1) {
         resultCountFlag <- resultCF %>%
           dplyr::compute(
-            name = paste0(tablePrefix, "win_count_flag"),
+            name = omopgenerics::uniqueTableName(tablePrefix),
             temporary = FALSE,
             overwrite = TRUE
           )
@@ -227,7 +224,7 @@ addIntersect <- function(x,
         resultCountFlag <- resultCountFlag |>
           dplyr::union_all(resultCF) |>
           dplyr::compute(
-            name = paste0(tablePrefix, "win_count_flag"),
+            name = omopgenerics::uniqueTableName(tablePrefix),
             temporary = FALSE,
             overwrite = TRUE
           )
@@ -300,7 +297,7 @@ addIntersect <- function(x,
       if (i == 1) {
         resultDateTimeOther <- resultDTO %>%
           dplyr::compute(
-            name = paste0(tablePrefix, "win_date_days"),
+            name = omopgenerics::uniqueTableName(tablePrefix),
             temporary = FALSE,
             overwrite = TRUE
           )
@@ -308,7 +305,7 @@ addIntersect <- function(x,
         resultDateTimeOther <- resultDateTimeOther |>
           dplyr::union_all(resultDTO) |>
           dplyr::compute(
-            name = paste0(tablePrefix, "win_date_days"),
+            name = omopgenerics::uniqueTableName(tablePrefix),
             temporary = FALSE,
             overwrite = TRUE
           )
@@ -344,7 +341,7 @@ addIntersect <- function(x,
         dplyr::all_of(newColCountFlag), ~ dplyr::if_else(is.na(.x), 0, .x)
       )) %>%
       dplyr::compute(
-        name = paste0(tablePrefix, "count_flag"),
+        name = omopgenerics::uniqueTableName(tablePrefix),
         temporary = FALSE,
         overwrite = TRUE
       )
@@ -379,7 +376,7 @@ addIntersect <- function(x,
 
     x <- x %>%
       dplyr::compute(
-        name = paste0(tablePrefix, "date_days"),
+        name = omopgenerics::uniqueTableName(tablePrefix),
         temporary = FALSE,
         overwrite = TRUE
       )
@@ -405,12 +402,17 @@ addIntersect <- function(x,
 
     newTib <- dplyr::tibble(!!id := 1)
     newTib[, cols] <- valk
+    tmpName <- omopgenerics::uniqueTableName(tablePrefix)
+    cdm <- omopgenerics::insertTable(cdm = cdm, name = tmpName, table = newTib)
 
     x <- x |>
       dplyr::mutate(!!id := 1) |>
-      dplyr::inner_join(newTib, copy = TRUE, by = id) |>
+      dplyr::inner_join(cdm[[tmpName]], by = id) |>
+      dplyr::select(!dplyr::all_of(id)) |>
       dplyr::compute(
-        name = paste0(tablePrefix, "_val"), temporary = FALSE, overwrite = TRUE
+        name = omopgenerics::uniqueTableName(tablePrefix),
+        temporary = FALSE,
+        overwrite = TRUE
       )
   }
 
