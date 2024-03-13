@@ -25,6 +25,9 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/plot.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/authors.html</loc>
   </url>
   <url>
@@ -146,6 +149,12 @@
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotCharacteristics.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotLargeScaleCharacteristics.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/reexports.html</loc>

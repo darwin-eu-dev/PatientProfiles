@@ -31,6 +31,7 @@ occurrences, a flag of presence, a certain date and/or the time difference"><!--
     <a class="dropdown-item" href="../articles/addCohortIntersections.html">Get cohort intersections</a>
     <a class="dropdown-item" href="../articles/addPatientCharacteristics.html">Get patients' characteristics</a>
     <a class="dropdown-item" href="../articles/ExampleAnalysis.html">Using PatientProfiles for analysis</a>
+    <a class="dropdown-item" href="../articles/plot.html">Plot Characteristics or large scale characteristics</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -175,15 +176,15 @@ required parameters</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> addCohortIntersectCount()</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> addCohortIntersectDate()</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> addCohortIntersectDays()</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_007_1710186489&gt; [2 x 12]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_007_1710354900&gt; [2 x 12]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 2020-01-01        2020-04-01     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    1          1 2020-06-01        2020-08-01     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: count_cohort_2_0_to_inf &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   count_cohort_1_0_to_inf &lt;dbl&gt;, flag_cohort_1_0_to_inf &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   flag_cohort_2_0_to_inf &lt;dbl&gt;, date_cohort_1_0_to_inf &lt;date&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: flag_cohort_2_0_to_inf &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   count_cohort_2_0_to_inf &lt;dbl&gt;, count_cohort_1_0_to_inf &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   flag_cohort_1_0_to_inf &lt;dbl&gt;, date_cohort_1_0_to_inf &lt;date&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   date_cohort_2_0_to_inf &lt;date&gt;, days_cohort_1_0_to_inf &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   days_cohort_2_0_to_inf &lt;dbl&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
