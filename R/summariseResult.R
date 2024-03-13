@@ -64,10 +64,6 @@ summariseResult <- function(table,
       what = "summariseResult(functions)",
       with = "summariseResult(estimates)"
     )
-    if (missing(estimates)) {
-      estimates <- functions
-    }
-    rm(functions)
   }
 
   # initial checks
@@ -106,6 +102,12 @@ summariseResult <- function(table,
     }
     if (!is.list(estimates)) {
       estimates <- list(estimates)
+    }
+    if (!is.list(group)) {
+      group <- list(group)
+    }
+    if (!is.list(strata)) {
+      strata <- list(strata)
     }
     checkStrata(group, table)
     checkStrata(strata, table)
@@ -207,7 +209,7 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
   result$binary <- summariseBinary(table, functions)
 
   # summariseCategories
-  result$categories <- summariseCategories(table, functions)
+  #result$categories <- summariseCategories(table, functions)
 
   # summariseMissings
   result$missings <- summariseMissings(table, functions)
@@ -332,7 +334,7 @@ summariseBinary <- function(table, functions) {
         "estimate_type" = "integer"
       )
     if (length(binDen) > 0) {
-      strata <- colnames(num)[!colnames(num) %in% binVars]
+      strata <- colnames(num)[!colnames(num) %in% paste0("counts_", binVars)]
       den <- table |>
         dplyr::summarise(dplyr::across(
           .cols = dplyr::all_of(binDen),
@@ -383,22 +385,49 @@ summariseBinary <- function(table, functions) {
 }
 
 summariseMissings <- function(table, functions) {
-  funs <- functions |>
-    dplyr::filter(
-      .data$estimate_name %in% c("count_missing", "percentage_missing")
-    )
-  missingVars <- funs |> dplyr::pull("variable_name") |> unique()
-  if (length(missingVars) > 0) {
-    countMissing <- table |>
-      dplyr::summarise(dplyr::across(
-        .cols = dplyr::all_of(missingVars),
-        ~ sum(.x, na.rm = TRUE),
-        .names = "cm_{.col}"
-      ))
+  result <- list()
+
+  # counts
+  mVars <- functions |>
+    dplyr::filter(.data$estimate_name %in% c("count_missing", "percentage_missing")) |>
+    dplyr::pull("variable_name")
+  if (length(mVars) > 0) {
+    result <- table |>
+      dplyr::summarise(
+        dplyr::across(
+          .cols = dplyr::all_of(mVars),
+          ~ sum(is.na(.x), na.rm = TRUE),
+          .names = "cm_{.col}"
+        ),
+        "den" = dplyr::n()
+      ) |>
+      dplyr::collect() |>
+      tidyr::pivot_longer(
+        cols = dplyr::all_of(paste0("cm_", cmVars)),
+        names_to = "variable_name",
+        values_to = "count_missing"
+      ) |>
+      dplyr::mutate("percentage_missing" = 100*.data$count_missing/.data$den) |>
+      dplyr::select(-"den") |>
+      tidyr::pivot_longer(
+        cols = c("count_missing", "percentage_missing"),
+        names_to = "estimate_name",
+        values_to = "estimate_value"
+      ) |>
+      dplyr::mutate(
+        "variable_level" = NA_character_,
+        "estimate_value" = as.character(.data$estimate_value)
+      ) |>
+      dplyr::inner_join(
+        functions |>
+          dplyr::filter(.data$estimate_name %in% c("count_missing", "percentage_missing")) |>
+          dplyr::select("variable_name", "estimate_name", "estimate_type"),
+        by = c("variable_name", "estimate_name")
+      )
   } else {
-    res <- NULL
+    result <- NULL
   }
-  return(res)
+  return(result)
 }
 
 orderVariables <- function(res, cols, est) {
