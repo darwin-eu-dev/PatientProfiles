@@ -51,3 +51,7 @@ rsconnect/
 /Meta/
 docs
 inst/doc
+.Rproj.user
+.Rdata
+.DS_Store
+.quarto

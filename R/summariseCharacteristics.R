@@ -396,13 +396,35 @@ summariseCharacteristics <- function(cohort,
 
   # detect other variables
   x <- variableTypes(cohort %>% dplyr::select(dplyr::all_of(otherVariables)))
+  datesVariables <- x %>%
+    dplyr::filter(.data$variable_type == "date") %>%
+    dplyr::pull("variable_name")
+  numericVariables <- x %>%
+    dplyr::filter(.data$variable_type %in% c("numeric", "integer")) %>%
+    dplyr::pull("variable_name")
+  binaryVariables <- numericVariables[
+    lapply(numericVariables, function(x) {
+      cohort |>
+        dplyr::select(dplyr::all_of(x)) |>
+        dplyr::distinct() |>
+        dplyr::pull() |>
+        binaryVariable()
+    }) |>
+      unlist()
+  ]
+  numericVariables  <- numericVariables[!numericVariables %in% binaryVariables]
+  categoricalVariables <- x %>%
+    dplyr::filter(.data$variable_type == "categorical") %>%
+    dplyr::pull("variable_name")
   variables <- variables |>
     updateVariables(
-      date = x %>% dplyr::filter(.data$variable_type == "date") %>% dplyr::pull("variable"),
-      numeric = x %>% dplyr::filter(.data$variable_type == "numeric") %>% dplyr::pull("variable"),
-      binary = x %>% dplyr::filter(.data$variable_type == "binary") %>% dplyr::pull("variable"),
-      categorical = x %>% dplyr::filter(.data$variable_type == "categorical") %>% dplyr::pull("variable")
+      date = datesVariables,
+      numeric = numericVariables,
+      binary = binaryVariables,
+      categorical = categoricalVariables
     )
+
+  variables <- variables[lengths(variables) > 0]
 
   cli::cli_alert_info("summarising data")
   # summarise results
@@ -411,7 +433,8 @@ summariseCharacteristics <- function(cohort,
       group = list("cohort_name"),
       strata = strata,
       variables = variables,
-      functions = functions[names(variables)]
+      estimates = functions[names(variables)],
+      verbose = FALSE
     ) %>%
     addCdmName(cdm = cdm) %>%
     dplyr::mutate(result_type = "summarised_characteristics")

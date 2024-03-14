@@ -83,7 +83,6 @@ test_that("groups and strata", {
       dplyr::pull("estimate_value") == "1000"
   )
 
-
   result <- cdm$condition_occurrence %>%
     addDemographics(
       indexDate = "condition_start_date",
@@ -96,19 +95,19 @@ test_that("groups and strata", {
     dplyr::select("strata_name") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c("overall", "age_group and sex")))
+    c("overall", "age_group &&& sex")))
   expect_true(all(result %>%
     dplyr::select("strata_level") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
     c(
       "overall",
-      "0 to 30 and Female",
-      "0 to 30 and Male",
-      "31 to 60 and Female",
-      "31 to 60 and Male",
-      "None and Female",
-      "None and Male"
+      "0 to 30 &&& Female",
+      "0 to 30 &&& Male",
+      "31 to 60 &&& Female",
+      "31 to 60 &&& Male",
+      "None &&& Female",
+      "None &&& Male"
     )))
 
   result <- cdm$condition_occurrence %>%
@@ -122,19 +121,19 @@ test_that("groups and strata", {
     dplyr::select("group_name") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c("overall", "age_group and sex")))
+    c("overall", "age_group &&& sex")))
   expect_true(all(result %>%
     dplyr::select("group_level") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
     c(
       "overall",
-      "0 to 30 and Female",
-      "0 to 30 and Male",
-      "31 to 60 and Female",
-      "31 to 60 and Male",
-      "None and Female",
-      "None and Male"
+      "0 to 30 &&& Female",
+      "0 to 30 &&& Male",
+      "31 to 60 &&& Female",
+      "31 to 60 &&& Male",
+      "None &&& Female",
+      "None &&& Male"
     )))
 
   CDMConnector::cdm_disconnect(cdm)
@@ -221,51 +220,45 @@ test_that("obscure", {
   # minCellCount = 1
   s <- summariseResult(x) |>
     suppress(minCellCount = 1)
-  # expect_true(nrow(s) == 29)
-  # expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<1") == 0)
-  # expect_true(sum(is.na(s$estimate_value)) == 0)
+  expect_true(nrow(s) == 34)
+  expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<1") == 0)
+  expect_true(sum(is.na(s$estimate_value)) == 0)
 
   # minCellCount = 2
   s <- summariseResult(x) |>
     suppress(minCellCount = 2)
-  # expect_true(nrow(s) == 29)
-  # expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<2") == 4)
-  # expect_true(sum(is.na(s$estimate_value)) == 4)
+  expect_true(nrow(s) == 34)
+  expect_true(sum(is.na(s$estimate_value)) == 8)
 
   # minCellCount = 3
   s <- summariseResult(x) |>
     suppress(minCellCount = 3)
-  # expect_true(nrow(s) == 29)
-  # expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<3") == 8)
-  # expect_true(sum(is.na(s$estimate_value)) == 8)
+  expect_true(nrow(s) == 34)
+  expect_true(sum(is.na(s$estimate_value)) == 16)
 
   # minCellCount = 4
   s <- summariseResult(x) |>
     suppress(minCellCount = 4)
-  # expect_true(nrow(s) == 29)
-  # expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<4") == 9)
-  # expect_true(sum(is.na(s$estimate_value)) == 9)
+  expect_true(nrow(s) == 34)
+  expect_true(sum(is.na(s$estimate_value)) == 23)
 
   # minCellCount = 5
   s <- summariseResult(x) |>
     suppress(minCellCount = 5)
-  # expect_true(nrow(s) == 29)
-  # expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<5") == 9)
-  # expect_true(sum(is.na(s$estimate_value)) == 9)
+  expect_true(nrow(s) == 34)
+  expect_true(sum(is.na(s$estimate_value)) == 23)
 
   # minCellCount = 6
   s <- summariseResult(x) |>
     suppress(minCellCount = 6)
-  # expect_true(nrow(s) == 29)
-  # expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<6") == 9)
-  # expect_true(sum(is.na(s$estimate_value)) == 9)
+  expect_true(nrow(s) == 34)
+  expect_true(sum(is.na(s$estimate_value)) == 23)
 
   # minCellCount = 7
   s <- summariseResult(x) |>
     suppress(minCellCount = 7)
-  # expect_true(nrow(s) == 29)
-  # expect_true(sum(s$estimate_value[!is.na(s$estimate_value)] == "<7") == 1)
-  # expect_true(sum(is.na(s$estimate_value)) == 28)
+  expect_true(nrow(s) == 34)
+  expect_true(sum(is.na(s$estimate_value)) == 34)
 })
 
 test_that("test empty cohort", {
@@ -345,13 +338,13 @@ test_that("misisng counts", {
     categorical = c("sex")
   )
   functions <- list(
-    numeric = c("median", "q25", "q75", "missing"),
+    numeric = c("median", "q25", "q75", "count_missing", "percentage_missing"),
     categorical = c("count", "percentage")
   )
   expect_no_error(
     result <- summariseResult(
       cohort, strata = list("sex"), variables = variables,
-      functions = functions
+      estimates = functions
     )
   )
   expected <- dplyr::tribble(
@@ -429,7 +422,7 @@ test_that("data is ordered", {
   # first numbers, age, sex, prior_history, number_visits
   variables <- unique(result$variable_name)
   expect_identical(variables, c(
-    "number subjects", "number records", "age", "sex", "prior_history",
+    "number records", "number subjects", "age", "sex", "prior_history",
     "number_visits"
   ))
   # variable levels appear by order
@@ -469,7 +462,7 @@ test_that("data is ordered", {
   # first numbers, age, sex, prior_history, number_visits
   variables <- unique(result$variable_name)
   expect_identical(variables, c(
-    "number subjects", "number records", "age", "sex", "prior_history",
+    "number records", "number subjects", "age", "sex", "prior_history",
     "number_visits"
   ))
   # variable levels appear by order

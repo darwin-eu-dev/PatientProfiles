@@ -47,3 +47,24 @@ test_that("addInObservation, parameters", {
 
   expect_true(all(result1 %>% dplyr::collect() |> dplyr::arrange(condition_occurrence_id, condition_start_date) %>% dplyr::select(observ) %>% dplyr::pull() == 1))
 })
+
+test_that("addInObservation, window", {
+
+  cdm <- mockPatientProfiles()
+
+  expect_true(all(
+    cdm$cohort1 |> addInObservation(window = c(-5055, 5046)) |> dplyr::pull(in_observation) == c(0, 1)
+  ))
+  expect_true(all(
+    cdm$cohort1 |> addInObservation(window = c(-5054, 5046)) |> dplyr::pull(in_observation) == c(0, 1)
+  ))
+
+  expect_true(all(
+    cdm$cohort1 |> addInObservation(window = c(-5055, 30042)) |> dplyr::pull(in_observation) == c(0, 0)
+  ))
+  expect_true(all(
+    cdm$cohort1 |> addInObservation(window = c(-5055, 30042), completeInterval = F) |> dplyr::pull(in_observation) == c(0, 1)
+  ))
+
+}
+)

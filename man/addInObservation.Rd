@@ -8,6 +8,8 @@ addInObservation(
   x,
   cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
+  window = c(0, 0),
+  completeInterval = TRUE,
   name = "in_observation"
 )
 }
@@ -18,6 +20,10 @@ addInObservation(
 
 \item{indexDate}{Variable in x that contains the date to compute the
 observation flag.}
+
+\item{window}{window to consider events of}
+
+\item{completeInterval}{If the individuals are in observation for the full window}
 
 \item{name}{name of the column to hold the result of the query:
 1 if the individual is in observation, 0 if not}
