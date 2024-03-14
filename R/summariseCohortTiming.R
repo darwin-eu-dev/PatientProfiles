@@ -9,7 +9,7 @@
 #' cohort will be considered. If FALSE all entries per individual will be
 #' considered
 #' @param timing Summary statistics for timing.
-#'  @param density Get data for density plot.
+#' @param density Get data for density plot.
 #'
 #' @return A summarised result
 #' @export
@@ -88,13 +88,13 @@ summariseCohortTiming <- function(cohort,
 
   timingsResult <- omopgenerics::emptySummarisedResult()
 
-  if (nrow(cohort_timings) > 0) {
+  if (nrow(cohort_timings) > 0 & length(timing) > 0) {
     timingsResult <- cohort_timings |>
       summariseResult(group = list(c("cohort_name_reference", "cohort_name_comparator")),
                       includeOverallGroup = FALSE,
                       strata = strata,
                       variables = list(diff_days = "diff_days"),
-                      functions = list(diff_days = timing)) |>
+                      estimates = list(diff_days = timing)) |>
       dplyr::mutate(result_type = "cohort_timing",
                     cdm_name = CDMConnector::cdmName(cdm))
   }

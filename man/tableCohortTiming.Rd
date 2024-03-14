@@ -10,11 +10,12 @@ tableCohortTiming(
   cohortNameComparator = NULL,
   strataName = NULL,
   strataLevel = NULL,
-  splitStrata = TRUE,
   cdmName = NULL,
+  variableName = c("number records", "number subjects", "diff_days"),
   formatEstimateName = c(N = "<count>", `Median [Q25 - Q75]` =
     "<median> [<q25> - <q75>]", Range = "<min> - <max>"),
   header = character(0),
+  splitStrata = TRUE,
   type = "gt",
   minCellCount = 5,
   .options = list()
@@ -31,14 +32,14 @@ tableCohortTiming(
 
 \item{strataLevel}{Names of the strata levels to include.}
 
-\item{splitStrata}{If TRUE strata name-levle columns will be splitted.}
-
 \item{cdmName}{Name of the databases to include.}
 
 \item{formatEstimateName}{Whether to include the number of subjects.}
 
 \item{header}{Vector with names and column names to use in the header of gt
 and flextable.}
+
+\item{splitStrata}{If TRUE strata name-levle columns will be splitted.}
 
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", or "tibble".}

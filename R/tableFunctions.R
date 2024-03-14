@@ -374,6 +374,7 @@ tableCohortOverlap  <- function(result,
 #' @param strataLevel Names of the strata levels to include.
 #' @param splitStrata If TRUE strata name-levle columns will be splitted.
 #' @param cdmName Name of the databases to include.
+#' @param variableName Name of the variable names to include.
 #' @param formatEstimateName Whether to include the number of subjects.
 #' @param header Vector with names and column names to use in the header of gt
 #' and flextable.

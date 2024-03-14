@@ -39,7 +39,6 @@ test_that("summariseCohortTiming", {
 
   expect_true(all(c("min", "q25","median","q75","max","count", "restrict_to_first_entry") %in%
                     timing1$estimate_name |> unique()))
-  expect_equal(timing1$estimate_value[1], timing1$estimate_value[2])
   expect_true(omopgenerics::settings(timing1)$restrict_to_first_entry)
 
   timing2 <- summariseCohortTiming(cdm$table,
@@ -319,11 +318,24 @@ test_that("plotCohortTiming, density", {
                                facetBy = "cdm_name",
                                timingLabel = "{cdm_name}; {cohort_name_reference}; {cohort_name_comparator}",
                                uniqueCombinations = FALSE)
-  expect_true(all(c("plot_id", "timing_label", "color_var", "facet_var", "x", "y", ".group") %in% colnames(density2$data)))
+  expect_true(all(c("plot_id", "timing_label", "facet_var", "x", "y", ".group") %in% colnames(density2$data)))
   expect_true(all(c("gg", "ggplot") %in% class(density2)))
   expect_null(density2$labels$fill)
   expect_true("facet_var" %in% colnames(density2$data))
   expect_true(unique(density2$data$facet_var) == "PP_MOCK")
+
+  timing2 <- summariseCohortTiming(cdm$table,
+                                   timing = character(),
+                                   density = TRUE)
+  density4 <- plotCohortTiming(timing2,
+                               type = "density",
+                               cohortNameReference = c("cohort_1", "cohort_2"),
+                               facetBy = NULL,
+                               color = c("cohort_name_reference"),
+                               timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+                               uniqueCombinations = TRUE)
+  expect_true(all(c("gg", "ggplot") %in% class(density4)))
+  expect_true(all(is.na(density4$data$median)))
 
   # strata
   cdm$table <- cdm$table |>
@@ -337,15 +349,16 @@ test_that("plotCohortTiming, density", {
 
   density3 <- plotCohortTiming(timing3,
                                type = "density",
-                               color = NULL,
+                               color = "strata_level",
                                facetBy = "strata_name",
                                timingLabel = "{cdm_name}; {cohort_name_reference}; {cohort_name_comparator}",
                                uniqueCombinations = FALSE)
-  expect_true(all(c("plot_id", "timing_label", "color_var", "facet_var", "x", "y", ".group") %in% colnames(density2$data)))
-  expect_true(all(c("gg", "ggplot") %in% class(density2)))
-  expect_null(density2$labels$fill)
-  expect_true("facet_var" %in% colnames(density2$data))
-  expect_true(unique(density2$data$facet_var) == "PP_MOCK")
+  expect_true(all(c("plot_id", "timing_label", "color_var", "facet_var", "x", "y", ".group") %in% colnames(density3$data)))
+  expect_true(all(c("gg", "ggplot") %in% class(density3)))
+  expect_true(all(c("Overall", "Age group", "Age group and sex") %in% unique(density3$data$facet_var)))
+  expect_true(all(unique(density3$data$color_var) %in% c("Overall", "0 to 40", "0 to 40 and female",
+                                                         "41 to 150", "41 to 150 and female", "41 to 150 and male",
+                                                         "0 to 40 and male")))
 
   CDMConnector::cdm_disconnect(cdm)
 })

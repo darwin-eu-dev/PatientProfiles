@@ -148,11 +148,13 @@ test_that("tableCohortOverlap", {
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(tibbleResult1)))
   expect_true(all(c("Age group", "Sex") %in% colnames(tibbleResult1)))
 
-  tibbleResult2 <-  tableCohortOverlap(overlap3, type = "tibble",
+  tibbleResult2 <-  tableCohortOverlap(overlap3,
+                                       type = "tibble",
                                        strataName = "age_group",
-                                       strataLevel = c("0 to 40", "41 to 100"),
+                                       strataLevel = c("0 to 40", "41 to 150"),
                                        splitStrata = FALSE)
   expect_true(all(c("Strata name", "Strata level") %in% colnames(tibbleResult2)))
+  expect_true(all(unique(tibbleResult2$`Strata level`) %in% c("0 to 40", "41 to 150")))
 
   expect_warning(
     tibbleResult2 <-  tableCohortOverlap(overlap, type = "tibble", cohortNameReference = c("hola"))
