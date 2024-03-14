@@ -24,8 +24,8 @@
 plotCohortOverlap <- function(result,
                               cohortNameReference = NULL,
                               cohortNameComparator = NULL,
-                              strataName = "overall",
-                              strataLevel = "overall",
+                              strataName = NULL,
+                              strataLevel = NULL,
                               cdmName = NULL,
                               variableName = "number subjects",
                               facetBy = NULL,
@@ -191,8 +191,8 @@ plotCohortTiming <- function(result,
                              type = "boxplot",
                              cohortNameReference = NULL,
                              cohortNameComparator = NULL,
-                             strataName = "overall",
-                             strataLevel = "overall",
+                             strataName = NULL,
+                             strataLevel = NULL,
                              cdmName = NULL,
                              facetBy = NULL,
                              color = c("cohort_name_reference", "cohort_name_comparator"),
@@ -226,13 +226,15 @@ plotCohortTiming <- function(result,
   strataName <- selectors$strata_name
   cdmName <- selectors$cdm_name
   if (is.null(strataLevel)) {
-    strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
+      strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
   }
 
   if (uniqueCombinations) {
     x <- x |>
       getUniqueCombinations(order = sort(unique(x$cohort_name_reference)))
   }
+
+  # prepare data
   x <- x |>
     dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
     dplyr::filter(.data$strata_name %in% .env$strataName) |>
@@ -245,8 +247,8 @@ plotCohortTiming <- function(result,
                                     "cohort_name_reference", "cohort_name_comparator")),
                     ~stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", .x))))) |>
     dplyr::arrange(dplyr::across(
-      dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator"))),
-      desc) |>
+      dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator")),
+      dplyr::desc)) |>
     dplyr::mutate(timing_label = glue::glue(.env$timingLabel))
 
   # Plotting
@@ -270,8 +272,10 @@ plotCohortTiming <- function(result,
                      upper = .data$q75, ymax = .data$q100),
         stat = "identity"
       ) +
-      ggplot2::ylab("Timing") +
-      ggplot2::xlab("")
+      ggplot2::scale_x_discrete(labels = ggplot2::label_wrap_gen(15)) +
+      ggplot2::ylab("Time (days)") +
+      ggplot2::xlab("") +
+      ggplot2::theme(legend.title = ggplot2::element_blank())
     # facet
     if (!is.null(facetBy)) {
       gg$data <- gg$data |>
@@ -280,9 +284,11 @@ plotCohortTiming <- function(result,
       gg <- gg +
         ggplot2::facet_wrap(ggplot2::vars(.data$facet_var))
     }
+
   } else if (type == "density") {
     x <- assertDensityEstimates(x)
-    # vertical position
+
+    # vertical positions of the denisty plots
     if (!is.null(facetBy)) {
       x <- x |>
         tidyr::unite("facet_var",
@@ -293,22 +299,15 @@ plotCohortTiming <- function(result,
       x <- x |>
         tidyr::unite("y_position_id",
                      dplyr::all_of(y_id_expression), remove = FALSE, sep = "; ") |>
-        dplyr::distinct(.data$plot_id) |>
-        dplyr::mutate(y_pos = dplyr::row_number()) |>
-        dplyr::inner_join(
-          x |>
-            tidyr::unite("y_position_id",
-                         dplyr::all_of(y_id_expression), remove = FALSE, sep = "; "),
-          by = c("y_position_id")
-        )
+        dplyr::group_by(.data$y_position_id) |>
+        dplyr::mutate(y_pos = dplyr::cur_group_id()) |>
+        dplyr::ungroup()
     } else {
       x <- x |>
         dplyr::group_by(plot_id) |>
         dplyr::mutate(y_pos = dplyr::cur_group_id()) |>
         dplyr::ungroup()
     }
-
-    # change y positions
     x <- x |>
       dplyr::mutate(height = max(.data$y)) |>
       dplyr::group_by(.data$plot_id) |>
@@ -316,24 +315,26 @@ plotCohortTiming <- function(result,
         y_pos = .data$y_pos*.data$height - .data$height,
         y = .data$y + .data$y_pos,
         timing_label = paste0(timing_label, "\n (median = ", .data$median, ")")
-      ) |>
-      dplyr::ungroup()
+      )
 
-    if (is.null(color)) {
+    # plot
+    if (!is.null(color)) {
       x <- x |>
-        tidyr::unite("group",
+        tidyr::unite("color_var",
                      dplyr::all_of(.env$color), remove = FALSE, sep = "; ")
       gg <- x |>
-        ggplot2::ggplot(ggplot2::aes(x = x, y = y, color = group, fill = group))
+        ggplot2::ggplot(ggplot2::aes(x = .data$x, y = .data$y,
+                                     group = .data$plot_id,
+                                     color = .data$color_var,
+                                     fill = .data$color_var))
     } else {
       gg <- x |>
-        ggplot2::ggplot(ggplot2::aes(x = x, y = y))
+        ggplot2::ggplot(ggplot2::aes(x = .data$x, y = .data$y, group = .data$plot_id))
     }
 
     gg <- gg +
       ggplot2::geom_line() +
       ggplot2::geom_polygon(alpha = 0.5) +
-      ggplot2::geom_vline(xintercept = 0, linetype = "dashed") +
       ggplot2::geom_hline(yintercept = unique(x$y_pos), color = "gray") +
       ggplot2::geom_line(data = x |>
                            dplyr::group_by(plot_id) |>
@@ -343,8 +344,8 @@ plotCohortTiming <- function(result,
                            dplyr::select(-x) |>
                            dplyr::rename("x" = "median"),
                          linewidth = 0.8) +
-      ggplot2::scale_y_continuous(breaks = x$y_pos + x$height/2,
-                                  labels = x$timing_label) +
+      ggplot2::geom_vline(xintercept = 0, linetype = "dashed") +
+      ggplot2::scale_y_continuous(breaks = x$y_pos + x$height/2, labels = x$timing_label) +
       ggplot2::theme_minimal() +
       ggplot2::xlab("Time (days)") +
       ggplot2::ylab("") +
@@ -431,7 +432,7 @@ assertDensityEstimates <- function(x) {
       estimate_name = dplyr::if_else(
         .data$estimate_name == "median", "q50", .data$estimate_name
       ),
-      plot_id = paste0(.data$cohort_name_reference, "; ", .data$cohort_name_comparator, "; ",
+      plot_id = paste0(.data$cdm_name, "; ", .data$cohort_name_reference, "; ", .data$cohort_name_comparator, "; ",
                   .data$strata_name, "; ", .data$strata_level)
     ) |>
     dplyr::filter(.data$estimate_name %in% c("x", "y", "q50")) |>

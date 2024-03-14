@@ -4,7 +4,7 @@ test_that("summariseCohortOverlap", {
     gender_concept_id = 8532,
     year_of_birth = runif(n=20, min=1950, max=2000),
     month_of_birth = runif(n=20, min=1, max=12),
-    day_of_birth = runif(n=20, min=1, max=30),
+    day_of_birth = runif(n=20, min=1, max=28),
     race_concept_id= 0,
     ethnicity_concept_id = 0
   )
@@ -85,7 +85,7 @@ test_that("tableCohortOverlap", {
     gender_concept_id = 8532,
     year_of_birth = runif(n=20, min=1950, max=2000),
     month_of_birth = runif(n=20, min=1, max=12),
-    day_of_birth = runif(n=20, min=1, max=30),
+    day_of_birth = runif(n=20, min=1, max=28),
     race_concept_id= 0,
     ethnicity_concept_id = 0
   )
@@ -168,7 +168,7 @@ test_that("plotCohortOverlap", {
     gender_concept_id = 8532,
     year_of_birth = runif(n=20, min=1950, max=1980),
     month_of_birth = runif(n=20, min=1, max=12),
-    day_of_birth = runif(n=20, min=1, max=30),
+    day_of_birth = runif(n=20, min=1, max=28),
     race_concept_id= 0,
     ethnicity_concept_id = 0
   )

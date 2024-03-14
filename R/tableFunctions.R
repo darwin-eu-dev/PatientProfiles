@@ -397,14 +397,16 @@ tableCohortTiming <- function(result,
                               cohortNameComparator = NULL,
                               strataName = NULL,
                               strataLevel = NULL,
-                              splitStrata = TRUE,
                               cdmName = NULL,
+                              variableName = c("number records", "number subjects",
+                                               "diff_days"),
                               formatEstimateName = c(
                                 "N" = "<count>",
                                 "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
                                 "Range" = "<min> - <max>"
                               ),
                               header = character(0),
+                              splitStrata = TRUE,
                               type = "gt",
                               minCellCount = 5,
                               .options = list()) {
@@ -452,10 +454,11 @@ tableCohortTiming <- function(result,
   # add default values
   selectors <- defaultColumnSelectors(
     x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
-            "strata_name" = strataName, "cdm_name" = cdmName))
+            "strata_name" = strataName, "cdm_name" = cdmName, "variable_name" = variableName))
   cohortNameReference <- selectors$cohort_name_reference
   cohortNameComparator <- selectors$cohort_name_comparator
   strataName <- selectors$strata_name
+  variableName <- selectors$variable_name
   cdmName <- selectors$cdm_name
   if (is.null(strataLevel)) {
     strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
@@ -466,7 +469,7 @@ tableCohortTiming <- function(result,
     dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
     dplyr::filter(.data$strata_name %in% .env$strataName) |>
     dplyr::filter(.data$strata_level %in% .env$strataLevel) |>
-    dplyr::filter(.data$variable_name == "diff_days") |>
+    dplyr::filter(.data$variable_name %in% .env$variableName) |>
     dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
     dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
     dplyr::select(!c("result_id", "result_type", "package_name", "package_version",

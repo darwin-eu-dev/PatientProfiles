@@ -86,6 +86,8 @@ summariseCohortTiming <- function(cohort,
                                                        interval = "day")) |>
     dplyr::collect()
 
+  timingsResult <- omopgenerics::emptySummarisedResult()
+
   if (nrow(cohort_timings) > 0) {
     timingsResult <- cohort_timings |>
       summariseResult(group = list(c("cohort_name_reference", "cohort_name_comparator")),
@@ -93,12 +95,11 @@ summariseCohortTiming <- function(cohort,
                       strata = strata,
                       variables = list(diff_days = "diff_days"),
                       functions = list(diff_days = timing)) |>
-      dplyr::filter(!grepl("number", .data$variable_name)) |>
       dplyr::mutate(result_type = "cohort_timing",
                     cdm_name = CDMConnector::cdmName(cdm))
   }
 
-  if (density) {
+  if (density & nrow(cohort_timings) > 0) {
     forDensity <- cohort_timings |>
       visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator"))
     forDensity <- lapply(c(list(character(0)), strata), function(levels, data = forDensity) {
@@ -133,50 +134,52 @@ summariseCohortTiming <- function(cohort,
         }
       }
     }
-    timingsResult <- timingsResult |>
-      dplyr::union_all(
-        timingDensity |>
-          dplyr::bind_rows() |>
-          dplyr::mutate(
-            result_id = as.integer(1),
-            cdm_name = CDMConnector::cdmName(cdm),
-            result_type = "cohort_timing",
-            package_name = "PatientProfiles",
-            package_version = as.character(utils::packageVersion("PatientProfiles")),
-            group_name = "cohort_name_reference &&& cohort_name_comparator",
-            variable_name = "density",
-            variable_level = NA_character_,
-            estimate_type = "numeric",
-            additional_name ="overall",
-            additional_level = "overall"
-          )
-      ) |>
-      dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result")))
+      timingsResult <- timingsResult |>
+        dplyr::union_all(
+          timingDensity |>
+            dplyr::bind_rows() |>
+            dplyr::mutate(
+              result_id = as.integer(1),
+              cdm_name = CDMConnector::cdmName(cdm),
+              result_type = "cohort_timing",
+              package_name = "PatientProfiles",
+              package_version = as.character(utils::packageVersion("PatientProfiles")),
+              group_name = "cohort_name_reference &&& cohort_name_comparator",
+              variable_name = "density",
+              variable_level = NA_character_,
+              estimate_type = "numeric",
+              additional_name ="overall",
+              additional_level = "overall"
+            )
+        ) |>
+        dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result")))
   }
 
   # add settings
-  timingsResult <- timingsResult |>
-    dplyr::union_all(
-      dplyr::tibble(
-        result_id = as.integer(1),
-        "cdm_name" = omopgenerics::cdmName(cdm),
-        "result_type" = "cohort_timing",
-        "package_name" = "PatientProfiles",
-        "package_version" = as.character(utils::packageVersion("PatientProfiles")),
-        "group_name" = "overall",
-        "group_level" = "overall",
-        "strata_name" = "overall",
-        "strata_level" = "overall",
-        "variable_name" = "settings",
-        "variable_level" = NA_character_,
-        "estimate_name" = "restrict_to_first_entry",
-        "estimate_type" = "logical",
-        "estimate_value" = as.character(restrictToFirstEntry),
-        "additional_name" = "overall",
-        "additional_level" = "overall"
-      )
-    ) |>
-    omopgenerics::newSummarisedResult()
+  if (nrow(timingsResult) > 0) {
+    timingsResult <- timingsResult |>
+      dplyr::union_all(
+        dplyr::tibble(
+          result_id = as.integer(1),
+          "cdm_name" = omopgenerics::cdmName(cdm),
+          "result_type" = "cohort_timing",
+          "package_name" = "PatientProfiles",
+          "package_version" = as.character(utils::packageVersion("PatientProfiles")),
+          "group_name" = "overall",
+          "group_level" = "overall",
+          "strata_name" = "overall",
+          "strata_level" = "overall",
+          "variable_name" = "settings",
+          "variable_level" = NA_character_,
+          "estimate_name" = "restrict_to_first_entry",
+          "estimate_type" = "logical",
+          "estimate_value" = as.character(restrictToFirstEntry),
+          "additional_name" = "overall",
+          "additional_level" = "overall"
+        )
+      ) |>
+      omopgenerics::newSummarisedResult()
+  }
 
   return(timingsResult)
 }
