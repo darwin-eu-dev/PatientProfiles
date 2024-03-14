@@ -70,4 +70,4 @@ reference:
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCohortName|addCdmName|addCategories|variableTypes|available|detectVariables|endDateColumn|sourceConceptIdColumn|standardConceptIdColumn|startDateColumn|mockPatientProfiles|gt|suppress|assert")
+  - matches("addCohortName|addCdmName|addCategories|variableTypes|available|endDateColumn|sourceConceptIdColumn|standardConceptIdColumn|startDateColumn|mockPatientProfiles|gt|suppress|assert")

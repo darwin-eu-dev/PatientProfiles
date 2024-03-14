@@ -10,10 +10,6 @@ test_that("test variableTypes", {
     "numeric", "date", "numeric", "integer", "numeric", "categorical",
     "categorical", "logical"
   )))
-  expect_true(identical(detectVariables(x, "numeric"), c("x1", "x3", "x5")))
-  expect_true(identical(detectVariables(x, "date"), "x2"))
-  expect_true(identical(detectVariables(x, "integer"), "x4"))
-  expect_true(identical(detectVariables(x, "categorical"), c("x6", "x7")))
 })
 
 test_that("test functions", {

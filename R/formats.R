@@ -174,50 +174,13 @@ availableEstimates <- function(variableType = NULL, fullQuantiles = FALSE){
   x |> dplyr::filter(.data$variable_type %in% .env$variableType)
 }
 
-#' Detect automatically variables with a certain classification
-#'
-#' @param table Tibble
-#' @param variableType Classification of interest, choice between
-#' "numeric", "date", "binary" and "categorical"
-#' @param exclude Variables to exclude
-#'
-#' @return Variables in x with the desired classification
-#'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#' x <- dplyr::tibble(
-#'   person_id = c(1, 2),
-#'   start_date = as.Date(c("2020-05-02", "2021-11-19")),
-#'   asthma = c(0, 1)
-#' )
-#' detectVariables(x, "numeric")
-#' }
-#'
-#' @export
-#'
-detectVariables <- function(table,
-                            variableType,
-                            exclude = c(
-                              "person_id", "subject_id", "cohort_definition_id",
-                              "cohort_name", "strata_name", "strata_level"
-                            )) {
-  # initial checks
-  checkTable(table)
-  checkVariableType(variableType)
-  checkExclude(exclude)
-
-  # get variable types
-  variables <- variableTypes(table) %>%
-    dplyr::filter(
-      .data$variable_type == .env$variableType
-    ) %>%
-    dplyr::pull("variable_name")
-
-  # eliminate excluded variables
-  variables <- variables[!(variables %in% exclude)]
-
-  return(variables)
+binaryVariable <- function(x) {
+  u <- unique(x)
+  if (length(u) <= 3) {
+    u <- as.character(u)
+    return(all(u %in% c("0", "1", NA_character_)))
+  }
+  return(FALSE)
 }
 
 #' @noRd

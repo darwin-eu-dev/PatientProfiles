@@ -239,7 +239,7 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
       dplyr::mutate("strata_id" = as.integer(1))
   } else {
     table <- table |>
-      dplyr::inner_join(strataGroup, by = strataGroupk, copy = TRUE)
+      dplyr::inner_join(strataGroup, by = strataGroupk)
   }
   table <- table |>
     dplyr::select(dplyr::any_of(c(
@@ -266,6 +266,7 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
 
   # format group strata
   strataGroup <- strataGroup |>
+    dplyr::collect() |>
     visOmopResults::uniteGroup(cols = groupk, keep = TRUE) |>
     visOmopResults::uniteStrata(cols = stratak, keep = TRUE) |>
     dplyr::select(
@@ -331,6 +332,11 @@ summariseNumeric <- function(table, functions) {
       .data$variable_type %in% c("date", "numeric", "integer") &
         !grepl("count|percentage", .data$estimate_name)
     )
+
+  if (nrow(funs) == 0) {
+    return(NULL)
+  }
+
   res <- list()
   uniqueEstimates <- funs$estimate_name |> unique()
   uniqueVariables <- funs$variable_name |> unique()
@@ -439,7 +445,7 @@ summariseBinary <- function(table, functions) {
       den <- table |>
         dplyr::summarise(dplyr::across(
           .cols = dplyr::all_of(binDen),
-          ~ sum(!is.na(.x), na.rm = TRUE),
+          ~ sum(as.integer(!is.na(.x)), na.rm = TRUE),
           .names = "den_{.col}"
         )) |>
         dplyr::collect()
