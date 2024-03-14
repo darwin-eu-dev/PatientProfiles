@@ -78,7 +78,7 @@ test_that("groups and strata", {
       dplyr::filter(
         group_name == "overall" & group_level == "overall" &
           strata_name == "overall" & strata_level == "overall" &
-          variable_name == "number_subjects"
+          variable_name == "number subjects"
       ) %>%
       dplyr::pull("estimate_value") == "1000"
   )
