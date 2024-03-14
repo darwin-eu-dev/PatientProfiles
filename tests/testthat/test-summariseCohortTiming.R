@@ -307,23 +307,45 @@ test_that("plotCohortTiming, density", {
                                timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
                                uniqueCombinations = TRUE)
 
-  expect_true(all(c("q0", "q25", "q50", "q75", "q100") %in% colnames(density1$data)))
-  expect_true(all(c("Cohort 1", "Cohort 2") %in% boxplot1$data$cohort_name_reference))
-  expect_true(all(c("Cohort 2", "Cohort 3", "Cohort 4") %in% boxplot1$data$cohort_name_comparator))
-  expect_false("Cohort 1" %in% boxplot1$data$cohort_name_comparator)
-  expect_true(all(c("gg", "ggplot") %in% class(boxplot1)))
-  expect_true(boxplot1$labels$fill == "group")
-  expect_true(unique(boxplot1$data$facet_var) == "PP_MOCK")
+  expect_true(all(c("plot_id", "timing_label", "color_var", "x", "y", ".group") %in% colnames(density1$data)))
+  expect_true(all(c("gg", "ggplot") %in% class(density1)))
+  expect_true(density1$labels$fill == "color_var")
+  expect_false("facet_var" %in% colnames(density1$data))
+  expect_true(all(unique(density1$data$color_var) %in% c("Cohort 1", "Cohort 2")))
 
-  boxplot2 <- plotCohortTiming(timing1,
-                               cohortNameReference = c("cohort_1", "cohort_2"),
+  density2 <- plotCohortTiming(timing1,
+                               type = "density",
                                color = NULL,
-                               timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+                               facetBy = "cdm_name",
+                               timingLabel = "{cdm_name}; {cohort_name_reference}; {cohort_name_comparator}",
                                uniqueCombinations = FALSE)
-  expect_true(all(c("Cohort 1", "Cohort 2") %in% boxplot2$data$cohort_name_reference))
-  expect_true(all(c("Cohort 1", "Cohort 2", "Cohort 3", "Cohort 4") %in% boxplot2$data$cohort_name_comparator))
-  expect_true(all(c("gg", "ggplot") %in% class(boxplot2)))
-  expect_false(any(c("facet_var", "group") %in% colnames(boxplot2$data)))
+  expect_true(all(c("plot_id", "timing_label", "color_var", "facet_var", "x", "y", ".group") %in% colnames(density2$data)))
+  expect_true(all(c("gg", "ggplot") %in% class(density2)))
+  expect_null(density2$labels$fill)
+  expect_true("facet_var" %in% colnames(density2$data))
+  expect_true(unique(density2$data$facet_var) == "PP_MOCK")
+
+  # strata
+  cdm$table <- cdm$table |>
+    addAge(ageGroup = list(c(0, 40), c(41, 150))) |>
+    addSex() |>
+    dplyr::compute(name = "table", temporary = FALSE) |>
+    omopgenerics::newCohortTable()
+  timing3 <- summariseCohortTiming(cdm$table,
+                                   strata = list("age_group", c("age_group", "sex")),
+                                   density = TRUE)
+
+  density3 <- plotCohortTiming(timing3,
+                               type = "density",
+                               color = NULL,
+                               facetBy = "strata_name",
+                               timingLabel = "{cdm_name}; {cohort_name_reference}; {cohort_name_comparator}",
+                               uniqueCombinations = FALSE)
+  expect_true(all(c("plot_id", "timing_label", "color_var", "facet_var", "x", "y", ".group") %in% colnames(density2$data)))
+  expect_true(all(c("gg", "ggplot") %in% class(density2)))
+  expect_null(density2$labels$fill)
+  expect_true("facet_var" %in% colnames(density2$data))
+  expect_true(unique(density2$data$facet_var) == "PP_MOCK")
 
   CDMConnector::cdm_disconnect(cdm)
 })
