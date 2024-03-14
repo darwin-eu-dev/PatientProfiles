@@ -204,6 +204,10 @@ summariseResult <- function(table,
     }
   }
 
+  # TO REMOVE
+  result$variable_name[result$variable_name == "number_subjects"] <- "number subjects"
+  result$variable_name[result$variable_name == "number_records"] <- "number records"
+
   # format summarised_result
   result <- result |>
     dplyr::mutate(
@@ -269,7 +273,8 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
   result <- result |>
     dplyr::bind_rows() |>
     dplyr::inner_join(strataGroup, by = "strata_id") |>
-    dplyr::select(-"strata_id")
+    dplyr::select(-"strata_id") |>
+    dplyr::arrange(.data$strata_level)
 
   return(result)
 }
@@ -288,29 +293,35 @@ countSubjects <- function(x) {
   } else if (j) {
     personVariable <- "subject_id"
   }
+  result <- list()
+  result$record <- x %>%
+    dplyr::summarise(
+      "estimate_value" = dplyr::n(),
+      .groups = "drop"
+    ) %>%
+    dplyr::collect() |>
+    dplyr::mutate(
+      "variable_name" = "number_records"
+    )
   if (i | j) {
-    result <- x %>%
+    result$subject <- x %>%
       dplyr::summarise(
-        "number_records" = dplyr::n(),
-        "number_subjects" = dplyr::n_distinct(.data[[personVariable]]),
+        "estimate_value" = dplyr::n_distinct(.data[[personVariable]]),
         .groups = "drop"
       ) %>%
       dplyr::collect() |>
-      tidyr::pivot_longer(
-        cols = c("number_records", "number_subjects"),
-        names_to = "variable_name",
-        values_to = "estimate_value"
-      ) |>
       dplyr::mutate(
-        "estimate_type" = "integer",
-        "estimate_name" = "count",
-        "variable_level" = NA_character_,
-        "estimate_value" = as.character(.data$estimate_value)
+        "variable_name" = "number_subjects"
       )
-    return(result)
-  } else {
-    return(NULL)
   }
+  result <- dplyr::bind_rows(result) |>
+    dplyr::mutate(
+      "estimate_type" = "integer",
+      "estimate_name" = "count",
+      "variable_level" = NA_character_,
+      "estimate_value" = as.character(.data$estimate_value)
+    )
+  return(result)
 }
 
 summariseNumeric <- function(table, functions) {
@@ -527,13 +538,14 @@ summariseMissings <- function(table, functions) {
   # counts
   mVars <- functions |>
     dplyr::filter(.data$estimate_name %in% c("count_missing", "percentage_missing")) |>
-    dplyr::pull("variable_name")
+    dplyr::pull("variable_name") |>
+    unique()
   if (length(mVars) > 0) {
     result <- table |>
       dplyr::summarise(
         dplyr::across(
           .cols = dplyr::all_of(mVars),
-          ~ sum(is.na(.x), na.rm = TRUE),
+          ~ sum(as.integer(is.na(.x)), na.rm = TRUE),
           .names = "cm_{.col}"
         ),
         "den" = dplyr::n()
@@ -552,6 +564,7 @@ summariseMissings <- function(table, functions) {
         values_to = "estimate_value"
       ) |>
       dplyr::mutate(
+        "variable_name" = substr(.data$variable_name, 4, nchar(.data$variable_name)),
         "variable_level" = NA_character_,
         "estimate_value" = as.character(.data$estimate_value)
       ) |>

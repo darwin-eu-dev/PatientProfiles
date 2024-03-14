@@ -100,8 +100,7 @@ assertClassification <- function(x) {
 #'
 availableFunctions <- function(variableType = NULL) {
   lifecycle::deprecate_warn("0.7.0", what = "availableFunctions()", with = "availableEstimates()")
-
-  availableEstimates()
+  availableEstimates(variableType = variableType)
 }
 
 #' Show the available estimates that can be used for the different variable_type
