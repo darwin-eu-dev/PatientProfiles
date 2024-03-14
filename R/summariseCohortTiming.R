@@ -9,6 +9,7 @@
 #' cohort will be considered. If FALSE all entries per individual will be
 #' considered
 #' @param timing Summary statistics for timing.
+#'  @param density Get data for density plot.
 #'
 #' @return A summarised result
 #' @export
@@ -24,7 +25,7 @@ summariseCohortTiming <- function(cohort,
                                   timing = c("min", "q25",
                                              "median","q75",
                                              "max"),
-                                  densityEstimates = FALSE){
+                                  density = FALSE){
 
   # validate inputs
   assertClass(cohort, "cohort_table")
@@ -63,13 +64,22 @@ summariseCohortTiming <- function(cohort,
       dplyr::ungroup()
   }
 
+  strataCols <- unlist(strata)
   # should we use addCohortIntersectDate instead to avoid potentially large number of rows?
   cohort_timings <- cdm[[name]] |>
     dplyr::rename("cohort_name_reference" = "cohort_name") |>
-    dplyr::inner_join(cdm[[name]] |>
-                        dplyr::rename_with(~ paste0(.x, "_comparator"),
-                                           .cols = c("cohort_definition_id", "cohort_start_date", "cohort_end_date", "cohort_name")),
-                      by = c("subject_id", unique(unlist(strata)))) |>
+    dplyr::select(dplyr::all_of(c(strataCols, "cohort_name_reference",
+                                "cohort_start_date", "cohort_end_date",
+                                "subject_id"))) |>
+    dplyr::inner_join(
+      cdm[[name]] |>
+        dplyr::rename_with(~ paste0(.x, "_comparator"),
+                           .cols = c("cohort_definition_id", "cohort_start_date",
+                                     "cohort_end_date", "cohort_name")) |>
+        dplyr::select(dplyr::all_of(c(strataCols, "cohort_name_comparator",
+                                    "cohort_start_date_comparator", "cohort_end_date_comparator",
+                                    "subject_id"))),
+                      by = c("subject_id", unique(strataCols))) |>
     dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) %>%
     dplyr::mutate(diff_days = !!CDMConnector::datediff("cohort_start_date",
                                                        "cohort_start_date_comparator",
@@ -77,7 +87,7 @@ summariseCohortTiming <- function(cohort,
     dplyr::collect()
 
   if (nrow(cohort_timings) > 0) {
-    cohort_timings <- cohort_timings |>
+    timingsResult <- cohort_timings |>
       dplyr::mutate("cohort_name_reference &&& cohort_name_comparator" =
                       paste0(.data$cohort_name_reference, " &&& ", .data$cohort_name_comparator)) |>
       summariseResult(group = list("cohort_name_reference &&& cohort_name_comparator"),
@@ -85,9 +95,109 @@ summariseCohortTiming <- function(cohort,
                       strata = strata,
                       variables = list(diff_days = "diff_days"),
                       functions = list(diff_days = timing)) |>
+      dplyr::filter(!grepl("number", .data$estimate_name)) |>
       dplyr::mutate(result_type = "cohort_timing",
                     cdm_name = CDMConnector::cdmName(cdm))
   }
 
-  return(cohort_timings)
+  if (density) {
+    forDensity <- cohort_timings |>
+      visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator"))
+    forDensity <- lapply(c(list(character(0)), strata), function(levels, data = forDensity) {
+      data |> visOmopResults::uniteStrata(cols = levels)
+      }) |>
+      dplyr::bind_rows() |>
+      dplyr::select(!dplyr::all_of(c(strataCols)))
+
+    groups <- unique(forDensity$group_level)
+    timingDensity <- NULL
+    for (gLevel in groups) {
+      # filter group comparison
+      gData <- forDensity |> dplyr::filter(.data$group_level == .env$gLevel)
+      strataNames <- unique(gData$strata_name)
+      for (sName in strataNames) {
+        # filter strata name
+        sNameData <- gData |> dplyr::filter(.data$strata_name == .env$sName)
+        strataLevels <- unique(sNameData$strata_level)
+        # compute density for each strata level
+        for (sLevel in strataLevels) {
+          sLevelData <- sNameData |> dplyr::filter(.data$strata_level == .env$sLevel)
+          if (nrow(sLevelData) > 2)
+            timingDensity <- timingDensity |>
+              dplyr::union_all(
+                getDensityData(sLevel, sLevelData) |>
+                  dplyr::mutate(
+                    group_level = gLevel,
+                    strata_name = sName
+                  )
+              )
+        }
+      }
+    }
+    timingsResult <- timingsResult |>
+      dplyr::union_all(
+        timingDensity |>
+          dplyr::bind_rows() |>
+          dplyr::mutate(
+            result_id = as.integer(1),
+            cdm_name = CDMConnector::cdmName(cdm),
+            result_type = "cohort_timing",
+            package_name = "PatientProfiles",
+            package_version = as.character(utils::packageVersion("PatientProfiles")),
+            group_name = "cohort_name_reference &&& cohort_name_comparator",
+            variable_name = "density",
+            variable_level = NA_character_,
+            estimate_type = "numeric",
+            additional_name ="overall",
+            additional_level = "overall"
+          )
+      ) |>
+      dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result")))
+  }
+
+  # add settings
+  timingsResult <- timingsResult |>
+    dplyr::union_all(
+      dplyr::tibble(
+        result_id = as.integer(1),
+        "cdm_name" = omopgenerics::cdmName(cdm),
+        "result_type" = "cohort_timing",
+        "package_name" = "PatientProfiles",
+        "package_version" = as.character(utils::packageVersion("PatientProfiles")),
+        "group_name" = "overall",
+        "group_level" = "overall",
+        "strata_name" = "overall",
+        "strata_level" = "overall",
+        "variable_name" = "settings",
+        "variable_level" = NA_character_,
+        "estimate_name" = "restrict_to_first_entry",
+        "estimate_type" = "logical",
+        "estimate_value" = as.character(restrictToFirstEntry),
+        "additional_name" = "overall",
+        "additional_level" = "overall"
+      )
+    ) |>
+    omopgenerics::newSummarisedResult()
+
+  return(timingsResult)
+}
+
+
+getDensityData <- function(sLevel, data) {
+  dStrata <- data$diff_days[data$strata_level == sLevel]
+  d <- stats::density(dStrata)
+  densityResult <- dplyr::tibble(
+    estimate_name = "x",
+    estimate_value = as.character(d$x)
+  ) |>
+    dplyr::union_all(
+      dplyr::tibble(
+        estimate_name = "y",
+        estimate_value = as.character(d$y)
+      )
+    ) |>
+    dplyr::mutate(
+      strata_level = sLevel
+    )
+  return(densityResult)
 }

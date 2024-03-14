@@ -38,8 +38,9 @@ test_that("summariseCohortTiming", {
                colnames(timing1))
 
   expect_true(all(timing1$estimate_name |> unique() %in%
-                    c("min", "q25","median","q75","max","count")))
+                    c("min", "q25","median","q75","max","count", "restrict_to_first_entry")))
   expect_equal(timing1$estimate_value[1], timing1$estimate_value[2])
+  expect_true(omopgenerics::settings(timing1)$restrict_to_first_entry)
 
   timing2 <- summariseCohortTiming(cdm$table,
                                     restrictToFirstEntry = FALSE,
@@ -49,7 +50,17 @@ test_that("summariseCohortTiming", {
                colnames(timing2))
   expect_false(timing2$estimate_value[5] == timing2$estimate_value[6])
   expect_true(all(timing2$estimate_name |> unique() %in%
-                    c("min","max","count")))
+                    c("min","max","count", "restrict_to_first_entry")))
+
+  timing3 <- summariseCohortTiming(cdm$table,
+                                   restrictToFirstEntry = FALSE,
+                                   timing = character(),
+                                   density = TRUE)
+  expect_true(all(c("density", "settings") %in%
+                    unique(timing3$variable_name)))
+  expect_true(all(c("x", "y") %in%
+                    unique(timing3$estimate_name)))
+  expect_true("overall" == unique(timing3$strata_level))
 
   ## Strata and cohortId----
   cdm$table <- cdm$table |>
@@ -57,18 +68,20 @@ test_that("summariseCohortTiming", {
     addSex() |>
     dplyr::compute(name = "table", temporary = FALSE) |>
     omopgenerics::newCohortTable()
-  timing3 <- summariseCohortTiming(cdm$table,
+  timing4 <- summariseCohortTiming(cdm$table,
                                    strata = list("age_group", c("age_group", "sex")))
   expect_true(all(c("overall", "age_group", "age_group &&& sex") %in%
-                    unique(timing3$strata_name)))
+                    unique(timing4$strata_name)))
 
-  timing4 <- summariseCohortTiming(cdm$table,
+  # add density tests
+
+  timing5 <- summariseCohortTiming(cdm$table,
                                    cohortId = 1)
-  expect_true(nrow(timing4) == 0)
-
-  expect_warning(timing5 <- summariseCohortTiming(cdm$table,
-                                                  cohortId = 5:7))
   expect_true(nrow(timing5) == 0)
+
+  expect_warning(timing6 <- summariseCohortTiming(cdm$table,
+                                                  cohortId = 5:7))
+  expect_true(nrow(timing6) == 0)
 
   CDMConnector::cdm_disconnect(cdm)
 
@@ -163,7 +176,7 @@ test_that("plotCohortTiming", {
 
   timing1 <- summariseCohortTiming(cdm$table,
                                    restrictToFirstEntry = TRUE)
-  boxplot1 <- plotCohortOverlap(timing1,
+  boxplot1 <- plotCohortTiming(timing1,
                                 cohortNameReference = c("cohort_1", "cohort_2"),
                                 facetBy = "cdm_name",
                                 color = "timingLabel",
@@ -177,7 +190,7 @@ test_that("plotCohortTiming", {
   expect_true(boxplot1$labels$fill == "group")
   expect_true(unique(boxplot1$data$facet_var) == "PP_MOCK")
 
-  boxplot2 <- plotCohortOverlap(timing1,
+  boxplot2 <- plotCohortTiming(timing1,
                                 cohortNameReference = c("cohort_1", "cohort_2"),
                                 color = NULL,
                                 timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",

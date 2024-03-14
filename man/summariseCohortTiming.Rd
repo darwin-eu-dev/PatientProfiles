@@ -10,7 +10,7 @@ summariseCohortTiming(
   strata = list(),
   restrictToFirstEntry = TRUE,
   timing = c("min", "q25", "median", "q75", "max"),
-  densityEstimates = FALSE
+  density = FALSE
 )
 }
 \arguments{
@@ -26,7 +26,8 @@ Must be column names in the cohort table provided.}
 cohort will be considered. If FALSE all entries per individual will be
 considered}
 
-\item{timing}{Summary statistics for timing.}
+\item{timing}{Summary statistics for timing.
+@param density Get data for density plot.}
 }
 \value{
 A summarised result
