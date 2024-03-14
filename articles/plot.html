@@ -73,7 +73,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Plot Characteristics or large scale characteristics</h1>
             
-            <h4 data-toc-skip class="date">2024-03-13</h4>
+            <h4 data-toc-skip class="date">2024-03-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/PatientProfiles/blob/HEAD/vignettes/plot.Rmd" class="external-link"><code>vignettes/plot.Rmd</code></a></small>
       <div class="d-none name"><code>plot.Rmd</code></div>
@@ -255,8 +255,8 @@ create a mock data.</p>
 <span><span class="va">emptyCohort</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/date.html" class="external-link">date</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/date.html" class="external-link">date</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span></span>
 <span>  dus_cohort <span class="op">=</span> <span class="va">dus_cohort</span>, cohort1 <span class="op">=</span> <span class="va">emptyCohort</span>,</span>
@@ -296,24 +296,19 @@ create a mock data.</p>
 <pre><code><span><span class="co">## <span style="color: #00BBBB;">ℹ</span> adding cohort intersect columns for table: medication</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #00BBBB;">ℹ</span> adding cohort intersect columns for table: comorbidities</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #00BBBB;">ℹ</span> summarising data</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: There was 1 warning in `dplyr::summarise()`.</span></span>
+<pre><code><span><span class="co">## Warning: There were 2 warnings in `dplyr::summarise()`.</span></span>
+<span><span class="co">## The first warning was:</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> In argument: `dplyr::across(...)`.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> In group 1: `strata_level = "overall"`.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> In group 2: `strata_id = 2`.</span></span>
 <span><span class="co">## Caused by warning in `base::min()`:</span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> no non-missing arguments to min; returning Inf</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: There was 1 warning in `dplyr::summarise()`.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> In argument: `dplyr::across(...)`.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> In group 1: `strata_level = "overall"`.</span></span>
-<span><span class="co">## Caused by warning in `base::max()`:</span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> no non-missing arguments to max; returning -Inf</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: <span style="color: #BBBB00;">!</span> `result_id` column is missing, please add it as it is</span></span>
-<span><span class="co">## a compulsory column.</span></span></code></pre>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> no non-missing arguments to min; returning Inf</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #00BB00;">✔</span> summariseCharacteristics finished!</span></span></code></pre>
 <p>Now we show barplot example by setting plotStyle = “barplot” in
 <code>plotCharacteristics</code>. Similar to previous function, user can
 define axes, facetVars and colorVars. Currently, barplot is only
 plotting percentage.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span>,</span>
 <span>    xAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
@@ -325,7 +320,7 @@ plotting percentage.</p>
 <p><img src="plot_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <p>User can plot boxplot based on q25 q75 median min max in data, using
 <code>plotCharacteristics</code> and set plotStyle = “boxplot”.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span>,</span>
 <span>    xAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
