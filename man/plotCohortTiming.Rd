@@ -13,7 +13,7 @@ plotCohortTiming(
   strataLevel = "overall",
   cdmName = NULL,
   facetBy = NULL,
-  color = "timingLabel",
+  color = c("cohort_name_reference", "cohort_name_comparator"),
   timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
   uniqueCombinations = TRUE
 )
@@ -21,7 +21,8 @@ plotCohortTiming(
 \arguments{
 \item{result}{A cohort_overlap object.}
 
-\item{type}{.}
+\item{type}{Type of desired formatted table, possibilities are "boxplot" and
+"density".}
 
 \item{cohortNameReference}{Names of the reference cohorts to include.}
 

@@ -47,7 +47,7 @@ Suggests:
     DiagrammeRsvg,
     DBI,
     gt,
-    flextable
+    flextable,
     ggpubr
 Imports: 
     magrittr,
@@ -59,7 +59,6 @@ Imports:
     rlang,
     cli,
     stringr,
-    gt,
     omopgenerics (>= 0.1.2),
     visOmopResults (>= 0.1.0),
     lifecycle

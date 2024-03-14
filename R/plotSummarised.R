@@ -165,7 +165,8 @@ plotCohortOverlap <- function(result,
 #' Plot cohort_overlap objects.
 #'
 #' @param result A cohort_overlap object.
-#' @param type .
+#' @param type Type of desired formatted table, possibilities are "boxplot" and
+#' "density".
 #' @param cohortNameReference Names of the reference cohorts to include.
 #' @param cohortNameComparator Names of the comparator cohorts to include.
 #' @param strataName Names of the strata names to include.
