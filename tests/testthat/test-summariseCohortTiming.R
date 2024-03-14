@@ -74,14 +74,22 @@ test_that("summariseCohortTiming", {
                     unique(timing4$strata_name)))
 
   # add density tests
-
   timing5 <- summariseCohortTiming(cdm$table,
-                                   cohortId = 1)
-  expect_true(nrow(timing5) == 0)
+                                   strata = list("age_group", c("age_group", "sex")),
+                                   timing = character(),
+                                   density = TRUE)
+  timing5 <- timing5 |> dplyr::filter(.data$variable_name != "settings")
+  expect_true(all(unique(timing5$estimate_name[timing5$strata_name == "age_group &&& sex"]) %in% c("x", "y")))
+  expect_true(all(unique(timing5$estimate_name[timing5$strata_name == "overall"]) %in% c("x", "y")))
+  expect_true(all(unique(timing5$estimate_name[timing5$strata_name == "age_group"]) %in% c("x", "y")))
 
-  expect_warning(timing6 <- summariseCohortTiming(cdm$table,
-                                                  cohortId = 5:7))
+  timing6 <- summariseCohortTiming(cdm$table,
+                                   cohortId = 1)
   expect_true(nrow(timing6) == 0)
+
+  expect_warning(timing7 <- summariseCohortTiming(cdm$table,
+                                                  cohortId = 5:7))
+  expect_true(nrow(timing7) == 0)
 
   CDMConnector::cdm_disconnect(cdm)
 
@@ -141,7 +149,7 @@ test_that("tableCohortTiming", {
 
 })
 
-test_that("plotCohortTiming", {
+test_that("plotCohortTiming, boxplot", {
   person <- dplyr::tibble(
     person_id = 1:20,
     gender_concept_id = 8532,
@@ -195,6 +203,69 @@ test_that("plotCohortTiming", {
                                 color = NULL,
                                 timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
                                 uniqueCombinations = FALSE)
+  expect_true(all(c("Cohort 1", "Cohort 2") %in% boxplot2$data$cohort_name_reference))
+  expect_true(all(c("Cohort 1", "Cohort 2", "Cohort 3", "Cohort 4") %in% boxplot2$data$cohort_name_comparator))
+  expect_true(all(c("gg", "ggplot") %in% class(boxplot2)))
+  expect_false(any(c("facet_var", "group") %in% colnames(boxplot2$data)))
+
+  CDMConnector::cdm_disconnect(cdm)
+})
+
+test_that("plotCohortTiming, density", {
+  person <- dplyr::tibble(
+    person_id = 1:20,
+    gender_concept_id = 8532,
+    year_of_birth = runif(n=20, min=1950, max=2000),
+    month_of_birth = runif(n=20, min=1, max=12),
+    day_of_birth = runif(n=20, min=1, max=30),
+    race_concept_id= 0,
+    ethnicity_concept_id = 0
+  )
+
+  table <- dplyr::tibble(
+    cohort_definition_id = c(rep(1, 15), rep(2, 10), rep(3, 15), rep(4, 5)),
+    subject_id = c(sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5),
+                   sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5)),
+    cohort_start_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
+                                  rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
+                                  rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5))),
+    cohort_end_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
+                                rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
+                                rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5)))
+  )
+
+  obs <- dplyr::tibble(
+    observation_period_id = 1:20,
+    person_id = 1:20,
+    observation_period_start_date = as.Date("1930-01-01"),
+    observation_period_end_date =  as.Date("2025-01-01"),
+    period_type_concept_id = NA
+  )
+
+  cdm <- mockPatientProfiles(person = person, observation_period = obs, table = table)
+
+  timing1 <- summariseCohortTiming(cdm$table,
+                                   density = TRUE)
+  boxplot1 <- plotCohortTiming(timing1,
+                               type = "density",
+                               cohortNameReference = c("cohort_1", "cohort_2"),
+                               facetBy = "cdm_name",
+                               color = "timingLabel",
+                               timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+                               uniqueCombinations = TRUE)
+  expect_true(all(c("q0", "q25", "q50", "q75", "q100") %in% colnames(boxplot1$data)))
+  expect_true(all(c("Cohort 1", "Cohort 2") %in% boxplot1$data$cohort_name_reference))
+  expect_true(all(c("Cohort 2", "Cohort 3", "Cohort 4") %in% boxplot1$data$cohort_name_comparator))
+  expect_false("Cohort 1" %in% boxplot1$data$cohort_name_comparator)
+  expect_true(all(c("gg", "ggplot") %in% class(boxplot1)))
+  expect_true(boxplot1$labels$fill == "group")
+  expect_true(unique(boxplot1$data$facet_var) == "PP_MOCK")
+
+  boxplot2 <- plotCohortTiming(timing1,
+                               cohortNameReference = c("cohort_1", "cohort_2"),
+                               color = NULL,
+                               timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+                               uniqueCombinations = FALSE)
   expect_true(all(c("Cohort 1", "Cohort 2") %in% boxplot2$data$cohort_name_reference))
   expect_true(all(c("Cohort 1", "Cohort 2", "Cohort 3", "Cohort 4") %in% boxplot2$data$cohort_name_comparator))
   expect_true(all(c("gg", "ggplot") %in% class(boxplot2)))

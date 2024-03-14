@@ -88,14 +88,12 @@ summariseCohortTiming <- function(cohort,
 
   if (nrow(cohort_timings) > 0) {
     timingsResult <- cohort_timings |>
-      dplyr::mutate("cohort_name_reference &&& cohort_name_comparator" =
-                      paste0(.data$cohort_name_reference, " &&& ", .data$cohort_name_comparator)) |>
-      summariseResult(group = list("cohort_name_reference &&& cohort_name_comparator"),
+      summariseResult(group = list(c("cohort_name_reference", "cohort_name_comparator")),
                       includeOverallGroup = FALSE,
                       strata = strata,
                       variables = list(diff_days = "diff_days"),
                       functions = list(diff_days = timing)) |>
-      dplyr::filter(!grepl("number", .data$estimate_name)) |>
+      dplyr::filter(!grepl("number", .data$variable_name)) |>
       dplyr::mutate(result_type = "cohort_timing",
                     cdm_name = CDMConnector::cdmName(cdm))
   }
@@ -122,7 +120,7 @@ summariseCohortTiming <- function(cohort,
         # compute density for each strata level
         for (sLevel in strataLevels) {
           sLevelData <- sNameData |> dplyr::filter(.data$strata_level == .env$sLevel)
-          if (nrow(sLevelData) > 2)
+          if (nrow(sLevelData) > 2) {
             timingDensity <- timingDensity |>
               dplyr::union_all(
                 getDensityData(sLevel, sLevelData) |>
@@ -131,6 +129,7 @@ summariseCohortTiming <- function(cohort,
                     strata_name = sName
                   )
               )
+          }
         }
       }
     }
