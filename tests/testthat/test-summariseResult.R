@@ -422,7 +422,7 @@ test_that("data is ordered", {
   # first numbers, age, sex, prior_history, number_visits
   variables <- unique(result$variable_name)
   expect_identical(variables, c(
-    "number subjects", "number records", "age", "sex", "prior_history",
+    "number records", "number subjects", "age", "sex", "prior_history",
     "number_visits"
   ))
   # variable levels appear by order
@@ -462,7 +462,7 @@ test_that("data is ordered", {
   # first numbers, age, sex, prior_history, number_visits
   variables <- unique(result$variable_name)
   expect_identical(variables, c(
-    "number subjects", "number records", "age", "sex", "prior_history",
+    "number records", "number subjects", "age", "sex", "prior_history",
     "number_visits"
   ))
   # variable levels appear by order

@@ -144,6 +144,7 @@ summariseResult <- function(table,
     }
 
     # only required variables
+    colOrder <- colnames(table)
     table <- table |>
       dplyr::select(dplyr::any_of(unique(c(
         unlist(strata), unlist(group), functions$variable_name, "person_id",
@@ -190,7 +191,7 @@ summariseResult <- function(table,
           table, groupk, stratak, functions, counts
         ) |>
           # order variables
-          orderVariables(colnames(table), unique(unlist(estimates)))
+          orderVariables(colOrder, unique(unlist(estimates)))
         resultk <- resultk + 1
         if (verbose) {
           k <- k + 1
