@@ -34,6 +34,8 @@ tableCohortTiming(
 
 \item{cdmName}{Name of the databases to include.}
 
+\item{variableName}{Name of the variable names to include.}
+
 \item{formatEstimateName}{Whether to include the number of subjects.}
 
 \item{header}{Vector with names and column names to use in the header of gt

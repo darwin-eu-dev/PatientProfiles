@@ -337,7 +337,7 @@ plotCohortTiming <- function(result,
       ggplot2::geom_hline(yintercept = unique(x$y_pos), color = "gray") +
       ggplot2::geom_line(
         data = x |>
-          dplyr::group_by(plot_id) |>
+          dplyr::group_by(.data$plot_id) |>
           dplyr::filter(abs(.data$q50 - .data$x) == min(abs(.data$q50 - .data$x))) |>
           tidyr::pivot_longer(cols = c("y", "y_pos"), values_to = "y") |>
           dplyr::ungroup() |>

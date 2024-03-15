@@ -26,8 +26,9 @@ Must be column names in the cohort table provided.}
 cohort will be considered. If FALSE all entries per individual will be
 considered}
 
-\item{timing}{Summary statistics for timing.
-@param density Get data for density plot.}
+\item{timing}{Summary statistics for timing.}
+
+\item{density}{Get data for density plot.}
 }
 \value{
 A summarised result
