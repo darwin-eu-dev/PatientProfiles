@@ -535,6 +535,9 @@ addInObservation <- function(x,
       when = "0.7.0", what = "addInObservation(name)",
       with = "addInObservation(nameStyle)"
     )
+    if (missing(nameStyle)) {
+      nameStyle <- name
+    }
   }
 
   if (!is.list(window)) {
