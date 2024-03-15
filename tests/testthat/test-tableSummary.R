@@ -21,9 +21,10 @@ test_that("with and with overall groups and strata", {
       20, 42, 83, 12, 13.63636, 5, 5.681818
     ))
   )
-  expect_warning(
+  expect_error(
     x <- summaryChar %>% gtCharacteristics()
   )
-
-  expect_false("percentage" %in% x$format)
+  expect_error(
+    x <- summaryChar %>% gtResult()
+  )
 })
