@@ -584,20 +584,20 @@ addInObservation <- function(x,
       if(completeInterval == T){
         x <- x %>%
           dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-            is.na(.data$prior_observation) &
+            !is.na(.data$prior_observation) &
               .data$prior_observation <= .env$lower &
               .env$upper <= .data$future_observation,
-            0,
-            1
+            1,
+            0
           )))
       } else {
         x <- x %>%
           dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-            is.na(.data$prior_observation) &
+            !is.na(.data$prior_observation) &
               .data$prior_observation <= .env$upper &
               .env$lower <= .data$future_observation,
-            0,
-            1
+            1,
+            0
           )))
       }
 
