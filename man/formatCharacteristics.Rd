@@ -35,7 +35,7 @@ formatCharacteristics(
 
 \item{minCellCount}{.}
 
-\item{.options}{.}
+\item{.options}{See optionsTableCharacteristics() for default values.}
 }
 \value{
 A tibble with a tidy version of the summarised_characteristics

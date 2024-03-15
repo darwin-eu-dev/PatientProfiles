@@ -85,8 +85,8 @@ summariseResult <- function(table,
 
   # create the summary for overall
   if (table %>%
-    dplyr::count() %>%
-    dplyr::pull() == 0) {
+      dplyr::count() %>%
+      dplyr::pull() == 0) {
     if (counts) {
       result <- dplyr::tibble(
         "group_name" = "overall", "group_level" = "overall",

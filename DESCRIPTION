@@ -46,6 +46,8 @@ Suggests:
     cowplot,
     DiagrammeRsvg,
     DBI,
+    gt,
+    flextable,
     ggpubr
 Imports: 
     magrittr,
@@ -57,7 +59,6 @@ Imports:
     rlang,
     cli,
     stringr,
-    gt,
     omopgenerics (>= 0.1.2),
     visOmopResults (>= 0.1.0),
     lifecycle
@@ -69,5 +70,3 @@ Depends:
     R (>= 2.10)
 Config/testthat/edition: 3
 Config/testthat/parallel: true
-Remotes:
-    oxford-pharmacoepi/visOmopResults

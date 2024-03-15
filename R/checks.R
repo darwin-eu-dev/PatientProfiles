@@ -413,16 +413,16 @@ checkTable <- function(table) {
 }
 
 #' @noRd
-checkStrata <- function(strata, table) {
-  errorMessage <- "strata should be a list that point to columns in table"
-  if (!is.list(strata)) {
+checkStrata <- function(list, table, type = "strata") {
+  errorMessage <- paste0(type, " should be a list that point to columns in table")
+  if (!is.list(list)) {
     cli::cli_abort(errorMessage)
   }
-  if (length(strata) > 0) {
-    if (!is.character(unlist(strata))) {
+  if (length(list) > 0) {
+    if (!is.character(unlist(list))) {
       cli::cli_abort(errorMessage)
     }
-    if (!all(unlist(strata) %in% colnames(table))) {
+    if (!all(unlist(list) %in% colnames(table))) {
       cli::cli_abort(errorMessage)
     }
   }
@@ -605,6 +605,31 @@ checkOtherVariables <- function(otherVariables, cohort, call = rlang::env_parent
     cli::cli_abort(errorMessage, call = call)
   }
   invisible(otherVariables)
+}
+
+assertClass <- function(x,
+                        class,
+                        null = FALSE,
+                        call = parent.frame()) {
+  # create error message
+  errorMessage <- paste0(
+    paste0(substitute(x), collapse = ""), " must have class: ",
+    paste0(class, collapse = ", "), "; but has class: ",
+    paste0(base::class(x), collapse = ", ") ,"."
+  )
+  if (is.null(x)) {
+    if (null) {
+      return(invisible(x))
+    } else {
+      cli::cli_abort(
+        "{paste0(substitute(x), collapse = '')} can not be NULL.", call = call
+      )
+    }
+  }
+  if (!all(class %in% base::class(x))) {
+    cli::cli_abort(errorMessage, call = call)
+  }
+  invisible(x)
 }
 
 correctStrata <- function(strata, overall) {
