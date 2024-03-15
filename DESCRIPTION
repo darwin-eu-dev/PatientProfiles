@@ -46,6 +46,8 @@ Suggests:
     cowplot,
     DiagrammeRsvg,
     DBI,
+    gt,
+    flextable,
     ggpubr
 Imports: 
     magrittr,
