@@ -225,18 +225,32 @@ test_that("plotCohortOverlap", {
     dplyr::compute(name = "table", temporary = FALSE) |>
     omopgenerics::newCohortTable()
 
-  overlap3 <- summariseCohortOverlap(cdm$table,
+  overlap2 <- summariseCohortOverlap(cdm$table,
                                      strata = list("age_group", c("age_group", "sex")))
-  gg3 <- plotCohortOverlap(overlap3,
+  gg3 <- plotCohortOverlap(overlap2,
                            cohortNameReference = c("cohort_1", "cohort_2"),
                            variableName = "number subjects",
                            strataName = "age_group &&& sex",
-                           strataLevel = unique(overlap3$strata_level),
+                           strataLevel = unique(overlap2$strata_level),
                            facetBy = "strata_level",
+                           overlapLabel = "{cohort_name_reference}_{cohort_name_comparator}_{strata_name}",
                            uniqueCombinations = FALSE)
   expect_true("ggplot" %in% class(gg3))
   expect_true(all(c("0 to 40 and female", "41 to 150 and female") %in%
                     gg3$data$facet_var |> unique()))
+
+  # > 1 CDM
+  overlap3 <- overlap |>
+    dplyr::union_all(
+      overlap |>
+        dplyr::mutate(cdm_name = "cdm2") |>
+        dplyr::filter(.data$group_level != "cohort_2 &&& cohort_4"))
+  gg4 <- plotCohortOverlap(overlap3,
+                           cohortNameReference = c("cohort_1", "cohort_2"),
+                           variableName = "number records",
+                           facetBy = "cdm_name",
+                           uniqueCombinations = FALSE)
+  expect_true(nrow(gg3$data |> dplyr::distinct(comparison_name, y_pos)) == 6)
 
   CDMConnector::cdm_disconnect(cdm)
 })

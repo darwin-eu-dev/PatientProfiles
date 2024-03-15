@@ -335,7 +335,7 @@ test_that("plotCohortTiming, density", {
                                timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
                                uniqueCombinations = TRUE)
   expect_true(all(c("gg", "ggplot") %in% class(density4)))
-  expect_true(all(is.na(density4$data$median)))
+  expect_true(all(is.na(density4$data$q50)))
 
   # strata
   cdm$table <- cdm$table |>
