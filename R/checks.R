@@ -680,3 +680,22 @@ assertNameStyle <- function(nameStyle,
 
   return(invisible(nameStyle))
 }
+
+warnOverwriteColumns <- function(cols, nameStyle, values = list()) {
+  if (length(values) > 0) {
+    nameStyle <- tidyr::expand_grid(!!!values) |>
+      dplyr::mutate("tmp_12345" = glue::glue(.env$nameStyle)) |>
+      dplyr::pull("tmp_12345") |>
+      as.character() |>
+      unique()
+  }
+  extraColumns <- cols[cols %in% nameStyle]
+  if (length(extraColumns) > 0) {
+    ms <- extraColumns
+    names(ms) <- rep("*", length(ms))
+    cli::cli_inform(message = c(
+      "!" = "The following columns will be overwritten:", ms
+    ))
+  }
+  return(invisible(extraColumns))
+}
