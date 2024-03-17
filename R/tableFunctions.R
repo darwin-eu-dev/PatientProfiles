@@ -26,7 +26,7 @@
 #' @param cohortName .
 #' @param style .
 #' @param minCellCount .
-#' @param .options .
+#' @param .options See optionsTableCharacteristics() for default values.
 #'
 #' @examples
 #' \donttest{
@@ -71,7 +71,7 @@ formatCharacteristics <- function(result,
   checkmate::assertIntegerish(minCellCount, any.missing = FALSE, len = 1)
 
   # add default options
-  .options <- defaultOptions(.options)
+  .options <- defaultCharacteristicsOptions(.options)
 
   result <- result |>
     suppress(minCellCount = minCellCount) |>
@@ -115,6 +115,7 @@ formatCharacteristics <- function(result,
       )
     colsStrata <- "strata"
   } else {
+
     result <- result |>
       visOmopResults::splitStrata()
   }
@@ -165,7 +166,7 @@ formatCharacteristics <- function(result,
   return(result)
 }
 
-defaultOptions <- function(.options) {
+defaultCharacteristicsOptions <- function(.options) {
   defaults <- list(
     "decimals" = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
     "decimalMark" = ".",
@@ -180,10 +181,527 @@ defaultOptions <- function(.options) {
     "groupNameAsColumn" = FALSE,
     "groupOrder" = NULL
   )
-  for (nm in names(defaults)) {
-    if (!nm %in% names(.options)) {
-      .options[[nm]] <- defaults[[nm]]
+
+  for (opt in names(.options)) {
+    defaults[[opt]] <- .options[[opt]]
+  }
+  return(defaults)
+}
+
+#' Additional arguments for the function formatCharacteristics.
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in
+#' formatCharacteristics. and their given default values.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' optionsTableCharacteristics()
+#' }
+#'
+#'
+optionsTableCharacteristics <- function() {
+  return(defaultCharacteristicsOptions(NULL))
+}
+
+#' Format a cohort_overlap object into a visual table.
+#'
+#' @param result A cohort_overlap object.
+#' @param cohortNameReference Names of the reference cohorts to include.
+#' @param cohortNameComparator Names of the comparator cohorts to include.
+#' @param strataName Names of the strata names to include.
+#' @param strataLevel Names of the strata levels to include.
+#' @param splitStrata If TRUE strata name-levle columns will be splitted.
+#' @param cdmName Name of the databases to include.
+#' @param variableName Name of the variable names to include.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", or "tibble".
+#' @param minCellCount Counts below which results will be clouded.
+#' @param .options named list with additional formatting options.
+#' PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
+#' their default values.
+#'
+#' @examples
+#' \donttest{
+#' }
+#'
+#' @return A formatted table of the overlap_cohort summarised object.
+#'
+#' @export
+
+tableCohortOverlap  <- function(result,
+                                cohortNameReference = NULL,
+                                cohortNameComparator = NULL,
+                                strataName = "overall",
+                                strataLevel = "overall",
+                                splitStrata = TRUE,
+                                cdmName = NULL,
+                                variableName = c("number records",
+                                                 "number subjects"),
+                                type = "gt",
+                                minCellCount = 5,
+                                .options = list()) {
+  # initial checks
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "cohort_overlap")
+  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
+  checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
+  checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
+  checkmate::assertCharacter(strataName, null.ok = TRUE)
+  checkmate::assertCharacter(strataLevel, null.ok = TRUE)
+  checkmate::assertCharacter(cdmName, null.ok = TRUE)
+  checkmate::assertCharacter(variableName, null.ok = TRUE)
+  checkmate::assertList(.options)
+
+  # split table
+  x <- result |>
+    visOmopResults::splitGroup()
+
+  # add default values
+  selectors <- defaultColumnSelectors(
+    x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
+            "strata_name" = strataName, "cdm_name" = cdmName, "variable_name" = variableName))
+  cohortNameReference <- selectors$cohort_name_reference
+  cohortNameComparator <- selectors$cohort_name_comparator
+  strataName <- selectors$strata_name
+  cdmName <- selectors$cdm_name
+  if (is.null(strataLevel)) {
+    strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
+  }
+  .options <- defaultOverlapOptions(.options)
+
+  # format table
+  x <- x |>
+    dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
+    dplyr::filter(.data$variable_name == .env$variableName) |>
+    dplyr::filter(.data$strata_name %in% .env$strataName) |>
+    dplyr::filter(.data$strata_level %in% .env$strataLevel) |>
+    dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
+    getTidyOverlap() |>
+    dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
+    dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
+    # to support header in visOmopResults 0.1.0
+    dplyr::mutate(
+      total = .data$reference + .data$comparator,
+      reference = .data$reference - .data$overlap,
+      comparator = .data$comparator - .data$overlap
+    ) |>
+    dplyr::mutate(
+      only_in_reference = dplyr::if_else(
+        (.data$reference < .env$minCellCount) | is.na(.data$reference),
+        paste0("<", niceNum(.env$minCellCount, .options, "integer")),
+        formatOverlapEstimate(.data$reference, .data$reference/.data$total * 100, .env$.options)
+      ),
+      only_in_comparator = dplyr::if_else(
+        (.data$comparator < .env$minCellCount) | is.na(.data$comparator),
+        paste0("<", niceNum(.env$minCellCount, .options, "integer")),
+        formatOverlapEstimate(.data$comparator, .data$comparator/.data$total * 100, .env$.options)
+      ),
+      overlap = dplyr::if_else(
+        (.data$overlap < .env$minCellCount) | is.na(.data$overlap),
+        paste0("<",niceNum(.env$minCellCount, .options, "integer")),
+        formatOverlapEstimate(.data$overlap, .data$overlap*2/.data$total * 100, .env$.options)),
+      estimate_name = "N (%)"
+    ) |>
+    dplyr::select(c("cdm_name", "cohort_name_reference", "cohort_name_comparator",
+                    "strata_name", "strata_level", "variable_name", "estimate_name",
+                    "only_in_reference", "only_in_comparator", "overlap"))
+
+  # split strata
+  if (splitStrata) {
+    x <- x |>
+      visOmopResults::splitStrata()
+  } else {
+    x <- x |>
+      dplyr::mutate(
+        strata_name = stringr::str_to_sentence(gsub("&&&", "and", .data$strata_name)),
+        strata_level = stringr::str_to_sentence(gsub("&&&", "and", .data$strata_level))
+      )
+  }
+
+  # nice column names and values
+  x <- x |>
+    dplyr::mutate(
+      cohort_name_reference = stringr::str_to_sentence(gsub("_", " ", .data$cohort_name_reference)),
+      cohort_name_comparator = stringr::str_to_sentence(gsub("_", " ", .data$cohort_name_comparator)),
+      variable_name = stringr::str_to_sentence(gsub("_", " ", .data$variable_name))
+    ) |>
+    dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", .x)))) |>
+    dplyr::rename("CDM name" = "Cdm name")
+
+  if (type == "gt") {
+    x <- x |>
+      visOmopResults::gtTable(
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  } else if (type == "flextable") {
+    x <- x |>
+      visOmopResults::fxTable(
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  }
+
+  return(x)
+}
+
+#' Format a cohort_timing object into a visual table.
+#'
+#' @param result A cohort_overlap object.
+#' @param cohortNameReference Names of the reference cohorts to include.
+#' @param cohortNameComparator Names of the comparator cohorts to include.
+#' @param strataName Names of the strata names to include.
+#' @param strataLevel Names of the strata levels to include.
+#' @param splitStrata If TRUE strata name-levle columns will be splitted.
+#' @param cdmName Name of the databases to include.
+#' @param variableName Name of the variable names to include.
+#' @param formatEstimateName Whether to include the number of subjects.
+#' @param header Vector with names and column names to use in the header of gt
+#' and flextable.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", or "tibble".
+#' @param minCellCount Counts below which results will be clouded.
+#' @param .options named list with additional formatting options.
+#' PatientProfiles::optionsTableCohortTiming() shows allowed arguments and
+#' their default values.
+#'
+#' @examples
+#' \donttest{
+#' }
+#'
+#' @return A formatted table of the cohort_timing summarised object.
+#'
+#' @export
+#'
+tableCohortTiming <- function(result,
+                              cohortNameReference = NULL,
+                              cohortNameComparator = NULL,
+                              strataName = NULL,
+                              strataLevel = NULL,
+                              cdmName = NULL,
+                              variableName = c("number records", "number subjects",
+                                               "diff_days"),
+                              formatEstimateName = c(
+                                "N" = "<count>",
+                                "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                "Range" = "<min> - <max>"
+                              ),
+                              header = character(0),
+                              splitStrata = TRUE,
+                              type = "gt",
+                              minCellCount = 5,
+                              .options = list()) {
+  # initial checks
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type == "cohort_timing")
+  checkmate::assertChoice(type, c("gt", "flextable", "tibble"))
+  checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
+  checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
+  checkmate::assertCharacter(strataName, null.ok = TRUE)
+  checkmate::assertCharacter(strataLevel, null.ok = TRUE)
+  checkmate::assertCharacter(cdmName, null.ok = TRUE)
+  checkmate::assertCharacter(formatEstimateName)
+  checkmate::assertCharacter(header)
+  checkmate::assertIntegerish(minCellCount, len = 1, null.ok = FALSE)
+  checkmate::assertList(.options)
+  if (any(c("strata_name", "strata_level") %in% header) & splitStrata) {
+    cli::cli_abort("It is not possible to include strata names and/or levels in
+                   the header and split it into columns. Revise splitStrata and header arguments.")
+  }
+
+  .options <- defaultTimingOptions(.options)
+
+  # split and format estimates
+  x <- result |>
+    omopgenerics::suppress(minCellCount = minCellCount) |>
+    # Change when visOmopResults 0.1.3
+    dplyr::mutate(estimate_value = dplyr::if_else(
+      is.na(.data$estimate_value), paste0("<", .env$minCellCount), .data$estimate_value
+    )) |>
+    dplyr::filter(!is.na(.data$estimate_value)) |>
+    # move format functions after filter in visOmopResults 0.1.3
+    visOmopResults::formatEstimateValue(
+      decimals = .options$decimals,
+      decimalMark = .options$decimalMark,
+      bigMark = .options$bigMark
+    ) |>
+    visOmopResults::formatEstimateName(
+      estimateNameFormat = formatEstimateName,
+      keepNotFormatted = .options$keepNotFormatted,
+      useFormatOrder = .options$useFormatOrder
+    ) |>
+    visOmopResults::splitGroup()
+
+  # add default values
+  selectors <- defaultColumnSelectors(
+    x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
+            "strata_name" = strataName, "cdm_name" = cdmName, "variable_name" = variableName))
+  cohortNameReference <- selectors$cohort_name_reference
+  cohortNameComparator <- selectors$cohort_name_comparator
+  strataName <- selectors$strata_name
+  variableName <- selectors$variable_name
+  cdmName <- selectors$cdm_name
+  if (is.null(strataLevel)) {
+    strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
+  }
+
+  # filter data
+  x <- x |>
+    dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
+    dplyr::filter(.data$strata_name %in% .env$strataName) |>
+    dplyr::filter(.data$strata_level %in% .env$strataLevel) |>
+    dplyr::filter(.data$variable_name %in% .env$variableName) |>
+    dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
+    dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
+    dplyr::select(!c("result_id", "result_type", "package_name", "package_version",
+                     "estimate_type", "variable_level", "additional_name", "additional_level"))
+
+  if (.options$uniqueCombinations) {
+    x <- x |> getUniqueCombinations(order = cohortNameReference)
+  }
+
+  # new header
+  header <- lapply(as.list(header),
+                   function(span) {
+                     if (span == "cdm_name") {
+                       span <- "CDM name"
+                     } else if (span %in% colnames(x)) {
+                       span <- stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", span)))
+                     }
+                     return(span)
+                   }) |> unlist()
+
+  # nice cases
+  x <- x |>
+    dplyr::mutate(
+      cohort_name_reference = stringr::str_to_sentence(gsub("_", " ", .data$cohort_name_reference)),
+      cohort_name_comparator = stringr::str_to_sentence(gsub("_", " ", .data$cohort_name_comparator)),
+      strata_name = stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", .data$strata_name))),
+      strata_level = stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", .data$strata_level))),
+      variable_name = stringr::str_to_sentence(gsub("_", " ", .data$variable_name))
+    )
+
+  # split strata
+  if (splitStrata) {
+    x <- x |>
+      visOmopResults::splitStrata()
+    if ("Overall" %in% colnames(x)) {
+      x <- x |>
+        dplyr::select(!"Overall")
     }
   }
-  return(.options)
+
+  # nice column names
+  if (length(header) > 0) {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x)), .cols = !dplyr::contains("estimate_value")) |>
+      dplyr::rename("CDM name" = "Cdm name")
+
+    # header
+    x <- x |>
+      visOmopResults::formatHeader(
+        header = header,
+        delim = .options$delim,
+        includeHeaderName = .options$includeHeaderName,
+        includeHeaderKey = .options$includeHeaderKey
+      )
+  } else {
+    x <- x |>
+      dplyr::rename_with(~stringr::str_to_sentence(gsub("_", " ", .x))) |>
+      dplyr::rename("CDM name" = "Cdm name")
+  }
+
+
+  if (all(.options$colsToMergeRows %in% colnames(x))) {
+    .options$colsToMergeRows <- stringr::str_to_sentence(gsub("_", " ", .options$colsToMergeRows))
+  }
+  if (!is.null(.options$groupNameCol)) {
+    .options$groupNameCol <- stringr::str_to_sentence(gsub("_", " ", .options$groupNameCol))
+  }
+
+  if (type == "gt") {
+    x <- x |>
+      visOmopResults::gtTable(
+        delim = .options$delim,
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  } else if (type == "flextable") {
+    x <- x |>
+      visOmopResults::fxTable(
+        delim = .options$delim,
+        style = .options$style,
+        na = .options$na,
+        title = .options$title,
+        subtitle = .options$subtitle,
+        caption = .options$caption,
+        groupNameCol = .options$groupNameCol,
+        groupNameAsColumn = .options$groupNameAsColumn,
+        groupOrder = .options$groupOrder,
+        colsToMergeRows = .options$colsToMergeRows
+      )
+  }
+
+  return(x)
 }
+
+
+formatOverlapEstimate <- function(count, percentage, .options) {
+  paste0(
+    niceNum(count, .options, "integer"),
+    " (",
+    niceNum(percentage, .options, "percentage"),
+    "%)"
+  )
+
+}
+niceNum <- function(num, .options, type) {
+  trimws(format(round(num, .options$decimals[[type]]),
+                big.mark = .options$bigMark,
+                decimal.mark = .options$decimalMark,
+                nsmall = .options$decimals[[type]],
+                scientific = FALSE))
+}
+
+defaultOverlapOptions <- function(userOptions) {
+  defaultOpts <- list(
+    uniqueCombinations = TRUE,
+    decimals = c(integer = 0, percentage = 1),
+    decimalMark = ".",
+    bigMark = ",",
+    style = "default",
+    na = "-",
+    title = NULL,
+    subtitle = NULL,
+    caption = NULL,
+    groupNameCol = NULL,
+    groupNameAsColumn = FALSE,
+    groupOrder = NULL,
+    colsToMergeRows = "all_columns"
+  )
+
+  for (opt in names(userOptions)) {
+    defaultOpts[[opt]] <- userOptions[[opt]]
+  }
+
+  return(defaultOpts)
+}
+
+defaultTimingOptions <- function(userOptions) {
+  defaultOpts <- list(
+    uniqueCombinations = TRUE,
+    decimals = c(integer = 0, percentage = 1),
+    decimalMark = ".",
+    bigMark = ",",
+    keepNotFormatted = TRUE,
+    useFormatOrder = TRUE,
+    delim = "\n",
+    includeHeaderName = FALSE,
+    includeHeaderKey = TRUE,
+    style = "default",
+    na = "-",
+    title = NULL,
+    subtitle = NULL,
+    caption = NULL,
+    groupNameCol = NULL,
+    groupNameAsColumn = FALSE,
+    groupOrder = NULL,
+    colsToMergeRows = "all_columns"
+  )
+
+  for (opt in names(userOptions)) {
+    defaultOpts[[opt]] <- userOptions[[opt]]
+  }
+
+  return(defaultOpts)
+}
+
+
+defaultColumnSelectors <- function(data, selectors) {
+  outSelectors <- list()
+  for (selector in names(selectors)) {
+    column <- data[[selector]]
+    input <- selectors[[selector]]
+    if (is.null(input)) {
+      input <- unique(column)
+    } else {
+      notIn <- which(!input %in% unique(column))
+      if (length(notIn) > 0) {
+        cli::cli_warn("The following are not in {selector} and will not be included:
+                    {paste0(input[notIn], collapse = ', ')}")
+      }
+    }
+    outSelectors[[selector]] <- input
+  }
+  return(outSelectors)
+}
+
+#' Additional arguments for the function tableCohortOverlap.
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in
+#' tableCohortOverlap and their given default value.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' optionsTableCohortOverlap()
+#' }
+#'
+#'
+optionsTableCohortOverlap <- function() {
+  return(defaultOverlapOptions(NULL))
+}
+
+#' Additional arguments for the function tableCohortTiming.
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in
+#' tableCohortTiming and their given default value.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' optionsTableCohortTiming()
+#' }
+#'
+#'
+optionsTableCohortTiming <- function() {
+  return(defaultTimingOptions(NULL))
+}
+

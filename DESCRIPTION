@@ -1,7 +1,7 @@
 Package: PatientProfiles
 Type: Package
 Title: Identify Characteristics of Patients in the OMOP Common Data Model
-Version: 0.6.2
+Version: 0.6.99.900
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
@@ -46,6 +46,8 @@ Suggests:
     cowplot,
     DiagrammeRsvg,
     DBI,
+    gt,
+    flextable,
     ggpubr
 Imports: 
     magrittr,
@@ -57,7 +59,6 @@ Imports:
     rlang,
     cli,
     stringr,
-    gt,
     omopgenerics (>= 0.1.2),
     visOmopResults (>= 0.1.0),
     lifecycle
@@ -69,5 +70,3 @@ Depends:
     R (>= 2.10)
 Config/testthat/edition: 3
 Config/testthat/parallel: true
-Remotes:
-    oxford-pharmacoepi/visOmopResults

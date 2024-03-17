@@ -504,6 +504,8 @@ addPriorObservation <- function(x,
 #' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
+#' @param window window to consider events of
+#' @param completeInterval If the individuals are in observation for the full window
 #' @param name name of the column to hold the result of the query:
 #' 1 if the individual is in observation, 0 if not
 #'
@@ -520,6 +522,8 @@ addPriorObservation <- function(x,
 addInObservation <- function(x,
                              cdm = lifecycle::deprecated(),
                              indexDate = "cohort_start_date",
+                             window = c(0,0),
+                             completeInterval = TRUE,
                              name = "in_observation") {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "inObservation(cdm)")
@@ -542,7 +546,11 @@ addInObservation <- function(x,
       sex = FALSE,
       priorObservation = TRUE,
       futureObservation = TRUE
-    ) %>%
+    )
+
+  if(all(window == c(0,0))) {
+
+  x <- x %>%
     dplyr::mutate(
       !!name := as.numeric(dplyr::if_else(
         is.na(.data$prior_observation) | is.na(.data$future_observation) | .data$prior_observation < 0 | .data$future_observation < 0, 0, 1
@@ -551,6 +559,44 @@ addInObservation <- function(x,
     dplyr::select(
       -"prior_observation", -"future_observation"
     )
+
+  } else {
+
+    lower <- window[1]
+    upper <- window[2]
+
+
+    if(completeInterval == T){
+
+  x <- x %>%
+    dplyr::mutate(
+      !!name := as.numeric(dplyr::if_else(
+        is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation >= 0 + lower |
+          .data$future_observation <= 0 + upper, 0, 1
+      ))
+    ) %>%
+    dplyr::select(
+      -"prior_observation", -"future_observation"
+    )
+
+    } else {
+
+      x <- x %>%
+        dplyr::mutate(
+          !!name := as.numeric(dplyr::if_else(
+            is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation >= 0 + lower &
+              .data$future_observation <= 0 + upper, 0, 1
+          ))
+        ) %>%
+        dplyr::select(
+          -"prior_observation", -"future_observation"
+        )
+
+
+
+}
+
+  }
 
   x <- x %>% dplyr::compute()
 
