@@ -85,8 +85,15 @@ addIntersect <- function(x,
   checkVariableInX(targetStartDate, cdm[[tableName]], FALSE, "targetStartDate")
   checkVariableInX(targetEndDate, cdm[[tableName]], TRUE, "targetEndDate")
   checkmate::assertChoice(order, c("first", "last"))
-  checkNameStyle(nameStyle, filterTbl, windowTbl, value)
   checkVariableInX(censorDate, x, TRUE, "censorDate")
+
+  values <- list(
+    "id_name" = filterTbl$id_name,
+    "window_name" = windowTbl$window_name,
+    "value" = value
+  )
+  assertNameStyle(nameStyle, values)
+  x <- warnOverwriteColumns(x = x, nameStyle = nameStyle, values = values)
 
   if (!is.null(censorDate)) {
     checkCensorDate(x, censorDate)
@@ -96,8 +103,6 @@ addIntersect <- function(x,
   }
 
   tablePrefix <- omopgenerics::tmpPrefix()
-
-  startTibble <- x
 
   # define overlapTable that contains the events of interest
   overlapTable <- cdm[[tableName]]
@@ -125,12 +130,6 @@ addIntersect <- function(x,
     ))) %>%
     dplyr::select("colnam", "value") %>%
     dplyr::mutate(colnam = checkSnakeCase(.data$colnam, verbose = F))
-  overwriteCols <- newCols$colnam[newCols$colnam %in% colnames(x)]
-  if (length(overwriteCols) > 0) {
-    cli::cli_warn("The following cols will be overwriten: {paste0(overwriteCols, collapse = ', ')}")
-    x <- x %>%
-      dplyr::select(-dplyr::all_of(overwriteCols))
-  }
 
   overlapTable <- overlapTable %>%
     dplyr::select(
