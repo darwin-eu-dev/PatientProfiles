@@ -87,14 +87,6 @@ addIntersect <- function(x,
   checkmate::assertChoice(order, c("first", "last"))
   checkVariableInX(censorDate, x, TRUE, "censorDate")
 
-  values <- list(
-    "id_name" = filterTbl$id_name,
-    "window_name" = windowTbl$window_name,
-    "value" = value
-  )
-  assertNameStyle(nameStyle, values)
-  x <- warnOverwriteColumns(x = x, nameStyle = nameStyle, values = values)
-
   if (!is.null(censorDate)) {
     checkCensorDate(x, censorDate)
   }
@@ -114,6 +106,14 @@ addIntersect <- function(x,
     filterTbl <- dplyr::tibble("id" = 1, "id_name" = "all")
     overlapTable <- dplyr::mutate(overlapTable, "id" = 1)
   }
+
+  values <- list(
+    "id_name" = filterTbl$id_name,
+    "window_name" = windowTbl$window_name,
+    "value" = value
+  )
+  assertNameStyle(nameStyle, values)
+  x <- warnOverwriteColumns(x = x, nameStyle = nameStyle, values = values)
 
   # columns that will be added
   newCols <- expand.grid(
