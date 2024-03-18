@@ -171,7 +171,7 @@ plotCohortOverlap <- function(result,
 #' @param cdmName Names of the databases to include.
 #' @param facetBy Vector of column names  in the cohort_overlap table for faceting the
 #' ggplot object.
-#' @param color Vector of column names to distict by colors.
+#' @param color Vector of column names to distinct by colors.
 #' @param timingLabel A glue expression to identify each plotted cohort
 #' overlap.
 #' @param uniqueCombinations If TRUE, only unique combinations of reference and
