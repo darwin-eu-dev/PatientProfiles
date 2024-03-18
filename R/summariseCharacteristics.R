@@ -499,6 +499,30 @@ summariseCharacteristics <- function(cohort,
   return(results)
 }
 
+#' Summarise concept intersect with a cohort_table
+#'
+#' @param cohort A cohort in the cdm
+#' @param strata Stratification list
+#' @param conceptIntersect A list of arguments that uses addConceptIntersect
+#' function to add variables to summarise.
+#'
+#' @return A summary of the concept intersect of the individuals
+#'
+#' @export
+#'
+summariseConceptIntersect <- function(cohort,
+                                      conceptIntersect,
+                                      strata = list()) {
+  if (length(conceptIntersect) == 0) {
+    cli::cli_abort("Please provide at least one cocneptSet to insersect with.")
+  }
+  summariseCharacteristics(
+    cohort = cohort, strata = strata, demographics = FALSE, ageGroup = NULL,
+    tableIntersect = list(), cohortIntersect = list(),
+    conceptIntersect = conceptIntersect, otherVariables = character()
+  )
+}
+
 correctWindowName <- function(windowName) {
   id <- grepl("_to_", windowName)
   windowName[id] <- windowName[id] |>
