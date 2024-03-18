@@ -937,7 +937,7 @@ test_that("addCategories input", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 1, patient_size = 5)
 
   # overwrite when categories named same as variable, throw warning
-  expect_warning(
+  expect_error(
     cdm$cohort1 %>%
       addAge() %>%
       addCategories(
@@ -946,7 +946,7 @@ test_that("addCategories input", {
       )
   )
 
-  expect_warning(
+  expect_error(
     cdm$cohort1 %>%
       addDemographics(
         sex = FALSE,

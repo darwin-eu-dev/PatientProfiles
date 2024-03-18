@@ -58,16 +58,6 @@ addCategories <- function(x,
     types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
 
-  for (i in seq_along(categories)) {
-    if (!is.null(names(categories)) && variable == names(categories)[i]) {
-      cli::cli_warn(paste0(
-        "Categories name '",
-        names(categories)[i],
-        "' already existed, the original variable has been overwritten."
-      ))
-    }
-  }
-
   if (length(unique(names(categories))) < length((names(categories)))) {
     cli::cli_abort(
       "Categories have repeated names, please rename the groups."
@@ -79,6 +69,8 @@ addCategories <- function(x,
   } else {
     nam <- names(categories)
   }
+
+  x <- warnOverwriteColumns(x, nameStyle = nam)
 
   if (
     utils::head(x, 1) %>%
