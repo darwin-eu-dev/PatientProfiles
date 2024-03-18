@@ -1,7 +1,5 @@
 ---
-title: "Get patients' characteristics"
-author: "Martí Català, Mike Du, Yuchen Guo, Kim López-Güell, Xintong Li, Núria Mercadé-Besora, and Edward Burn"
-date: "`r Sys.Date()`"
+title: "Adding patient characteristics"
 output: 
   html_document:
     pandoc_args: [
@@ -10,7 +8,7 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Get cohort patients characteristics}
+  %\VignetteIndexEntry{a01_addinigPatientCharacteristics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
