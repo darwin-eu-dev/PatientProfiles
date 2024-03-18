@@ -116,7 +116,7 @@ addCohortIntersect <- function(x,
   value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = targetCohortTable,
       filterVariable = parameters$filter_variable,
       filterId = parameters$filter_id,
@@ -186,7 +186,7 @@ addCohortIntersectFlag <- function(x,
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = targetCohortTable,
       filterVariable = parameters$filter_variable,
       filterId = parameters$filter_id,
@@ -256,7 +256,7 @@ addCohortIntersectCount <- function(x,
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = targetCohortTable,
       filterVariable = parameters$filter_variable,
       filterId = parameters$filter_id,
@@ -329,7 +329,7 @@ addCohortIntersectDays <- function(x,
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = targetCohortTable,
       indexDate = indexDate,
       value = "days",
@@ -403,7 +403,7 @@ addCohortIntersectDate <- function(x,
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = targetCohortTable,
       indexDate = indexDate,
       value = "date",

@@ -145,13 +145,13 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
 test_that(" test checkWindow in addIntersect", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 2)
 
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
-  expect_warning(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-365), -c(0), -c(30)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
+  expect_warning(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-365), -c(0), -c(30)), value = "date"))
 
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(30, -365)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(30, -365)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
 })
 
 test_that("test checkSnakeCase", {
@@ -246,7 +246,7 @@ test_that("checkNameStyle", {
     observation_period = op, cohort2 = cohort2
   )
 
-  expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% addIntersect(
+  expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% .addIntersect(
     tableName = "cohort2", value = c("flag", "count"),
     nameStyle = "{value}_{id_name}"
   ))))
