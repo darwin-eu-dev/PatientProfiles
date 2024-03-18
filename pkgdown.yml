@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  a01_addingPatientCharacteristics: a01_addingPatientCharacteristics.html
+  a01_addingPatientDemographics: a01_addingPatientDemographics.html
   a02_addingCohortIntersections: a02_addingCohortIntersections.html
   a03_addingConceptIntersections: a03_addingConceptIntersections.html
   a04_addingTableIntersections: a04_addingTableIntersections.html
@@ -11,7 +11,7 @@ articles:
   a07_summariseLargeScaleCharacteristics: a07_summariseLargeScaleCharacteristics.html
   a08_summariseCohortOverlap: a08_summariseCohortOverlap.html
   a09_summariseCohortTiming: a09_summariseCohortTiming.html
-last_built: 2024-03-18T12:54Z
+last_built: 2024-03-18T15:27Z
 urls:
   reference: https://darwin-eu-dev.github.io/PatientProfiles/reference
   article: https://darwin-eu-dev.github.io/PatientProfiles/articles
