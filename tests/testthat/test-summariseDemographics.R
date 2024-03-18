@@ -19,6 +19,9 @@ test_that("test summariseCharacteristics", {
     strata = list(c("sex")),
     ageGroup = list(c(0,50), c(51,100))
   ))
+
+  expect_true(inherits(res, "summarised_result"))
+
   expect_equal(
     res <- PatientProfiles::summariseDemographics(
       cohort = cdm$cohort1,
