@@ -674,7 +674,7 @@ assertNameStyle <- function(nameStyle,
                             call = parent.frame()) {
   # initial checks
   checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
-  checkmate::assertList(values, any.missing = FALSE, names = "named")
+  checkmate::assertList(values, names = "named")
   checkmate::assertClass(call, "environment")
 
   # check name style
@@ -699,7 +699,7 @@ assertNameStyle <- function(nameStyle,
   return(invisible(nameStyle))
 }
 
-warnOverwriteColumns <- function(cols, nameStyle, values = list()) {
+warnOverwriteColumns <- function(x, nameStyle, values = list()) {
   if (length(values) > 0) {
     nameStyle <- tidyr::expand_grid(!!!values) |>
       dplyr::mutate("tmp_12345" = glue::glue(.env$nameStyle)) |>
@@ -707,15 +707,18 @@ warnOverwriteColumns <- function(cols, nameStyle, values = list()) {
       as.character() |>
       unique()
   }
-  extraColumns <- cols[cols %in% nameStyle]
+
+  extraColumns <- colnames(x)[colnames(x) %in% nameStyle]
   if (length(extraColumns) > 0) {
     ms <- extraColumns
     names(ms) <- rep("*", length(ms))
     cli::cli_inform(message = c(
       "!" = "The following columns will be overwritten:", ms
     ))
+    x <- x |> dplyr::select(!dplyr::all_of(extraColumns))
   }
-  return(invisible(extraColumns))
+
+  return(x)
 }
 assertCharacter <- function(x,
                             length = NULL,
