@@ -63,8 +63,7 @@ test_that("addInObservation, window", {
     cdm$cohort1 |> addInObservation(window = c(-5055, 30042)) |> dplyr::pull(in_observation) == c(0, 0)
   ))
   expect_true(all(
-    cdm$cohort1 |> addInObservation(window = c(-5055, 30042), completeInterval = F) |> dplyr::pull(in_observation) == c(0, 1)
+    cdm$cohort1 |> addInObservation(window = c(-5055, 30042), completeInterval = F) |> dplyr::pull(in_observation) == c(1, 1)
   ))
 
-}
-)
+})

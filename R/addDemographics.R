@@ -506,8 +506,9 @@ addPriorObservation <- function(x,
 #' observation flag.
 #' @param window window to consider events of
 #' @param completeInterval If the individuals are in observation for the full window
-#' @param name name of the column to hold the result of the query:
-#' 1 if the individual is in observation, 0 if not
+#' @param nameStyle Name of the new columns to create, it must contain
+#' "{window_name}" if multiple windows are provided.
+#' @param name deprecated
 #'
 #' @return cohort table with the added binary column assessing inObservation
 #' @export
@@ -524,20 +525,33 @@ addInObservation <- function(x,
                              indexDate = "cohort_start_date",
                              window = c(0,0),
                              completeInterval = TRUE,
-                             name = "in_observation") {
+                             name = lifecycle::deprecated(),
+                             nameStyle = "in_observation") {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "inObservation(cdm)")
   }
+  if (lifecycle::is_present(name)) {
+    lifecycle::deprecate_warn(
+      when = "0.7.0", what = "addInObservation(name)",
+      with = "addInObservation(nameStyle)"
+    )
+    if (missing(nameStyle)) {
+      nameStyle <- name
+    }
+  }
+
+  if (!is.list(window)) {
+    window <- list(window)
+  }
+
   ## check for standard types of user error
   cdm <- omopgenerics::cdmReference(x)
   personVariable <- checkX(x)
   checkCdm(cdm, c("observation_period"))
   checkVariableInX(indexDate, x)
-  checkmate::assertCharacter(name, any.missing = FALSE, len = 1)
-  name <- checkNewName(name, x)
-
-  # Start code
-  name <- rlang::enquo(name)
+  checkWindow(window)
+  names(window) <- getWindowNames(window)
+  assertNameStyle(nameStyle = nameStyle, values = list("window_name" = window))
 
   x <- x %>%
     addDemographics(
@@ -546,59 +560,54 @@ addInObservation <- function(x,
       sex = FALSE,
       priorObservation = TRUE,
       futureObservation = TRUE
-    )
+    ) |>
+    dplyr::mutate("prior_observation" = - .data$prior_observation)
 
-  if(all(window == c(0,0))) {
+  for (k in seq_along(window)) {
 
-  x <- x %>%
-    dplyr::mutate(
-      !!name := as.numeric(dplyr::if_else(
-        is.na(.data$prior_observation) | is.na(.data$future_observation) | .data$prior_observation < 0 | .data$future_observation < 0, 0, 1
-      ))
-    ) %>%
-    dplyr::select(
-      -"prior_observation", -"future_observation"
-    )
+    win <- window[[k]]
+    window_name <- names(window)[k]
+    nam <- glue::glue(nameStyle) |> as.character()
 
-  } else {
+    if(all(win == c(0,0))) {
 
-    lower <- window[1]
-    upper <- window[2]
-
-
-    if(completeInterval == T){
-
-  x <- x %>%
-    dplyr::mutate(
-      !!name := as.numeric(dplyr::if_else(
-        is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation >= 0 + lower |
-          .data$future_observation <= 0 + upper, 0, 1
-      ))
-    ) %>%
-    dplyr::select(
-      -"prior_observation", -"future_observation"
-    )
+      x <- x %>%
+        dplyr::mutate(!!nam := as.numeric(
+          dplyr::if_else(is.na(.data$prior_observation), 0, 1)
+        ))
 
     } else {
 
-      x <- x %>%
-        dplyr::mutate(
-          !!name := as.numeric(dplyr::if_else(
-            is.na(.data$prior_observation) | is.na(.data$future_observation) | -.data$prior_observation >= 0 + lower &
-              .data$future_observation <= 0 + upper, 0, 1
-          ))
-        ) %>%
-        dplyr::select(
-          -"prior_observation", -"future_observation"
-        )
+      lower <- win[1]
+      upper <- win[2]
 
+      if(completeInterval == T){
+        x <- x %>%
+          dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
+            !is.na(.data$prior_observation) &
+              .data$prior_observation <= .env$lower &
+              .env$upper <= .data$future_observation,
+            1,
+            0
+          )))
+      } else {
+        x <- x %>%
+          dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
+            !is.na(.data$prior_observation) &
+              .data$prior_observation <= .env$upper &
+              .env$lower <= .data$future_observation,
+            1,
+            0
+          )))
+      }
 
-
-}
+    }
 
   }
 
-  x <- x %>% dplyr::compute()
+  x <- x |>
+    dplyr::select(-"prior_observation", -"future_observation") |>
+    dplyr::compute()
 
   return(x)
 }
