@@ -2,11 +2,11 @@
 % Please edit documentation in R/addIntersect.R
 \name{addIntersect}
 \alias{addIntersect}
-\title{It creates columns to indicate overlap information between two tables}
+\title{It creates columns to indicate overlap information between two tables
+`r lifecycle::badge("deprecated")`}
 \usage{
 addIntersect(
   x,
-  cdm = lifecycle::deprecated(),
   tableName,
   value,
   filterVariable = NULL,
@@ -23,8 +23,6 @@ addIntersect(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm}
-
-\item{cdm}{A cdm_reference object.}
 
 \item{tableName}{name of the cohort that we want to check for overlap}
 
@@ -62,6 +60,7 @@ table with added columns with overlap information
 }
 \description{
 It creates columns to indicate overlap information between two tables
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

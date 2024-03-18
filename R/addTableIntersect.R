@@ -114,7 +114,7 @@ addTableIntersect <- function(x,
   targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -176,7 +176,7 @@ addTableIntersectFlag <- function(x,
   targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -238,7 +238,7 @@ addTableIntersectCount <- function(x,
   targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -297,7 +297,7 @@ addTableIntersectDate <- function(x,
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -356,7 +356,7 @@ addTableIntersectDays <- function(x,
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -423,7 +423,7 @@ addTableIntersectField <- function(x,
   nameStyle <- gsub("\\{extra_value\\}", "\\{value\\}", nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,

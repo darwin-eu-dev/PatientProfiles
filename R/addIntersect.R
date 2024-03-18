@@ -15,9 +15,9 @@
 # limitations under the License.
 
 #' It creates columns to indicate overlap information between two tables
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param x Table with individuals in the cdm
-#' @param cdm A cdm_reference object.
 #' @param tableName name of the cohort that we want to check for overlap
 #' @param filterVariable the variable that we are going to use to filter (e.g.
 #' cohort_definition_id)
@@ -53,7 +53,6 @@
 #' }
 #'
 addIntersect <- function(x,
-                         cdm = lifecycle::deprecated(),
                          tableName,
                          value,
                          filterVariable = NULL,
@@ -66,9 +65,29 @@ addIntersect <- function(x,
                          targetEndDate = endDateColumn(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addIntersect(cdm)")
-  }
+  lifecycle::deprecate_warn("0.7.0", "addIntersect()")
+  .addIntersect(
+    x = x, tableName = tableName, value = value,
+    filterVariable = filterVariable, filterId = filterId, idName = idName,
+    window = window, indexDate = indexDate, censorDate = censorDate,
+    targetStartDate = targetStartDate, targetEndDate = targetEndDate,
+    order = order, nameStyle = nameStyle
+  )
+}
+
+.addIntersect <- function(x,
+                         tableName,
+                         value,
+                         filterVariable = NULL,
+                         filterId = NULL,
+                         idName = NULL,
+                         window = list(c(0, Inf)),
+                         indexDate = "cohort_start_date",
+                         censorDate = NULL,
+                         targetStartDate = startDateColumn(tableName),
+                         targetEndDate = endDateColumn(tableName),
+                         order = "first",
+                         nameStyle = "{value}_{id_name}_{window_name}") {
   if (!is.list(window)) {
     window <- list(window)
   }
