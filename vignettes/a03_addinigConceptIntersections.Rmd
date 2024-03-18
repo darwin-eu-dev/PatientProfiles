@@ -1,0 +1,19 @@
+---
+title: "Addinig concept intersections"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{a03_addinigConceptIntersections}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(PatientProfiles)
+```
