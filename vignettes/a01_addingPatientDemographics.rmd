@@ -99,7 +99,7 @@ cdm$condition_occurrence %>%
   glimpse()
 ```
 
-Similarly we could also identify whether an individual was in observation at the time of their diagnosis (i.e. had an observation period that ovelapped with their diagnosis date), as well as identifying how much prior observation time they had on this date and how much they have following it. 
+Similarly we could also identify whether an individual was in observation at the time of their diagnosis (i.e. had an observation period that overlaps with their diagnosis date), as well as identifying how much prior observation time they had on this date and how much they have following it. 
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$condition_occurrence <- cdm$condition_occurrence %>%
