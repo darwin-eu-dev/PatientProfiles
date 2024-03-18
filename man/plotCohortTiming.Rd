@@ -37,7 +37,7 @@ plotCohortTiming(
 \item{facetBy}{Vector of column names  in the cohort_overlap table for faceting the
 ggplot object.}
 
-\item{color}{Vector of column names to distict by colors.}
+\item{color}{Vector of column names to distinct by colors.}
 
 \item{timingLabel}{A glue expression to identify each plotted cohort
 overlap.}

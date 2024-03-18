@@ -29,7 +29,7 @@ tableCohortOverlap(
 
 \item{strataLevel}{Names of the strata levels to include.}
 
-\item{splitStrata}{If TRUE strata name-levle columns will be splitted.}
+\item{splitStrata}{If TRUE strata name-level columns will be split.}
 
 \item{cdmName}{Name of the databases to include.}
 

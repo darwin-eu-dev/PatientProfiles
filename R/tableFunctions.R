@@ -216,7 +216,7 @@ optionsTableCharacteristics <- function() {
 #' @param cohortNameComparator Names of the comparator cohorts to include.
 #' @param strataName Names of the strata names to include.
 #' @param strataLevel Names of the strata levels to include.
-#' @param splitStrata If TRUE strata name-levle columns will be splitted.
+#' @param splitStrata If TRUE strata name-level columns will be split.
 #' @param cdmName Name of the databases to include.
 #' @param variableName Name of the variable names to include.
 #' @param type Type of desired formatted table, possibilities: "gt",
@@ -372,7 +372,7 @@ tableCohortOverlap  <- function(result,
 #' @param cohortNameComparator Names of the comparator cohorts to include.
 #' @param strataName Names of the strata names to include.
 #' @param strataLevel Names of the strata levels to include.
-#' @param splitStrata If TRUE strata name-levle columns will be splitted.
+#' @param splitStrata If TRUE strata name-level columns will be split.
 #' @param cdmName Name of the databases to include.
 #' @param variableName Name of the variable names to include.
 #' @param formatEstimateName Whether to include the number of subjects.

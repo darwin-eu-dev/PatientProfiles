@@ -1,8 +1,8 @@
 ---
-title: "Addinig table intersections"
+title: "Adding concept intersections"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{a04_addinigTableIntersections}
+  %\VignetteIndexEntry{a03_addingConceptIntersections}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

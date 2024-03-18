@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #' Summarise variables using a set of estimate functions. The output will be
-#' a formatted summaried_result object.
+#' a formatted summarised_result object.
 #'
 #' @param table Table with different records
 #' @param group List of groups to be considered.
