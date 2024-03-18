@@ -510,19 +510,6 @@ summariseCharacteristics <- function(cohort,
 #'
 #' @export
 #'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#'
-#' cdm <- mockPatientProfiles()
-#'
-#' summariseConceptIntersect(
-#'   cohort = cdm$cohort1,
-#'   conceptIntersect = list(
-#'     conceptSet = list(a = 1), value = "flag", window = c(-365, -1)
-#'   )
-#' )
-#' }
 summariseConceptIntersect <- function(cohort,
                                       conceptIntersect,
                                       strata = list()) {

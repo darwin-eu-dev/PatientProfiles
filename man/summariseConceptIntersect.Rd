@@ -20,17 +20,3 @@ A summary of the concept intersect of the individuals
 \description{
 Summarise concept intersect with a cohort_table
 }
-\examples{
-\donttest{
-library(PatientProfiles)
-
-cdm <- mockPatientProfiles()
-
-summariseConceptIntersect(
-  cohort = cdm$cohort1,
-  conceptIntersect = list(
-    conceptSet = list(a = 1), value = "flag", window = c(-365, -1)
-  )
-)
-}
-}
