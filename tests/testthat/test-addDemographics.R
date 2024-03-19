@@ -1255,3 +1255,15 @@ test_that("overwriting obs period variables", {
     PatientProfiles::addInObservation())
 
 })
+
+
+test_that("addDemographics, date of birth option", {
+  cdm <- mockPatientProfiles()
+
+  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T) |> dplyr::select("date_of_birth"))
+  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T,dateOfBirthName = "abc") |> dplyr::select("abc"))
+  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = F))
+
+
+
+})
