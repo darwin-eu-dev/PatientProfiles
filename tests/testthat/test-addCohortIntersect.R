@@ -780,10 +780,10 @@ test_that("cohortIntersect after observation", {
 
   windows <- list(
     c(-Inf, Inf), c(0,0), c(0, Inf), c(5000, 31000), c(31000, Inf),
-    c(31000, 45000)
+    c(31000, 45000), c(-Inf, -5000), c(-Inf, -6000), c(-8000, -6000)
   )
 
-  expect_error(
+  expect_no_error(
     x <- cdm$cohort1 |>
       addCohortIntersectFlag(
         targetCohortTable = "cohort2",
@@ -811,4 +811,19 @@ test_that("cohortIntersect after observation", {
       ) |>
       dplyr::collect()
   )
+
+  windows <- checkWindow(windows)
+  out <- c(5, 6, 8, 9)
+  for (k in seq_along(windows)) {
+    for (val in c("flag", "count", "date", "days")) {
+      col <- paste0(val, "_", names(windows)[k])
+      expect_true(col %in% colnames(x))
+      if (k %in% out) {
+        expect_true(all(is.na(x[[col]])))
+      } else if (val %in% c("flag", "count")) {
+        expect_true(all(!is.na(x[[col]])))
+      }
+    }
+  }
+
 })
