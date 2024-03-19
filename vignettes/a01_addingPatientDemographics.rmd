@@ -1,0 +1,178 @@
+---
+title: "Adding patient demographics"
+output: 
+  html_document:
+    pandoc_args: [
+      "--number-offset=1,0"
+      ]
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{a01_addinigPatientDemographics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+The OMOP CDM is a person centric model. The person table contains records that uniquely identify each individual along with some of their demographic information. Below we create a mock CDM reference which, as is standard, has a person table which contains fields which indicate an individuals date of birth, gender, race, and ethnicity. Each of the latter are represented by a concept ID, and as the person table contains one record per person these fields are treated as time-invariant.
+
+```{r, message= FALSE, warning=FALSE}
+library(PatientProfiles)
+library(duckdb)
+library(dplyr)
+
+cdm <- mockPatientProfiles(
+  patient_size = 10000,
+  drug_exposure_size = 10000
+)
+
+cdm$person %>% 
+  dplyr::glimpse()
+```
+
+As well as the person table, every CDM reference will include an observation period table. This table contains spans of times during which an individual is considered to being under observation. Individuals can have multiple observation periods, but they cannot overlap.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$observation_period %>% 
+  dplyr::glimpse()
+```
+
+When performing analyses we will often be interested in working with the person and observation period tables to identify individuals' characteristics on some date of interest. PatientProfiles provides a number of functions that can help us do this.
+
+## Adding characteristics to OMOP CDM tables
+
+Let's say we're working with the condition occurrence table. 
+
+```{r, message= FALSE, warning=FALSE}
+cdm$condition_occurrence %>%
+  glimpse()
+```
+
+This table contains diagnoses of individuals and we might, for example, want to identify their age on their date of diagnosis. This involves linking back to the person table which contains their date of birth (split across three different columns). PatientProfiles provides a simple function for this. `addAge()` will add a new column to the table containing each patient's age relative to the specified index date.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$condition_occurrence <- cdm$condition_occurrence %>%
+  addAge(indexDate = "condition_start_date")
+
+cdm$condition_occurrence %>%
+  glimpse()
+```
+
+As well as calculating age, we can also create age groups at the same time. Here we create three age groups: those aged 0 to 17, those 18 to 65, and those 66 or older.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$condition_occurrence <- cdm$condition_occurrence %>%
+  addAge(
+    indexDate = "condition_start_date",
+    ageGroup = list(
+        "0 to 17" = c(0, 17),
+        "18 to 65" = c(20, 39),
+        ">= 66" = c(40, 59)))
+
+cdm$condition_occurrence %>%
+  glimpse()
+```
+
+
+By default when adding age the new column will have been called "age" and will have been calculated using all available information on date of birth contained in the person. We can, however, alter these defaults like so (where we impose month of birth to be January and day of birth to be the 1st for all individuals)
+
+```{r, message= FALSE, warning=FALSE}
+cdm$condition_occurrence <- cdm$condition_occurrence %>%
+  addAge(indexDate = "condition_start_date", 
+         ageName = "age_from_year_of_birth", 
+         ageDefaultMonth = 1,
+         ageDefaultDay = 1,
+         ageImposeMonth = TRUE, 
+         ageImposeDay = TRUE)
+
+cdm$condition_occurrence %>%
+  glimpse()
+```
+
+As well as age at diagnosis, we might also want identify patients' sex. PatientProfiles provides the `addSex()` function that will add this for us. Because this is treated as time-invariant, we will not have to specify any index variable.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$condition_occurrence <- cdm$condition_occurrence %>%
+  addSex()
+
+cdm$condition_occurrence %>%
+  glimpse()
+```
+
+Similarly we could also identify whether an individual was in observation at the time of their diagnosis (i.e. had an observation period that overlaps with their diagnosis date), as well as identifying how much prior observation time they had on this date and how much they have following it. 
+
+```{r, message= FALSE, warning=FALSE}
+cdm$condition_occurrence <- cdm$condition_occurrence %>%
+  addInObservation(indexDate = "condition_start_date") %>% 
+  addPriorObservation(indexDate = "condition_start_date") %>% 
+  addFutureObservation(indexDate = "condition_start_date")
+
+cdm$condition_occurrence %>%
+  glimpse()
+```
+
+For these latter functions which work with information from the observation table, it is important to note that the results will be based on the observation period during which the index date falls within. Moreover, if a patient is not under observation at the specified date, `addPriorObservation()` and `addFutureObservation()` functions will return NA.
+
+## Adding characteristics to a cohort tables
+
+The above functions can be used on both standard OMOP CDM tables and cohort tables. Note as the default index date in the functions is "cohort_start_date" we can now omit this function.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  glimpse()
+
+cdm$cohort1 <- cdm$cohort1 %>%
+  addAge(ageGroup = list(
+        "0 to 17" = c(0, 17),
+        "18 to 65" = c(20, 39),
+        ">= 66" = c(40, 59))) %>% 
+  addSex() %>% 
+  addInObservation() %>%
+  addPriorObservation() %>%
+  addFutureObservation()
+
+cdm$cohort1 %>%
+  glimpse()
+```
+
+
+## Getting multiple characteristics at once
+
+The above functions each fetch the related information one by one. In the cases where we are interested in adding multiple characteristics, we can add these all at the same time using `addDemographics()`. This is more efficient as it requires fewer joins between our table of interest and the person and observation period table.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort2 %>%
+  glimpse()
+
+tictoc::tic()
+cdm$cohort2 %>%
+  addAge(ageGroup = list(
+        "0 to 17" = c(0, 17),
+        "18 to 65" = c(20, 39),
+        ">= 66" = c(40, 59))) %>% 
+  addSex() %>% 
+  addInObservation() %>%
+  addPriorObservation() %>%
+  addFutureObservation()
+tictoc::toc()
+
+tictoc::tic()
+cdm$cohort2 %>%
+  addDemographics(
+    age = TRUE,
+    ageName = "age",
+    ageGroup = list(
+        "0 to 17" = c(0, 17),
+        "18 to 65" = c(20, 39),
+        ">= 66" = c(40, 59)),
+    sex = TRUE,
+    sexName = "sex",
+    priorObservation = TRUE,
+    priorObservationName = "prior_observation",
+    futureObservation = FALSE,
+  ) %>%
+  glimpse()
+tictoc::toc()
+```
+
+In our small mock dataset we see a small improvement in performance, but this difference will become much more noticeable when working with real data that will typically be far larger.
