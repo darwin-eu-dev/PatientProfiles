@@ -279,7 +279,7 @@ addIntersect <- function(x,
         )
       if ("date" %in% value) {
         resultDTO <- resultDTO %>%
-          dplyr::mutate(date = !!CDMConnector::dateadd("index_date", "days"))
+          dplyr::mutate(date = as.Date(!!CDMConnector::dateadd("index_date", "days")))
       }
       if (length(extraValue) > 0) {
         resultDTO <- resultDTO %>%
