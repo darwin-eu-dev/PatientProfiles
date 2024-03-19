@@ -49,6 +49,10 @@
 #'
 #' @param dateOfBirthName dateOfBirth column name.
 #'
+#' @param dateOfBirth TRUE or FALSE, if true the date of birth will be return.
+#'
+#' @param dateOfBirthName dateOfBirth column name.
+#'
 #' @return cohort table with the added demographic information columns.
 #' @export
 #'
@@ -350,6 +354,13 @@ sexQuery <- function(name, missingValue) {
 priorObservationQuery <- function(indexDate, name) {
   return(glue::glue('CDMConnector::datediff("observation_period_start_date",
                       "{indexDate}")') %>%
+           rlang::parse_exprs() %>%
+           rlang::set_names(glue::glue(name)))
+}
+
+futureObservationQuery <- function(indexDate, name) {
+  return(glue::glue('CDMConnector::datediff("{indexDate}",
+                          "observation_period_end_date")') %>%
            rlang::parse_exprs() %>%
            rlang::set_names(glue::glue(name)))
 }

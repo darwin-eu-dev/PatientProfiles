@@ -72,11 +72,12 @@ of the current observation period and the indexDate will be calculated.}
 indexDate and the end of the current observation period will be
 calculated.}
 
-\item{futureObservationName}{Future observation variable name.}
+\item{futureObservationName}{Future observation variable name}
 
 \item{dateOfBirth}{TRUE or FALSE, if true the date of birth will be return.}
 
-\item{dateOfBirthName}{dateOfBirth column name.}
+\item{dateOfBirthName}{dateOfBirth column name}
+
 }
 \value{
 cohort table with the added demographic information columns.

@@ -14,7 +14,7 @@ vignette: >
 ---
 
 ## Introduction
-The OMOP CDM is a person centric model. The person table contains records that uniquely identify each individual along with some of their demographic information. Below we create a mock CDM reference which, as is standard, has a person table which contains fields which indicate an individuals date of birth, gender, race, and ethnicity. Each of the latter are represented by a concept ID, and as the person table contains one record per person these fields are treated as time-invariant.
+The OMOP CDM is a person-centric model. The person table contains records that uniquely identify each individual along with some of their demographic information. Below we create a mock CDM reference which, as is standard, has a person table which contains fields which indicate an individuals date of birth, gender, race, and ethnicity. Each of the latter are represented by a concept ID, and as the person table contains one record per person these fields are treated as time-invariant.
 
 ```{r, message= FALSE, warning=FALSE}
 library(PatientProfiles)
@@ -66,8 +66,8 @@ cdm$condition_occurrence <- cdm$condition_occurrence %>%
     indexDate = "condition_start_date",
     ageGroup = list(
         "0 to 17" = c(0, 17),
-        "18 to 65" = c(20, 39),
-        ">= 66" = c(40, 59)))
+        "18 to 65" = c(18, 65),
+        ">= 66" = c(66, Inf)))
 
 cdm$condition_occurrence %>%
   glimpse()
@@ -124,8 +124,8 @@ cdm$cohort1 %>%
 cdm$cohort1 <- cdm$cohort1 %>%
   addAge(ageGroup = list(
         "0 to 17" = c(0, 17),
-        "18 to 65" = c(20, 39),
-        ">= 66" = c(40, 59))) %>% 
+        "18 to 65" = c(18, 65),
+        ">= 66" = c(66, Inf))) %>% 
   addSex() %>% 
   addInObservation() %>%
   addPriorObservation() %>%
@@ -148,8 +148,8 @@ tictoc::tic()
 cdm$cohort2 %>%
   addAge(ageGroup = list(
         "0 to 17" = c(0, 17),
-        "18 to 65" = c(20, 39),
-        ">= 66" = c(40, 59))) %>% 
+        "18 to 65" = c(18, 65),
+        ">= 66" = c(66, Inf))) %>% 
   addSex() %>% 
   addInObservation() %>%
   addPriorObservation() %>%
@@ -163,8 +163,8 @@ cdm$cohort2 %>%
     ageName = "age",
     ageGroup = list(
         "0 to 17" = c(0, 17),
-        "18 to 65" = c(20, 39),
-        ">= 66" = c(40, 59)),
+        "18 to 65" = c(18, 65),
+        ">= 66" = c(66, Inf)),
     sex = TRUE,
     sexName = "sex",
     priorObservation = TRUE,
