@@ -99,7 +99,7 @@ addIntersect <- function(x,
   personVariableTable <- checkX(cdm[[tableName]])
   extraValue <- checkValue(value, cdm[[tableName]], tableName)
   filterTbl <- checkFilter(filterVariable, filterId, idName, cdm[[tableName]])
-  windowTbl <- checkWindow(window)
+  window <- checkWindow(window)
   checkVariableInX(indexDate, x)
   checkVariableInX(targetStartDate, cdm[[tableName]], FALSE, "targetStartDate")
   checkVariableInX(targetEndDate, cdm[[tableName]], TRUE, "targetEndDate")
@@ -128,7 +128,7 @@ addIntersect <- function(x,
 
   values <- list(
     "id_name" = filterTbl$id_name,
-    "window_name" = windowTbl$window_name,
+    "window_name" = names(window),
     "value" = value
   )
   assertNameStyle(nameStyle, values)
@@ -138,7 +138,7 @@ addIntersect <- function(x,
   newCols <- expand.grid(
     value = value,
     id_name = filterTbl$id_name,
-    window_name = windowTbl$window_name
+    window_name = names(window)
   ) %>%
     dplyr::as_tibble() %>%
     dplyr::mutate(colnam = as.character(glue::glue(
@@ -198,8 +198,8 @@ addIntersect <- function(x,
   resultDateTimeOther <- NULL
   # Start loop for different windows
 
-  for (i in c(1:nrow(windowTbl))) {
-    win <- c(windowTbl$lower[i], windowTbl$upper[i]) |> as.numeric()
+  for (i in seq_along(window)) {
+    win <- window[[i]]
     if (is.infinite(win[1])) {
       if (is.infinite(win[2])) {
         resultW <- result
@@ -230,7 +230,7 @@ addIntersect <- function(x,
         dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
-        dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
+        dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if ("flag" %in% value) {
         resultCF <- resultCF %>% dplyr::mutate(flag = 1)
       }
@@ -309,7 +309,7 @@ addIntersect <- function(x,
       resultDTO <- resultDTO %>%
         dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
-        dplyr::mutate("window_name" = !!tolower(windowTbl$window_name[i]))
+        dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if (!("days" %in% value)) {
         resultDTO <- dplyr::select(resultDTO, -"days")
       }

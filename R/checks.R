@@ -192,27 +192,21 @@ checkWindow <- function(window) {
           use it as both window start and window end")
   }
 
-  windowTbl <- dplyr::tibble(
-    lower = lapply(window, function(x) {
-      x[1]
-    }) %>% unlist(),
-    upper = lapply(window, function(x) {
-      x[2]
-    }) %>% unlist(),
-    window_name = getWindowNames(window) %>% unlist()
-  )
+  names(window) <- getWindowNames(window)
+  lower <- lapply(window, function(x) {x[1]}) %>% unlist()
+  upper <- lapply(window, function(x) {x[2]}) %>% unlist()
 
-  if (any(windowTbl$lower > windowTbl$upper)) {
+  if (any(lower > upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
   }
-  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == 1)) {
+  if (any(is.infinite(lower) & lower == upper & sign(upper) == 1)) {
     cli::cli_abort("Not both elements in the window can be +Inf")
   }
-  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == -1)) {
+  if (any(is.infinite(lower) & lower == upper & sign(upper) == -1)) {
     cli::cli_abort("Not both elements in the window can be -Inf")
   }
 
-  invisible(windowTbl)
+  invisible(window)
 }
 
 #' @noRd
