@@ -262,6 +262,11 @@ tableCohortOverlap  <- function(result,
   x <- result |>
     visOmopResults::splitGroup()
 
+  # check overlap:
+  if (nrow(x |> dplyr::filter(cohort_name_reference != cohort_name_comparator)) == 0) {
+    cli::cli_abort("There are no overlapping cohorts in the result object provided.")
+  }
+
   # add default values
   selectors <- defaultColumnSelectors(
     x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
