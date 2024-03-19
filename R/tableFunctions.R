@@ -233,7 +233,7 @@ optionsTableCharacteristics <- function() {
 #' @return A formatted table of the overlap_cohort summarised object.
 #'
 #' @export
-
+#'
 tableCohortOverlap  <- function(result,
                                 cohortNameReference = NULL,
                                 cohortNameComparator = NULL,

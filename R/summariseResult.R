@@ -123,7 +123,7 @@ summariseResult <- function(table,
     if (!is.list(strata)) {
       strata <- list(strata)
     }
-    checkStrata(group, table)
+    checkStrata(group, table, type = "group")
     checkStrata(strata, table)
     functions <- checkVariablesFunctions(variables, estimates, table)
 

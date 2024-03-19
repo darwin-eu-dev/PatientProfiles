@@ -17,8 +17,8 @@
 #'
 #' @param data output of summariseCharacteristics
 #' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data
-#' @param yAxis what to plot on y axis, default as estimate_value column. Has to be a column in data
-#' @param plotStyle boxplot or barplot
+#' @param yAxis what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value
+#' @param plotStyle Now allows boxplot or barplot only
 #' @param facetVars column in data to facet by
 #' @param colorVars column in data to color by
 #' @param facetOrder order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars
@@ -37,16 +37,24 @@ plotCharacteristics <- function(data,
                                 colorNames = NULL,
                                 vertical_x = FALSE,
                                 options = list()) {
-  return(plotfunction(
-    data,
-    xAxis,
-    yAxis,
-    plotStyle,
-    facetVars,
-    colorVars,
-    facetOrder,
-    colorNames,
-    vertical_x,
-    options
-  ))
+  errorMessage <- checkmate::makeAssertCollection()
+
+  checkmate::assertTRUE(plotStyle %in% c("boxplot", "barplot"), add = errorMessage)
+
+  checkmate::reportAssertions(collection = errorMessage)
+
+  return(
+    plotfunction(
+      data,
+      xAxis,
+      yAxis,
+      plotStyle,
+      facetVars,
+      colorVars,
+      facetOrder,
+      colorNames,
+      vertical_x,
+      options
+    )
+  )
 }

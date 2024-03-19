@@ -928,7 +928,7 @@ test_that("test if column exist, overwrite", {
 
   cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
 
-  expect_warning(
+  expect_message(
     result <- cdm$cohort1 %>%
       .addIntersect(
         tableName = "cohort2",
@@ -1242,7 +1242,7 @@ test_that("no NA when overwrite column", {
 
 
   # Trying to overwrite the previous created variable, for example because the characteristics cohort has changed.
-  expect_warning(
+  expect_message(
     cdm$cohort1 <- cdm$cohort1 %>%
       addCohortIntersectFlag(
         targetCohortTable = "cohort2",
@@ -1260,7 +1260,7 @@ test_that("no NA when overwrite column", {
   cdm$cohort2 <- cdm$cohort2 %>%
     dplyr::mutate(subject_id = dplyr::if_else(cohort_definition_id == 1 & subject_id == 1, 2, subject_id))
 
-  expect_warning(
+  expect_message(
     cdm$cohort1 <- cdm$cohort1 %>%
       addCohortIntersectFlag(
         targetCohortTable = "cohort2",

@@ -22,9 +22,9 @@ plotCharacteristics(
 
 \item{xAxis}{what to plot on x axis, default as variable_name column. Has to be a column in data}
 
-\item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data}
+\item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value}
 
-\item{plotStyle}{boxplot or barplot}
+\item{plotStyle}{Now allows boxplot or barplot only}
 
 \item{facetVars}{column in data to facet by}
 

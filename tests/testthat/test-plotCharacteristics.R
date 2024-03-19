@@ -100,12 +100,37 @@ test_that("test plot",{
   #boxplot
   plot2 <- plotCharacteristics(
     data =  test_data,
-    xAxis = "estimate_value",
-    yAxis = "variable_name",
+    xAxis = "variable_name",
+    yAxis = "estimate_value",
     plotStyle = "boxplot",
     facetVars = "variable_name",
     colorVars = c("group_level")
   )
 
   expect_true(ggplot2::is.ggplot(plot2))
+
+  expect_no_error(plotCharacteristics(
+    data =  test_data,
+    xAxis = "variable_name",
+    yAxis = "estimate_value",
+    plotStyle = "boxplot"
+  ))
+
+
+  expect_no_error(plotCharacteristics(
+    data =  test_data,
+    xAxis = "variable_name",
+    yAxis = "estimate_value",
+    plotStyle = "barplot"
+  ))
+
+
+  expect_no_error(plotCharacteristics(
+    data =  test_data,
+    xAxis = "estimate_value",
+    yAxis = "variable_name",
+    plotStyle = "barplot"
+  ))
+
+
 })

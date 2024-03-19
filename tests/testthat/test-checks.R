@@ -280,23 +280,29 @@ test_that("test assertNameStyle", {
 
 test_that("test warnOverwriteColumns", {
   # no glue expression
+  x <- dplyr::tibble("my_columns" = character(), "no_column" = character())
   expect_message(
-    x <- warnOverwriteColumns(c("my_columns", "no_column"), "no_column")
+    y <- warnOverwriteColumns(x, "no_column")
   )
-  expect_identical(x, "no_column")
+  expect_identical(colnames(y), "my_columns")
   expect_no_message(
-    x <- warnOverwriteColumns(c("my_columns", "no_column"), c("asdfd", "safvf"))
+    y <- warnOverwriteColumns(x, c("asdfd", "safvf"))
   )
-  expect_identical(x, character())
+  expect_identical(x, y)
 
   # glue expression
   expect_no_message(warnOverwriteColumns(
-    c("my_col"), "column_{a}_{b}", list(a = c("abcd", "defg"), b = "hi", x = "a")
+    x, "column_{a}_{b}", list(a = c("abcd", "defg"), b = "hi", x = "a")
   ))
-  expect_message(x <- warnOverwriteColumns(
-    cols = c("my_col", "column_abcd_hi", "column_sadf_ha", "column_defg_hu"),
+  x <- dplyr::tibble(
+    my_col = character(), column_abcd_hi = character(),
+    column_sadf_ha = character(), column_defg_hu = character()
+  )
+  expect_message(y <- warnOverwriteColumns(
+    x,
     nameStyle = "column_{a}_{b}",
     values = list(a = c("abcd", "defg"), b = c("hi", "ha", "hu"), x = "a")
   ))
-  expect_identical(x, c("column_abcd_hi", "column_defg_hu"))
+  yy <- dplyr::tibble(my_col = character(), column_sadf_ha = character())
+  expect_identical(y, yy)
 })
