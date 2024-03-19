@@ -202,7 +202,10 @@ plotting percentage.</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="a06_summarisePatientCharacteristics_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <p>User can plot boxplot based on q25 q75 median min max in data, using
-<code>plotCharacteristics</code> and set plotStyle = “boxplot”.</p>
+<code>plotCharacteristics</code> and set plotStyle = “boxplot”. Boxplot
+will be horizontal if the xAxis is set to estimate_value, and vertical
+if yAxis is set to estimate_value. But for all the plots, at least one
+of the xAxis or yAxis has to be estimate_value.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span>,</span>
@@ -212,6 +215,10 @@ plotting percentage.</p>
 <span>    facetVars <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
 <span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_segment()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_segment()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_segment()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
