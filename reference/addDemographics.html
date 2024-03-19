@@ -80,7 +80,9 @@
 <span>  priorObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  priorObservationName <span class="op">=</span> <span class="st">"prior_observation"</span>,</span>
 <span>  futureObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  futureObservationName <span class="op">=</span> <span class="st">"future_observation"</span></span>
+<span>  futureObservationName <span class="op">=</span> <span class="st">"future_observation"</span>,</span>
+<span>  dateOfBirth <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  dateOfBirthName <span class="op">=</span> <span class="st">"date_of_birth"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -167,6 +169,14 @@ calculated</p></dd>
 <dt>futureObservationName</dt>
 <dd><p>Future observation variable name</p></dd>
 
+
+<dt>dateOfBirth</dt>
+<dd><p>TRUE or FALSE, if true the date of birth will be return.</p></dd>
+
+
+<dt>dateOfBirthName</dt>
+<dd><p>dateOfBirth column name</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -182,7 +192,7 @@ calculated</p></dd>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">addDemographics</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_043_1710849078&gt; [2 x 8]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_043_1710866774&gt; [2 x 8]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date   age sex   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
