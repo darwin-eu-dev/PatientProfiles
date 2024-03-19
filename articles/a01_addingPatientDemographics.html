@@ -88,7 +88,7 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The OMOP CDM is a person centric model. The person table contains
+<p>The OMOP CDM is a person-centric model. The person table contains
 records that uniquely identify each individual along with some of their
 demographic information. Below we create a mock CDM reference which, as
 is standard, has a person table which contains fields which indicate an
@@ -186,8 +186,8 @@ time. Here we create three age groups: those aged 0 to 17, those 18 to
 <span>    indexDate <span class="op">=</span> <span class="st">"condition_start_date"</span>,</span>
 <span>    ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        <span class="st">"0 to 17"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">17</span><span class="op">)</span>,</span>
-<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>,</span>
-<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">65</span><span class="op">)</span>,</span>
+<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">66</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">condition_occurrence</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -201,7 +201,7 @@ time. Here we create three age groups: those aged 0 to 17, those 18 to
 <span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-12-09, 2011-11-29, 2007-07-24, 2014-03…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 37, 10, 84, 37, 19, 88, 65, 56, 71, 30, 64, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "None", "18 to 65", "…</span></span></code></pre>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "&gt;= 66", "18 to 65", …</span></span></code></pre>
 <p>By default when adding age the new column will have been called “age”
 and will have been calculated using all available information on date of
 birth contained in the person. We can, however, alter these defaults
@@ -228,7 +228,7 @@ to be the 1st for all individuals)</p>
 <span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-12-09, 2011-11-29, 2007-07-24, 2014-03…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 37, 10, 84, 37, 19, 88, 65, 56, 71, 30, 64, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "None", "18 to 65", "…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "&gt;= 66", "18 to 65", …</span></span>
 <span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 38, 10, 84, 37, 20, 89, 65, 56, 71, 31, 64, …</span></span></code></pre>
 <p>As well as age at diagnosis, we might also want identify patients’
 sex. PatientProfiles provides the <code><a href="../reference/addSex.html">addSex()</a></code> function that
@@ -250,7 +250,7 @@ not have to specify any index variable.</p>
 <span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-12-09, 2011-11-29, 2007-07-24, 2014-03…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 37, 10, 84, 37, 19, 88, 65, 56, 71, 30, 64, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "None", "18 to 65", "…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "&gt;= 66", "18 to 65", …</span></span>
 <span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 38, 10, 84, 37, 20, 89, 65, 56, 71, 31, 64, …</span></span>
 <span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Female", "Male", "F…</span></span></code></pre>
 <p>Similarly we could also identify whether an individual was in
@@ -276,7 +276,7 @@ have following it.</p>
 <span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2010-12-09, 2011-11-29, 2015-02-10, 2015-04…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 37, 10, 19, 88, 56, 70, 56, 49, 10, 21, 12, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "None", "None", "&gt;= 6…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "18 to 65", "&gt;= 66", …</span></span>
 <span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 38, 10, 20, 89, 56, 71, 56, 49, 10, 21, 13, …</span></span>
 <span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Female", "Male", "F…</span></span>
 <span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
@@ -309,8 +309,8 @@ cohort tables. Note as the default index date in the functions is
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addAge.html">addAge</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        <span class="st">"0 to 17"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">17</span><span class="op">)</span>,</span>
-<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>,</span>
-<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">65</span><span class="op">)</span>,</span>
+<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">66</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/addSex.html">addSex</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/addInObservation.html">addInObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -326,7 +326,7 @@ cohort tables. Note as the default index date in the functions is
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-06-01, 2020-01-02, 2020-01-01, 2020-01-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-08-01, 2020-02-02, 2020-03-01, 2020-04-01</span></span>
 <span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 47, 20, 97, 47</span></span>
-<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "&gt;= 66", "18 to 65", "None", "&gt;= 66"</span></span>
+<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "18 to 65", "&gt;= 66", "18 to 65"</span></span>
 <span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Male"</span></span>
 <span><span class="co">## $ in_observation       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1</span></span>
 <span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4946, 5034, 4466, 4794</span></span>
@@ -355,13 +355,13 @@ interest and the person and observation period table.</p>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addAge.html">addAge</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        <span class="st">"0 to 17"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">17</span><span class="op">)</span>,</span>
-<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>,</span>
-<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">65</span><span class="op">)</span>,</span>
+<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">66</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/addSex.html">addSex</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/addInObservation.html">addInObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addFutureObservation.html">addFutureObservation</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_023_1710866847&gt; [5 x 10]</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_023_1710867141&gt; [5 x 10]</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">##   cohort_definition_id subject_id cohort_start_date cohort_end_date   age</span></span>
 <span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -374,7 +374,7 @@ interest and the person and observation period table.</p>
 <span><span class="co">## <span style="color: #949494;">#   prior_observation &lt;dbl&gt;, future_observation &lt;dbl&gt;</span></span></span></code></pre>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 1.674 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 1.645 sec elapsed</span></span></code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -383,8 +383,8 @@ interest and the person and observation period table.</p>
 <span>    ageName <span class="op">=</span> <span class="st">"age"</span>,</span>
 <span>    ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        <span class="st">"0 to 17"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">17</span><span class="op">)</span>,</span>
-<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>,</span>
-<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        <span class="st">"18 to 65"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">65</span><span class="op">)</span>,</span>
+<span>        <span class="st">"&gt;= 66"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">66</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    sex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    sexName <span class="op">=</span> <span class="st">"sex"</span>,</span>
 <span>    priorObservation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -402,10 +402,10 @@ interest and the person and observation period table.</p>
 <span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 47, 20, 97, 47, 47</span></span>
 <span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Male", "Male"</span></span>
 <span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4939, 5033, 4466, 4939, 4792</span></span>
-<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "&gt;= 66", "18 to 65", "None", "&gt;= 66", "&gt;= 66"</span></span></code></pre>
+<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "18 to 65", "&gt;= 66", "18 to 65", "18…</span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 0.778 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 0.78 sec elapsed</span></span></code></pre>
 <p>In our small mock dataset we see a small improvement in performance,
 but this difference will become much more noticeable when working with
 real data that will typically be far larger.</p>
