@@ -7,7 +7,7 @@
 summariseCohortOverlap(cohort, cohortId = NULL, strata = list())
 }
 \arguments{
-\item{cohort}{A cohort table in a cdm reference}
+\item{cohort}{A cohort table in a cdm reference.}
 
 \item{cohortId}{Vector of cohort definition ids to include, if NULL, all
 cohort definition ids will be used.}
@@ -16,12 +16,16 @@ cohort definition ids will be used.}
 Must be column names in the cohort table provided.}
 }
 \value{
-A summarised_result
+A summarised result.
 }
 \description{
 Summarise cohort overlap
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+results <- summariseCohortOverlap(cdm$cohort2)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

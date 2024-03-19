@@ -30,10 +30,10 @@ or a column date of x.}
 \item{window}{window to consider events in.}
 
 \item{overlap}{Whether to consider end date or only end date for the
-intersection..}
+intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with intersect information.
@@ -47,6 +47,7 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addTableIntersectFlag(tableName = "visit_occurrence")
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

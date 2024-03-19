@@ -39,7 +39,7 @@ or a column date of x.}
 required for date and days options).}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with intersect information.
@@ -58,6 +58,8 @@ cdm$cohort1 \%>\%
     order = "last",
     window = c(-Inf, -1)
   )
+
+ CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

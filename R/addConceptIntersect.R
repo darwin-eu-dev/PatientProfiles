@@ -17,28 +17,28 @@
 #' It creates columns to indicate overlap information between a table and a
 #' concept
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param conceptSet Concept set list.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a date column of x
 #' @param window window to consider events in.
 #' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
+#' (in overlap) or on its own (for incidence).
 #' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
+#' (overlap) or NULL (if incidence).
 #' @param order last or first date to use for date/time calculations.
-#' @param order which record is considered in case of multiple records
+#' @param order which record is considered in case of multiple records.
 #' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
-#' intersection
+#' intersection.
 #' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
-#' for this intersection
+#' for this intersection.
 #' @param date TRUE or FALSE. If TRUE, date will be calculated for this
-#' intersection
+#' intersection.
 #' @param days TRUE or FALSE. If TRUE, time difference in days will be
-#' calculated for this intersection
+#' calculated for this intersection.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -47,7 +47,6 @@
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockPatientProfiles()
 #' # result <- cdm$cohort1 %>%

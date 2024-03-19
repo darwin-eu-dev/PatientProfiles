@@ -19,25 +19,25 @@ addCohortIntersectDays(
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
 
-\item{targetCohortTable}{Cohort table to}
+\item{targetCohortTable}{Cohort table to.}
 
 \item{targetCohortId}{Cohort IDs of interest from the other cohort table. If
 NULL, all cohorts will be used with a days variable added for each
-cohort of interest}
+cohort of interest.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
 
 \item{censorDate}{whether to censor overlap events at a specific date
-or a column date of x}
+or a column date of x.}
 
 \item{targetDate}{Date of interest in the other cohort table. Either
-cohort_start_date or cohort_end_date}
+cohort_start_date or cohort_end_date.}
 
 \item{order}{date to use if there are multiple records for an
 individual during the window of interest. Either first or last.}
@@ -46,7 +46,7 @@ individual during the window of interest. Either first or last.}
 Records outside of this time period will be ignored.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 x along with additional columns for each cohort of interest.
@@ -63,6 +63,7 @@ cdm$cohort1 \%>\%
   addCohortIntersectDays(
     targetCohortTable = "cohort2"
   )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

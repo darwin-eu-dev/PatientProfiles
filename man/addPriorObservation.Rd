@@ -13,18 +13,18 @@ addPriorObservation(
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{cdm}{A cdm_reference object.}
 
 \item{indexDate}{Variable in x that contains the date to compute the prior
 observation.}
 
-\item{priorObservationName}{name of the new column to be added}
+\item{priorObservationName}{name of the new column to be added.}
 }
 \value{
 cohort table with added column containing prior observation of the
-individuals
+individuals.
 }
 \description{
 Compute the number of days of prior observation in the current observation period
@@ -36,5 +36,7 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addPriorObservation()
+
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

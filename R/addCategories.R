@@ -16,23 +16,21 @@
 
 #' Categorize a numeric variable
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
 #' @param missingCategoryValue Value to assign to those individuals not in
 #' any named category. If NULL or NA, missing will values will be
 #' given.
-#' @param overlap TRUE if the categories given overlap
+#' @param overlap TRUE if the categories given overlap.
 #'
 #' @return tibble with the categorical variable added.
 #'
 #' @export
 #'
 #' @examples
-#' #'
 #' \donttest{
-#'
 #' cdm <- mockPatientProfiles()
 #'
 #' result <- cdm$cohort1 %>%
@@ -43,6 +41,7 @@
 #'       "0 to 39" = c(0, 39), "40 to 79" = c(40, 79), "80 to 150" = c(80, 150)
 #'     ))
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addCategories <- function(x,
                           variable,

@@ -7,10 +7,10 @@
 sourceConceptIdColumn(tableName)
 }
 \arguments{
-\item{tableName}{Name of the table}
+\item{tableName}{Name of the table.}
 }
 \value{
-Name of the source_concept_id column in that table
+Name of the source_concept_id column in that table.
 }
 \description{
 Get the name of the source concept_id column for a certain table in the cdm

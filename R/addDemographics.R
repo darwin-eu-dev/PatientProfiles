@@ -16,16 +16,16 @@
 
 #' Compute demographic characteristics at a certain date
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the
 #' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
-#' indexDate
+#' indexDate.
 #' @param ageDefaultMonth Month of the year assigned to individuals with missing
 #' month of birth.
-#' @param ageName Age variable name
+#' @param ageName Age variable name.
 #' @param ageDefaultDay day of the month assigned to individuals
 #' with missing day of birth.
 #' @param ageImposeMonth TRUE or FALSE. Whether the month of the date of birth
@@ -34,18 +34,18 @@
 #' will be considered as missing for all the individuals.
 #' @param ageGroup if not NULL, a list of ageGroup vectors.
 #' @param missingAgeGroupValue Value to include if missing age.
-#' @param sex TRUE or FALSE. If TRUE, sex will be identified
-#' @param sexName Sex variable name
+#' @param sex TRUE or FALSE. If TRUE, sex will be identified.
+#' @param sexName Sex variable name.
 #' @param missingSexValue Value to include if missing sex.
 #' @param priorObservation TRUE or FALSE. If TRUE, days of between the start
-#' of the current observation period and the indexDate will be calculated
-#' @param priorObservationName Prior observation variable name
+#' of the current observation period and the indexDate will be calculated.
+#' @param priorObservationName Prior observation variable name.
 #' @param futureObservation TRUE or FALSE. If TRUE, days between the
 #' indexDate and the end of the current observation period will be
-#' calculated
-#' @param futureObservationName Future observation variable name
+#' calculated.
+#' @param futureObservationName Future observation variable name.
 #'
-#' @return cohort table with the added demographic information columns
+#' @return cohort table with the added demographic information columns.
 #' @export
 #'
 #' @examples
@@ -54,6 +54,7 @@
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDemographics()
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addDemographics <- function(x,
@@ -357,7 +358,7 @@ futureObservationQuery <- function(indexDate, name) {
 #' as missing for all the individuals.
 #' @param missingAgeGroupValue Value to include if missing age.
 #'
-#' @return tibble with the age column added
+#' @return tibble with the age column added.
 #' @export
 #'
 #' @examples
@@ -366,6 +367,8 @@ futureObservationQuery <- function(indexDate, name) {
 #'
 #' cdm$cohort1 |>
 #'   addAge()
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addAge <- function(x,
                    cdm = lifecycle::deprecated(),
@@ -409,10 +412,10 @@ addAge <- function(x,
 #' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
-#' @param futureObservationName name of the new column to be added
+#' @param futureObservationName name of the new column to be added.
 #'
 #' @return cohort table with added column containing future observation of the
-#' individuals
+#' individuals.
 #' @export
 #'
 #' @examples
@@ -421,6 +424,7 @@ addAge <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addFutureObservation()
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addFutureObservation <- function(x,
                                  cdm = lifecycle::deprecated(),
@@ -453,14 +457,14 @@ addFutureObservation <- function(x,
 #' Compute the number of days of prior observation in the current observation period
 #' at a certain date
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the prior
 #' observation.
-#' @param priorObservationName name of the new column to be added
+#' @param priorObservationName name of the new column to be added.
 #'
 #' @return cohort table with added column containing prior observation of the
-#' individuals
+#' individuals.
 #' @export
 #'
 #' @examples
@@ -469,6 +473,8 @@ addFutureObservation <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addPriorObservation()
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addPriorObservation <- function(x,
                                 cdm = lifecycle::deprecated(),
@@ -504,13 +510,13 @@ addPriorObservation <- function(x,
 #' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
-#' @param window window to consider events of
-#' @param completeInterval If the individuals are in observation for the full window
+#' @param window window to consider events of.
+#' @param completeInterval If the individuals are in observation for the full window.
 #' @param nameStyle Name of the new columns to create, it must contain
 #' "{window_name}" if multiple windows are provided.
-#' @param name deprecated
+#' @param name deprecated.
 #'
-#' @return cohort table with the added binary column assessing inObservation
+#' @return cohort table with the added binary column assessing inObservation.
 #' @export
 #'
 #' @examples
@@ -518,6 +524,7 @@ addPriorObservation <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addInObservation()
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addInObservation <- function(x,
@@ -614,12 +621,12 @@ addInObservation <- function(x,
 
 #' Compute the sex of the individuals
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm A cdm_reference object.
 #' @param sexName name of the new column to be added.
 #' @param missingSexValue Value to include if missing sex.
 #'
-#' @return table x with the added column with sex information
+#' @return table x with the added column with sex information.
 #' @export
 #'
 #' @examples
@@ -627,6 +634,7 @@ addInObservation <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addSex()
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addSex <- function(x,

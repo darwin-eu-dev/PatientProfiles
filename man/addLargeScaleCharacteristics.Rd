@@ -29,7 +29,7 @@ addLargeScaleCharacteristics(
 intersection.}
 
 \item{censorDate}{whether to censor overlap events at a specific date
-or a column date of x}
+or a column date of x.}
 
 \item{minimumFrequency}{Minimum frequency covariates to report.}
 
@@ -37,9 +37,22 @@ or a column date of x}
 }
 \value{
 The output of this function is the cohort with the new created
-columns
+columns.
 }
 \description{
 This function is used to add columns with the large scale characteristics of
 a cohort table.
+}
+\examples{
+\donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+results <- cdm$cohort2 \%>\%
+  addLargeScaleCharacteristics(
+  episodeInWindow = c("condition_occurrence"),
+  minimumFrequency = 0
+  )
+CDMConnector::cdmDisconnect(cdm = cdm)
+}
+
 }
