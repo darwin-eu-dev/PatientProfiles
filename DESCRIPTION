@@ -48,8 +48,7 @@ Suggests:
     DBI,
     gt,
     flextable,
-    ggpubr,
-    tidyselect
+    ggpubr
 Imports: 
     magrittr,
     CDMConnector (>= 1.3.0),

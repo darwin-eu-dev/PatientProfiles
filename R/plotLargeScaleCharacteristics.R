@@ -173,7 +173,7 @@ plotfunction <- function(data,
 
     df_non_dates_wide <- df_non_dates %>%
       tidyr::pivot_wider(
-        id_cols = tidyselect::all_of(colnames(
+        id_cols = dplyr::all_of(colnames(
           df_non_dates %>%
             dplyr::select(-c("estimate_name", "estimate_value"))
         )),
@@ -183,7 +183,7 @@ plotfunction <- function(data,
 
     df_dates_wide <- df_dates %>%
       tidyr::pivot_wider(
-        id_cols = tidyselect::all_of(colnames(df_non_dates %>% dplyr::select(-c("estimate_name", "estimate_value")))),
+        id_cols = dplyr::all_of(colnames(df_non_dates %>% dplyr::select(-c("estimate_name", "estimate_value")))),
         names_from = "estimate_name", values_from = "estimate_value"
       )
 
