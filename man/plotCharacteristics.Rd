@@ -22,15 +22,15 @@ plotCharacteristics(
 
 \item{xAxis}{what to plot on x axis, default as variable_name column. Has to be a column in data.}
 
-\item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value}
+\item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.}
 
-\item{plotStyle}{Now allows boxplot or barplot only}
+\item{plotStyle}{Now allows boxplot or barplot only.}
 
 \item{facetVars}{column in data to facet by.}
 
 \item{colorVars}{column in data to color by.}
 
-\item{facetOrder}{order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars.}
+\item{facetOrder}{order of facet, make sure multiple facets are separated by period and in the order provided in facetVars.}
 
 \item{colorNames}{A vector or pre-selected color.}
 

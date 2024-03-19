@@ -16,16 +16,16 @@
 
 #' plot large scale characteristics
 #'
-#' @param data output of summariseLargeScaleCharacteristics
-#' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data
-#' @param yAxis what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value
-#' @param facetVars column in data to facet by
-#' @param colorVars column in data to color by
-#' @param facetOrder order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars
-#' @param colorNames A vector or pre-selected color
-#' @param vertical_x whether to display x axis string vertically
-#' @param options Other plot options in a list
-#' @return A ggplot
+#' @param data output of summariseLargeScaleCharacteristics.
+#' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.
+#' @param yAxis what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.
+#' @param facetVars column in data to facet by.
+#' @param colorVars column in data to color by.
+#' @param facetOrder order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars.
+#' @param colorNames A vector or pre-selected color.
+#' @param vertical_x whether to display x axis string vertically.
+#' @param options Other plot options in a list.
+#' @return A ggplot.
 #' @export
 #' @examples
 #' \donttest{

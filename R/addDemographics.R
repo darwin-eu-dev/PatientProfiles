@@ -49,10 +49,6 @@
 #'
 #' @param dateOfBirthName dateOfBirth column name.
 #'
-#' @param dateOfBirth TRUE or FALSE, if true the date of birth will be return.
-#'
-#' @param dateOfBirthName dateOfBirth column name.
-#'
 #' @return cohort table with the added demographic information columns.
 #' @export
 #'
