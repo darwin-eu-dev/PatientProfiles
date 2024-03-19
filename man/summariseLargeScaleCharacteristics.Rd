@@ -74,5 +74,6 @@ summariseLargeScaleCharacteristics(
  episodeInWindow = c("condition_occurrence"),
  minimumFrequency = 0
  )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }
