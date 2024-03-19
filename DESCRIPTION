@@ -48,7 +48,7 @@ Suggests:
     DBI,
     gt,
     flextable,
-    ggpubr
+    ggpubr,
     tictoc
 Imports: 
     magrittr,
