@@ -45,6 +45,10 @@
 #' calculated
 #' @param futureObservationName Future observation variable name
 #'
+#' @param dateOfBirth TRUE or FALSE, if true the date of birth will be return.
+#'
+#' @param dateOfBirthName dateOfBirth column name
+#'
 #' @return cohort table with the added demographic information columns
 #' @export
 #'
@@ -73,7 +77,9 @@ addDemographics <- function(x,
                             priorObservation = TRUE,
                             priorObservationName = "prior_observation",
                             futureObservation = TRUE,
-                            futureObservationName = "future_observation") {
+                            futureObservationName = "future_observation",
+                            dateOfBirth = FALSE,
+                            dateOfBirthName = "date_of_birth") {
   ## change ageDefaultMonth, ageDefaultDay to integer
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "addDemographics(cdm)")
@@ -108,9 +114,10 @@ addDemographics <- function(x,
   checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
   checkmate::assertLogical(priorObservation, any.missing = FALSE, len = 1)
   checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(dateOfBirth, any.missing = FALSE, len = 1)
   checkVariableInX(indexDate, x, !(age | priorObservation | futureObservation))
-  if (!(age | sex | priorObservation | futureObservation)) {
-    cli::cli_abort("age, sex, priorObservation, futureObservation can not be FALSE")
+  if (!(age | sex | priorObservation | futureObservation | dateOfBirth)) {
+    cli::cli_abort("age, sex, priorObservation, futureObservation and dateOfBirth can not be FALSE")
   }
   checkmate::assertCharacter(missingAgeGroupValue, len = 1, any.missing = FALSE)
   checkmate::assertCharacter(missingSexValue, len = 1, any.missing = FALSE)
@@ -133,6 +140,10 @@ addDemographics <- function(x,
     futureObservationName <- checkSnakeCase(futureObservationName)
     name <- c(name, futureObservationName)
   }
+  if (dateOfBirth) {
+    dateOfBirthName <- checkSnakeCase(dateOfBirthName)
+    name <- c(name, dateOfBirthName)
+  }
 
   checkNewName(name = name, x = x)
 
@@ -150,6 +161,10 @@ addDemographics <- function(x,
   # Start code
   startTibble <- x
   startNames <- colnames(x)
+
+  if(dateOfBirth){
+    startNames <- c(startNames,"date_of_birth")
+  }
 
   personDetails <- cdm[["person"]] %>%
     dplyr::select(
@@ -183,7 +198,7 @@ addDemographics <- function(x,
   }
 
   # update dates
-  if (age) {
+  if (age | dateOfBirth) {
     personDetails <- personDetails %>%
       dplyr::filter(!is.na(.data$year_of_birth)) %>%
       addDateOfBirth(
@@ -289,6 +304,11 @@ addDemographics <- function(x,
       ))
   }
 
+  if (dateOfBirth == TRUE) {
+    x <- x %>%
+      dplyr::rename(!!dateOfBirthName := "date_of_birth")
+  }
+
   x <- x %>% dplyr::compute()
 
   if (!is.null(ageGroup)) {
@@ -338,6 +358,13 @@ futureObservationQuery <- function(indexDate, name) {
                           "observation_period_end_date")') %>%
     rlang::parse_exprs() %>%
     rlang::set_names(glue::glue(name)))
+}
+
+futureObservationQuery <- function(indexDate, name) {
+  return(glue::glue('CDMConnector::datediff("{indexDate}",
+                          "observation_period_end_date")') %>%
+           rlang::parse_exprs() %>%
+           rlang::set_names(glue::glue(name)))
 }
 
 #' Compute the age of the individuals at a certain date
@@ -524,7 +551,7 @@ addInObservation <- function(x,
                              cdm = lifecycle::deprecated(),
                              indexDate = "cohort_start_date",
                              window = c(0,0),
-                             completeInterval = TRUE,
+                             completeInterval = FALSE,
                              name = lifecycle::deprecated(),
                              nameStyle = "in_observation") {
   if (lifecycle::is_present(cdm)) {
