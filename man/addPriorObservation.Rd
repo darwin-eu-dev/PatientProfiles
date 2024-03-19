@@ -36,7 +36,6 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addPriorObservation()
-
 CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

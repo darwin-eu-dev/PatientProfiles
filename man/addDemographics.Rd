@@ -22,7 +22,9 @@ addDemographics(
   priorObservation = TRUE,
   priorObservationName = "prior_observation",
   futureObservation = TRUE,
-  futureObservationName = "future_observation"
+  futureObservationName = "future_observation",
+  dateOfBirth = FALSE,
+  dateOfBirthName = "date_of_birth"
 )
 }
 \arguments{
@@ -71,6 +73,10 @@ indexDate and the end of the current observation period will be
 calculated.}
 
 \item{futureObservationName}{Future observation variable name.}
+
+\item{dateOfBirth}{TRUE or FALSE, if true the date of birth will be return.}
+
+\item{dateOfBirthName}{dateOfBirth column name.}
 }
 \value{
 cohort table with the added demographic information columns.

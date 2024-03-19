@@ -9,7 +9,7 @@ addInObservation(
   cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   window = c(0, 0),
-  completeInterval = TRUE,
+  completeInterval = FALSE,
   name = lifecycle::deprecated(),
   nameStyle = "in_observation"
 )
