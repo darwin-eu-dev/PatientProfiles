@@ -774,3 +774,41 @@ test_that("casing of empty dates", {
       is.numeric()
   )
 })
+
+test_that("cohortIntersect after observation", {
+  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
+
+  windows <- list(
+    c(-Inf, Inf), c(0,0), c(0, Inf), c(5000, 31000), c(31000, Inf),
+    c(31000, 45000)
+  )
+
+  expect_error(
+    x <- cdm$cohort1 |>
+      addCohortIntersectFlag(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "flag_{window_name}"
+      ) |>
+      addCohortIntersectCount(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "count_{window_name}"
+      ) |>
+      addCohortIntersectDays(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "days_{window_name}"
+      ) |>
+      addCohortIntersectDate(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "date_{window_name}"
+      ) |>
+      dplyr::collect()
+  )
+})

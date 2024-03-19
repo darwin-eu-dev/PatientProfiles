@@ -147,7 +147,6 @@ addIntersect <- function(x,
       id_name = .data$id_name,
       window_name = .data$window_name
     ))) %>%
-    dplyr::select("colnam", "value") %>%
     dplyr::mutate(colnam = checkSnakeCase(.data$colnam, verbose = F))
 
   overlapTable <- overlapTable %>%
@@ -434,6 +433,30 @@ addIntersect <- function(x,
         temporary = FALSE,
         overwrite = TRUE
       )
+  }
+
+  if (any(value %in% c("count", "flag"))) {
+    for (k in seq_along(window)) {
+      tmpName <- "tmp_col_12345"
+      cols <- newCols |>
+        dplyr::filter(
+          .data$window_name == names(window)[k] &
+            .data$value %in% c("count", "flag")
+        ) |>
+        dplyr::pull("colnam")
+      x <- x |>
+        addInObservation(
+          indexDate = indexDate,
+          window = window[[k]],
+          completeInterval = F,
+          nameStyle = tmpName
+        ) |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(cols),
+          .fns = ~ dplyr::if_else(tmp_col_12345 == 0, as.numeric(NA), .)
+        )) |>
+        dplyr::select(!dplyr::all_of(tmpName))
+    }
   }
 
   x <- dplyr::compute(x)
