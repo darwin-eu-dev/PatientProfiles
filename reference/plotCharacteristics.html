@@ -79,52 +79,77 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>data</dt>
-<dd><p>output of summariseCharacteristics</p></dd>
+<dd><p>output of summariseCharacteristics.</p></dd>
 
 
 <dt>xAxis</dt>
-<dd><p>what to plot on x axis, default as variable_name column. Has to be a column in data</p></dd>
+<dd><p>what to plot on x axis, default as variable_name column. Has to be a column in data.</p></dd>
 
 
 <dt>yAxis</dt>
-<dd><p>what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value</p></dd>
+<dd><p>what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.</p></dd>
 
 
 <dt>plotStyle</dt>
-<dd><p>Now allows boxplot or barplot only</p></dd>
+<dd><p>Now allows boxplot or barplot only.</p></dd>
 
 
 <dt>facetVars</dt>
-<dd><p>column in data to facet by</p></dd>
+<dd><p>column in data to facet by.</p></dd>
 
 
 <dt>colorVars</dt>
-<dd><p>column in data to color by</p></dd>
+<dd><p>column in data to color by.</p></dd>
 
 
 <dt>facetOrder</dt>
-<dd><p>order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars</p></dd>
+<dd><p>order of facet, make sure multiple facets are separated by period and in the order provided in facetVars.</p></dd>
 
 
 <dt>colorNames</dt>
-<dd><p>A vector or pre-selected color</p></dd>
+<dd><p>A vector or pre-selected color.</p></dd>
 
 
 <dt>vertical_x</dt>
-<dd><p>whether to display x axis string vertically</p></dd>
+<dd><p>whether to display x axis string vertically.</p></dd>
 
 
 <dt>options</dt>
-<dd><p>Other plot options in a list</p></dd>
+<dd><p>Other plot options in a list.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A ggplot</p>
+<p>A ggplot.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="summariseCharacteristics.html">summariseCharacteristics</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> cohort <span class="op">=</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>,</span></span>
+<span class="r-in"><span> ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">79</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> tableIntersect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> tableName <span class="op">=</span> <span class="st">"visit_occurrence"</span>, value <span class="op">=</span> <span class="st">"count"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>cohortIntersect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>, value <span class="op">=</span> <span class="st">"flag"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> adding demographics columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> adding table intersect columns for table: visit_occurrence</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> adding cohort intersect columns for table: cohort2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> summarising data</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> summariseCharacteristics finished!</span>
+<span class="r-in"><span><span class="va">graph</span> <span class="op">&lt;-</span> <span class="fu">plotCharacteristics</span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -79,7 +79,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>Table with individuals in the cdm</p></dd>
+<dd><p>Table with individuals in the cdm.</p></dd>
 
 
 <dt>cdm</dt>
@@ -88,13 +88,13 @@ cdm reference.</p></dd>
 
 
 <dt>targetCohortTable</dt>
-<dd><p>Cohort table to</p></dd>
+<dd><p>Cohort table to.</p></dd>
 
 
 <dt>targetCohortId</dt>
 <dd><p>Cohort IDs of interest from the other cohort table. If
 NULL, all cohorts will be used with a time variable added for each
-cohort of interest</p></dd>
+cohort of interest.</p></dd>
 
 
 <dt>indexDate</dt>
@@ -104,12 +104,12 @@ intersection.</p></dd>
 
 <dt>censorDate</dt>
 <dd><p>whether to censor overlap events at a specific date
-or a column date of x</p></dd>
+or a column date of x.</p></dd>
 
 
 <dt>targetDate</dt>
 <dd><p>Date of interest in the other cohort table. Either
-cohort_start_date or cohort_end_date</p></dd>
+cohort_start_date or cohort_end_date.</p></dd>
 
 
 <dt>order</dt>
@@ -124,7 +124,7 @@ Records outside of this time period will be ignored.</p></dd>
 
 <dt>nameStyle</dt>
 <dd><p>naming of the added column or columns, should include
-required parameters</p></dd>
+required parameters.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -143,13 +143,14 @@ required parameters</p></dd>
 <span class="r-in"><span>  <span class="fu">addCohortIntersectDate</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_027_1710867046&gt; [2 x 6]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_027_1710874821&gt; [2 x 6]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 2020-01-01        2020-04-01     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    1          1 2020-06-01        2020-08-01     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: cohort_2_0_to_inf &lt;date&gt;, cohort_1_0_to_inf &lt;date&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: cohort_1_0_to_inf &lt;date&gt;, cohort_2_0_to_inf &lt;date&gt;</span></span>
+<span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

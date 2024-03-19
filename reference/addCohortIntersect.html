@@ -90,7 +90,7 @@ occurrences, a flag of presence, a certain date and/or the time difference</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>Table with individuals in the cdm</p></dd>
+<dd><p>Table with individuals in the cdm.</p></dd>
 
 
 <dt>cdm</dt>
@@ -99,11 +99,11 @@ cdm reference.</p></dd>
 
 
 <dt>targetCohortTable</dt>
-<dd><p>name of the cohort that we want to check for overlap</p></dd>
+<dd><p>name of the cohort that we want to check for overlap.</p></dd>
 
 
 <dt>targetCohortId</dt>
-<dd><p>vector of cohort definition ids to include</p></dd>
+<dd><p>vector of cohort definition ids to include.</p></dd>
 
 
 <dt>indexDate</dt>
@@ -113,57 +113,57 @@ intersection.</p></dd>
 
 <dt>censorDate</dt>
 <dd><p>whether to censor overlap events at a specific date
-or a column date of x</p></dd>
+or a column date of x.</p></dd>
 
 
 <dt>targetStartDate</dt>
 <dd><p>date of reference in cohort table, either for start
-(in overlap) or on its own (for incidence)</p></dd>
+(in overlap) or on its own (for incidence).</p></dd>
 
 
 <dt>targetEndDate</dt>
 <dd><p>date of reference in cohort table, either for end
-(overlap) or NULL (if incidence)</p></dd>
+(overlap) or NULL (if incidence).</p></dd>
 
 
 <dt>window</dt>
-<dd><p>window to consider events of</p></dd>
+<dd><p>window to consider events of.</p></dd>
 
 
 <dt>order</dt>
-<dd><p>which record is considered in case of multiple records</p></dd>
+<dd><p>which record is considered in case of multiple records.</p></dd>
 
 
 <dt>flag</dt>
 <dd><p>TRUE or FALSE. If TRUE, flag will calculated for this
-intersection</p></dd>
+intersection.</p></dd>
 
 
 <dt>count</dt>
 <dd><p>TRUE or FALSE. If TRUE, the number of counts will be calculated
-for this intersection</p></dd>
+for this intersection.</p></dd>
 
 
 <dt>date</dt>
 <dd><p>TRUE or FALSE. If TRUE, date will be calculated for this
-intersection</p></dd>
+intersection.</p></dd>
 
 
 <dt>days</dt>
 <dd><p>TRUE or FALSE. If TRUE, time difference in days will be
-calculated for this intersection</p></dd>
+calculated for this intersection.</p></dd>
 
 
 <dt>nameStyle</dt>
 <dd><p>naming of the added column or columns, should include
-required parameters</p></dd>
+required parameters.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>table with added columns with overlap information</p>
+<p>table with added columns with overlap information.</p>
     </div>
 
     <div class="section level2">
@@ -181,17 +181,18 @@ required parameters</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> addCohortIntersectCount()</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> addCohortIntersectDate()</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> addCohortIntersectDays()</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_013_1710867040&gt; [2 x 12]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_013_1710874815&gt; [2 x 12]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 2020-01-01        2020-04-01     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    1          1 2020-06-01        2020-08-01     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: flag_cohort_1_0_to_inf &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: flag_cohort_2_0_to_inf &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   count_cohort_2_0_to_inf &lt;dbl&gt;, count_cohort_1_0_to_inf &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   flag_cohort_2_0_to_inf &lt;dbl&gt;, date_cohort_2_0_to_inf &lt;date&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   date_cohort_1_0_to_inf &lt;date&gt;, days_cohort_2_0_to_inf &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   days_cohort_1_0_to_inf &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   flag_cohort_1_0_to_inf &lt;dbl&gt;, date_cohort_1_0_to_inf &lt;date&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   date_cohort_2_0_to_inf &lt;date&gt;, days_cohort_1_0_to_inf &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   days_cohort_2_0_to_inf &lt;dbl&gt;</span></span>
+<span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

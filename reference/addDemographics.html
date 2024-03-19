@@ -89,7 +89,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>Table with individuals in the cdm</p></dd>
+<dd><p>Table with individuals in the cdm.</p></dd>
 
 
 <dt>cdm</dt>
@@ -104,11 +104,11 @@ demographics characteristics.</p></dd>
 
 <dt>age</dt>
 <dd><p>TRUE or FALSE. If TRUE, age will be calculated relative to
-indexDate</p></dd>
+indexDate.</p></dd>
 
 
 <dt>ageName</dt>
-<dd><p>Age variable name</p></dd>
+<dd><p>Age variable name.</p></dd>
 
 
 <dt>ageDefaultMonth</dt>
@@ -140,11 +140,11 @@ will be considered as missing for all the individuals.</p></dd>
 
 
 <dt>sex</dt>
-<dd><p>TRUE or FALSE. If TRUE, sex will be identified</p></dd>
+<dd><p>TRUE or FALSE. If TRUE, sex will be identified.</p></dd>
 
 
 <dt>sexName</dt>
-<dd><p>Sex variable name</p></dd>
+<dd><p>Sex variable name.</p></dd>
 
 
 <dt>missingSexValue</dt>
@@ -153,21 +153,21 @@ will be considered as missing for all the individuals.</p></dd>
 
 <dt>priorObservation</dt>
 <dd><p>TRUE or FALSE. If TRUE, days of between the start
-of the current observation period and the indexDate will be calculated</p></dd>
+of the current observation period and the indexDate will be calculated.</p></dd>
 
 
 <dt>priorObservationName</dt>
-<dd><p>Prior observation variable name</p></dd>
+<dd><p>Prior observation variable name.</p></dd>
 
 
 <dt>futureObservation</dt>
 <dd><p>TRUE or FALSE. If TRUE, days between the
 indexDate and the end of the current observation period will be
-calculated</p></dd>
+calculated.</p></dd>
 
 
 <dt>futureObservationName</dt>
-<dd><p>Future observation variable name</p></dd>
+<dd><p>Future observation variable name.</p></dd>
 
 
 <dt>dateOfBirth</dt>
@@ -175,14 +175,14 @@ calculated</p></dd>
 
 
 <dt>dateOfBirthName</dt>
-<dd><p>dateOfBirth column name</p></dd>
+<dd><p>dateOfBirth column name.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>cohort table with the added demographic information columns</p>
+<p>cohort table with the added demographic information columns.</p>
     </div>
 
     <div class="section level2">
@@ -192,13 +192,14 @@ calculated</p></dd>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">addDemographics</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_043_1710867068&gt; [2 x 8]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_102_1710874860&gt; [2 x 8]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date   age sex   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 2020-01-01        2020-04-01         27 Female</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    1          1 2020-06-01        2020-08-01         27 Female</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: prior_observation &lt;dbl&gt;, future_observation &lt;dbl&gt;</span></span>
+<span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
