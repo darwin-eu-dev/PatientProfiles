@@ -17,9 +17,9 @@
 #' Classify the variables between 5 types: "numeric", "categorical", "binary",
 #' "date", or NA.
 #'
-#' @param table Tibble
+#' @param table Tibble.
 #'
-#' @return Tibble with the variables type and classification
+#' @return Tibble with the variables type and classification.
 #'
 #' @examples
 #' \donttest{
@@ -82,7 +82,7 @@ assertClassification <- function(x) {
 #' or "categorical".
 #'
 #' @return A tibble with the available functions for a certain variable
-#' classification (or all if NULL)
+#' classification (or all if NULL).
 #'
 #' @examples
 #' \donttest{

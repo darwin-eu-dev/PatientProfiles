@@ -15,24 +15,24 @@ addDateOfBirth(
 )
 }
 \arguments{
-\item{x}{Table in the cdm that contains 'person_id' or 'subject_id'}
+\item{x}{Table in the cdm that contains 'person_id' or 'subject_id'.}
 
 \item{cdm}{A cdm_reference object.}
 
-\item{name}{Name of the column to be added with the date of birth}
+\item{name}{Name of the column to be added with the date of birth.}
 
-\item{missingDay}{Day of the individuals with no or imposed day of birth}
+\item{missingDay}{Day of the individuals with no or imposed day of birth.}
 
 \item{missingMonth}{Month of the individuals with no or imposed month of
-birth}
+birth.}
 
-\item{imposeDay}{Whether to impose day of birth}
+\item{imposeDay}{Whether to impose day of birth.}
 
-\item{imposeMonth}{Whether to impose month of birth}
+\item{imposeMonth}{Whether to impose month of birth.}
 }
 \value{
 The function returns the table x with an extra column that contains
-the date of birth
+the date of birth.
 }
 \description{
 Add a column with the individual birth date
@@ -43,5 +43,6 @@ library(PatientProfiles)
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addDateOfBirth()
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

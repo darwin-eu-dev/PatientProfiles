@@ -17,33 +17,33 @@
 #' Compute the intersect with a target cohort, you can compute the number of
 #' occurrences, a flag of presence, a certain date and/or the time difference
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param targetCohortTable name of the cohort that we want to check for overlap
-#' @param targetCohortId vector of cohort definition ids to include
+#' @param targetCohortTable name of the cohort that we want to check for overlap.
+#' @param targetCohortId vector of cohort definition ids to include.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
+#' or a column date of x.
 #' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
+#' (in overlap) or on its own (for incidence).
 #' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
-#' @param window window to consider events of
-#' @param order which record is considered in case of multiple records
+#' (overlap) or NULL (if incidence).
+#' @param window window to consider events of.
+#' @param order which record is considered in case of multiple records.
 #' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
-#' intersection
+#' intersection.
 #' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
-#' for this intersection
+#' for this intersection.
 #' @param date TRUE or FALSE. If TRUE, date will be calculated for this
-#' intersection
+#' intersection.
 #' @param days TRUE or FALSE. If TRUE, time difference in days will be
-#' calculated for this intersection
+#' calculated for this intersection.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
-#' @return table with added columns with overlap information
+#' @return table with added columns with overlap information.
 #' @export
 #'
 #' @examples
@@ -54,6 +54,7 @@
 #'   addCohortIntersect(
 #'     targetCohortTable = "cohort2"
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersect <- function(x,
@@ -136,24 +137,24 @@ addCohortIntersect <- function(x,
 
 #' It creates columns to indicate the presence of cohorts
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param targetCohortTable name of the cohort that we want to check for overlap
-#' @param targetCohortId vector of cohort definition ids to include
+#' @param targetCohortTable name of the cohort that we want to check for overlap.
+#' @param targetCohortId vector of cohort definition ids to include.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
+#' or a column date of x.
 #' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
+#' (in overlap) or on its own (for incidence).
 #' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
-#' @param window window to consider events of
+#' (overlap) or NULL (if incidence).
+#' @param window window to consider events of.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
-#' @return table with added columns with overlap information
+#' @return table with added columns with overlap information.
 #' @export
 #'
 #' @examples
@@ -164,6 +165,7 @@ addCohortIntersect <- function(x,
 #'   addCohortIntersectFlag(
 #'     targetCohortTable = "cohort2"
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectFlag <- function(x,
@@ -206,24 +208,24 @@ addCohortIntersectFlag <- function(x,
 #' It creates columns to indicate number of occurrences of intersection with a
 #' cohort
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param targetCohortTable name of the cohort that we want to check for overlap
-#' @param targetCohortId vector of cohort definition ids to include
+#' @param targetCohortTable name of the cohort that we want to check for overlap.
+#' @param targetCohortId vector of cohort definition ids to include.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
+#' or a column date of x.
 #' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
+#' (in overlap) or on its own (for incidence).
 #' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
-#' @param window window to consider events of
+#' (overlap) or NULL (if incidence).
+#' @param window window to consider events of.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
-#' @return table with added columns with overlap information
+#' @return table with added columns with overlap information.
 #' @export
 #'
 #' @examples
@@ -234,6 +236,7 @@ addCohortIntersectFlag <- function(x,
 #'   addCohortIntersectCount(
 #'     targetCohortTable = "cohort2"
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectCount <- function(x,
@@ -276,25 +279,25 @@ addCohortIntersectCount <- function(x,
 #' It creates columns to indicate the number of days between the current table
 #' and a target cohort
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param targetCohortTable Cohort table to
+#' @param targetCohortTable Cohort table to.
 #' @param targetCohortId Cohort IDs of interest from the other cohort table. If
 #' NULL, all cohorts will be used with a days variable added for each
-#' cohort of interest
+#' cohort of interest.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
+#' or a column date of x.
 #' @param targetDate Date of interest in the other cohort table. Either
-#' cohort_start_date or cohort_end_date
+#' cohort_start_date or cohort_end_date.
 #' @param order date to use if there are multiple records for an
 #' individual during the window of interest. Either first or last.
 #' @param window Window of time to identify records relative to the indexDate.
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return x along with additional columns for each cohort of interest.
 #' @export
@@ -307,6 +310,7 @@ addCohortIntersectCount <- function(x,
 #'   addCohortIntersectDays(
 #'     targetCohortTable = "cohort2"
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectDays <- function(x,
@@ -350,25 +354,25 @@ addCohortIntersectDays <- function(x,
 
 #' Date of cohorts that are present in a certain window
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
 #' cdm reference.
-#' @param targetCohortTable Cohort table to
+#' @param targetCohortTable Cohort table to.
 #' @param targetCohortId Cohort IDs of interest from the other cohort table. If
 #' NULL, all cohorts will be used with a time variable added for each
-#' cohort of interest
+#' cohort of interest.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x
+#' or a column date of x.
 #' @param targetDate Date of interest in the other cohort table. Either
-#' cohort_start_date or cohort_end_date
+#' cohort_start_date or cohort_end_date.
 #' @param order date to use if there are multiple records for an
 #' individual during the window of interest. Either first or last.
 #' @param window Window of time to identify records relative to the indexDate.
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return x along with additional columns for each cohort of interest.
 #' @export
@@ -381,6 +385,7 @@ addCohortIntersectDays <- function(x,
 #'   addCohortIntersectDate(
 #'     targetCohortTable = "cohort2"
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectDate <- function(x,

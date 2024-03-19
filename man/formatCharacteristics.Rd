@@ -23,17 +23,19 @@ formatCharacteristics(
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", "tibble".}
 
-\item{splitStrata}{.}
+\item{splitStrata}{Whether or not to split the strata, deault is True.}
 
-\item{format}{.}
+\item{format}{The columns that the user wishes to see for the
+formatted table.}
 
-\item{cdmName}{.}
+\item{cdmName}{Whether or not to display the cdm name, default is TRUE.}
 
-\item{cohortName}{.}
+\item{cohortName}{Weather or not to display the cohort name, default is TRUE.}
 
-\item{style}{.}
+\item{style}{The style of the table output.}
 
-\item{minCellCount}{.}
+\item{minCellCount}{Default is 5, meaing results that are more than
+0 but less than 5 will not be reported.}
 
 \item{.options}{See optionsTableCharacteristics() for default values.}
 }
@@ -53,6 +55,7 @@ cdm <- mockPatientProfiles()
 cdm$cohort1 |>
   summariseCharacteristics() |>
   formatCharacteristics()
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

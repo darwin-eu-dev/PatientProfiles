@@ -7,10 +7,10 @@
 endDateColumn(tableName)
 }
 \arguments{
-\item{tableName}{Name of the table}
+\item{tableName}{Name of the table.}
 }
 \value{
-Name of the end date column in that table
+Name of the end date column in that table.
 }
 \description{
 Get the name of the end date column for a certain table in the cdm
