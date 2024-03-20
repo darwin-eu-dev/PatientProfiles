@@ -44,10 +44,17 @@
 #'   cohort = cdm$cohort1,
 #'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
 #'   tableIntersect = list(
-#'     tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+#'     "Number visits prior year" = list(
+#'       tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+#'     )
 #'   ),
 #'   cohortIntersect = list(
-#'     targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     "Drugs prior year" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     ),
+#'     "Conditions any time prior" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-Inf, -1)
+#'     )
 #'   )
 #' )
 #' CDMConnector::cdmDisconnect(cdm = cdm)

@@ -521,12 +521,48 @@ checkTableIntersect <- function(tableIntersect, cdm) {
       tableIntersect <- list(tableIntersect)
     }
   }
-  lapply(tableIntersect, function(x) {
-    checkmate::assertList(x, names = "named")
-    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
-    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
-  })
+  assertInputIntersect(
+    inputList = tableIntersect,
+    possibleArguments = c(arguments$all, "value"),
+    compulsoryArguments = arguments$compulsory,
+    nameFunction = "tableIntersect",
+    values = c("count", "flag", "date", "days")
+  )
+  # add naming
   return(tableIntersect)
+}
+
+assertInputIntersect <- function(inputList,
+                                 possibleArguments,
+                                 compulsoryArguments,
+                                 nameFunction,
+                                 values = c("count", "flag", "date", "days")) {
+  lapply(inputList, function(x) {
+    if (!is.list(x) | length(names(x)) != length(x)) {
+      cli::cli_abort(
+        "inputs of {nameFunction} must be a named list, see examples."
+      )
+    }
+    allArgs <- names(x)
+    notValidArgs <- allArgs[!allArgs %in% possibleArguments]
+    if (length(notValidArgs) > 0) {
+      cli::cli_alert_danger(
+        "Not valid args for {nameFunction}: {paste0(notValidArgs, collapse = ', ')}."
+      )
+    }
+    notPresent <- compulsoryArguments[!compulsoryArguments %in% names(x)]
+    if (length(notPresent) > 0) {
+      cli::cli_abort(
+        "Required arguments not provided for {nameFunction}: {paste0(notPresent, collapse = ', ')}"
+      )
+    }
+    val <- x$value[!x$value %in% values]
+    if (length(val) > 0) {
+      cli::cli_abort(c(
+        "Wrong value for {nameFunction}: {paste0(val, collapse = ', ')}. Possible values: {paste0(values, collapse = ', ')}",
+      ))
+    }
+  })
 }
 
 getArguments <- function(fun) {
