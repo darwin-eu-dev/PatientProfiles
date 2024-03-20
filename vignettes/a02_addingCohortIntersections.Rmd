@@ -1,0 +1,280 @@
+---
+title: "Adding cohort intersections"
+output: 
+  html_document:
+    pandoc_args: [
+      "--number-offset=1,0"
+      ]
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{a02_addinigCohortIntersections}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+Cohorts are often a key component in studies that use the OMOP CDM. Cohorts may be created to represent various clinical events of interest and we often use cohorts in combination, whether it is to identify outcomes among people with an exposure of interest, report baseline comorbidites among a certain study population, or for many other possible reasons.
+
+Cohorts have a particular format in the OMOP CDM, which we can see for two cohort tables created by the `mockPatientProfiles()` function provided by PatientProfiles, which mimics a database in the OMOP CDM format. We can see the first cohort table contains 2 cohorts while the second contains 3 cohorts.
+
+```{r, message= FALSE, warning=FALSE}
+library(CDMConnector)
+library(PatientProfiles)
+library(duckdb)
+library(dplyr)
+library(ggplot2)
+
+cdm <- mockPatientProfiles(
+  patient_size = 1000,
+  drug_exposure_size = 1000
+)
+
+# In this mock dataset there are the following cohort tables:
+cdm$cohort1 %>%
+  glimpse()
+settings(cdm$cohort1)
+
+cdm$cohort2 %>%
+  glimpse()
+settings(cdm$cohort2)
+```
+
+## Identifying cohort intersections
+
+PatientProfiles provides four functions for identifying cohort intersections (the presence of an individual in two cohorts). The first `addCohortIntersectFlag()` adds a flag of whether someone appeared in the other cohort during a time window. The second, `addCohortIntersectCount()`, counts the number of times someone appeared in the other cohort in the window. A third, `addCohortIntersectDate()`, adds the date when the intersection occurred. And the fourth, `addCohortIntersectDays()`, add the number of days to the intersection. 
+
+We can see each of these below. Note that they add variables to our cohort table of interest, and identify intersections over a given window. As we can see below, if our target cohort table contains multiple cohorts, by default these functions will add one new variable per cohort.
+
+Let's start by adding flag and count variables using a window of 180 days before to 180 days after the cohort start date in our table of interest. By default the cohort start date of our cohort of interest will be used as the index date, with the cohort start to cohort end date of the target cohort then used to check for an intersection.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectFlag(indexDate = "cohort_start_date",
+    targetCohortTable = "cohort2",
+    targetStartDate = "cohort_start_date",
+    targetEndDate = "cohort_end_date",
+    window = list(c(-180, 180)) 
+  ) |> 
+  glimpse()
+
+cdm$cohort1 %>%
+  addCohortIntersectCount(indexDate = "cohort_start_date",
+    targetCohortTable = "cohort2",
+    targetStartDate = "cohort_start_date",
+    targetEndDate = "cohort_end_date",
+    window = list(c(-180, 180)) 
+  ) |> 
+  glimpse()
+```
+
+Next we can add the date of the intersection and the days to the intersection. Note that when identifying these variables we look at only one date in our target table, which by default will be the cohort start date. In addition by default the first intersection that occurs within our window will be used.   
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectDate(indexDate = "cohort_start_date",
+    targetCohortTable = "cohort2",
+    targetDate = "cohort_start_date",
+    window = list(c(-180, 180)), 
+    order = "first" 
+  ) |> 
+  glimpse()
+
+cdm$cohort1 %>%
+  addCohortIntersectDays(indexDate = "cohort_start_date",
+    targetCohortTable = "cohort2",
+    targetDate = "cohort_start_date",
+    window = list(c(-180, 180)), 
+    order = "first"  
+  ) |> 
+  glimpse()
+```
+
+
+## Options for identifying cohort intersection
+To consider the impact of the different options we can choose when identifying cohort intersections let´s consider a toy example with a single patient with common cold (diagnosed on the 1st February 2020 and ending on the 15th February 2020). Let's say this person had two records for aspirin, one ending shortly before their start date for common cold and the other starting during their record for common cold.
+
+```{r, message= FALSE, warning=FALSE}
+common_cold <- dplyr::tibble(
+    cohort_definition_id = 1,
+    subject_id = 1,
+    cohort_start_date = as.Date("2020-02-01"),
+    cohort_end_date = as.Date("2020-02-15")
+  )
+
+aspirin <- dplyr::tibble(
+    cohort_definition_id = c(1, 1),
+    subject_id = c(1, 1),
+    cohort_start_date = as.Date(c("2020-01-01", "2020-02-10")),
+    cohort_end_date = as.Date(c("2020-01-28", "2020-03-15"))
+  )
+ 
+bind_rows(common_cold |> mutate(cohort = "common cold"),
+          aspirin |> mutate(cohort = "aspirin")) |> 
+  mutate(record = as.character(row_number())) |>
+  ggplot() +
+geom_segment(aes(x = cohort_start_date, 
+                 y = cohort,
+                 xend = cohort_end_date, 
+                 yend = cohort, col = cohort, fill = cohort),
+            size = 4.5, alpha = .5) +
+  geom_point(aes(x = cohort_start_date, y = cohort, color = cohort), size = 4) +
+  geom_point(aes(x = cohort_end_date, y = cohort, color = cohort), size = 4) +
+  ylab("") +
+  xlab("")+
+  theme_minimal() +
+  theme(legend.position = "none")
+```  
+  
+Whether we consider there to be a cohort intersection will depend on what options we choose. To see this let's first create a cdm reference containing our example.
+
+```{r, message= FALSE, warning=FALSE}
+cdm <- mockPatientProfiles(
+  list(
+    con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+    write_schema = "main"
+  ),
+  cohort1 = common_cold,
+  cohort2 = aspirin,
+  patient_size = 2
+)
+```
+
+If we consider the intersection relative to the cohort start date for common cold with a window of 0 to 0 (ie only the index date) then no intersection will be identified as the individual did not have an ongoing record for aspirin on that date.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectFlag(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetStartDate = "cohort_start_date",
+    targetEndDate = "cohort_end_date",
+    window = list(c(0, 0)), 
+  ) |> 
+  glimpse()
+```
+
+We could, however, change the index date to cohort end date in which case an intersection would be found.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectFlag(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_end_date", 
+    targetStartDate = "cohort_start_date",
+    targetEndDate = "cohort_end_date",
+    window = list(c(0, 0)), 
+  ) |> 
+  glimpse()
+```
+
+Or we could also extend the window to include more time before or after which in both cases would lead to cohort intersections being found.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectFlag(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetStartDate = "cohort_start_date",
+    targetEndDate = "cohort_end_date",
+    window = list(c(-90, 90)), 
+  ) |> 
+  glimpse()
+```
+
+With a window of 90 days before to 90 days after cohort start, the person would have a count of two cohort intersections.  
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectCount(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetStartDate = "cohort_start_date",
+    targetEndDate = "cohort_end_date",
+    window = list(c(-90, 90)), 
+  ) |> 
+  glimpse()
+```
+
+With this same window, if we add the first cohort intersect date we will get the start date of the first record of aspirin.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectDate(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetDate = "cohort_start_date",
+    window = list(c(-90, 90)), 
+    order = "first"
+  ) |> 
+  glimpse()
+```
+
+But if we instead set order to last, we get the start date of the second record of aspirin.
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectDate(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetDate = "cohort_start_date",
+    window = list(c(-90, 90)), 
+    order = "last"
+  ) |> 
+  glimpse()
+```
+
+## Naming conventions for new variables
+
+One last option relates to the naming convention used to for the new variables.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectDate(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetDate = "cohort_start_date",
+    window = list(c(-90, 90)), 
+    order = "last",
+    nameStyle = "{cohort_name}_{window_name}"
+  ) |> 
+  glimpse()
+```
+
+We can instead choose a specific name (but this will only work if only one new variable will be added, otherwise we will get an error to avoid duplicate names).
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 %>%
+  addCohortIntersectDate(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetDate = "cohort_start_date",
+    window = list(c(-90, 90)), 
+    order = "last",
+    nameStyle = "my_new_variable"
+  ) |> 
+  glimpse()
+```
+
+In the other direction we could also include the estimate type in the name. This will be useful, for example, if we're adding multiple different types of intersection values.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 |> 
+  addCohortIntersectDate(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetDate = "cohort_start_date",
+    window = list(c(-90, 90)), 
+    order = "last",
+    nameStyle = "{cohort_name}_{window_name}_{value}"
+  ) |> 
+  addCohortIntersectDays(
+    targetCohortTable = "cohort2",
+    indexDate = "cohort_start_date", 
+    targetDate = "cohort_start_date",
+    window = list(c(-90, 90)), 
+    order = "last",
+    nameStyle = "{cohort_name}_{window_name}_{value}"
+  ) |> 
+  glimpse()
+```

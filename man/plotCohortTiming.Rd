@@ -37,7 +37,7 @@ plotCohortTiming(
 \item{facetBy}{Vector of column names  in the cohort_overlap table for faceting the
 ggplot object.}
 
-\item{color}{Vector of column names to distict by colors.}
+\item{color}{Vector of column names to distinct by colors.}
 
 \item{timingLabel}{A glue expression to identify each plotted cohort
 overlap.}
@@ -53,6 +53,11 @@ Plot cohort_overlap objects.
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+timing <- summariseCohortTiming(cdm$cohort2)
+plotCohortTiming(timing)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

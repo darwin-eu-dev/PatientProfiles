@@ -7,10 +7,10 @@
 startDateColumn(tableName)
 }
 \arguments{
-\item{tableName}{Name of the table}
+\item{tableName}{Name of the table.}
 }
 \value{
-Name of the start date column in that table
+Name of the start date column in that table.
 }
 \description{
 Get the name of the start date column for a certain table in the cdm

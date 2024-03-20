@@ -29,7 +29,7 @@ tableCohortOverlap(
 
 \item{strataLevel}{Names of the strata levels to include.}
 
-\item{splitStrata}{If TRUE strata name-levle columns will be splitted.}
+\item{splitStrata}{If TRUE strata name-level columns will be split.}
 
 \item{cdmName}{Name of the databases to include.}
 
@@ -52,6 +52,11 @@ Format a cohort_overlap object into a visual table.
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+results <- summariseCohortOverlap(cdm$cohort2)
+table <- tableCohortOverlap(results)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

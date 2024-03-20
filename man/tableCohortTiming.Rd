@@ -41,7 +41,7 @@ tableCohortTiming(
 \item{header}{Vector with names and column names to use in the header of gt
 and flextable.}
 
-\item{splitStrata}{If TRUE strata name-levle columns will be splitted.}
+\item{splitStrata}{If TRUE strata name-level columns will be split.}
 
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", or "tibble".}
@@ -60,6 +60,11 @@ Format a cohort_timing object into a visual table.
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+results <- summariseCohortTiming(cdm$cohort2)
+table <- tableCohortTiming(results)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

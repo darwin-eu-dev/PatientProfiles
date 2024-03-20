@@ -22,7 +22,7 @@ addConceptIntersect(
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{conceptSet}{Concept set list.}
 
@@ -34,27 +34,27 @@ intersection.}
 \item{window}{window to consider events in.}
 
 \item{targetStartDate}{date of reference in cohort table, either for start
-(in overlap) or on its own (for incidence)}
+(in overlap) or on its own (for incidence).}
 
 \item{targetEndDate}{date of reference in cohort table, either for end
-(overlap) or NULL (if incidence)}
+(overlap) or NULL (if incidence).}
 
-\item{order}{which record is considered in case of multiple records}
+\item{order}{which record is considered in case of multiple records.}
 
 \item{flag}{TRUE or FALSE. If TRUE, flag will calculated for this
-intersection}
+intersection.}
 
 \item{count}{TRUE or FALSE. If TRUE, the number of counts will be calculated
-for this intersection}
+for this intersection.}
 
 \item{date}{TRUE or FALSE. If TRUE, date will be calculated for this
-intersection}
+intersection.}
 
 \item{days}{TRUE or FALSE. If TRUE, time difference in days will be
-calculated for this intersection}
+calculated for this intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with overlap information
@@ -66,14 +66,26 @@ concept
 \examples{
 \donttest{
 library(PatientProfiles)
-library(CodelistGenerator)
-
 cdm <- mockPatientProfiles()
-# result <- cdm$cohort1 \%>\%
-#   addConceptIntersect(
-#     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#  ) \%>\%
-#   dplyr::collect()
-}
+ concept <- dplyr::tibble(
+  concept_id = c(1125315),
+  domain_id = "Drug",
+  vocabulary_id = NA_character_,
+  concept_class_id = "Ingredient",
+  standard_concept = "S",
+  concept_code = NA_character_,
+  valid_start_date = as.Date("1900-01-01"),
+  valid_end_date = as.Date("2099-01-01"),
+  invalid_reason = NA_character_
+ ) \%>\%
+ dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+ cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+result <- cdm$cohort1 \%>\%
+ addConceptIntersect(
+  conceptSet = list("acetaminophen"=1125315)
+  ) \%>\%
+ dplyr::collect()
+ CDMConnector::cdmDisconnect(cdm = cdm)
+ }
 
 }

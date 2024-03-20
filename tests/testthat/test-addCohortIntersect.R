@@ -774,3 +774,56 @@ test_that("casing of empty dates", {
       is.numeric()
   )
 })
+
+test_that("cohortIntersect after observation", {
+  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
+
+  windows <- list(
+    c(-Inf, Inf), c(0,0), c(0, Inf), c(5000, 31000), c(31000, Inf),
+    c(31000, 45000), c(-Inf, -5000), c(-Inf, -6000), c(-8000, -6000)
+  )
+
+  expect_no_error(
+    x <- cdm$cohort1 |>
+      addCohortIntersectFlag(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "flag_{window_name}"
+      ) |>
+      addCohortIntersectCount(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "count_{window_name}"
+      ) |>
+      addCohortIntersectDays(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "days_{window_name}"
+      ) |>
+      addCohortIntersectDate(
+        targetCohortTable = "cohort2",
+        targetCohortId = 1,
+        window = windows,
+        nameStyle = "date_{window_name}"
+      ) |>
+      dplyr::collect()
+  )
+
+  windows <- checkWindow(windows)
+  out <- c(5, 6, 8, 9)
+  for (k in seq_along(windows)) {
+    for (val in c("flag", "count", "date", "days")) {
+      col <- paste0(val, "_", names(windows)[k])
+      expect_true(col %in% colnames(x))
+      if (k %in% out) {
+        expect_true(all(is.na(x[[col]])))
+      } else if (val %in% c("flag", "count")) {
+        expect_true(all(!is.na(x[[col]])))
+      }
+    }
+  }
+
+})

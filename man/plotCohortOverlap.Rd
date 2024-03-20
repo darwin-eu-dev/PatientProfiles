@@ -49,6 +49,10 @@ Plot cohort_overlap objects.
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+overlap <- summariseCohortOverlap(cdm$cohort2)
+plotCohortOverlap(overlap)
 }
 
 }

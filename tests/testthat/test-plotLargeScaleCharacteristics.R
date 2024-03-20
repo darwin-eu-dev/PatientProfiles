@@ -117,6 +117,12 @@ test_that("Function returns a ggplot object", {
     facetOrder = levels_ordered
   )
 
-  expect_true(ggplot2::is.ggplot(plot_multiple))#
+  expect_true(ggplot2::is.ggplot(plot_multiple))
+
+  #do not throw error even if they do not specify color or facet
+  expect_no_error(plotLargeScaleCharacteristics(
+    data =  test_data,
+    xAxis = "variable_name",
+    yAxis = "estimate_value"))
 
 })

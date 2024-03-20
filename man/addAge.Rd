@@ -43,7 +43,7 @@ as missing for all the individuals.}
 \item{missingAgeGroupValue}{Value to include if missing age.}
 }
 \value{
-tibble with the age column added
+tibble with the age column added.
 }
 \description{
 Compute the age of the individuals at a certain date
@@ -54,5 +54,6 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 |>
   addAge()
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

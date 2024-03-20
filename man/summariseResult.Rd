@@ -3,7 +3,7 @@
 \name{summariseResult}
 \alias{summariseResult}
 \title{Summarise variables using a set of estimate functions. The output will be
-a formatted summaried_result object.}
+a formatted summarised_result object.}
 \usage{
 summariseResult(
   table,
@@ -19,7 +19,7 @@ summariseResult(
 )
 }
 \arguments{
-\item{table}{Table with different records}
+\item{table}{Table with different records.}
 
 \item{group}{List of groups to be considered.}
 
@@ -48,7 +48,7 @@ A summarised_result object with the summarised data of interest.
 }
 \description{
 Summarise variables using a set of estimate functions. The output will be
-a formatted summaried_result object.
+a formatted summarised_result object.
 }
 \examples{
 \donttest{
@@ -60,6 +60,7 @@ x <- cdm$cohort1 \%>\%
   addDemographics() \%>\%
   collect()
 result <- summariseResult(x)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

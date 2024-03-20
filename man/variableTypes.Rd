@@ -8,10 +8,10 @@
 variableTypes(table)
 }
 \arguments{
-\item{table}{Tibble}
+\item{table}{Tibble.}
 }
 \value{
-Tibble with the variables type and classification
+Tibble with the variables type and classification.
 }
 \description{
 Classify the variables between 5 types: "numeric", "categorical", "binary",

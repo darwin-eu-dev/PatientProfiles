@@ -12,7 +12,7 @@ addSex(
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{cdm}{A cdm_reference object.}
 
@@ -21,7 +21,7 @@ addSex(
 \item{missingSexValue}{Value to include if missing sex.}
 }
 \value{
-table x with the added column with sex information
+table x with the added column with sex information.
 }
 \description{
 Compute the sex of the individuals
@@ -31,6 +31,7 @@ Compute the sex of the individuals
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addSex()
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

@@ -19,34 +19,34 @@ addCohortIntersectCount(
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
 
-\item{targetCohortTable}{name of the cohort that we want to check for overlap}
+\item{targetCohortTable}{name of the cohort that we want to check for overlap.}
 
-\item{targetCohortId}{vector of cohort definition ids to include}
+\item{targetCohortId}{vector of cohort definition ids to include.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
 
 \item{censorDate}{whether to censor overlap events at a specific date
-or a column date of x}
+or a column date of x.}
 
 \item{targetStartDate}{date of reference in cohort table, either for start
-(in overlap) or on its own (for incidence)}
+(in overlap) or on its own (for incidence).}
 
 \item{targetEndDate}{date of reference in cohort table, either for end
-(overlap) or NULL (if incidence)}
+(overlap) or NULL (if incidence).}
 
-\item{window}{window to consider events of}
+\item{window}{window to consider events of.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
-table with added columns with overlap information
+table with added columns with overlap information.
 }
 \description{
 It creates columns to indicate number of occurrences of intersection with a
@@ -60,6 +60,7 @@ cdm$cohort1 \%>\%
   addCohortIntersectCount(
     targetCohortTable = "cohort2"
   )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

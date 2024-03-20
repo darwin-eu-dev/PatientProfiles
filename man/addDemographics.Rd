@@ -22,11 +22,13 @@ addDemographics(
   priorObservation = TRUE,
   priorObservationName = "prior_observation",
   futureObservation = TRUE,
-  futureObservationName = "future_observation"
+  futureObservationName = "future_observation",
+  dateOfBirth = FALSE,
+  dateOfBirthName = "date_of_birth"
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
 cdm reference.}
@@ -35,9 +37,9 @@ cdm reference.}
 demographics characteristics.}
 
 \item{age}{TRUE or FALSE. If TRUE, age will be calculated relative to
-indexDate}
+indexDate.}
 
-\item{ageName}{Age variable name}
+\item{ageName}{Age variable name.}
 
 \item{ageDefaultMonth}{Month of the year assigned to individuals with missing
 month of birth.}
@@ -55,25 +57,29 @@ will be considered as missing for all the individuals.}
 
 \item{missingAgeGroupValue}{Value to include if missing age.}
 
-\item{sex}{TRUE or FALSE. If TRUE, sex will be identified}
+\item{sex}{TRUE or FALSE. If TRUE, sex will be identified.}
 
-\item{sexName}{Sex variable name}
+\item{sexName}{Sex variable name.}
 
 \item{missingSexValue}{Value to include if missing sex.}
 
 \item{priorObservation}{TRUE or FALSE. If TRUE, days of between the start
-of the current observation period and the indexDate will be calculated}
+of the current observation period and the indexDate will be calculated.}
 
-\item{priorObservationName}{Prior observation variable name}
+\item{priorObservationName}{Prior observation variable name.}
 
 \item{futureObservation}{TRUE or FALSE. If TRUE, days between the
 indexDate and the end of the current observation period will be
-calculated}
+calculated.}
 
-\item{futureObservationName}{Future observation variable name}
+\item{futureObservationName}{Future observation variable name.}
+
+\item{dateOfBirth}{TRUE or FALSE, if true the date of birth will be return.}
+
+\item{dateOfBirthName}{dateOfBirth column name.}
 }
 \value{
-cohort table with the added demographic information columns
+cohort table with the added demographic information columns.
 }
 \description{
 Compute demographic characteristics at a certain date
@@ -84,6 +90,7 @@ library(PatientProfiles)
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addDemographics()
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

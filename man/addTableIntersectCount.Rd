@@ -33,7 +33,7 @@ or a column date of x.}
 intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with intersect information.
@@ -47,6 +47,8 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addTableIntersectCount(tableName = "visit_occurrence")
+
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

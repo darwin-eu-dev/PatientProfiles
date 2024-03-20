@@ -19,13 +19,14 @@
 #' @param result A summarised_characteristics object.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
-#' @param format .
-#' @param splitStrata .
-#' @param format .
-#' @param cdmName .
-#' @param cohortName .
-#' @param style .
-#' @param minCellCount .
+#' @param splitStrata Whether or not to split the strata, deault is True.
+#' @param format The columns that the user wishes to see for the
+#' formatted table.
+#' @param cdmName Whether or not to display the cdm name, default is TRUE.
+#' @param cohortName Weather or not to display the cohort name, default is TRUE.
+#' @param style The style of the table output.
+#' @param minCellCount Default is 5, meaing results that are more than
+#' 0 but less than 5 will not be reported.
 #' @param .options See optionsTableCharacteristics() for default values.
 #'
 #' @examples
@@ -37,6 +38,7 @@
 #' cdm$cohort1 |>
 #'   summariseCharacteristics() |>
 #'   formatCharacteristics()
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A tibble with a tidy version of the summarised_characteristics
@@ -194,7 +196,6 @@ defaultCharacteristicsOptions <- function(.options) {
 #' It provides a list of allowed inputs for .option argument in
 #' formatCharacteristics. and their given default values.
 #'
-#'
 #' @return The default .options named list.
 #'
 #' @export
@@ -216,7 +217,7 @@ optionsTableCharacteristics <- function() {
 #' @param cohortNameComparator Names of the comparator cohorts to include.
 #' @param strataName Names of the strata names to include.
 #' @param strataLevel Names of the strata levels to include.
-#' @param splitStrata If TRUE strata name-levle columns will be splitted.
+#' @param splitStrata If TRUE strata name-level columns will be split.
 #' @param cdmName Name of the databases to include.
 #' @param variableName Name of the variable names to include.
 #' @param type Type of desired formatted table, possibilities: "gt",
@@ -228,12 +229,17 @@ optionsTableCharacteristics <- function() {
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' results <- summariseCohortOverlap(cdm$cohort2)
+#' table <- tableCohortOverlap(results)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A formatted table of the overlap_cohort summarised object.
 #'
 #' @export
-
+#'
 tableCohortOverlap  <- function(result,
                                 cohortNameReference = NULL,
                                 cohortNameComparator = NULL,
@@ -372,7 +378,7 @@ tableCohortOverlap  <- function(result,
 #' @param cohortNameComparator Names of the comparator cohorts to include.
 #' @param strataName Names of the strata names to include.
 #' @param strataLevel Names of the strata levels to include.
-#' @param splitStrata If TRUE strata name-levle columns will be splitted.
+#' @param splitStrata If TRUE strata name-level columns will be split.
 #' @param cdmName Name of the databases to include.
 #' @param variableName Name of the variable names to include.
 #' @param formatEstimateName Whether to include the number of subjects.
@@ -387,6 +393,11 @@ tableCohortOverlap  <- function(result,
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' results <- summariseCohortTiming(cdm$cohort2)
+#' table <- tableCohortTiming(results)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A formatted table of the cohort_timing summarised object.

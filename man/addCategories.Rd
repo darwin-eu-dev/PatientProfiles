@@ -13,7 +13,7 @@ addCategories(
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{variable}{Target variable that we want to categorize.}
 
@@ -24,7 +24,7 @@ limit.}
 any named category. If NULL or NA, missing will values will be
 given.}
 
-\item{overlap}{TRUE if the categories given overlap}
+\item{overlap}{TRUE if the categories given overlap.}
 }
 \value{
 tibble with the categorical variable added.
@@ -33,9 +33,7 @@ tibble with the categorical variable added.
 Categorize a numeric variable
 }
 \examples{
-#'
 \donttest{
-
 cdm <- mockPatientProfiles()
 
 result <- cdm$cohort1 \%>\%
@@ -46,5 +44,6 @@ result <- cdm$cohort1 \%>\%
       "0 to 39" = c(0, 39), "40 to 79" = c(40, 79), "80 to 150" = c(80, 150)
     ))
   )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

@@ -192,27 +192,21 @@ checkWindow <- function(window) {
           use it as both window start and window end")
   }
 
-  windowTbl <- dplyr::tibble(
-    lower = lapply(window, function(x) {
-      x[1]
-    }) %>% unlist(),
-    upper = lapply(window, function(x) {
-      x[2]
-    }) %>% unlist(),
-    window_name = getWindowNames(window) %>% unlist()
-  )
+  names(window) <- getWindowNames(window)
+  lower <- lapply(window, function(x) {x[1]}) %>% unlist()
+  upper <- lapply(window, function(x) {x[2]}) %>% unlist()
 
-  if (any(windowTbl$lower > windowTbl$upper)) {
+  if (any(lower > upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
   }
-  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == 1)) {
+  if (any(is.infinite(lower) & lower == upper & sign(upper) == 1)) {
     cli::cli_abort("Not both elements in the window can be +Inf")
   }
-  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == -1)) {
+  if (any(is.infinite(lower) & lower == upper & sign(upper) == -1)) {
     cli::cli_abort("Not both elements in the window can be -Inf")
   }
 
-  invisible(windowTbl)
+  invisible(window)
 }
 
 #' @noRd
@@ -674,7 +668,7 @@ assertNameStyle <- function(nameStyle,
                             call = parent.frame()) {
   # initial checks
   checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
-  checkmate::assertList(values, any.missing = FALSE, names = "named")
+  checkmate::assertList(values, names = "named")
   checkmate::assertClass(call, "environment")
 
   # check name style
@@ -699,6 +693,27 @@ assertNameStyle <- function(nameStyle,
   return(invisible(nameStyle))
 }
 
+warnOverwriteColumns <- function(x, nameStyle, values = list()) {
+  if (length(values) > 0) {
+    nameStyle <- tidyr::expand_grid(!!!values) |>
+      dplyr::mutate("tmp_12345" = glue::glue(.env$nameStyle)) |>
+      dplyr::pull("tmp_12345") |>
+      as.character() |>
+      unique()
+  }
+
+  extraColumns <- colnames(x)[colnames(x) %in% nameStyle]
+  if (length(extraColumns) > 0) {
+    ms <- extraColumns
+    names(ms) <- rep("*", length(ms))
+    cli::cli_inform(message = c(
+      "!" = "The following columns will be overwritten:", ms
+    ))
+    x <- x |> dplyr::select(!dplyr::all_of(extraColumns))
+  }
+
+  return(x)
+}
 assertCharacter <- function(x,
                             length = NULL,
                             na = FALSE,

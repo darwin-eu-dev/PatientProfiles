@@ -50,7 +50,7 @@ reference:
 - subtitle: Summarise patient characteristic standard function
   desc: Function that allow the user to summarise patient characteristics based on some paramters
 - contents:
-  - '`summariseCharacteristics`'
+  - matches("summariseCharacteristics|summariseDemographics|summariseConceptIntersect")
 - subtitle: Summarise patient large scale characteristics
   desc: Summarise large scale characteristics
 - contents:
