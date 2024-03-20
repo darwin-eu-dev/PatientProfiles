@@ -22,72 +22,43 @@
 #' }
 #'
 plotCohortOverlap <- function(result,
-                              cohortNameReference = NULL,
-                              cohortNameComparator = NULL,
-                              strataName = NULL,
-                              strataLevel = NULL,
-                              cdmName = NULL,
-                              variableName = "number subjects",
-                              facetBy = NULL,
+                              facetBy = "variable_name",
                               overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
                               uniqueCombinations = TRUE) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type == "cohort_overlap")
-  checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
-  checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
-  checkmate::assertCharacter(strataName, null.ok = TRUE)
-  checkmate::assertCharacter(strataLevel, null.ok = TRUE)
-  checkmate::assertCharacter(cdmName, null.ok = TRUE)
-  checkmate::assertCharacter(variableName, null.ok = TRUE)
+  # checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
+  # checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
+  # checkmate::assertCharacter(strataName, null.ok = TRUE)
+  # checkmate::assertCharacter(strataLevel, null.ok = TRUE)
+  # checkmate::assertCharacter(cdmName, null.ok = TRUE)
+  # checkmate::assertCharacter(variableName, null.ok = TRUE)
   checkmate::assertCharacter(facetBy, null.ok = TRUE)
   checkmate::assertCharacter(overlapLabel)
   checkmate::assertLogical(uniqueCombinations)
 
   # split table
   x <- result |>
-    visOmopResults::splitGroup()
-
-  # add default values
-  # add default values
-  selectors <- defaultColumnSelectors(
-    x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
-            "strata_name" = strataName, "cdm_name" = cdmName, "variable_name" = variableName))
-  cohortNameReference <- selectors$cohort_name_reference
-  cohortNameComparator <- selectors$cohort_name_comparator
-  strataName <- selectors$strata_name
-  cdmName <- selectors$cdm_name
-  if (is.null(strataLevel)) {
-    strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
-  }
+    visOmopResults::tidy(splitStrata = FALSE, pivotEstimatesBy = c("variable_level", "estimate_name"))
 
   if (uniqueCombinations) {
     x <- x |>
       getUniqueCombinations(order = sort(unique(x$cohort_name_reference)))
   }
+
   x <- x |>
-    dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
-    dplyr::filter(.data$variable_name == .env$variableName) |>
-    dplyr::filter(.data$strata_name %in% .env$strataName) |>
-    dplyr::filter(.data$strata_level %in% .env$strataLevel) |>
-    dplyr::mutate(estimate_value = as.numeric(.data$estimate_value)) |>
-    getTidyOverlap() |>
-    dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
-    dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
     dplyr::arrange(dplyr::across(
-      dplyr::all_of(c("cdm_name", "cohort_name_reference", "cohort_name_comparator")),
+      dplyr::all_of(c("result_id", "cdm_name", "cohort_name_reference", "cohort_name_comparator", "strata_name", "strata_level")),
       dplyr::desc)) |>
     dplyr::mutate(
-      total = .data$reference + .data$comparator - .data$overlap,
-      reference = .data$reference/.data$total * 100,
-      comparator = .data$comparator/.data$total * 100,
-      total = 100,
-      only_reference = .data$reference - .data$overlap,
-      only_comparator = .data$comparator - .data$overlap,
       dplyr::across(
         dplyr::all_of(c("strata_name", "strata_level",
                         "cohort_name_reference", "cohort_name_comparator")),
         ~stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", .x)))),
+      reference = paste0(.data$only_in_reference_count, " (", round(only_in_reference_percentage, 2), "%)"),
+      comparator = paste0(.data$only_in_comparator_count, " (", round(only_in_comparator_percentage, 2), "%)"),
+      overlap = paste0(.data$overlap_count, " (", round(overlap_percentage, 2), "%)"),
       comparison_name = glue::glue(.env$overlapLabel),
     )
 
@@ -116,22 +87,32 @@ plotCohortOverlap <- function(result,
 
   gg <- x |>
     ggplot2::ggplot() +
-    # x
-    suppressWarnings(ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = .data$reference,
+    # reference
+    suppressWarnings(ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = .data$only_in_reference_percentage,
                                                      ymin = .data$y_pos-0.35, ymax = .data$y_pos+0.35,
-                                                     label1 = .data$only_reference,
-                                                     label2 = .data$only_comparator,
-                                                     label3 = .data$overlap),
-                                        fill = "#669bbc", alpha = 0.5)) +
-    # y
-    suppressWarnings(ggplot2::geom_rect(ggplot2::aes(xmin = .data$total - .data$comparator,
-                                                     xmax = .data$total,
+                                                     label1 = .data$reference,
+                                                     label2 = .data$comparator,
+                                                     label3 = .data$overlap,
+                                                     label4 = .data$variable_name),
+                                        fill = "#B6CDDE")) +
+    # overlap
+    suppressWarnings(ggplot2::geom_rect(ggplot2::aes(xmin = .data$only_in_reference_percentage,
+                                                     xmax = .data$only_in_reference_percentage + .data$overlap_percentage,
                                                      ymin = .data$y_pos-0.35, ymax = .data$y_pos+0.35,
-                                                     label1 = .data$only_reference,
-                                                     label2 = .data$only_comparator,
-                                                     label3 = .data$overlap),
-                                        fill = "#cd5d67",
-                                        alpha = 0.4)) +
+                                                     label1 = .data$reference,
+                                                     label2 = .data$comparator,
+                                                     label3 = .data$overlap,
+                                                     label4 = .data$variable_name),
+                                        fill = "#BBA0AE")) +
+    # comparator
+    suppressWarnings(ggplot2::geom_rect(ggplot2::aes(xmin = 100 - .data$only_in_comparator_percentage,
+                                                     xmax = 100,
+                                                     ymin = .data$y_pos-0.35, ymax = .data$y_pos+0.35,
+                                                     label1 = .data$reference,
+                                                     label2 = .data$comparator,
+                                                     label3 = .data$overlap,
+                                                     label4 = .data$variable_name),
+                                        fill = "#E7BEC2")) +
     ggplot2::scale_y_continuous(breaks = x$y_pos, labels = x$comparison_name) +
     ggplot2::scale_x_continuous(breaks = x_breaks, labels = x_labels, limits = c(0, NA)) +
     ggplot2::theme_bw() +
@@ -149,7 +130,8 @@ plotCohortOverlap <- function(result,
       order = 3,
       override.aes = list(fill = c('#B6CDDE', '#E7BEC2', "#BBA0AE")))
     ) +
-    ggplot2::ylab("") + ggplot2::xlab("")
+    ggplot2::ylab("") +
+      ggplot2::xlab("")
 
   if (!is.null(facetBy)) {
     gg <- gg +
@@ -186,11 +168,6 @@ plotCohortOverlap <- function(result,
 #'
 plotCohortTiming <- function(result,
                              type = "boxplot",
-                             cohortNameReference = NULL,
-                             cohortNameComparator = NULL,
-                             strataName = NULL,
-                             strataLevel = NULL,
-                             cdmName = NULL,
                              facetBy = NULL,
                              color = c("cohort_name_reference", "cohort_name_comparator"),
                              timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
@@ -199,11 +176,6 @@ plotCohortTiming <- function(result,
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type == "cohort_timing")
   checkmate::assertChoice(type, c("boxplot", "density"))
-  checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
-  checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
-  checkmate::assertCharacter(strataName, null.ok = TRUE)
-  checkmate::assertCharacter(strataLevel, null.ok = TRUE)
-  checkmate::assertCharacter(cdmName, null.ok = TRUE)
   checkmate::assertCharacter(facetBy, null.ok = TRUE)
   checkmate::assertCharacter(color, null.ok = TRUE)
   checkmate::assertCharacter(timingLabel)
@@ -214,18 +186,6 @@ plotCohortTiming <- function(result,
     visOmopResults::splitGroup() |>
     visOmopResults::splitAdditional()
 
-  # add default values
-  selectors <- defaultColumnSelectors(
-    x, list("cohort_name_reference" = cohortNameReference, "cohort_name_comparator" = cohortNameComparator,
-            "strata_name" = strataName, "cdm_name" = cdmName))
-  cohortNameReference <- selectors$cohort_name_reference
-  cohortNameComparator <- selectors$cohort_name_comparator
-  strataName <- selectors$strata_name
-  cdmName <- selectors$cdm_name
-  if (is.null(strataLevel)) {
-      strataLevel <- unique(x$strata_level[x$strata_name %in% strataName])
-  }
-
   if (uniqueCombinations) {
     x <- x |>
       getUniqueCombinations(order = sort(unique(x$cohort_name_reference)))
@@ -233,11 +193,6 @@ plotCohortTiming <- function(result,
 
   # prepare data
   x <- x |>
-    dplyr::filter(.data$cdm_name %in% .env$cdmName) |>
-    dplyr::filter(.data$strata_name %in% .env$strataName) |>
-    dplyr::filter(.data$strata_level %in% .env$strataLevel) |>
-    dplyr::filter(.data$cohort_name_reference %in% .env$cohortNameReference) |>
-    dplyr::filter(.data$cohort_name_comparator %in% .env$cohortNameComparator) |>
     dplyr::mutate(estimate_value = as.numeric(.data$estimate_value),
                   dplyr::across(
                     dplyr::all_of(c("strata_name", "strata_level",

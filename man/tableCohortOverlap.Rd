@@ -6,20 +6,28 @@
 \usage{
 tableCohortOverlap(
   result,
-  cohortNameReference = NULL,
-  cohortNameComparator = NULL,
-  strataName = "overall",
-  strataLevel = "overall",
-  splitStrata = TRUE,
-  cdmName = NULL,
-  variableName = c("number records", "number subjects"),
   type = "gt",
+  formatEstimateName = c(`N (\%)` = "<count> (<percentage>\%)"),
+  header = c("strata"),
+  split = c("group", "strata", "additional"),
+  groupColumn = NULL,
   minCellCount = 5,
+  excludeColumns = c("result_id", "result_type", "package_name", "package_version",
+    "estimate_type"),
   .options = list()
 )
 }
 \arguments{
 \item{result}{A cohort_overlap object.}
+
+\item{type}{Type of desired formatted table, possibilities: "gt",
+"flextable", or "tibble".}
+
+\item{minCellCount}{Counts below which results will be clouded.}
+
+\item{.options}{named list with additional formatting options.
+PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
+their default values.}
 
 \item{cohortNameReference}{Names of the reference cohorts to include.}
 
@@ -34,15 +42,6 @@ tableCohortOverlap(
 \item{cdmName}{Name of the databases to include.}
 
 \item{variableName}{Name of the variable names to include.}
-
-\item{type}{Type of desired formatted table, possibilities: "gt",
-"flextable", or "tibble".}
-
-\item{minCellCount}{Counts below which results will be clouded.}
-
-\item{.options}{named list with additional formatting options.
-PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
-their default values.}
 }
 \value{
 A formatted table of the overlap_cohort summarised object.

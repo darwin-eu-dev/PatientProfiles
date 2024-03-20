@@ -6,23 +6,34 @@
 \usage{
 tableCohortTiming(
   result,
-  cohortNameReference = NULL,
-  cohortNameComparator = NULL,
-  strataName = NULL,
-  strataLevel = NULL,
-  cdmName = NULL,
-  variableName = c("number records", "number subjects", "diff_days"),
+  type = "gt",
   formatEstimateName = c(N = "<count>", `Median [Q25 - Q75]` =
     "<median> [<q25> - <q75>]", Range = "<min> - <max>"),
-  header = character(0),
-  splitStrata = TRUE,
-  type = "gt",
+  header = c("strata"),
+  split = c("group", "strata", "additional"),
+  groupColumn = NULL,
   minCellCount = 5,
+  excludeColumns = c("result_id", "result_type", "package_name", "package_version",
+    "estimate_type", "variable_level"),
   .options = list()
 )
 }
 \arguments{
 \item{result}{A cohort_overlap object.}
+
+\item{type}{Type of desired formatted table, possibilities: "gt",
+"flextable", or "tibble".}
+
+\item{formatEstimateName}{Whether to include the number of subjects.}
+
+\item{header}{Vector with names and column names to use in the header of gt
+and flextable.}
+
+\item{minCellCount}{Counts below which results will be clouded.}
+
+\item{.options}{named list with additional formatting options.
+PatientProfiles::optionsTableCohortTiming() shows allowed arguments and
+their default values.}
 
 \item{cohortNameReference}{Names of the reference cohorts to include.}
 
@@ -32,25 +43,11 @@ tableCohortTiming(
 
 \item{strataLevel}{Names of the strata levels to include.}
 
+\item{splitStrata}{If TRUE strata name-level columns will be split.}
+
 \item{cdmName}{Name of the databases to include.}
 
 \item{variableName}{Name of the variable names to include.}
-
-\item{formatEstimateName}{Whether to include the number of subjects.}
-
-\item{header}{Vector with names and column names to use in the header of gt
-and flextable.}
-
-\item{splitStrata}{If TRUE strata name-level columns will be split.}
-
-\item{type}{Type of desired formatted table, possibilities: "gt",
-"flextable", or "tibble".}
-
-\item{minCellCount}{Counts below which results will be clouded.}
-
-\item{.options}{named list with additional formatting options.
-PatientProfiles::optionsTableCohortTiming() shows allowed arguments and
-their default values.}
 }
 \value{
 A formatted table of the cohort_timing summarised object.
