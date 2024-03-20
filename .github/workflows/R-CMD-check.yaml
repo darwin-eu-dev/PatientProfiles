@@ -47,7 +47,7 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Install R packages
+      - name: Install old version dbplyr
         run: |
             install.packages("http://cran.r-project.org/src/contrib/Archive/dbplyr/dbplyr_2.4.0.tar.gz", repos=NULL, type="source")
         shell: Rscript {0}
