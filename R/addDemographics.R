@@ -620,24 +620,55 @@ addInObservation <- function(x,
       lower <- win[1]
       upper <- win[2]
 
-      if(completeInterval == T){
-        x <- x %>%
-          dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-            !is.na(.data$prior_observation) &
-              .data$prior_observation <= .env$lower &
-              .env$upper <= .data$future_observation,
-            1,
-            0
-          )))
+      if(completeInterval == TRUE){
+        if (is.infinite(lower) |is.infinite(upper)) {
+          x <- x %>% dplyr::mutate(!!nam := 0)
+        } else {
+          x <- x %>%
+            dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
+              !is.na(.data$prior_observation) &
+                .data$prior_observation <= .env$lower &
+                .env$upper <= .data$future_observation,
+              1,
+              0
+            )))
+        }
       } else {
-        x <- x %>%
-          dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-            !is.na(.data$prior_observation) &
-              .data$prior_observation <= .env$upper &
-              .env$lower <= .data$future_observation,
-            1,
-            0
-          )))
+        if (is.infinite(lower)) {
+          if (is.infinite(upper)) {
+            x <- x %>%
+              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
+                !is.na(.data$prior_observation), 1, 0
+              )))
+          } else {
+            x <- x %>%
+              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
+                !is.na(.data$prior_observation) &
+                  .data$prior_observation <= .env$upper,
+                1,
+                0
+              )))
+          }
+        } else {
+          if (is.infinite(upper)) {
+            x <- x %>%
+              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
+                !is.na(.data$prior_observation) &
+                  .env$lower <= .data$future_observation,
+                1,
+                0
+              )))
+          } else {
+            x <- x %>%
+              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
+                !is.na(.data$prior_observation) &
+                  .data$prior_observation <= .env$upper &
+                  .env$lower <= .data$future_observation,
+                1,
+                0
+              )))
+          }
+        }
       }
 
     }

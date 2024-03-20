@@ -167,12 +167,11 @@ test_that("test checkSnakeCase", {
 
 test_that("check window", {
   window <- list("short" = c(0, 9), c(10, 20), c(20, 35), "long" = c(-50, 10))
-  windowName <- checkWindow(window)
-  expect_true("tbl" %in% class(windowName))
-  expect_true(all(names(windowName) == c("lower", "upper", "window_name")))
-  expect_true(all(windowName$lower == c(0, 10, 20, -50)))
-  expect_true(all(windowName$upper == c(9, 20, 35, 10)))
-  expect_true(all(windowName$window_name == c("short", "10_to_20", "20_to_35", "long")))
+  windowCorrected <- checkWindow(window)
+  expect_true("list" %in% class(windowCorrected))
+  expect_true(all(lapply(windowCorrected, function(x){x[1]}) |> unlist() == c(0, 10, 20, -50)))
+  expect_true(all(lapply(windowCorrected, function(x){x[2]}) |> unlist() == c(9, 20, 35, 10)))
+  expect_true(all(names(windowCorrected) == c("short", "10_to_20", "20_to_35", "long")))
 })
 
 test_that("checkAgeGroup", {
