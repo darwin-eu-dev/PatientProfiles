@@ -8,7 +8,5 @@
 
 library(testthat)
 library(PatientProfiles)
-packageurl <- "http://cran.r-project.org/src/contrib/Archive/dbplyr/dbplyr_2.4.0.tar.gz"
-install.packages(packageurl, repos=NULL, type="source")
 
 test_check("PatientProfiles")
