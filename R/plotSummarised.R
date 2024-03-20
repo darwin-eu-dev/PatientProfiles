@@ -1,12 +1,6 @@
 #' Plot cohort_overlap objects.
 #'
 #' @param result A cohort_overlap object.
-#' @param cohortNameReference Names of the reference cohorts to include.
-#' @param cohortNameComparator Names of the comparator cohorts to include.
-#' @param strataName Names of the strata names to include.
-#' @param strataLevel Names of the strata levels to include.
-#' @param cdmName Names of the databases to include.
-#' @param variableName Names of the variable names to include.
 #' @param facetBy Names of columns in the cohort_overlap table for faceting the
 #' ggplot object.
 #' @param overlapLabel A glue expression to identify each plotted cohort
@@ -146,11 +140,6 @@ plotCohortOverlap <- function(result,
 #' @param result A cohort_overlap object.
 #' @param type Type of desired formatted table, possibilities are "boxplot" and
 #' "density".
-#' @param cohortNameReference Names of the reference cohorts to include.
-#' @param cohortNameComparator Names of the comparator cohorts to include.
-#' @param strataName Names of the strata names to include.
-#' @param strataLevel Names of the strata levels to include.
-#' @param cdmName Names of the databases to include.
 #' @param facetBy Vector of column names  in the cohort_overlap table for faceting the
 #' ggplot object.
 #' @param color Vector of column names to distinct by colors.

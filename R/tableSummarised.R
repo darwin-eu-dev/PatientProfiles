@@ -19,14 +19,19 @@
 #' @param result A summarised_characteristics object.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
-#' @param format .
-#' @param splitStrata .
-#' @param format .
-#' @param cdmName .
-#' @param cohortName .
-#' @param style .
-#' @param minCellCount .
-#' @param .options See optionsTableCharacteristics() for default values.
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
+#' `variable`, `estimate`, `settings`.
+#' @param split A vector containing the name-level groups to split ("group",
+#' "strata", "additional"), or an empty character vector to not split.
+#' @param groupColumn Column to use as group labels.
+#' @param minCellCount Counts below which results will be clouded.
+#' @param excludeColumns Columsn to drop from the output table.
+#' @param .options Named list with additional formatting options.
+#' PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
+#' their default values.
 #'
 #' @examples
 #' \donttest{
@@ -136,17 +141,19 @@ optionsTableCharacteristics <- function() {
 #' Format a cohort_overlap object into a visual table.
 #'
 #' @param result A cohort_overlap object.
-#' @param cohortNameReference Names of the reference cohorts to include.
-#' @param cohortNameComparator Names of the comparator cohorts to include.
-#' @param strataName Names of the strata names to include.
-#' @param strataLevel Names of the strata levels to include.
-#' @param splitStrata If TRUE strata name-level columns will be split.
-#' @param cdmName Name of the databases to include.
-#' @param variableName Name of the variable names to include.
 #' @param type Type of desired formatted table, possibilities: "gt",
-#' "flextable", or "tibble".
+#' "flextable", "tibble".
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
+#' `variable`, `estimate`, `settings`.
+#' @param split A vector containing the name-level groups to split ("group",
+#' "strata", "additional"), or an empty character vector to not split.
+#' @param groupColumn Column to use as group labels.
 #' @param minCellCount Counts below which results will be clouded.
-#' @param .options named list with additional formatting options.
+#' @param excludeColumns Columsn to drop from the output table.
+#' @param .options Named list with additional formatting options.
 #' PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
 #' their default values.
 #'
@@ -215,19 +222,18 @@ tableCohortOverlap  <- function(result,
 #' Format a cohort_timing object into a visual table.
 #'
 #' @param result A cohort_overlap object.
-#' @param cohortNameReference Names of the reference cohorts to include.
-#' @param cohortNameComparator Names of the comparator cohorts to include.
-#' @param strataName Names of the strata names to include.
-#' @param strataLevel Names of the strata levels to include.
-#' @param splitStrata If TRUE strata name-level columns will be split.
-#' @param cdmName Name of the databases to include.
-#' @param variableName Name of the variable names to include.
-#' @param formatEstimateName Whether to include the number of subjects.
-#' @param header Vector with names and column names to use in the header of gt
-#' and flextable.
 #' @param type Type of desired formatted table, possibilities: "gt",
-#' "flextable", or "tibble".
+#' "flextable", "tibble".
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
+#' `variable`, `estimate`, `settings`.
+#' @param split A vector containing the name-level groups to split ("group",
+#' "strata", "additional"), or an empty character vector to not split.
+#' @param groupColumn Column to use as group labels.
 #' @param minCellCount Counts below which results will be clouded.
+#' @param excludeColumns Columsn to drop from the output table.
 #' @param .options named list with additional formatting options.
 #' PatientProfiles::optionsTableCohortTiming() shows allowed arguments and
 #' their default values.
