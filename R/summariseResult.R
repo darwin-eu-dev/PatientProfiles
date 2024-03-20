@@ -17,7 +17,7 @@
 #' Summarise variables using a set of estimate functions. The output will be
 #' a formatted summarised_result object.
 #'
-#' @param table Table with different records
+#' @param table Table with different records.
 #' @param group List of groups to be considered.
 #' @param includeOverallGroup TRUE or FALSE. If TRUE, results for an overall
 #' group will be reported when a list of groups has been specified.
@@ -46,6 +46,7 @@
 #'   addDemographics() %>%
 #'   collect()
 #' result <- summariseResult(x)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 summariseResult <- function(table,

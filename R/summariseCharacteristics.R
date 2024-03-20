@@ -16,13 +16,13 @@
 
 #' Summarise characteristics of individuals
 #'
-#' @param cohort A cohort in the cdm
+#' @param cohort A cohort in the cdm.
 #' @param cdm A cdm reference.
-#' @param strata Stratification list
+#' @param strata Stratification list.
 #' @param demographics Whether to summarise demographics data.
 #' @param ageGroup A list of age groups.
 #' @param tableIntersect A list of arguments that uses addTableIntersect
-#' function to add variables to summarise
+#' function to add variables to summarise.
 #' @param cohortIntersect A list of arguments that uses addCohortIntersect
 #' function to add variables to summarise.
 #' @param conceptIntersect A list of arguments that uses addConceptIntersect
@@ -30,7 +30,7 @@
 #' @param otherVariables Other variables contained in cohort that you want to be
 #' summarised.
 #'
-#' @return A summary of the characteristics of the individuals
+#' @return A summary of the characteristics of the individuals.
 #'
 #' @export
 #'
@@ -50,6 +50,7 @@
 #'     targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
 #'   )
 #' )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 summariseCharacteristics <- function(cohort,
                                      cdm = lifecycle::deprecated(),

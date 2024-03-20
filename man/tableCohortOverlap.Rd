@@ -51,6 +51,11 @@ Format a cohort_overlap object into a visual table.
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+results <- summariseCohortOverlap(cdm$cohort2)
+table <- tableCohortOverlap(results)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

@@ -22,41 +22,41 @@ addIntersect(
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
-\item{tableName}{name of the cohort that we want to check for overlap}
+\item{tableName}{name of the cohort that we want to check for overlap.}
 
-\item{value}{value of interest to add: it can be count, flag, date or time}
+\item{value}{value of interest to add: it can be count, flag, date or time.}
 
 \item{filterVariable}{the variable that we are going to use to filter (e.g.
-cohort_definition_id)}
+cohort_definition_id).}
 
 \item{filterId}{the value of filterVariable that we are interested in, it can
-be a vector}
+be a vector.}
 
 \item{idName}{the name of each filterId, must have same length than
-filterId}
+filterId.}
 
-\item{window}{window to consider events of}
+\item{window}{window to consider events of.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
 
-\item{censorDate}{whether to censor overlap events at a date column of x}
+\item{censorDate}{whether to censor overlap events at a date column of x.}
 
 \item{targetStartDate}{date of reference in cohort table, either for start
-(in overlap) or on its own (for incidence)}
+(in overlap) or on its own (for incidence).}
 
 \item{targetEndDate}{date of reference in cohort table, either for end
-(overlap) or NULL (if incidence)}
+(overlap) or NULL (if incidence).}
 
-\item{order}{last or first date to use for date/time calculations}
+\item{order}{last or first date to use for date/time calculations.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
-table with added columns with overlap information
+table with added columns with overlap information.
 }
 \description{
 It creates columns to indicate overlap information between two tables
@@ -70,6 +70,7 @@ cdm <- mockPatientProfiles()
 result <- cdm$cohort1 \%>\%
   addIntersect(tableName = "cohort2", value = "date") \%>\%
   dplyr::collect()
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

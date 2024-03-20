@@ -13,7 +13,7 @@ or "categorical".}
 }
 \value{
 A tibble with the available functions for a certain variable
-classification (or all if NULL)
+classification (or all if NULL).
 }
 \description{
 Show the available functions for the 4 classifications of data that are

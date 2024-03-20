@@ -14,7 +14,7 @@ summariseCohortTiming(
 )
 }
 \arguments{
-\item{cohort}{A cohort table in a cdm reference}
+\item{cohort}{A cohort table in a cdm reference.}
 
 \item{cohortId}{Vector of cohort definition ids to include, if NULL, all
 cohort definition ids will be used.}
@@ -24,20 +24,24 @@ Must be column names in the cohort table provided.}
 
 \item{restrictToFirstEntry}{If TRUE only an individual's first entry per
 cohort will be considered. If FALSE all entries per individual will be
-considered}
+considered.}
 
 \item{timing}{Summary statistics for timing.}
 
 \item{density}{Get data for density plot.}
 }
 \value{
-A summarised result
+A summarised result.
 }
 \description{
 Summarise cohort timing
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+results <- summariseCohortTiming(cdm$cohort2)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

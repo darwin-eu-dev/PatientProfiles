@@ -18,20 +18,20 @@ gtCharacteristics(
 \arguments{
 \item{summarisedCharacteristics}{Summary characteristics long table.}
 
-\item{pivotWide}{variables to pivot wide}
+\item{pivotWide}{variables to pivot wide.}
 
-\item{format}{formats and labels to use}
+\item{format}{formats and labels to use.}
 
-\item{keepNotFormatted}{Whether to keep not formatted estimate types}
+\item{keepNotFormatted}{Whether to keep not formatted estimate types.}
 
-\item{decimals}{Decimals per estimate_type}
+\item{decimals}{Decimals per estimate_type.}
 
-\item{decimalMark}{decimal mark}
+\item{decimalMark}{decimal mark.}
 
-\item{bigMark}{big mark}
+\item{bigMark}{big mark.}
 }
 \value{
-New table in gt format
+New table in gt format.
 }
 \description{
 `r lifecycle::badge("deprecated")`
@@ -56,5 +56,6 @@ summariseCharacteristics(
     )
   )
 )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

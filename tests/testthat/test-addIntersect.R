@@ -545,17 +545,27 @@ test_that("working examples calculating as incidence target cohort", {
   }
 
   result <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", value = "date", nameStyle = "test_{id_name}_{window_name}") %>%
+    .addIntersect(
+      tableName = "cohort2",
+      window = c(-Inf, Inf),
+      value = "date",
+      nameStyle = "test_{id_name}_{window_name}"
+    ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result1 <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", value = "date", targetEndDate = NULL) %>%
+    .addIntersect(
+      tableName = "cohort2",
+      window = c(-Inf, Inf),
+      value = "date",
+      targetEndDate = NULL
+    ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(result$test_all_0_to_inf == as.Date("2020-01-01")))
-  # expect_true(("all_0_to_inf" %in% colnames(result1)))
+  expect_true(all(result$test_all_minf_to_inf == as.Date("2020-01-01")))
+  expect_true(("date_all_minf_to_inf" %in% colnames(result1)))
 })
 
 test_that("working examples with more than one window", {

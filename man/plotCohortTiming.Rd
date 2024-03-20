@@ -38,6 +38,11 @@ Plot cohort_overlap objects.
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+timing <- summariseCohortTiming(cdm$cohort2)
+plotCohortTiming(timing)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

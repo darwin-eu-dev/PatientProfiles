@@ -44,21 +44,21 @@ required for date and days options).}
 intersection.}
 
 \item{flag}{TRUE or FALSE. If TRUE, flag will calculated for this
-intersection}
+intersection.}
 
 \item{count}{TRUE or FALSE. If TRUE, the number of counts will be calculated
-for this intersection}
+for this intersection.}
 
 \item{date}{TRUE or FALSE. If TRUE, date will be calculated for this
-intersection}
+intersection.}
 
 \item{days}{TRUE or FALSE. If TRUE, time difference in days will be
-calculated for this intersection}
+calculated for this intersection.}
 
 \item{field}{Other columns from the table to intersect.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with intersect information.
@@ -74,6 +74,7 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addTableIntersect(tableName = "visit_occurrence")
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

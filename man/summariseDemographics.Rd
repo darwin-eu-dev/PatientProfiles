@@ -14,7 +14,7 @@ summariseDemographics(cohort, strata = list(), ageGroup = NULL)
 \item{ageGroup}{A list of age groups.}
 }
 \value{
-A summary of the demographics of the individuals
+A summary of the demographics of the individuals.
 }
 \description{
 Summarise demographics of individuals
@@ -29,5 +29,6 @@ summariseDemographics(
   cohort = cdm$cohort1,
   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))
 )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

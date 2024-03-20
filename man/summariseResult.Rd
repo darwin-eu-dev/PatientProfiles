@@ -19,7 +19,7 @@ summariseResult(
 )
 }
 \arguments{
-\item{table}{Table with different records}
+\item{table}{Table with different records.}
 
 \item{group}{List of groups to be considered.}
 
@@ -60,6 +60,7 @@ x <- cdm$cohort1 \%>\%
   addDemographics() \%>\%
   collect()
 result <- summariseResult(x)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

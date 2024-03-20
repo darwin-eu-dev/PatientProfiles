@@ -1,16 +1,20 @@
 #' Summarise cohort overlap
 #'
-#' @param cohort  A cohort table in a cdm reference
+#' @param cohort  A cohort table in a cdm reference.
 #' @param cohortId  Vector of cohort definition ids to include, if NULL, all
 #' cohort definition ids will be used.
 #' @param strata List of the stratifications within each group to be considered.
 #' Must be column names in the cohort table provided.
 #'
-#' @return A summarised_result
+#' @return A summarised result.
 #' @export
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' results <- summariseCohortOverlap(cdm$cohort2)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 
 summariseCohortOverlap <- function(cohort,

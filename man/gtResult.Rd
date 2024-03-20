@@ -19,19 +19,19 @@ gtResult(
 \arguments{
 \item{summarisedResult}{A SummarisedResult object.}
 
-\item{long}{List of variables and specification to long}
+\item{long}{List of variables and specification to long.}
 
-\item{wide}{List of variables and specification to wide}
+\item{wide}{List of variables and specification to wide.}
 
-\item{format}{formats and labels to use}
+\item{format}{formats and labels to use.}
 
-\item{keepNotFormatted}{Whether to keep not formatted estimate types}
+\item{keepNotFormatted}{Whether to keep not formatted estimate types.}
 
-\item{decimals}{Decimals per estimate_type}
+\item{decimals}{Decimals per estimate_type.}
 
-\item{decimalMark}{decimal mark}
+\item{decimalMark}{decimal mark.}
 
-\item{bigMark}{big mark}
+\item{bigMark}{big mark.}
 }
 \value{
 A formatted summarisedResult gt object.
@@ -49,6 +49,7 @@ cdm$cohort1 \%>\%
   summariseCharacteristics(
     ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))
   )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

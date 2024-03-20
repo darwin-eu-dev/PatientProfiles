@@ -52,6 +52,11 @@ Format a cohort_timing object into a visual table.
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+results <- summariseCohortTiming(cdm$cohort2)
+table <- tableCohortTiming(results)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

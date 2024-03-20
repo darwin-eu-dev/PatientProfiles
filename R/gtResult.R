@@ -3,14 +3,14 @@
 #' `r lifecycle::badge("deprecated")`
 #'
 #' @param summarisedCharacteristics Summary characteristics long table.
-#' @param pivotWide variables to pivot wide
-#' @param format formats and labels to use
-#' @param keepNotFormatted Whether to keep not formatted estimate types
-#' @param decimals Decimals per estimate_type
-#' @param decimalMark decimal mark
-#' @param bigMark big mark
+#' @param pivotWide variables to pivot wide.
+#' @param format formats and labels to use.
+#' @param keepNotFormatted Whether to keep not formatted estimate types.
+#' @param decimals Decimals per estimate_type.
+#' @param decimalMark decimal mark.
+#' @param bigMark big mark.
 #'
-#' @return New table in gt format
+#' @return New table in gt format.
 #'
 #' @export
 #'
@@ -34,6 +34,7 @@
 #'     )
 #'   )
 #' )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 gtCharacteristics <- function(summarisedCharacteristics,
                               pivotWide = c("CDM Name", "Group", "Strata"),
@@ -60,13 +61,13 @@ gtCharacteristics <- function(summarisedCharacteristics,
 #' `r lifecycle::badge("deprecated")`
 #'
 #' @param summarisedResult A SummarisedResult object.
-#' @param long List of variables and specification to long
-#' @param wide List of variables and specification to wide
-#' @param format formats and labels to use
-#' @param keepNotFormatted Whether to keep not formatted estimate types
-#' @param decimals Decimals per estimate_type
-#' @param decimalMark decimal mark
-#' @param bigMark big mark
+#' @param long List of variables and specification to long.
+#' @param wide List of variables and specification to wide.
+#' @param format formats and labels to use.
+#' @param keepNotFormatted Whether to keep not formatted estimate types.
+#' @param decimals Decimals per estimate_type.
+#' @param decimalMark decimal mark.
+#' @param bigMark big mark.
 #'
 #' @return A formatted summarisedResult gt object.
 #'
@@ -82,6 +83,7 @@ gtCharacteristics <- function(summarisedCharacteristics,
 #'   summariseCharacteristics(
 #'     ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 gtResult <- function(summarisedResult,

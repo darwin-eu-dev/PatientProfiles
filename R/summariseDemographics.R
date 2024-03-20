@@ -20,7 +20,7 @@
 #' @param strata Stratification list.
 #' @param ageGroup A list of age groups.
 #'
-#' @return A summary of the demographics of the individuals
+#' @return A summary of the demographics of the individuals.
 #'
 #' @export
 #'
@@ -34,6 +34,7 @@
 #'   cohort = cdm$cohort1,
 #'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))
 #' )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 
 summariseDemographics <- function(cohort,

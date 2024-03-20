@@ -17,28 +17,28 @@
 #' It creates columns to indicate overlap information between a table and a
 #' concept
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param conceptSet Concept set list.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a date column of x
 #' @param window window to consider events in.
 #' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
+#' (in overlap) or on its own (for incidence).
 #' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
+#' (overlap) or NULL (if incidence).
 #' @param order last or first date to use for date/time calculations.
-#' @param order which record is considered in case of multiple records
+#' @param order which record is considered in case of multiple records.
 #' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
-#' intersection
+#' intersection.
 #' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
-#' for this intersection
+#' for this intersection.
 #' @param date TRUE or FALSE. If TRUE, date will be calculated for this
-#' intersection
+#' intersection.
 #' @param days TRUE or FALSE. If TRUE, time difference in days will be
-#' calculated for this intersection
+#' calculated for this intersection.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -47,15 +47,27 @@
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersect(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersect(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersect <- function(x,
                                 conceptSet,
@@ -181,15 +193,27 @@ addConceptIntersect <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectFlag(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectFlag(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersectFlag <- function(x,
                                     conceptSet,
@@ -241,15 +265,27 @@ addConceptIntersectFlag <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectCount(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectCount(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersectCount <- function(x,
                                     conceptSet,
@@ -298,15 +334,27 @@ addConceptIntersectCount <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectDate(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectDate(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersectDate <- function(x,
                                      conceptSet,
@@ -354,15 +402,27 @@ addConceptIntersectDate <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectDays(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectDays(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersectDays <- function(x,
                                     conceptSet,

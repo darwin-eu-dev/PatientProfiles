@@ -13,6 +13,10 @@
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' overlap <- summariseCohortOverlap(cdm$cohort2)
+#' plotCohortOverlap(overlap)
 #' }
 #'
 plotCohortOverlap <- function(result,
@@ -153,6 +157,11 @@ plotCohortOverlap <- function(result,
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' timing <- summariseCohortTiming(cdm$cohort2)
+#' plotCohortTiming(timing)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 plotCohortTiming <- function(result,
