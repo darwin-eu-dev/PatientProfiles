@@ -80,15 +80,15 @@ tableCharacteristics <- function(result,
   .options <- defaultCharacteristicsOptions(.options)
 
   # format table
-  result <- formatTable(result = result,
-                        formatEstimateName = formatEstimateName,
-                        header = header,
-                        groupColumn = groupColumn,
-                        split = split,
-                        type = type,
-                        minCellCount = minCellCount,
-                        excludeColumns = excludeColumns,
-                        .options = .options)
+  result <- visOmopResults::formatTable(result = result,
+                                        formatEstimateName = formatEstimateName,
+                                        header = header,
+                                        groupColumn = groupColumn,
+                                        split = split,
+                                        type = type,
+                                        minCellCount = minCellCount,
+                                        excludeColumns = excludeColumns,
+                                        .options = .options)
 
   return(result)
 }
@@ -206,15 +206,15 @@ tableCohortOverlap  <- function(result,
   }
 
   # format table
-  result <- formatTable(result = x,
-                        formatEstimateName = formatEstimateName,
-                        header = c(header, "variable"),
-                        groupColumn = groupColumn,
-                        split = split,
-                        type = type,
-                        minCellCount = minCellCount,
-                        excludeColumns = excludeColumns,
-                        .options = .options)
+  result <- visOmopResults::formatTable(result = x,
+                                        formatEstimateName = formatEstimateName,
+                                        header = c(header, "variable"),
+                                        groupColumn = groupColumn,
+                                        split = split,
+                                        type = type,
+                                        minCellCount = minCellCount,
+                                        excludeColumns = excludeColumns,
+                                        .options = .options)
 
   return(result)
 }
@@ -282,15 +282,15 @@ tableCohortTiming <- function(result,
   }
 
   # format table
-  result <- formatTable(result = x,
-                        formatEstimateName = formatEstimateName,
-                        header = header,
-                        groupColumn = groupColumn,
-                        split = split,
-                        type = type,
-                        minCellCount = minCellCount,
-                        excludeColumns = excludeColumns,
-                        .options = .options)
+  result <- visOmopResults::formatTable(result = x,
+                                        formatEstimateName = formatEstimateName,
+                                        header = header,
+                                        groupColumn = groupColumn,
+                                        split = split,
+                                        type = type,
+                                        minCellCount = minCellCount,
+                                        excludeColumns = excludeColumns,
+                                        .options = .options)
 
   return(result)
 }
