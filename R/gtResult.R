@@ -127,8 +127,8 @@ gtResult <- function(summarisedResult,
 #' cdm <- mockPatientProfiles()
 #'
 #' cdm$cohort1 |>
-#'   summariseCharacteristics() |>
-#'   formatCharacteristics()
+#'   summariseCharacteristics()
+#'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
