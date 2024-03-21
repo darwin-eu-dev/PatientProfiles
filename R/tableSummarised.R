@@ -28,7 +28,7 @@
 #' "strata", "additional"), or an empty character vector to not split.
 #' @param groupColumn Column to use as group labels.
 #' @param minCellCount Counts below which results will be clouded.
-#' @param excludeColumns Columsn to drop from the output table.
+#' @param excludeColumns Columns to drop from the output table.
 #' @param .options Named list with additional formatting options.
 #' PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
 #' their default values.
@@ -41,7 +41,7 @@
 #'
 #' cdm$cohort1 |>
 #'   summariseCharacteristics() |>
-#'   formatCharacteristics()
+#'   tableCharacteristics()
 #' }
 #'
 #' @return A tibble with a tidy version of the summarised_characteristics
@@ -80,15 +80,16 @@ tableCharacteristics <- function(result,
   .options <- defaultCharacteristicsOptions(.options)
 
   # format table
-  result <- visOmopResults::formatTable(result = result,
-                                        formatEstimateName = formatEstimateName,
-                                        header = header,
-                                        groupColumn = groupColumn,
-                                        split = split,
-                                        type = type,
-                                        minCellCount = minCellCount,
-                                        excludeColumns = excludeColumns,
-                                        .options = .options)
+  result <- visOmopResults::formatTable(
+    result = result,
+    formatEstimateName = formatEstimateName,
+    header = header,
+    groupColumn = groupColumn,
+    split = split,
+    type = type,
+    minCellCount = minCellCount,
+    excludeColumns = excludeColumns,
+    .options = .options)
 
   return(result)
 }
@@ -152,7 +153,7 @@ optionsTableCharacteristics <- function() {
 #' "strata", "additional"), or an empty character vector to not split.
 #' @param groupColumn Column to use as group labels.
 #' @param minCellCount Counts below which results will be clouded.
-#' @param excludeColumns Columsn to drop from the output table.
+#' @param excludeColumns Columns to drop from the output table.
 #' @param .options Named list with additional formatting options.
 #' PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
 #' their default values.
@@ -194,7 +195,7 @@ tableCohortOverlap  <- function(result,
       dplyr::arrange(dplyr::across(dplyr::all_of(
         c("result_id", "cdm_name", "cohort_name_reference", "cohort_name_comparator", "strata_name", "strata_level", "variable_name", "variable_level")
       ))) |>
-      dplyr::mutate(variable_level = as.character(variable_level)) |>
+      dplyr::mutate(variable_level = as.character(.data$variable_level)) |>
       visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator"))
   } else {
     x <- result |>
@@ -202,7 +203,7 @@ tableCohortOverlap  <- function(result,
       dplyr::arrange(dplyr::across(dplyr::all_of(
         c("result_id", "cdm_name", "group_name", "group_level", "strata_name", "strata_level", "variable_name", "variable_level")
       ))) |>
-      dplyr::mutate(variable_level = as.character(variable_level))
+      dplyr::mutate(variable_level = as.character(.data$variable_level))
   }
 
   # format table
@@ -233,7 +234,7 @@ tableCohortOverlap  <- function(result,
 #' "strata", "additional"), or an empty character vector to not split.
 #' @param groupColumn Column to use as group labels.
 #' @param minCellCount Counts below which results will be clouded.
-#' @param excludeColumns Columsn to drop from the output table.
+#' @param excludeColumns Columns to drop from the output table.
 #' @param .options named list with additional formatting options.
 #' PatientProfiles::optionsTableCohortTiming() shows allowed arguments and
 #' their default values.

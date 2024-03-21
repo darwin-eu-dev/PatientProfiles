@@ -39,7 +39,7 @@ in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
 
 \item{minCellCount}{Counts below which results will be clouded.}
 
-\item{excludeColumns}{Columsn to drop from the output table.}
+\item{excludeColumns}{Columns to drop from the output table.}
 
 \item{.options}{Named list with additional formatting options.
 PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
@@ -60,7 +60,7 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 |>
   summariseCharacteristics() |>
-  formatCharacteristics()
+  tableCharacteristics()
 }
 
 }

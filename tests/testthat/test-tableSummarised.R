@@ -89,7 +89,7 @@ test_that("tableCharacteristics", {
                                                          "estimate_type", "additional_name",
                                                          "additional_level", "cdm_name")))
   expect_true("gt_tbl" %in% class(gt1))
-  expect_true(all(c("Cohort name", "Variable name", "Variable level", "Estimate name", "Estimate value") %in%
+  expect_true(all(c("Variable name", "Variable level", "Estimate name") %in%
                     colnames(gt1$`_data`)))
 
   fx1 <- tableCharacteristics(result1, header = c("cdm_name", "group", "strata"), type = "flextable")
@@ -101,11 +101,12 @@ test_that("tableCharacteristics", {
                     c("Number records", "Number subjects", "Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
                       "Future observation", "Ibuprophen", "Acetaminophen", "Naloxone", "Headache", "Covid")))
 
-  tibble1 <- tableCharacteristics(result1, type = "tibble", split = "strata")
+  tibble1 <- tableCharacteristics(result1, type = "tibble", split = "strata", header = character())
   expect_true(all(class(tibble1) %in% c("tbl_df", "tbl", "data.frame")))
   expect_true(all(c("Variable name", "Variable level", "Estimate name",
                     "CDM name", "Group name", "Group level", "Estimate value") %in%
                     colnames(tibble1)))
+  expect_true(nrow(tibble1) == 43)
 })
 
 test_that("tableCohortOverlap", {
@@ -375,9 +376,7 @@ test_that("tableCohortTiming", {
                     "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 2\n[header_level]Age group\n[header_level]41 to 150",
                     "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 2\n[header_level]Age group and sex\n[header_level]41 to 150 and female",
                     "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 2\n[header_level]Overall\n[header_level]Overall",
-                    "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 3\n[header_level]Age group\n[header_level]0 to 40",
                     "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 3\n[header_level]Age group\n[header_level]41 to 150",
-                    "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 3\n[header_level]Age group and sex\n[header_level]0 to 40 and female",
                     "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 3\n[header_level]Age group and sex\n[header_level]41 to 150 and female",
                     "[header]CDM name\n[header_level]PP_MOCK\n[header_level]Cohort name reference and cohort name comparator\n[header_level]Cohort 1 and cohort 3\n[header_level]Overall\n[header_level]Overall") %in%
                     colnames(gt3$`_data`)))

@@ -11,8 +11,10 @@ test_that("summariseCohortOverlap", {
 
   table <- dplyr::tibble(
     cohort_definition_id = c(rep(1, 15), rep(2, 10), rep(3, 15), rep(4, 5), 5),
-    subject_id = c(sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5),
-                   sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), 199),
+    subject_id = c(20, 5, 10, 12, 4, 15, 2, 1, 5, 10, 5, 8, 13, 4, 10,
+                   6, 18, 5, 1, 20, 14, 13, 8, 17, 3,
+                   16, 15, 20, 17, 3, 14, 6, 11, 8, 7, 20, 19, 5, 2, 18,
+                   5, 12, 3, 14, 13, 199),
     cohort_start_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
                                   rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
                                   rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5), "1989-03-31")),
@@ -90,8 +92,10 @@ test_that("plotCohortOverlap", {
 
   table <- dplyr::tibble(
     cohort_definition_id = c(rep(1, 15), rep(2, 10), rep(3, 15), rep(4, 5)),
-    subject_id = c(sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5),
-                   sample(1:20, 5), sample(1:20, 5), sample(1:20, 5), sample(1:20, 5)),
+    subject_id = c(20, 5, 10, 12, 4, 15, 2, 1, 5, 10, 5, 8, 13, 4, 10,
+                   6, 18, 5, 1, 20, 14, 13, 8, 17, 3,
+                   16, 15, 20, 17, 3, 14, 6, 11, 8, 7, 20, 19, 5, 2, 18,
+                   5, 12, 3, 14, 13),
     cohort_start_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
                           rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
                           rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5))),

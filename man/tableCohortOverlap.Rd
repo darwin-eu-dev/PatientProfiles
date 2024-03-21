@@ -37,7 +37,7 @@ in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
 
 \item{minCellCount}{Counts below which results will be clouded.}
 
-\item{excludeColumns}{Columsn to drop from the output table.}
+\item{excludeColumns}{Columns to drop from the output table.}
 
 \item{.options}{Named list with additional formatting options.
 PatientProfiles::optionsTableCohortOverlap() shows allowed arguments and
@@ -51,11 +51,6 @@ Format a cohort_overlap object into a visual table.
 }
 \examples{
 \donttest{
-library(PatientProfiles)
-cdm <- PatientProfiles::mockPatientProfiles()
-results <- summariseCohortOverlap(cdm$cohort2)
-table <- tableCohortOverlap(results)
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

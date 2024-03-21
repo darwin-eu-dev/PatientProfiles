@@ -38,7 +38,7 @@ in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
 
 \item{minCellCount}{Counts below which results will be clouded.}
 
-\item{excludeColumns}{Columsn to drop from the output table.}
+\item{excludeColumns}{Columns to drop from the output table.}
 
 \item{.options}{named list with additional formatting options.
 PatientProfiles::optionsTableCohortTiming() shows allowed arguments and
@@ -52,11 +52,6 @@ Format a cohort_timing object into a visual table.
 }
 \examples{
 \donttest{
-library(PatientProfiles)
-cdm <- PatientProfiles::mockPatientProfiles()
-results <- summariseCohortTiming(cdm$cohort2)
-table <- tableCohortTiming(results)
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

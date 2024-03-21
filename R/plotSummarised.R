@@ -26,12 +26,6 @@ plotCohortOverlap <- function(result,
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type == "cohort_overlap")
-  # checkmate::assertCharacter(cohortNameReference, null.ok = TRUE)
-  # checkmate::assertCharacter(cohortNameComparator, null.ok = TRUE)
-  # checkmate::assertCharacter(strataName, null.ok = TRUE)
-  # checkmate::assertCharacter(strataLevel, null.ok = TRUE)
-  # checkmate::assertCharacter(cdmName, null.ok = TRUE)
-  # checkmate::assertCharacter(variableName, null.ok = TRUE)
   checkmate::assertCharacter(facetBy, null.ok = TRUE)
   checkmate::assertCharacter(overlapLabel)
   checkmate::assertLogical(uniqueCombinations)
@@ -54,13 +48,12 @@ plotCohortOverlap <- function(result,
         dplyr::all_of(c("strata_name", "strata_level",
                         "cohort_name_reference", "cohort_name_comparator")),
         ~stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", .x)))),
-      reference = paste0(.data$only_in_reference_count, " (", round(only_in_reference_percentage, 2), "%)"),
-      comparator = paste0(.data$only_in_comparator_count, " (", round(only_in_comparator_percentage, 2), "%)"),
-      overlap = paste0(.data$overlap_count, " (", round(overlap_percentage, 2), "%)"),
+      reference = paste0(.data$only_in_reference_count, " (", round(.data$only_in_reference_percentage, 2), "%)"),
+      comparator = paste0(.data$only_in_comparator_count, " (", round(.data$only_in_comparator_percentage, 2), "%)"),
+      overlap = paste0(.data$overlap_count, " (", round(.data$overlap_percentage, 2), "%)"),
       comparison_name = glue::glue(.env$overlapLabel),
     )
 
-  # vertical position
   # vertical position
   assingY <- c("result_id", "cdm_name", "cohort_name_reference", "cohort_name_comparator",
                "strata_name", "strata_level")
@@ -116,9 +109,9 @@ plotCohortOverlap <- function(result,
     ggplot2::theme_bw() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(size = 12),
                    axis.text.x = ggplot2::element_text(size = 11)) +
-    suppressWarnings(ggplot2::geom_col(data = dplyr::tibble("reference" = 0, "comparator" = 0,
+    suppressWarnings(ggplot2::geom_col(data = dplyr::tibble("only_in_reference_percentage" = 0, "only_in_comparator_percentage" = 0,
                                            to_fill = c("Cohort reference", "Cohort comparator", "Overlap")),
-                      ggplot2::aes(x = .data$reference, y = .data$comparator, fill = .data$to_fill))) +
+                      ggplot2::aes(x = .data$only_in_reference_percentage, y = .data$only_in_comparator_percentage, fill = .data$to_fill))) +
     ggplot2::scale_fill_manual(
       "Legend",
       values=c('#B6CDDE', '#E7BEC2', "#BBA0AE"),
