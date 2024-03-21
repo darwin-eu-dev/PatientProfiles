@@ -268,13 +268,13 @@ addDemographics <- function(x,
   }
 
   if (priorObservation == TRUE) {
-    pHQ <- priorObservationQuery(indexDate, name = priorObservationName)
+    pHQ <- priorObservationQuery(cdm, indexDate, name = priorObservationName)
   } else {
     pHQ <- NULL
   }
 
   if (futureObservation == TRUE) {
-    fOQ <- futureObservationQuery(indexDate, name = futureObservationName)
+    fOQ <- futureObservationQuery(cdm, indexDate, name = futureObservationName)
   } else {
     fOQ <- NULL
   }
@@ -347,33 +347,21 @@ sexQuery <- function(name, missingValue) {
            rlang::set_names(glue::glue(name)))
 }
 
-priorObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("observation_period_start_date",
-                      "{indexDate}")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
+priorObservationQuery <- function(cdm, indexDate, name) {
+  daysDiffQuery(cdm = cdm,
+                start = "observation_period_start_date",
+                end = indexDate,
+                names = name)
 }
 
-futureObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("{indexDate}",
-                          "observation_period_end_date")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
+futureObservationQuery <- function(cdm, indexDate, name) {
+  daysDiffQuery(cdm = cdm,
+                start = indexDate,
+                end = "observation_period_end_date",
+                names = name)
 }
 
-futureObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("{indexDate}",
-                          "observation_period_end_date")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
-}
 
-futureObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("{indexDate}",
-                          "observation_period_end_date")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
-}
 
 #' Compute the age of the individuals at a certain date
 #'

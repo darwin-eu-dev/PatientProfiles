@@ -223,12 +223,18 @@ addIntersect <- function(x,
         overwrite = TRUE
       )
 
+    filterTblName <- omopgenerics::uniqueTableName(tablePrefix)
+    cdm <- omopgenerics::insertTable(cdm = cdm,
+                                     name = filterTblName,
+                                     table = filterTbl,
+                                     overwrite = TRUE)
+
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
       resultCF <- resultW %>%
         dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id) %>%
         dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
-        dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
+        dplyr::left_join(cdm[[filterTblName]], by = "id", copy = TRUE) %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if ("flag" %in% value) {
@@ -306,14 +312,14 @@ addIntersect <- function(x,
             by = c(personVariable, "index_date", "id")
           )
       }
+
       resultDTO <- resultDTO %>%
-        dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
+        dplyr::left_join(cdm[[filterTblName]], by = "id") %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if (!("days" %in% value)) {
         resultDTO <- dplyr::select(resultDTO, -"days")
       }
-
       if (i == 1) {
         resultDateTimeOther <- resultDTO %>%
           dplyr::compute(

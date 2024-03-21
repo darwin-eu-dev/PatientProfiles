@@ -262,8 +262,12 @@ addLargeScaleCharacteristics <- function(cohort,
   dic <- dplyr::tibble(window_name = nams, window_nam = paste0("lsc_", winNams))
   names(window) <- nams
 
-  # random tablePrefix
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  tablePrefix <- omopgenerics::tmpPrefix()
+  dicTblName <- omopgenerics::uniqueTableName(tablePrefix)
+  cdm <- omopgenerics::insertTable(cdm,
+                     name = dicTblName,
+                     table = dic,
+                     overwrite = TRUE)
 
   # initial table
   x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
@@ -307,7 +311,7 @@ addLargeScaleCharacteristics <- function(cohort,
         dplyr::select(
           "subject_id", "cohort_start_date", "concept", "window_name"
         ) %>%
-        dplyr::inner_join(dic, by = "window_name", copy = TRUE) %>%
+        dplyr::inner_join(cdm[[dicTblName]], by = "window_name") %>%
         dplyr::mutate(
           value = 1,
           concept = as.character(as.integer(.data$concept)),
