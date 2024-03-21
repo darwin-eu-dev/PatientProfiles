@@ -516,19 +516,15 @@ checkSignificantDecimals <- function(significantDecimals) {
 checkTableIntersect <- function(tableIntersect, cdm) {
   checkmate::assertList(tableIntersect)
   arguments <- getArguments(addTableIntersect)
-  if (length(tableIntersect) > 0) {
-    if (!is.list(tableIntersect[[1]])) {
-      tableIntersect <- list(tableIntersect)
-    }
-  }
-  assertInputIntersect(
+  tableIntersect <- assertInputIntersect(
     inputList = tableIntersect,
     possibleArguments = c(arguments$all, "value"),
     compulsoryArguments = arguments$compulsory,
     nameFunction = "tableIntersect",
-    values = c("count", "flag", "date", "days")
+    cdm = cdm
   )
   # add naming
+  tableIntersect <- editNamesIntersect(tableIntersect)
   return(tableIntersect)
 }
 
@@ -536,7 +532,12 @@ assertInputIntersect <- function(inputList,
                                  possibleArguments,
                                  compulsoryArguments,
                                  nameFunction,
-                                 values = c("count", "flag", "date", "days")) {
+                                 cdm = NULL) {
+  if (length(inputList) > 0) {
+    if (!is.list(inputList[[1]])) {
+      inputList <- list(inputList)
+    }
+  }
   lapply(inputList, function(x) {
     if (!is.list(x) | length(names(x)) != length(x)) {
       cli::cli_abort(
@@ -556,15 +557,45 @@ assertInputIntersect <- function(inputList,
         "Required arguments not provided for {nameFunction}: {paste0(notPresent, collapse = ', ')}"
       )
     }
+    if (!is.null(cdm)) {
+      values <- c("count", "flag", "date", "days", colnames(cdm[[x$tableName]]))
+    } else {
+      values <- c("count", "flag", "date", "days")
+    }
     val <- x$value[!x$value %in% values]
     if (length(val) > 0) {
-      cli::cli_abort(c(
-        "Wrong value for {nameFunction}: {paste0(val, collapse = ', ')}. Possible values: {paste0(values, collapse = ', ')}",
-      ))
+      cli::cli_abort(
+        "Wrong value for {nameFunction}: {paste0(val, collapse = ', ')}. Possible values: {paste0(values, collapse = ', ')}"
+      )
     }
   })
+  return(invisible(NULL))
 }
-
+editNamesIntersect <- function(inputList) {
+  if (length(inputList) > 0) {
+    nms <- names(inputList)
+    if (is.null(nms)) {
+      nms <- rep("", length(nms))
+    }
+    for (k in seq_along(nms)) {
+      if (nms[k] == "") {
+        nams <- names(inputList[[k]])
+        if ("tableName" %in% nams) {
+          tblName <- inputList[[k]]$tableName
+        } else if ("conceptSet" %in% nams) {
+          tblName <- "Concepts"
+        } else {
+          tblName <- inputList[[k]]$targetCohortTable
+        }
+        value <- inputList[[k]]$value |> paste0(collapse = "+")
+        winName <- getWindowNames(inputList[[k]]$window) |> paste0(collapse = "+")
+        nms[k] <- paste(tblName, value, winName)
+      }
+    }
+    names(inputList) <- nms
+  }
+  return(inputList)
+}
 getArguments <- function(fun) {
   arguments <- formals(fun)
   compulsory <- character()
