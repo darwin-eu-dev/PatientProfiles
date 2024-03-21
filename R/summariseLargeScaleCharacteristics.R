@@ -72,7 +72,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                censorDate = NULL,
                                                includeSource = FALSE,
                                                minimumFrequency = 0.005,
-                                               excludedCodes = NULL,
+                                               excludedCodes = c(0),
                                                cdm = lifecycle::deprecated()) {
   if (!is.list(window)) {
     window <- list(window)
