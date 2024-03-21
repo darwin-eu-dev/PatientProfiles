@@ -382,19 +382,23 @@ addTableIntersectDays <- function(x,
   return(x)
 }
 
-#' Obtain a column's value of the intersect with an omop table,
+#' Intersecting the cohort with columns of an OMOP table of user's choice.
+#' It will add an extra column to the cohort, indicating the intersected
+#' entries with the target columns in a window of the user's choice.
 #'
 #' @param x Table with individuals in the cdm.
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
 #' device_exposure, measurement, observation, drug_era, condition_era, specimen.
-#' @param field Other columns from the table to intersect.
+#' @param field The columns from the table in tableName to intersect over.
+#' For example, if the user uses visit_occurrence in tableName then for field the possible
+#' options include visit_occurrence_id, visit_concept_id, visit_type_concept_id.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x.
-#' @param window window to consider events in.
-#' @param targetDate Target date in tableName.
+#' @param window window to consider events in when intersecting with the chosen column.
+#' @param targetDate The dates in the target columns in tableName that the user may want to restrict to.
 #' @param order which record is considered in case of multiple records (only
 #' required for date and days options).
 #' @param nameStyle naming of the added column or columns, should include
@@ -406,16 +410,14 @@ addTableIntersectDays <- function(x,
 #' @examples
 #' \donttest{
 #' cdm <- mockPatientProfiles()
-#'
 #' cdm$cohort1 %>%
 #'   addTableIntersectField(
-#'     tableName = "visit_occurrence",
-#'     field = "visit_concept_id",
-#'     order = "last",
-#'     window = c(-Inf, -1)
-#'   )
-#'
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'    tableName = "visit_occurrence",
+#'    field = "visit_concept_id",
+#'    order = "last",
+#'    window = c(-Inf, -1)
+#' )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectField <- function(x,
