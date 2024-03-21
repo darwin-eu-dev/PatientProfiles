@@ -18,6 +18,8 @@ plotDemographics(
 )
 }
 \arguments{
+\item{data}{output of summariseCharacteristics.}
+
 \item{xAxis}{what to plot on x axis, default as variable_name column. Has to be a column in data.}
 
 \item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.}
@@ -35,8 +37,6 @@ plotDemographics(
 \item{vertical_x}{whether to display x axis string vertically.}
 
 \item{options}{Other plot options in a list.}
-
-\item{result}{output of summariseCharacteristics.}
 }
 \value{
 A ggplot.
