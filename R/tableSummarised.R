@@ -160,6 +160,10 @@ optionsTableCharacteristics <- function() {
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' overlap <- summariseCohortOverlap(cdm$cohort2)
+#' tableCohortOverlap(overlap)
 #' }
 #'
 #' @return A formatted table of the overlap_cohort summarised object.
@@ -241,6 +245,11 @@ tableCohortOverlap  <- function(result,
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' timing <- summariseCohortTiming(cdm$cohort2)
+#' tableCohortTiming(timing)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A formatted table of the cohort_timing summarised object.
