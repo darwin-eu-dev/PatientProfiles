@@ -42,6 +42,8 @@
 #' cdm$cohort1 |>
 #'   summariseCharacteristics() |>
 #'   tableCharacteristics()
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A tibble with a tidy version of the summarised_characteristics
@@ -164,6 +166,7 @@ optionsTableCharacteristics <- function() {
 #' cdm <- PatientProfiles::mockPatientProfiles()
 #' overlap <- summariseCohortOverlap(cdm$cohort2)
 #' tableCohortOverlap(overlap)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A formatted table of the overlap_cohort summarised object.
