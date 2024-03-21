@@ -61,6 +61,8 @@ cdm <- mockPatientProfiles()
 cdm$cohort1 |>
   summariseCharacteristics() |>
   tableCharacteristics()
+
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }
