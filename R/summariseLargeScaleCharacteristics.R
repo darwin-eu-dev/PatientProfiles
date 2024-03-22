@@ -557,13 +557,20 @@ addConceptName <- function(lsc, cdm) {
   concepts <- lsc %>%
     dplyr::select("concept", "analysis") %>%
     dplyr::distinct()
+
+  tablePrefix <- omopgenerics::tmpPrefix()
+  conceptsTblName <- omopgenerics::uniqueTableName(tablePrefix)
+  cdm <- omopgenerics::insertTable(cdm = cdm,
+                                   name = conceptsTblName,
+                                   table = concepts,
+                                   overwrite = TRUE )
+
   conceptNames <- cdm[["concept"]] %>%
     dplyr::select("concept" = "concept_id", "concept_name") %>%
     dplyr::inner_join(
-      concepts %>%
+      cdm[[conceptsTblName]] %>%
         dplyr::mutate(concept = as.numeric(.data$concept)),
-      by = "concept",
-      copy = TRUE
+      by = "concept"
     ) %>%
     dplyr::collect()
   return(conceptNames)
