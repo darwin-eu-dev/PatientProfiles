@@ -103,7 +103,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
 
   # random tablePrefix
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   # initial table
   x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
@@ -262,12 +262,10 @@ addLargeScaleCharacteristics <- function(cohort,
   dic <- dplyr::tibble(window_name = nams, window_nam = paste0("lsc_", winNams))
   names(window) <- nams
 
-  tablePrefix <- omopgenerics::tmpPrefix()
   dicTblName <- omopgenerics::uniqueTableName(tablePrefix)
-  cdm <- omopgenerics::insertTable(cdm,
-                     name = dicTblName,
-                     table = dic,
-                     overwrite = TRUE)
+  cdm <- omopgenerics::insertTable(
+    cdm = cdm, name = dicTblName, table = dic, overwrite = TRUE
+  )
 
   # initial table
   x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
@@ -558,8 +556,7 @@ addConceptName <- function(lsc, cdm) {
     dplyr::select("concept", "analysis") %>%
     dplyr::distinct()
 
-  tablePrefix <- omopgenerics::tmpPrefix()
-  conceptsTblName <- omopgenerics::uniqueTableName(tablePrefix)
+  conceptsTblName <- omopgenerics::uniqueTableName(omopgenerics::tmpPrefix())
   cdm <- omopgenerics::insertTable(cdm = cdm,
                                    name = conceptsTblName,
                                    table = concepts,
@@ -573,6 +570,9 @@ addConceptName <- function(lsc, cdm) {
       by = "concept"
     ) %>%
     dplyr::collect()
+
+  omopgenerics::dropTable(cdm = cdm, name = conceptsTblName)
+
   return(conceptNames)
 }
 getTableAnalysis <- function(table, type, analysis, tablePrefix) {
