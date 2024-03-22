@@ -65,11 +65,6 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotCohortTiming</span><span class="op">(</span></span>
 <span>  <span class="va">result</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"boxplot"</span>,</span>
-<span>  cohortNameReference <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohortNameComparator <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  strataName <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  strataLevel <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cdmName <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  facetBy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cohort_name_reference"</span>, <span class="st">"cohort_name_comparator"</span><span class="op">)</span>,</span>
 <span>  timingLabel <span class="op">=</span> <span class="st">"{cohort_name_reference}; {cohort_name_comparator}"</span>,</span>
@@ -86,26 +81,6 @@
 <dt>type</dt>
 <dd><p>Type of desired formatted table, possibilities are "boxplot" and
 "density".</p></dd>
-
-
-<dt>cohortNameReference</dt>
-<dd><p>Names of the reference cohorts to include.</p></dd>
-
-
-<dt>cohortNameComparator</dt>
-<dd><p>Names of the comparator cohorts to include.</p></dd>
-
-
-<dt>strataName</dt>
-<dd><p>Names of the strata names to include.</p></dd>
-
-
-<dt>strataLevel</dt>
-<dd><p>Names of the strata levels to include.</p></dd>
-
-
-<dt>cdmName</dt>
-<dd><p>Names of the databases to include.</p></dd>
 
 
 <dt>facetBy</dt>
@@ -142,8 +117,8 @@ comparator plots will be plotted.</p></dd>
 <span class="r-in"><span><span class="va">timing</span> <span class="op">&lt;-</span> <span class="fu"><a href="summariseCohortTiming.html">summariseCohortTiming</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> diff_days: min, q25, median, q75, max</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-03-22 10:46:21.054311</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-03-22 10:46:21.103056</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-03-22 12:49:11.143053</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-03-22 12:49:11.19147</span>
 <span class="r-in"><span><span class="fu">plotCohortTiming</span><span class="op">(</span><span class="va">timing</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>There was 1 warning in `dplyr::mutate()`.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> In argument: `estimate_value = as.numeric(.data$estimate_value)`.</span>
