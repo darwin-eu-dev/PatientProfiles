@@ -523,7 +523,6 @@ checkTableIntersect <- function(tableIntersect, cdm) {
     nameFunction = "tableIntersect",
     cdm = cdm
   )
-  # add naming
   tableIntersect <- editNamesIntersect(tableIntersect)
   return(tableIntersect)
 }
@@ -569,7 +568,7 @@ assertInputIntersect <- function(inputList,
       )
     }
   })
-  return(invisible(NULL))
+  return(inputList)
 }
 editNamesIntersect <- function(inputList) {
   if (length(inputList) > 0) {
@@ -613,34 +612,28 @@ getArguments <- function(fun) {
 #' @noRd
 checkCohortIntersect <- function(cohortIntersect, cdm) {
   checkmate::assertList(cohortIntersect)
-  arguments <- getArguments(addCohortIntersect)
-  if (length(cohortIntersect) > 0) {
-    if (!is.list(cohortIntersect[[1]])) {
-      cohortIntersect <- list(cohortIntersect)
-    }
-  }
-  lapply(cohortIntersect, function(x) {
-    checkmate::assertList(x, names = "named")
-    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
-    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
-  })
+  arguments <- getArguments(.addCohortIntersect)
+  cohortIntersect <- assertInputIntersect(
+    inputList = cohortIntersect,
+    possibleArguments = c(arguments$all, "value"),
+    compulsoryArguments = arguments$compulsory,
+    nameFunction = "cohortIntersect"
+  )
+  cohortIntersect <- editNamesIntersect(cohortIntersect)
   return(cohortIntersect)
 }
 
 #' @noRd
 checkConceptIntersect <- function(conceptIntersect, cdm) {
-  checkmate::assertList(conceptIntersect, names = "named")
+  checkmate::assertList(conceptIntersect)
   arguments <- getArguments(.addConceptIntersect)
-  if (length(conceptIntersect) > 0) {
-    if (!identical(lapply(conceptIntersect, class) |> unlist() |> unname() |> unique(), "list")) {
-      conceptIntersect <- list(conceptIntersect)
-    }
-  }
-  lapply(conceptIntersect, function(x) {
-    checkmate::assertList(x, names = "named")
-    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
-    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
-  })
+  conceptIntersect <- assertInputIntersect(
+    inputList = conceptIntersect,
+    possibleArguments = c(arguments$all, "value"),
+    compulsoryArguments = arguments$compulsory,
+    nameFunction = "conceptIntersect"
+  )
+  conceptIntersect <- editNamesIntersect(conceptIntersect)
   return(conceptIntersect)
 }
 
