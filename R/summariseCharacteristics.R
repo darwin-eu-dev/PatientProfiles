@@ -621,13 +621,14 @@ updateDic <- function(value,
       ),
       "new_variable_level" = dplyr::if_else(
         .data$value %in% c("flag", "count", "date", "days"),
-        .data$value,
+        .data$full_cohort,
         as.character(NA)
       ),
       "table" = .env$tableName,
-      "window" = correctWindowName(.data$full_window)
+      "window" = correctWindowName(.data$full_window),
     ) |>
     dplyr::select(
-      "short_name", "new_variable_name", "new_variable_level", "table", "window"
+      "short_name", "new_variable_name", "new_variable_level", "table",
+      "window", "value"
     )
 }
