@@ -4,21 +4,14 @@
 \alias{summariseCohortIntersect}
 \title{Summarise cohort intersection information}
 \usage{
-summariseCohortIntersect(
-  cohort,
-  targetCohort = list(),
-  strata = list(),
-  ageGroup = NULL
-)
+summariseCohortIntersect(cohort, cohortIntersect = list(), strata = list())
 }
 \arguments{
 \item{cohort}{A cohort in the cdm.}
 
-\item{targetCohort}{The settings for cohort intersection settings.}
+\item{cohortIntersect}{The settings for cohort intersection settings.}
 
 \item{strata}{Stratification list.}
-
-\item{ageGroup}{A list of age groups.}
 }
 \value{
 A summary of the cohort intersection informations.
@@ -34,8 +27,10 @@ cdm <- mockPatientProfiles()
 
 summariseCohortIntersect(
   cohort = cdm$cohort1,
-  targetCohort = list(
-    targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+  cohortIntersect = list(
+    "Medications in the prior year" = list(
+      targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+    )
   )
 )
 CDMConnector::cdmDisconnect(cdm = cdm)

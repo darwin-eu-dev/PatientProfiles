@@ -17,9 +17,8 @@
 #' Summarise cohort intersection information
 #'
 #' @param cohort A cohort in the cdm.
-#' @param targetCohort The settings for cohort intersection settings.
+#' @param cohortIntersect The settings for cohort intersection settings.
 #' @param strata Stratification list.
-#' @param ageGroup A list of age groups.
 #'
 #' @return A summary of the cohort intersection informations.
 #' @export
@@ -32,34 +31,25 @@
 #'
 #' summariseCohortIntersect(
 #'   cohort = cdm$cohort1,
-#'   targetCohort = list(
-#'     targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'   cohortIntersect = list(
+#'     "Medications in the prior year" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     )
 #'   )
 #' )
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 summariseCohortIntersect <- function(cohort,
-                                     targetCohort = list(),
-                                     strata = list(),
-                                     ageGroup = NULL
-                                     ){
-
-  # Check if targetCohort is an empty list
-  if(length(targetCohort) == 0) {
-    stop("targetCohort is empty. Please provide a valid targetCohort in form of
-         list(targetCohortTable = 'cohort_name', value = 'flag', window = c(-365, -1)).")
-  }
-
-
-
-  results <- PatientProfiles::summariseCharacteristics(
+                                     cohortIntersect = list(),
+                                     strata = list()){
+  summariseCharacteristics(
     cohort = cohort,
     strata = strata,
-    ageGroup = ageGroup,
+    ageGroup = NULL,
     demographics = FALSE,
-    cohortIntersect = targetCohort
+    cohortIntersect = cohortIntersect,
+    tableIntersect = list(),
+    conceptIntersect = list(),
+    otherVariables = character()
   )
-
-  return(results)
-
 }
