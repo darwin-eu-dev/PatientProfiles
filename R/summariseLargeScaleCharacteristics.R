@@ -436,6 +436,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
       cdm = cdm, name = nm, table = dplyr::tibble("standard" = excludedCodes),
       overwrite = TRUE
     )
+    cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
     table <- table |>
       dplyr::anti_join(cdm[[nm]], by = "standard")
     if ("source" %in% colnames(table)) {
