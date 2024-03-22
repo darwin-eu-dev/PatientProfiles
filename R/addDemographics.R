@@ -268,13 +268,21 @@ addDemographics <- function(x,
   }
 
   if (priorObservation == TRUE) {
-    pHQ <- priorObservationQuery(cdm, indexDate, name = priorObservationName)
+    pHQ <-  glue::glue('local(CDMConnector::datediff("observation_period_start_date",
+                      "{indexDate}"))') %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(glue::glue(priorObservationName))
+
   } else {
     pHQ <- NULL
   }
 
   if (futureObservation == TRUE) {
-    fOQ <- futureObservationQuery(cdm, indexDate, name = futureObservationName)
+    fOQ <-  glue::glue('local(CDMConnector::datediff("{indexDate}",
+                          "observation_period_end_date"))') %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(futureObservationName)
+
   } else {
     fOQ <- NULL
   }
@@ -345,20 +353,6 @@ sexQuery <- function(name, missingValue) {
       TRUE ~ "{missingValue}")') %>%
            rlang::parse_exprs() %>%
            rlang::set_names(glue::glue(name)))
-}
-
-priorObservationQuery <- function(cdm, indexDate, name) {
-  daysDiffQuery(cdm = cdm,
-                start = "observation_period_start_date",
-                end = indexDate,
-                names = name)
-}
-
-futureObservationQuery <- function(cdm, indexDate, name) {
-  daysDiffQuery(cdm = cdm,
-                start = indexDate,
-                end = "observation_period_end_date",
-                names = name)
 }
 
 
