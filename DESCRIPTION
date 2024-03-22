@@ -61,7 +61,7 @@ Imports:
     cli,
     stringr,
     omopgenerics (>= 0.1.2),
-    visOmopResults (>= 0.1.0),
+    visOmopResults (>= 0.2.0),
     lifecycle
 VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/

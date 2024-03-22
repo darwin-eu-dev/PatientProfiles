@@ -44,7 +44,8 @@ summariseDemographics <- function(cohort,
   results <- PatientProfiles::summariseCharacteristics(
     cohort = cohort,
     strata = strata,
-    ageGroup = ageGroup,
+    demographics = TRUE,
+    ageGroup = ageGroup
   )
   return(results)
 }
