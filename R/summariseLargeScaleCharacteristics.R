@@ -238,6 +238,7 @@ addLargeScaleCharacteristics <- function(cohort,
   }
 
   cdm <- omopgenerics::cdmReference(cohort)
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   # initial checks
   checkX(cohort)
