@@ -16,7 +16,7 @@ summariseLargeScaleCharacteristics(
   censorDate = NULL,
   includeSource = FALSE,
   minimumFrequency = 0.005,
-  excludedCodes = NULL,
+  excludedCodes = c(0),
   cdm = lifecycle::deprecated()
 )
 }

@@ -6,31 +6,13 @@
 \usage{
 plotCohortOverlap(
   result,
-  cohortNameReference = NULL,
-  cohortNameComparator = NULL,
-  strataName = NULL,
-  strataLevel = NULL,
-  cdmName = NULL,
-  variableName = "number subjects",
-  facetBy = NULL,
+  facetBy = "variable_name",
   overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
   uniqueCombinations = TRUE
 )
 }
 \arguments{
 \item{result}{A cohort_overlap object.}
-
-\item{cohortNameReference}{Names of the reference cohorts to include.}
-
-\item{cohortNameComparator}{Names of the comparator cohorts to include.}
-
-\item{strataName}{Names of the strata names to include.}
-
-\item{strataLevel}{Names of the strata levels to include.}
-
-\item{cdmName}{Names of the databases to include.}
-
-\item{variableName}{Names of the variable names to include.}
 
 \item{facetBy}{Names of columns in the cohort_overlap table for faceting the
 ggplot object.}

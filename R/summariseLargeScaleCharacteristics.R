@@ -72,7 +72,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                censorDate = NULL,
                                                includeSource = FALSE,
                                                minimumFrequency = 0.005,
-                                               excludedCodes = NULL,
+                                               excludedCodes = c(0),
                                                cdm = lifecycle::deprecated()) {
   if (!is.list(window)) {
     window <- list(window)
@@ -103,7 +103,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
 
   # random tablePrefix
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   # initial table
   x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
@@ -238,6 +238,7 @@ addLargeScaleCharacteristics <- function(cohort,
   }
 
   cdm <- omopgenerics::cdmReference(cohort)
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   # initial checks
   checkX(cohort)
@@ -262,8 +263,10 @@ addLargeScaleCharacteristics <- function(cohort,
   dic <- dplyr::tibble(window_name = nams, window_nam = paste0("lsc_", winNams))
   names(window) <- nams
 
-  # random tablePrefix
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  dicTblName <- omopgenerics::uniqueTableName(tablePrefix)
+  cdm <- omopgenerics::insertTable(
+    cdm = cdm, name = dicTblName, table = dic, overwrite = TRUE
+  )
 
   # initial table
   x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
@@ -307,7 +310,7 @@ addLargeScaleCharacteristics <- function(cohort,
         dplyr::select(
           "subject_id", "cohort_start_date", "concept", "window_name"
         ) %>%
-        dplyr::inner_join(dic, by = "window_name", copy = TRUE) %>%
+        dplyr::inner_join(cdm[[dicTblName]], by = "window_name") %>%
         dplyr::mutate(
           value = 1,
           concept = as.character(as.integer(.data$concept)),
@@ -436,6 +439,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
       cdm = cdm, name = nm, table = dplyr::tibble("standard" = excludedCodes),
       overwrite = TRUE
     )
+    cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
     table <- table |>
       dplyr::anti_join(cdm[[nm]], by = "standard")
     if ("source" %in% colnames(table)) {
@@ -553,15 +557,24 @@ addConceptName <- function(lsc, cdm) {
   concepts <- lsc %>%
     dplyr::select("concept", "analysis") %>%
     dplyr::distinct()
+
+  conceptsTblName <- omopgenerics::uniqueTableName(omopgenerics::tmpPrefix())
+  cdm <- omopgenerics::insertTable(cdm = cdm,
+                                   name = conceptsTblName,
+                                   table = concepts,
+                                   overwrite = TRUE )
+
   conceptNames <- cdm[["concept"]] %>%
     dplyr::select("concept" = "concept_id", "concept_name") %>%
     dplyr::inner_join(
-      concepts %>%
+      cdm[[conceptsTblName]] %>%
         dplyr::mutate(concept = as.numeric(.data$concept)),
-      by = "concept",
-      copy = TRUE
+      by = "concept"
     ) %>%
     dplyr::collect()
+
+  omopgenerics::dropTable(cdm = cdm, name = conceptsTblName)
+
   return(conceptNames)
 }
 getTableAnalysis <- function(table, type, analysis, tablePrefix) {

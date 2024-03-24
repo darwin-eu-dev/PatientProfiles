@@ -19,10 +19,9 @@
 addCohortName <- function(cohort) {
   cohort %>%
     dplyr::left_join(
-      omopgenerics::settings(cohort) %>%
+      attr(cohort, "cohort_set") %>%
         dplyr::select("cohort_definition_id", "cohort_name"),
-      by = "cohort_definition_id",
-      copy = TRUE
+      by = "cohort_definition_id"
     )
 }
 

@@ -14,14 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Summarise demographics of individuals
+#' Summarise cohort intersection information
 #'
 #' @param cohort A cohort in the cdm.
+#' @param cohortIntersect The settings for cohort intersection settings.
 #' @param strata Stratification list.
-#' @param ageGroup A list of age groups.
 #'
-#' @return A summary of the demographics of the individuals.
-#'
+#' @return A summary of the cohort intersection informations.
 #' @export
 #'
 #' @examples
@@ -30,22 +29,27 @@
 #'
 #' cdm <- mockPatientProfiles()
 #'
-#' summariseDemographics(
+#' summariseCohortIntersect(
 #'   cohort = cdm$cohort1,
-#'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))
+#'   cohortIntersect = list(
+#'     "Medications in the prior year" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     )
+#'   )
 #' )
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
-
-summariseDemographics <- function(cohort,
-                                  strata = list(),
-                                  ageGroup = NULL) {
-
-  results <- PatientProfiles::summariseCharacteristics(
+summariseCohortIntersect <- function(cohort,
+                                     cohortIntersect = list(),
+                                     strata = list()){
+  summariseCharacteristics(
     cohort = cohort,
     strata = strata,
-    demographics = TRUE,
-    ageGroup = ageGroup
+    ageGroup = NULL,
+    demographics = FALSE,
+    cohortIntersect = cohortIntersect,
+    tableIntersect = list(),
+    conceptIntersect = list(),
+    otherVariables = character()
   )
-  return(results)
 }
