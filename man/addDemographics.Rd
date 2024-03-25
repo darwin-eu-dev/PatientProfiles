@@ -21,8 +21,10 @@ addDemographics(
   missingSexValue = "None",
   priorObservation = TRUE,
   priorObservationName = "prior_observation",
+  priorObservationType = "days",
   futureObservation = TRUE,
   futureObservationName = "future_observation",
+  futureObservationType = "days",
   dateOfBirth = FALSE,
   dateOfBirthName = "date_of_birth"
 )
@@ -68,11 +70,17 @@ of the current observation period and the indexDate will be calculated.}
 
 \item{priorObservationName}{Prior observation variable name.}
 
+\item{priorObservationType}{Whether to return a "date" or the number of
+"days".}
+
 \item{futureObservation}{TRUE or FALSE. If TRUE, days between the
 indexDate and the end of the current observation period will be
 calculated.}
 
 \item{futureObservationName}{Future observation variable name.}
+
+\item{futureObservationType}{Whether to return a "date" or the number of
+"days".}
 
 \item{dateOfBirth}{TRUE or FALSE, if true the date of birth will be return.}
 
