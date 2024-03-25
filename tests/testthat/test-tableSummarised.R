@@ -99,7 +99,7 @@ test_that("tableCharacteristics", {
                     colnames(fx1$body$dataset)))
   expect_true(all(fx1$body$dataset$`Variable name` %>% unique() %in%
                     c("Number records", "Number subjects", "Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
-                      "Future observation", "Ibuprophen", "Acetaminophen", "Naloxone", "Headache", "Covid")))
+                      "Future observation", "Medications", "Comorbidities")))
 
   tibble1 <- tableCharacteristics(result1, type = "tibble", split = "strata", header = character())
   expect_true(all(class(tibble1) %in% c("tbl_df", "tbl", "data.frame")))
