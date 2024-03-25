@@ -50,7 +50,7 @@ A tibble with a tidy version of the summarised_characteristics
 object.
 }
 \description{
-Format a summarised_characteristics object into a visual table.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{

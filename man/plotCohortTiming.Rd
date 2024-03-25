@@ -34,7 +34,7 @@ comparator plots will be plotted.}
 A ggplot2.
 }
 \description{
-Plot cohort_overlap objects.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{

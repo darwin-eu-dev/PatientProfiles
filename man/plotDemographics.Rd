@@ -42,7 +42,7 @@ plotDemographics(
 A ggplot.
 }
 \description{
-Plot summariseDemographics output.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{

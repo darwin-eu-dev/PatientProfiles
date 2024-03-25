@@ -47,7 +47,7 @@ their default values.}
 A formatted table of the overlap_cohort summarised object.
 }
 \description{
-Format a cohort_overlap object into a visual table.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{

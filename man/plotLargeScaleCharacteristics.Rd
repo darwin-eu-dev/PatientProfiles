@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotLargeScaleCharacteristics.R
 \name{plotLargeScaleCharacteristics}
 \alias{plotLargeScaleCharacteristics}
-\title{plot large scale characteristics}
+\title{create a ggplot from the output of summariseLargeScaleCharacteristics.}
 \usage{
 plotLargeScaleCharacteristics(
   data,
@@ -19,15 +19,18 @@ plotLargeScaleCharacteristics(
 \arguments{
 \item{data}{output of summariseLargeScaleCharacteristics.}
 
-\item{xAxis}{what to plot on x axis, default as variable_name column. Has to be a column in data.}
+\item{xAxis}{what to plot on x axis, default as variable_name column.
+Has to be a column in data.}
 
-\item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.}
+\item{yAxis}{what to plot on y axis, default as estimate_value column.
+Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.}
 
 \item{facetVars}{column in data to facet by.}
 
 \item{colorVars}{column in data to color by.}
 
-\item{facetOrder}{order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars.}
+\item{facetOrder}{order of facet, make  sure multiple facets are separated
+by period and in the order provided in facetVars.}
 
 \item{colorNames}{A vector or pre-selected color.}
 
@@ -39,7 +42,7 @@ plotLargeScaleCharacteristics(
 A ggplot.
 }
 \description{
-plot large scale characteristics
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{
@@ -59,11 +62,11 @@ valid_end_date = as.Date("2099-01-01")
 cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 results <- cdm$cohort2 \%>\%
 summariseLargeScaleCharacteristics(
- episodeInWindow = c("condition_occurrence"),
- minimumFrequency = 0
- )
+  episodeInWindow = c("condition_occurrence"),
+  minimumFrequency = 0
+)
 graphs <- plotLargeScaleCharacteristics(results)
 CDMConnector::cdmDisconnect(cdm = cdm)
- }
+}
 
 }
