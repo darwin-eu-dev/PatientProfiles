@@ -93,21 +93,19 @@ addDemographics <- function(x,
   }
   cdm <- omopgenerics::cdmReference(x)
 
-  if (typeof(ageDefaultMonth) == "character") {
-    ageDefaultMonth <- as.integer(ageDefaultMonth)
-  }
-
-  if (typeof(ageDefaultDay) == "character") {
-    ageDefaultDay <- as.integer(ageDefaultDay)
-  }
-
   ## check for standard types of user error
   personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
+  if (typeof(ageDefaultMonth) %in% c("character", "double")) {
+    ageDefaultMonth <- as.integer(ageDefaultMonth)
+  }
+  if (typeof(ageDefaultDay) %in% c("character", "double")) {
+    ageDefaultDay <- as.integer(ageDefaultDay)
+  }
   checkmate::assertIntegerish(
     ageDefaultMonth,
-    lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    lower = 1, upper = 12, any.missing = FALSE, len = 1,
     null.ok = !age
   )
   checkmate::assertIntegerish(
@@ -117,8 +115,6 @@ addDemographics <- function(x,
   )
   checkmate::assertLogical(ageImposeMonth, any.missing = FALSE, len = 1)
   checkmate::assertLogical(ageImposeDay, any.missing = FALSE, len = 1)
-  checkmate::assertInteger(ageDefaultMonth, any.missing = FALSE, len = 1, lower = 1, upper = 12)
-  checkmate::assertInteger(ageDefaultDay, any.missing = FALSE, len = 1, lower = 1, upper = 31)
   ageGroup <- checkAgeGroup(ageGroup)
   checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
   checkmate::assertLogical(priorObservation, any.missing = FALSE, len = 1)
@@ -197,14 +193,14 @@ addDemographics <- function(x,
           dplyr::rename(!!personVariable := "person_id") %>%
           dplyr::select(
             dplyr::all_of(personVariable),
-            !!priorObservationName := "observation_period_start_date",
-            !!futureObservationName := "observation_period_end_date"
+            "observation_period_start_date",
+            "observation_period_end_date"
           ),
         by = personVariable
       ) %>%
       dplyr::filter(
-        .data[[priorObservationName]] <= .data[[indexDate]] &
-          .data[[futureObservationName]] >= .data[[indexDate]]
+        .data$observation_period_start_date <= .data[[indexDate]] &
+          .data$observation_period_end_date >= .data[[indexDate]]
       )
   }
 
@@ -275,24 +271,32 @@ addDemographics <- function(x,
     sQ <- NULL
   }
 
-  if (priorObservation == TRUE & priorObservationType == "days") {
-    pHQ <-  glue::glue(
-      'local(CDMConnector::datediff("{priorObservationName}","{indexDate}"))'
-    ) %>%
+  if (priorObservation == TRUE) {
+    if (priorObservationType == "days") {
+      pHQ <-  glue::glue(
+        'local(CDMConnector::datediff("observation_period_start_date","{indexDate}"))'
+      )
+    } else {
+      pHQ <- ".data$observation_period_start_date"
+    }
+    pHQ <- pHQ %>%
       rlang::parse_exprs() %>%
       rlang::set_names(glue::glue(priorObservationName))
-
   } else {
     pHQ <- NULL
   }
 
-  if (futureObservation == TRUE & futureObservationType == "days") {
-    fOQ <-  glue::glue(
-    'local(CDMConnector::datediff("{indexDate}","{futureObservationName}"))'
-    ) %>%
+  if (futureObservation == TRUE) {
+    if (futureObservationType == "days") {
+      fOQ <-  glue::glue(
+        'local(CDMConnector::datediff("{indexDate}","observation_period_end_date"))'
+      )
+    } else {
+      fOQ <- ".data$observation_period_end_date"
+    }
+    fOQ <- fOQ |>
       rlang::parse_exprs() %>%
       rlang::set_names(futureObservationName)
-
   } else {
     fOQ <- NULL
   }
