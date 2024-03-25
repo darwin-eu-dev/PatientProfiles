@@ -49,7 +49,8 @@ Suggests:
     gt,
     flextable,
     ggpubr,
-    tictoc
+    tictoc,
+    withr
 Imports: 
     magrittr,
     CDMConnector (>= 1.3.0),
