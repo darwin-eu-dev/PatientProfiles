@@ -117,6 +117,8 @@ addDemographics <- function(x,
   )
   checkmate::assertLogical(ageImposeMonth, any.missing = FALSE, len = 1)
   checkmate::assertLogical(ageImposeDay, any.missing = FALSE, len = 1)
+  checkmate::assertInteger(ageDefaultMonth, any.missing = FALSE, len = 1, lower = 1, upper = 12)
+  checkmate::assertInteger(ageDefaultDay, any.missing = FALSE, len = 1, lower = 1, upper = 31)
   ageGroup <- checkAgeGroup(ageGroup)
   checkmate::assertLogical(sex, any.missing = FALSE, len = 1)
   checkmate::assertLogical(priorObservation, any.missing = FALSE, len = 1)
