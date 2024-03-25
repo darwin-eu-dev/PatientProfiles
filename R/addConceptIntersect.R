@@ -120,8 +120,6 @@ addConceptIntersect <- function(x,
   # ids
   conceptSetId <- conceptSetId(conceptSet)
 
-  conceptSet <- list("mc" = 4112343)
-
   # subset table
   cdm[[nm]] <- subsetTable(cdm[[nm]]) |>
     dplyr::compute(name = nm, temporary = FALSE)
