@@ -35,6 +35,8 @@ For this vignette we'll use the Eunomia synthetic dataset. First lets create our
 library(CDMConnector)
 library(CodelistGenerator)
 library(PatientProfiles)
+library(dplyr)
+library(ggplot2)
 
 con <- DBI::dbConnect(duckdb::duckdb(),
                        dbdir = CDMConnector::eunomia_dir())
@@ -139,5 +141,45 @@ cdm$ankle_sprain %>%
 
 ## Cohort-based versus concept-based intersections
 
-TO DO
+In the previous vignette we saw that we can add an intersection variable using a cohort we have created. Meanwhile in this vignette we see that we can instead create an intersection variable using a concept set directly. It is important to note that these two approaches can lead to different results.
 
+When creating a cohort we combine overlapping records, as cohort entries cannot overlap. Thus when adding an intersection count, `addCohortIntersectCount()` will return a count of cohort entries in the window of interest while `addConceptIntersectCount()` will return a count of records withing the window. We can see the impact for acetaminophen for our example data below, where we have slightly more records than cohort entries.
+
+```{r, fig.width=7}
+acetaminophen_cs <- getDrugIngredientCodes(cdm = cdm, 
+                                  name = c("acetaminophen"))
+
+cdm <- generateConceptCohortSet(
+  cdm = cdm,
+  name = "acetaminophen",
+  conceptSet = acetaminophen_cs,
+  end = "event_end_date",
+  limit = "all"
+)
+
+dplyr::bind_rows(
+cdm$ankle_sprain |> 
+  addCohortIntersectCount(targetCohortTable = "acetaminophen",
+                         window = c(-Inf, Inf)) |> 
+  dplyr::group_by(acetaminophen_minf_to_inf)  |> 
+  dplyr::tally() |> 
+  dplyr::collect() |> 
+  dplyr::arrange(desc(acetaminophen_minf_to_inf)) |> 
+  dplyr::mutate(type = "cohort"),
+cdm$ankle_sprain |> 
+  addConceptIntersectCount(conceptSet = acetaminophen_cs, 
+                         window = c(-Inf, Inf)) |> 
+  dplyr::group_by(acetaminophen_minf_to_inf) |> 
+  dplyr::tally() |> 
+  dplyr::collect() |> 
+  dplyr::arrange(desc(acetaminophen_minf_to_inf)) |> 
+  dplyr::mutate(type = "concept_set")) |> 
+  ggplot() +
+  geom_col(aes(acetaminophen_minf_to_inf, n, fill = type), 
+           position = "dodge") +
+  theme_bw()+
+  theme(legend.title = element_blank(), 
+        legend.position = "top")
+```
+
+Additional differences between cohort and concept set intersections may also result from cohort table rules. For example, cohort tables will typically omit any records that occur outside an individual´s observation time (as defined in the observation period window). Such records, however, would not be excluded when adding a concept based intersection.
