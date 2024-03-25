@@ -144,7 +144,8 @@ summariseCharacteristics <- function(cohort,
 
   dic <- dplyr::tibble(
     short_name = character(), new_variable_name = character(),
-    new_variable_level = character(), table = character(), window = character()
+    new_variable_level = character(), table = character(), window = character(),
+    value = character()
   )
   variables <- list()
 
@@ -170,7 +171,8 @@ summariseCharacteristics <- function(cohort,
           new_variable_name = names(ageGroup),
           new_variable_level = as.character(NA),
           table = as.character(NA),
-          window = as.character(NA)
+          window = as.character(NA),
+          value = as.character(NA)
         ))
       names(ageGroup) <- newNames
       demographicsCategorical <- c(demographicsCategorical, newNames)
@@ -183,7 +185,8 @@ summariseCharacteristics <- function(cohort,
         ),
         new_variable_level = as.character(NA),
         table = as.character(NA),
-        window = as.character(NA)
+        window = as.character(NA),
+        value = as.character(NA)
       ))
 
     # add demographics
@@ -220,8 +223,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       tableIntersect[[k]]$value, shortNames, fullNames,
-      arguments$tableName, paste("any", arguments$tableName),
-      arguments$tableName
+      arguments$tableName, NA_character_, arguments$tableName,
+      names(tableIntersect)[k]
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -307,7 +310,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       cohortIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesCohort, fullNamesCohort, arguments$targetCohortTable
+      shortNamesCohort, fullNamesCohort, arguments$targetCohortTable,
+      names(cohortIntersect)[k]
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -366,7 +370,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       conceptIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesConcept, fullNamesConcept, NA_character_
+      shortNamesConcept, fullNamesConcept, NA_character_,
+      names(conceptIntersect)[k]
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -473,34 +478,9 @@ summariseCharacteristics <- function(cohort,
       c("variable_name", "variable_level"),
       ~ stringr::str_to_sentence(gsub("_", " ", .x))
     )) %>%
-    dplyr::mutate(
-      "additional_name" = dplyr::case_when(
-        is.na(.data$table) & is.na(.data$window) ~ "overall",
-        !is.na(.data$table) & is.na(.data$window) ~ "table",
-        is.na(.data$table) & !is.na(.data$window) ~ "window",
-        !is.na(.data$table) & !is.na(.data$window) ~ "table and window"
-      ),
-      "additional_level" = dplyr::case_when(
-        is.na(.data$table) & is.na(.data$window) ~ "overall",
-        !is.na(.data$table) & is.na(.data$window) ~ .data$table,
-        is.na(.data$table) & !is.na(.data$window) ~ .data$window,
-        !is.na(.data$table) & !is.na(.data$window) ~ paste(
-          .data$table, "and", .data$window
-        )
-      )
-    ) |>
-    dplyr::select(-dplyr::any_of(c("table", "window"))) |>
-    dplyr::as_tibble()
-
-  # correct integers
-  integers <- results$estimate_value
-  integers[results$estimate_type == "date"] <- NA
-  integers <- as.numeric(integers)
-  results$estimate_type[
-    results$estimate_type == "numeric" & integers == floor(integers)
-  ] <- "integer"
-
-  results <- omopgenerics::newSummarisedResult(results)
+    visOmopResults::uniteAdditional(cols = c("table", "window", "value")) |>
+    dplyr::as_tibble() |>
+    omopgenerics::newSummarisedResult()
 
   cli::cli_alert_success("summariseCharacteristics finished!")
 
@@ -594,7 +574,8 @@ updateDic <- function(value,
                       fullWindow,
                       shortCohort,
                       fullCohort,
-                      tableName) {
+                      tableName,
+                      nam) {
   expand.grid("value" = value, "short_window" = shortWindow) %>%
     dplyr::as_tibble() %>%
     dplyr::inner_join(
@@ -614,11 +595,7 @@ updateDic <- function(value,
       .data$value, "_", .data$short_cohort, "_", .data$short_window
     )) %>%
     dplyr::mutate(
-      "new_variable_name" = dplyr::if_else(
-        .data$value %in% c("flag", "count", "date", "days"),
-        .data$full_cohort,
-        .data$value
-      ),
+      "new_variable_name" = .env$nam,
       "new_variable_level" = dplyr::if_else(
         .data$value %in% c("flag", "count", "date", "days"),
         .data$full_cohort,
