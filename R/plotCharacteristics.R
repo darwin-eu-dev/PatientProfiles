@@ -13,7 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#' plot characteristics
+
+#' Create a ggplot from the output of summariseCharacteristics.
+#' `r lifecycle::badge("experimental")`
 #'
 #' @param data output of summariseCharacteristics.
 #' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.
@@ -30,18 +32,22 @@
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
+#'
 #' cdm <- mockPatientProfiles()
+#'
 #' results <- summariseCharacteristics(
-#'  cohort = cdm$cohort1,
-#'  ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
-#'  tableIntersect = list(
-#'  tableName = "visit_occurrence", value = "count", window = c(-365, -1)
-#' ),
-#' cohortIntersect = list(
-#'  targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
-#'  )
+#'   cohort = cdm$cohort1,
+#'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+#'   tableIntersect = list(
+#'     tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+#'   ),
+#'   cohortIntersect = list(
+#'     targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'   )
 #' )
-#' graph <- plotCharacteristics(results)
+#'
+#' plotCharacteristics(results)
+#'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 plotCharacteristics <- function(data,

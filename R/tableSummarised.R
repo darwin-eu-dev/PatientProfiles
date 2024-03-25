@@ -16,6 +16,8 @@
 
 #' Format a summarised_characteristics object into a visual table.
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' @param result A summarised_characteristics object.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
@@ -143,6 +145,8 @@ optionsTableCharacteristics <- function() {
 
 #' Format a cohort_overlap object into a visual table.
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' @param result A cohort_overlap object.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
@@ -228,6 +232,8 @@ tableCohortOverlap  <- function(result,
 }
 
 #' Format a cohort_timing object into a visual table.
+#'
+#' `r lifecycle::badge("experimental")`
 #'
 #' @param result A cohort_overlap object.
 #' @param type Type of desired formatted table, possibilities: "gt",

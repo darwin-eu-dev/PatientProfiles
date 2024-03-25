@@ -48,7 +48,7 @@ their default values.}
 A formatted table of the cohort_timing summarised object.
 }
 \description{
-Format a cohort_timing object into a visual table.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{

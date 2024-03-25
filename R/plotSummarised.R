@@ -1,5 +1,7 @@
 #' Plot cohort_overlap objects.
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' @param result A cohort_overlap object.
 #' @param facetBy Names of columns in the cohort_overlap table for faceting the
 #' ggplot object.
@@ -133,6 +135,8 @@ plotCohortOverlap <- function(result,
 }
 
 #' Plot cohort_overlap objects.
+#'
+#' `r lifecycle::badge("experimental")`
 #'
 #' @param result A cohort_overlap object.
 #' @param type Type of desired formatted table, possibilities are "boxplot" and
@@ -313,6 +317,8 @@ plotCohortTiming <- function(result,
 }
 
 #' Plot summariseDemographics output.
+#'
+#' `r lifecycle::badge("experimental")`
 #'
 #' @param data output of summariseCharacteristics.
 #' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.
