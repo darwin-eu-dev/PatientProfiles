@@ -97,10 +97,10 @@ addDemographics <- function(x,
   personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
-  if (typeof(ageDefaultMonth) %in% c("character", "double")) {
+  if (typeof(ageDefaultMonth) == "character") {
     ageDefaultMonth <- as.integer(ageDefaultMonth)
   }
-  if (typeof(ageDefaultDay) %in% c("character", "double")) {
+  if (typeof(ageDefaultDay) == "character") {
     ageDefaultDay <- as.integer(ageDefaultDay)
   }
   checkmate::assertIntegerish(
