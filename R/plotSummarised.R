@@ -354,6 +354,134 @@ plotDemographics <- function(data,
                              vertical_x = FALSE,
                              options = list()) {
 
+  # check input
+  data <- omopgenerics::newSummarisedResult(data) |>
+    dplyr::filter(.data$result_type %in%
+                    c("summarised_demographics"))
+
+  gg <- PatientProfiles::plotCharacteristics(
+    data = data,
+    xAxis = xAxis,
+    yAxis = yAxis,
+    plotStyle = plotStyle,
+    facetVars = facetVars,
+    colorVars = colorVars,
+    facetOrder = facetOrder,
+    colorNames = colorNames,
+    vertical_x = vertical_x,
+    options = options
+  )
+
+  return(gg)
+}
+
+#' Plot summariseCohortIntersect output.
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param data output of summariseCohortIntersect
+#' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.
+#' @param yAxis what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.
+#' @param plotStyle Now allows boxplot or barplot only.
+#' @param facetVars column in data to facet by.
+#' @param colorVars column in data to color by.
+#' @param facetOrder order of facet, make sure multiple facets are separated by period and in the order provided in facetVars.
+#' @param colorNames A vector or pre-selected color.
+#' @param vertical_x whether to display x axis string vertically.
+#' @param options Other plot options in a list.
+#' @return A ggplot.
+#' @export
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' results <- summariseCohortIntersect(
+#'   cohort = cdm$cohort1,
+#'   cohortIntersect = list(
+#'     "Medications in the prior year" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     )
+#'   )
+#' )
+#' graph <- plotCohortIntersect(results)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+plotCohortIntersect <- function(data,
+                               xAxis = "variable_name",
+                               yAxis = "estimate_value",
+                               plotStyle = "barplot",
+                               facetVars = NULL,
+                               colorVars = NULL,
+                               facetOrder = NULL,
+                               colorNames = NULL,
+                               vertical_x = FALSE,
+                               options = list()) {
+  # check input
+  data <- omopgenerics::newSummarisedResult(data) |>
+    dplyr::filter(.data$result_type %in%
+                    c("summarised_cohort_intersect"))
+
+  gg <- PatientProfiles::plotCharacteristics(
+    data = data,
+    xAxis = xAxis,
+    yAxis = yAxis,
+    plotStyle = plotStyle,
+    facetVars = facetVars,
+    colorVars = colorVars,
+    facetOrder = facetOrder,
+    colorNames = colorNames,
+    vertical_x = vertical_x,
+    options = options
+  )
+
+  return(gg)
+}
+
+#' Plot summariseTableIntersect output.
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param data output of summariseTableIntersect
+#' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.
+#' @param yAxis what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.
+#' @param plotStyle Now allows boxplot or barplot only.
+#' @param facetVars column in data to facet by.
+#' @param colorVars column in data to color by.
+#' @param facetOrder order of facet, make sure multiple facets are separated by period and in the order provided in facetVars.
+#' @param colorNames A vector or pre-selected color.
+#' @param vertical_x whether to display x axis string vertically.
+#' @param options Other plot options in a list.
+#' @return A ggplot.
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' results <- summariseTableIntersect(
+#'   cohort = cdm$cohort1,
+#'   tableIntersect = list(
+#'     "Number visits prior year" = list(
+#'       tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+#'     )
+#'   )
+#' )
+#' graph <- plotTableIntersect(results)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+plotTableIntersect <- function(data,
+                               xAxis = "variable_name",
+                               yAxis = "estimate_value",
+                               plotStyle = "barplot",
+                               facetVars = NULL,
+                               colorVars = NULL,
+                               facetOrder = NULL,
+                               colorNames = NULL,
+                               vertical_x = FALSE,
+                               options = list()) {
+  # check input
+  data <- omopgenerics::newSummarisedResult(data) |>
+    dplyr::filter(.data$result_type %in%
+                    c("summarised_table_intersect"))
+
   gg <- PatientProfiles::plotCharacteristics(
     data = data,
     xAxis = xAxis,
