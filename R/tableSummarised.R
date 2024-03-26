@@ -539,7 +539,7 @@ tableLargeScaleCharacteristics <- function(result,
     dplyr::group_by(.data$group) |>
     dplyr::mutate("order_id" = dplyr::row_number()) |>
     dplyr::ungroup() |>
-    dplyr::filter(.data$order_id <= .env$topConcepts) #|>
+    dplyr::filter(.data$order_id <= .env$topConcepts) |>
     dplyr::select(-"group")
   res <- res |>
     dplyr::inner_join(top, by = "concept_id") |>
