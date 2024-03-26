@@ -38,7 +38,7 @@ A formatted table.
 `r lifecycle::badge("experimental")`
 }
 \examples{
-\donttest{
+\dontrun{
 library(DBI)
 library(duckdb)
 library(CDMConnector)
