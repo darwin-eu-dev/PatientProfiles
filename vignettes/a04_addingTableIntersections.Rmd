@@ -82,8 +82,7 @@ Meanwhile if we set  we set targetStartDate to "drug_exposure_start_date" and ta
 cdm$ankle_sprain |> 
   addTableIntersectFlag(
     tableName = "drug_exposure",
-    indexDate = "cohort_start_date", 
-    overlap = FALSE,
+    indexDate = "cohort_start_date",
     window = c(-30, -1)
   ) |> 
   glimpse()
