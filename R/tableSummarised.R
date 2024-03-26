@@ -76,8 +76,8 @@ tableCharacteristics <- function(result,
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type %in%
                     c("summarised_characteristics", "summarised_demographics",
-                      "summarised_cohort_insersect", "summarised_concept_insersect",
-                      "summarised_table_insersect"))
+                      "summarised_cohort_intersect", "summarised_concept_intersect",
+                      "summarised_table_intersect"))
   checkmate::assertList(.options)
 
   # add default options
