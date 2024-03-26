@@ -558,7 +558,7 @@ tableLargeScaleCharacteristics <- function(result,
     res <- visOmopResults::fxTable(tab, groupNameCol = "group")
   }
 
-  resturn(res)
+  return(res)
 }
 cleanHeader <- function(header, strata) {
   header[header == "cdm name"] <- "CDM name"
