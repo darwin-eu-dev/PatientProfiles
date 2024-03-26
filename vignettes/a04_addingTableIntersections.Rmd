@@ -125,7 +125,7 @@ acetaminophen_cs <- getDrugIngredientCodes(cdm = cdm,
                                   name = c("acetaminophen"))
 
 cdm$acetaminophen_records <- cdm$drug_exposure |> 
-  filter(drug_concept_id %in% acetaminophen_cs$acetaminophen) |> 
+  filter(drug_concept_id %in% acetaminophen_cs[[1]]) |> 
   compute()
 
 cdm$ankle_sprain |> 
