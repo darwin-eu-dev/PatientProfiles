@@ -238,12 +238,13 @@ summariseCharacteristics <- function(cohort,
         indexDate = arguments$indexDate,
         censorDate = arguments$censorDate,
         order = arguments$order,
+        targetStartDate = arguments$targetStartDate,
+        targetEndDate = arguments$targetEndDate,
         flag = arguments$flag,
         count = arguments$count,
         date = arguments$date,
         days = arguments$days,
         field = arguments$field,
-        overlap = arguments$overlap,
         nameStyle = "{value}_{table_name}_{window_name}"
       )
 
