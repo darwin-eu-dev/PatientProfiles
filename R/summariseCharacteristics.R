@@ -449,7 +449,7 @@ summariseCharacteristics <- function(cohort,
       verbose = FALSE
     ) %>%
     addCdmName(cdm = cdm) %>%
-    dplyr::mutate(result_type = "summarised_characteristics")
+    dplyr::select(!"result_type")
 
   # rename variables
   results <- results %>%
