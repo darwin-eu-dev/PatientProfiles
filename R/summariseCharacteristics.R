@@ -387,10 +387,7 @@ summariseCharacteristics <- function(cohort,
         targetStartDate = arguments$targetStartDate,
         targetEndDate = arguments$targetEndDate,
         order = arguments$order,
-        flag = arguments$flag,
-        count = arguments$count,
-        date = arguments$date,
-        days = arguments$days,
+        value = arguments$value,
         nameStyle = "{value}_{concept_name}_{window_name}"
       )
 
