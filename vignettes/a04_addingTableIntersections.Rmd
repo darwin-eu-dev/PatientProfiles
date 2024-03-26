@@ -26,12 +26,11 @@ if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOM
 if (!eunomia_is_available()) downloadEunomiaData()
 ```
 
-
 So far we've seen that we can add variables indicating intersections based on cohorts or concept sets. One additional option we have is to simply add an intersection based on a table.
 
 Let's again create a cohort containing people with an ankle sprain.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 library(CDMConnector)
 library(CodelistGenerator)
 library(PatientProfiles)
@@ -58,25 +57,26 @@ cdm$ankle_sprain
 cdm$ankle_sprain %>%
   addTableIntersectFlag(
     tableName = "condition_occurrence",
-    window = c(-30, -1),
+    window = c(-30, -1)
   ) |> 
   tally()
 ```
 
-We can use table intersection functions to check whether someone had a record in the drug exposure table in the 30 days before their ankle sprain. With overlap as TRUE we are checking that they had an ongoing drug exposure record in the window.
+We can use table intersection functions to check whether someone had a record in the drug exposure table in the 30 days before their ankle sprain. If we set targetStartDate to "drug_exposure_start_date" and targetEndDate to "drug_exposure_end_date" we are checking whether an individual had an ongoing drug exposure record in the window.
 
 ```{r}
 cdm$ankle_sprain |> 
   addTableIntersectFlag(
     tableName = "drug_exposure",
     indexDate = "cohort_start_date", 
-    overlap = TRUE,
+    targetStartDate = "drug_exposure_start_date",
+    targetEndDate = "drug_exposure_end_date",
     window = c(-30, -1)
   ) |> 
   glimpse()
 ```
 
-Meanwhile if we set overlap as FALSE we are checking that they had a drug exposure record that started during the window.
+Meanwhile if we set  we set targetStartDate to "drug_exposure_start_date" and targetEndDate to "drug_exposure_start_date" we will instead be checking whether they had a drug exposure record that started during the window.
 
 ```{r}
 cdm$ankle_sprain |> 
@@ -95,7 +95,6 @@ cdm$ankle_sprain |>
   addTableIntersectCount(
     tableName = "drug_exposure",
     indexDate = "cohort_start_date", 
-    overlap = FALSE,
     window = c(-180, -1)
   ) |> 
   glimpse()
@@ -122,7 +121,7 @@ cdm$ankle_sprain |>
 
 In these examples we've been adding intersections using the entire drug exposure concept table. However, we could have subsetted it before adding our table intersection. For example, let's say we want to add a variable for acetaminophen use among our ankle sprain cohort. As we've seen before we could use a cohort or concept set for this, but now we have another option - subset the drug exposure table down to acetaminophen records and add a table intersection.
 
-```{r, eval=FALSE}
+```{r}
 acetaminophen_cs <- getDrugIngredientCodes(cdm = cdm, 
                                   name = c("acetaminophen"))
 
@@ -134,7 +133,8 @@ cdm$ankle_sprain |>
   addTableIntersectFlag(
     tableName = "acetaminophen_records",
     indexDate = "cohort_start_date", 
-    overlap = FALSE,
+    targetStartDate = "drug_exposure_start_date",
+    targetEndDate = "drug_exposure_end_date",
     window = c(-Inf, Inf)
   ) |> 
   glimpse()
