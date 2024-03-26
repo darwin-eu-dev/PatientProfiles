@@ -18,5 +18,4 @@ tableCohortOverlap and their given default value.
 optionsTableCohortOverlap()
 }
 
-
 }

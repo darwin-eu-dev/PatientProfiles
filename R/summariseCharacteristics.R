@@ -373,7 +373,7 @@ summariseCharacteristics <- function(cohort,
     addDic <- updateDic(
       conceptIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
       shortNamesConcept, fullNamesConcept, NA_character_,
-      names(conceptIntersect)[k], "summarised_concept_intersect"
+      names(conceptIntersect)[k],"summarised_concept_intersect"
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -462,6 +462,11 @@ summariseCharacteristics <- function(cohort,
         is.na(.data$new_variable_name),
         .data$variable_name,
         .data$new_variable_name
+      ),
+      "variable_level" = dplyr::if_else(
+        is.na(.data$new_variable_level),
+        .data$variable_level,
+        .data$new_variable_level
       ),
       "result_type" = dplyr::if_else(
         is.na(.data$result_type),

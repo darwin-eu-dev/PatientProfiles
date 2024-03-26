@@ -48,8 +48,8 @@
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A tibble with a tidy version of the summarised_characteristics
-#' object.
+#' @return A table with a formatted version of the summariseCharacteristics
+#' result.
 #'
 #' @export
 #'
@@ -59,6 +59,7 @@ tableCharacteristics <- function(result,
                                    "N (%)" = "<count> (<percentage>%)",
                                    "N" = "<count>",
                                    "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                   "[Q05 - Q95]" = "[<q05> - <q95>]",
                                    "Mean (SD)" = "<mean> (<sd>)",
                                    "Range" = "<min> to <max>"
                                  ),
@@ -142,11 +143,11 @@ optionsTableCharacteristics <- function() {
   return(defaultCharacteristicsOptions(NULL))
 }
 
-#' Format a cohort_overlap object into a visual table.
+#' Format a summariseOverlapCohort result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A cohort_overlap object.
+#' @param result A summariseOverlapCohort result.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -172,7 +173,7 @@ optionsTableCharacteristics <- function() {
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A formatted table of the summarised overlap cohort table.
+#' @return A formatted table of the summariseOverlapCohort result.
 #'
 #' @export
 #'
@@ -291,11 +292,11 @@ niceNum <- function(num, .options, type) {
                 scientific = FALSE))
 }
 
-#' Format a cohort_timing object into a visual table.
+#' Format a summariseCohortTiming result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A cohort_overlap object.
+#' @param result A summariseCohortTiming result
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -321,7 +322,7 @@ niceNum <- function(num, .options, type) {
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A formatted table of the summarised cohort timing table.
+#' @return A formatted table of the summariseCohortTiming result.
 #'
 #' @export
 #'
@@ -424,11 +425,11 @@ optionsTableCohortTiming <- function() {
   return(defaultTimingOptions(NULL))
 }
 
-#' Format a summarised table intersect result into a visual table.
+#' Format a summariseTableIntersect result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A result from summarisedTableIntersect.
+#' @param result A result from summariseTableIntersect.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -464,14 +465,13 @@ optionsTableCohortTiming <- function() {
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A table with a formatted version of a summarised table intersect
+#' @return A table with a formatted version of a summariseTableIntersect
 #' result.
 #'
 tableTableIntersect <- function(result,
                                  type = "gt",
                                  formatEstimateName = c(
                                    "N (%)" = "<count> (<percentage>%)",
-                                   "N" = "<count>",
                                    "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
                                    "Mean (SD)" = "<mean> (<sd>)",
                                    "Range" = "<min> to <max>"
@@ -482,8 +482,8 @@ tableTableIntersect <- function(result,
                                  minCellCount = 5,
                                  excludeColumns = c("result_id", "result_type",
                                                     "package_name", "package_version",
-                                                    "estimate_type", "additional_name",
-                                                    "additional_level"),
+                                                    "estimate_type", "variable_level",
+                                                    "additional_name", "additional_level"),
                                  .options = list()) {
 
   # check input
@@ -511,11 +511,11 @@ tableTableIntersect <- function(result,
 }
 
 
-#' Format a summarised cohort intersect result into a visual table.
+#' Format a summariseCohortIntersect result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A result from summarisedCohortIntersect.
+#' @param result A result from summariseCohortIntersect.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -551,7 +551,7 @@ tableTableIntersect <- function(result,
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A table with a formatted version of a summarised cohort intersect
+#' @return A table with a formatted version of a summariseCohortIntersect
 #' result.
 #'
 #' @export
@@ -559,7 +559,10 @@ tableTableIntersect <- function(result,
 tableCohortIntersect <- function(result,
                                 type = "gt",
                                 formatEstimateName = c(
-                                  "N (%)" = "<count> (<percentage>%)"
+                                  "N (%)" = "<count> (<percentage>%)",
+                                  "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                  "Mean (SD)" = "<mean> (<sd>)",
+                                  "Range" = "<min> to <max>"
                                 ),
                                 header = c("group"),
                                 split = c("group", "strata"),
@@ -595,11 +598,11 @@ tableCohortIntersect <- function(result,
   return(result)
 }
 
-#' Format a summarised demographics result into a visual table.
+#' Format a summariseDemographics result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A result from summarisedDemographics.
+#' @param result A result from summariseDemographics.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -629,7 +632,7 @@ tableCohortIntersect <- function(result,
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A table with a formatted version of a summarised demographics result.
+#' @return A table with a formatted version of a summariseDemographics result.
 #'
 #' @export
 #'
@@ -638,6 +641,7 @@ tableDemographics <- function(result,
                                  formatEstimateName = c(
                                    "N (%)" = "<count> (<percentage>%)",
                                    "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                   "[Q05 - Q95]" = "[<q05> - <q95>]",
                                    "Mean (SD)" = "<mean> (<sd>)",
                                    "Range" = "<min> to <max>"
                                  ),

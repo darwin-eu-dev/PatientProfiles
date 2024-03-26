@@ -33,15 +33,15 @@
 #'   cohort = cdm$cohort1,
 #'   tableIntersect = list(
 #'     "Number visits prior year" = list(
-#'       tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+#'       tableName = "visit_occurrence", value = "count", window = c(-Inf, -1)
 #'     )
 #'   )
 #' )
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 summariseTableIntersect <- function(cohort,
-                                     tableIntersect = list(),
-                                     strata = list()){
+                                    tableIntersect = list(),
+                                    strata = list()){
   summariseCharacteristics(
     cohort = cohort,
     strata = strata,
@@ -51,5 +51,6 @@ summariseTableIntersect <- function(cohort,
     tableIntersect = tableIntersect,
     conceptIntersect = list(),
     otherVariables = character()
-  )
+  ) |>
+    dplyr::filter(.data$result_type == "summarised_demographics")
 }

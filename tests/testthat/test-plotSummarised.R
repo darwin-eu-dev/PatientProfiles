@@ -263,16 +263,217 @@ test_that("plotCohortOverlap", {
   CDMConnector::cdm_disconnect(cdm)
 })
 test_that("plotTableIntersect", {
-  cdm <- mockPatientProfiles()
+  person <- dplyr::tibble(
+    person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
+    year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
+    day_of_birth = c(30, 10, 24),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
+  )
+  dus_cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    ))
+  )
+  comorbidities <- dplyr::tibble(
+    cohort_definition_id = c(1, 2, 2, 1),
+    subject_id = c(1, 1, 3, 3),
+    cohort_start_date = as.Date(c(
+      "1990-01-01", "1990-06-01", "2000-01-01", "2000-06-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "1990-01-01", "1990-06-01", "2000-01-01", "2000-06-01"
+    ))
+  )
+  visit_ocurrence <- dplyr::tibble(
+    visit_occurrence_id = 1:4,
+    person_id = c(1, 1, 2, 3),
+    visit_concept_id = NA_character_,
+    visit_start_date = as.Date(c(
+      "1990-02-01", "1990-08-01", "2009-01-01", "1995-06-01"
+    )),
+    visit_end_date = as.Date(c(
+      "1990-02-01", "1990-08-01", "2009-01-01", "1995-06-01"
+    )),
+    visit_type_concept_id = 0
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(c(
+      "1975-01-01", "1959-04-29", "1944-12-03"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2021-03-04", "2022-03-14", "2023-07-10"
+    )),
+    period_type_concept_id = 0
+  )
 
-  result <- summariseTableIntersect(
-    cohort = cdm$cohort1,
+  cdm <- mockPatientProfiles(
+    dus_cohort = dus_cohort, person = person,
+    observation_period = observation_period,
+    visit_occurrence = visit_ocurrence
+  )
+
+  result1 <- summariseCharacteristics(
+    cdm$dus_cohort,
     tableIntersect = list(
-      "Number visits prior year" = list(
-        tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+      "Visit history" = list(
+        tableName = "visit_occurrence", value = "count", window = c(-Inf, 0)
       )
     )
   )
+
+  gg1 <- plotTableIntersect(result1)
+  expect_true(ggplot2::is.ggplot(gg1))
+  expect_true(unique(gg1$data$result_type) == "summarised_table_intersect")
+
+  CDMConnector::cdm_disconnect(cdm)
+})
+test_that("plotCohortIntersect", {
+  person <- dplyr::tibble(
+    person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
+    year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
+    day_of_birth = c(30, 10, 24),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
+  )
+  dus_cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    ))
+  )
+  comorbidities <- dplyr::tibble(
+    cohort_definition_id = c(1, 2, 2, 1),
+    subject_id = c(1, 1, 3, 3),
+    cohort_start_date = as.Date(c(
+      "1990-01-01", "1990-06-01", "2000-01-01", "2000-06-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "1990-01-01", "1990-06-01", "2000-01-01", "2000-06-01"
+    ))
+  )
+  medication <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "1990-02-01", "1990-08-01", "2009-01-01", "1995-06-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "1990-02-01", "1990-08-01", "2009-01-01", "1995-06-01"
+    ))
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(c(
+      "1975-01-01", "1959-04-29", "1944-12-03"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2021-03-04", "2022-03-14", "2023-07-10"
+    )),
+    period_type_concept_id = 0
+  )
+
+  cdm <- mockPatientProfiles(
+    dus_cohort = dus_cohort, person = person,
+    comorbidities = comorbidities, medication = medication,
+    observation_period = observation_period
+  )
+
+  cdm$dus_cohort <- omopgenerics::newCohortTable(
+    table = cdm$dus_cohort, cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2), cohort_name = c("exposed", "unexposed")
+    ))
+  cdm$comorbidities <- omopgenerics::newCohortTable(
+    table = cdm$comorbidities, cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2), cohort_name = c("covid", "headache")
+    ))
+  cdm$medication <- omopgenerics::newCohortTable(
+    table = cdm$medication,
+    cohortSetRef = dplyr::tibble(
+      cohort_definition_id = c(1, 2, 3),
+      cohort_name = c("acetaminophen", "ibuprophen", "naloxone")
+    ),
+    cohortAttritionRef = NULL
+  )
+
+  result1 <- summariseCharacteristics(
+    cdm$dus_cohort,
+    cohortIntersect = list(
+      "Medications" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      ),
+      "Comorbidities" = list(
+        targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+      )
+    )
+  )
+
+  gg1 <- plotCohortIntersect(result1)
+  expect_true(ggplot2::is.ggplot(gg1))
+  expect_true(unique(gg1$data$result_type) == "summarised_cohort_intersect")
+
+  CDMConnector::cdm_disconnect(cdm)
+})
+test_that("plotDemographics", {
+  person <- dplyr::tibble(
+    person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
+    year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
+    day_of_birth = c(30, 10, 24),
+    race_concept_id = 0,
+    ethnicity_concept_id = 0
+  )
+  dus_cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "1990-04-19", "1991-04-19", "2010-11-14", "2000-05-25"
+    ))
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(c(
+      "1975-01-01", "1959-04-29", "1944-12-03"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2021-03-04", "2022-03-14", "2023-07-10"
+    )),
+    period_type_concept_id = 0
+  )
+
+  cdm <- mockPatientProfiles(
+    dus_cohort = dus_cohort, person = person,
+    observation_period = observation_period
+  )
+
+  result1 <- summariseCharacteristics(
+    cdm$dus_cohort,
+    demographics = TRUE,
+    ageGroup = list(c(0, 40), c(41, 150))
+  )
+
+  gg1 <- plotDemographics(result1)
+  expect_true(ggplot2::is.ggplot(gg1))
+  expect_true(unique(gg1$data$result_type) == "summarised_demographics")
+
+  gg2 <- plotDemographics(result1, plotStyle = "boxplot", colorVars = "variable_name")
+  expect_true(ggplot2::is.ggplot(gg2))
+  expect_true(unique(gg2$data$result_type) == "summarised_demographics")
 
   CDMConnector::cdm_disconnect(cdm)
 })

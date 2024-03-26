@@ -46,7 +46,7 @@ summariseDemographics <- function(cohort,
     strata = strata,
     demographics = TRUE,
     ageGroup = ageGroup
-  ) |>
+    ) |>
     dplyr::filter(.data$result_type == "summarised_demographics")
   return(results)
 }
