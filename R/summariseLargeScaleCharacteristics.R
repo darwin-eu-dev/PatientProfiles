@@ -177,10 +177,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
         .data$estimate_type == "count", "numeric", "percentage"
       )
     ) |>
-    visOmopResults::uniteAdditional(
-      cols = c("table_name", "type", "analysis", "concept")
-    ) |>
+    dplyr::rename("concept_id" = "concept") |>
+    visOmopResults::uniteAdditional(cols = c("concept_id")) |>
+    dplyr::select(!c("estimate", "variable")) |>
+    appendSettings(colsSettings = c("table_name", "type", "analysis")) |>
     dplyr::select(dplyr::all_of(c(
+      "result_id",
       "cdm_name", "result_type", "package_name", "package_version",
       "group_name", "group_level", "strata_name", "strata_level",
       "variable_name", "variable_level", "estimate_name", "estimate_type",
@@ -457,7 +459,6 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
       overwrite = TRUE
     )
 }
-
 summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
   result <- NULL
   cohortNames <- omopgenerics::settings(cohort)$cohort_name
@@ -683,4 +684,47 @@ trimCounts <- function(lsc, tableWindow, minimumCount, tablePrefix, winName) {
       )
   }
   return(lsc)
+}
+appendSettings <- function(results, colsSettings) {
+  ids <- results |>
+    dplyr::select(dplyr::all_of(colsSettings)) |>
+    dplyr::distinct() |>
+    dplyr::mutate("result_id" = as.integer(dplyr::row_number()))
+  results <- results |>
+    dplyr::left_join(ids, by = colsSettings) |>
+    dplyr::select(!dplyr::all_of(colsSettings))
+  settingsIds <- ids |>
+    tidyr::pivot_longer(
+      cols = dplyr::all_of(colsSettings),
+      names_to = "estimate_name",
+      values_to = "estimate_value"
+    ) |>
+    dplyr::inner_join(
+      variableTypes(ids) |>
+        dplyr::select(
+          "estimate_name" = "variable_name", "estimate_type" = "variable_type"
+        ) |>
+        dplyr::mutate("estimate_type" = dplyr::if_else(
+          .data$estimate_type == "categorical", "character", .data$estimate_type
+        )),
+      by = "estimate_name"
+    ) |>
+    dplyr::mutate(
+      "variable_name" = "settings",
+      "variable_level" = NA_character_,
+      "group_name" = "overall",
+      "group_level" = "overall",
+      "strata_name" = "overall",
+      "strata_level" = "overall",
+      "additional_name" = "overall",
+      "additional_level" = "overall",
+      "package_name" = results$package_name[1],
+      "package_version" = results$package_version[1],
+      "result_type" = results$result_type[1],
+      "cdm_name" = results$cdm_name[1]
+    )
+  results <- settingsIds |>
+    dplyr::union_all(results) |>
+    dplyr::arrange(.data$result_id)
+  return(results)
 }

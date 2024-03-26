@@ -445,3 +445,24 @@ optionsTableCohortTiming <- function() {
   return(defaultTimingOptions(NULL))
 }
 
+#' Format a summarised_large_scale_characteristics object into a visual table.
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param result
+tableLargeScaleCharacteristics <- function(result,
+                                           type = "gt",
+                                           formatEstimateName = c("N (%)" = "<count> (<percentage>)"),
+                                           header = c("strata"),
+                                           split = c("group", "strata", "additional"),
+                                           groupColumn = NULL,
+                                           topFeautures = 10,
+                                           minCellCount = 5,
+                                           excludeColumns = c(
+                                             "result_id", "result_type", "package_name",
+                                             "package_version", "estimate_type",
+                                             "variable_level"
+                                           ),
+                                           .options = list()) {
+
+}
