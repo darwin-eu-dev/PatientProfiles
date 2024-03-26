@@ -39,9 +39,17 @@ A formatted table.
 }
 \examples{
 \donttest{
-con <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomia_dir())
-cdm <- CDMConnector::cdmFromCon(con = con, cdmSchema = "main", writeSchema = "main")
-cdm <- CDMConnector::generateConceptCohortSet(cdm = cdm, conceptSet = list(my = 4112343), name = "my_cohort")
+library(DBI)
+library(duckdb)
+library(CDMConnector)
+
+con <- dbConnect(duckdb(), eunomia_dir())
+cdm <- cdmFromCon(con = con, cdmSchema = "main", writeSchema = "main")
+cdm <- generateConceptCohortSet(
+  cdm = cdm,
+  conceptSet = list("viral_pharyngitis" = 4112343),
+  name = "my_cohort"
+)
 result <- summariseLargeScaleCharacteristics(
   cohort = cdm$my_cohort,
   eventInWindow = "condition_occurrence",
