@@ -174,7 +174,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
       "estimate_name" = .data$estimate_type,
       "estimate_value" = .data$estimate,
       "estimate_type" = dplyr::if_else(
-        .data$estimate_type == "count", "numeric", "percentage"
+        .data$estimate_type == "count", "integer", "percentage"
       )
     ) |>
     dplyr::rename("concept_id" = "concept") |>

@@ -449,20 +449,149 @@ optionsTableCohortTiming <- function() {
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result
+#' @param result A summarised_large_scalecharacteristics object.
+#' @param type Output type ("gt" or "flextable").
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param splitStrata Whether to split strata_group and starta_level to multiple
+#' columns.
+#' @param header Specify the headers of the table.
+#' @param topConcepts Number of concepts to restrict the table.
+#' @param minCellCount Minimum number of counts to display.
+#'
+#' @export
+#'
+#' @return A formatted table.
+#'
+#' @examples
+#' \donttest{
+#' con <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomia_dir())
+#' cdm <- CDMConnector::cdmFromCon(con = con, cdmSchema = "main", writeSchema = "main")
+#' cdm <- CDMConnector::generateConceptCohortSet(cdm = cdm, conceptSet = list(my = 4112343), name = "my_cohort")
+#' result <- summariseLargeScaleCharacteristics(
+#'   cohort = cdm$my_cohort,
+#'   eventInWindow = "condition_occurrence",
+#'   episodeInWindow = "drug_exposure"
+#' )
+#' tableLargeScaleCharacteristics(result)
+#' }
+#'
 tableLargeScaleCharacteristics <- function(result,
                                            type = "gt",
-                                           formatEstimateName = c("N (%)" = "<count> (<percentage>)"),
-                                           header = c("strata"),
-                                           split = c("group", "strata", "additional"),
-                                           groupColumn = NULL,
-                                           topFeautures = 10,
-                                           minCellCount = 5,
-                                           excludeColumns = c(
-                                             "result_id", "result_type", "package_name",
-                                             "package_version", "estimate_type",
-                                             "variable_level"
-                                           ),
-                                           .options = list()) {
+                                           formatEstimateName = c("N (%)" = "<count> (<percentage>%)"),
+                                           splitStrata = TRUE,
+                                           header = c("cdm name", "cohort name", "strata", "window name"),
+                                           topConcepts = 10,
+                                           minCellCount = 5) {
+  assertClass(result, "summarised_result")
+  assertLogical(splitStrata, length = 1)
+  if (is.character(header)) {
+    header <- tolower(header)
+    header <- gsub("_", " ", header)
+  }
+  assertChoice(header, choices = c("cdm name", "cohort name", "strata", "window name"))
+  result <- result |>
+    dplyr::filter(.data$result_type == "summarised_large_scale_characteristics")
+  if (nrow(result) == 0) {
+    cli::cli_abort(
+      "No summarised_large_scale_characteristics records where found in this result object"
+    )
+  }
+  sets <- result |>
+    dplyr::filter(.data$variable_name == "settings") |>
+    dplyr::select("result_id", "estimate_name", "estimate_value") |>
+    tidyr::pivot_wider(names_from = "estimate_name", values_from = "estimate_value") |>
+    dplyr::mutate("group" = paste0(
+      "Table: ", .data$table_name, "; Type: ", .data$type, "; Analysis: ",
+      .data$analysis
+    )) |>
+    dplyr::select("result_id", "group")
+  res <- result |>
+    dplyr::filter(.data$variable_name != "settings") |>
+    omopgenerics::suppress(minCellCount = minCellCount) |>
+    visOmopResults::splitGroup() |>
+    visOmopResults::splitAdditional() |>
+    dplyr::inner_join(sets, by = "result_id") |>
+    dplyr::rename("window_name" = "variable_level") |>
+    dplyr::select(!c("package_name", "package_version", "result_id", "result_type"))
+  if (splitStrata) {
+    res <- res |> visOmopResults::splitStrata()
+    strataColumns <- visOmopResults::strataColumns(result)
+  } else {
+    strataColumns <- c("strata_name", "strata_level")
+  }
+  # get only topN
+  top <- res |>
+    dplyr::filter(.data$estimate_name == "count") |>
+    dplyr::select("concept_id", "estimate_value", "group") |>
+    dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
+    dplyr::arrange(desc(.data$estimate_value)) |>
+    dplyr::select("concept_id", "group") |>
+    dplyr::distinct() |>
+    dplyr::group_by(.data$group) |>
+    dplyr::mutate("order_id" = dplyr::row_number()) |>
+    dplyr::ungroup() |>
+    dplyr::filter(.data$order_id <= .env$topConcepts) #|>
+    dplyr::select(-"group")
+  res <- res |>
+    dplyr::inner_join(top, by = "concept_id") |>
+    visOmopResults::formatEstimateValue() |>
+    visOmopResults::formatEstimateName(estimateNameFormat = formatEstimateName) |>
+    orderWindow() |>
+    dplyr::arrange(!!!rlang::syms(c(
+      "cdm_name", "cohort_name", strataColumns, "group", "window_id",
+      "order_id"
+    ))) |>
+    dplyr::mutate(
+      "Concept" = paste0(.data$variable_name, " (", .data$concept_id, ")")
+    ) |>
+    dplyr::select(dplyr::all_of(c(
+      "group", "CDM name" = "cdm_name", "Cohort name" =  "cohort_name",
+      strataColumns, "Concept", "Window" = "window_name", "estimate_value"
+    )))
 
+  header <- cleanHeader(header, strataColumns)
+  tab <- visOmopResults::formatHeader(result = res, header = header)
+  if (type == "gt") {
+    res <- visOmopResults::gtTable(tab, groupNameCol = "group")
+  } else {
+    res <- visOmopResults::fxTable(tab, groupNameCol = "group")
+  }
+
+  resturn(res)
+}
+cleanHeader <- function(header, strata) {
+  header[header == "cdm name"] <- "CDM name"
+  header[header == "cohort name"] <- "Cohort name"
+  header[header == "window name"] <- "Window"
+  if ("strata" %in% header) {
+    id <- which(header == "strata")
+    header <- append(header, strata, after=id)
+    header <- header[header != "strata"]
+  }
+}
+orderWindow <- function(res) {
+  windows <- res |>
+    dplyr::select("window_name") |>
+    dplyr::distinct() |>
+    dplyr::pull()
+  win <- windows |>
+    stringr::str_split(pattern = " ") |>
+    lapply(function(x) {
+      if (length(x) == 3) {
+        if (x[2] == "to") {
+          return(dplyr::tibble(
+            lower = as.numeric(x[1]), upper = as.numeric(x[3])
+          ))
+        }
+      }
+      return(dplyr::tibble(lower = NA, upper = NA))
+    })
+  names(win) <- windows
+  tib <- dplyr::bind_rows(win, .id = "window_name") |>
+    dplyr::arrange(.data$lower, .data$upper) |>
+    dplyr::mutate("window_id" = dplyr::row_number())
+  res <- res |>
+    dplyr::left_join(tib, by = "window_name")
+  return(res)
 }
