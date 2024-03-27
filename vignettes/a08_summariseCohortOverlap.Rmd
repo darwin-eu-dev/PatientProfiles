@@ -1,6 +1,12 @@
 ---
 title: "Summarise cohort overlap"
-output: rmarkdown::html_vignette
+output: 
+  html_document:
+    pandoc_args: [
+      "--number-offset=1,0"
+      ]
+    number_sections: yes
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{a08_summariseCohortOverlap}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,6 +20,72 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(CDMConnector)
+if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
+if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
+if (!eunomia_is_available()) downloadEunomiaData()
+```
+
+When we create a set of cohorts a common question is what proportion of individuals in one cohort are also in another. The function `summariseCohortOverlap()` can help us to answer such a question. To show how this works lets first create a set of medication cohorts.
+
+```{r, warning = FALSE, message = FALSE}
+library(CDMConnector)
+library(CodelistGenerator)
 library(PatientProfiles)
+library(dplyr)
+library(ggplot2)
+
+con <- DBI::dbConnect(duckdb::duckdb(),
+                       dbdir = CDMConnector::eunomia_dir())
+cdm <- CDMConnector::cdm_from_con(con,
+                                  cdm_schem = "main",
+                                  write_schema = "main", 
+                                  cdm_name = "Eunomia")
+
+meds_cs <- getDrugIngredientCodes(cdm = cdm, 
+                                  name = c("acetaminophen",
+                                           "amoxicillin",
+                                           "aspirin",
+                                           "heparin",
+                                           "morphine",
+                                           "oxycodone",
+                                           "warfarin"))
+
+cdm <- generateConceptCohortSet(
+  cdm = cdm,
+  name = "meds",
+  conceptSet = meds_cs,
+  end = "event_end_date",
+  limit = "all",
+  overwrite = TRUE
+)
+```
+
+Once we have created our set of cohorts, we can now quickly get a summary of cohort overlaps.
+
+```{r}
+meds_overlap <- cdm$meds |> 
+  summariseCohortOverlap()
+
+meds_overlap |> 
+  glimpse()
+```
+
+After this we can create a table with our results.
+
+```{r}
+tableCohortOverlap(meds_overlap)
+```
+
+Or we could also visualise these results in a plot.
+
+```{r, fig.width=7, fig.height=6.5, message=FALSE, warning=FALSE}
+plotCohortOverlap(meds_overlap) +
+  theme(legend.position = "top")
 ```
