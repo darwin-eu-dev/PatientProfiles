@@ -353,6 +353,11 @@ a formatted summarised_result object.</dd>
           <code><a href="summariseDemographics.html">summariseDemographics()</a></code> 
         </dt>
         <dd>Summarise demographics of individuals</dd>
+      </dl><dl><dt>
+          
+          <code><a href="summariseTableIntersect.html">summariseTableIntersect()</a></code> 
+        </dt>
+        <dd>Summarise table intersection information</dd>
       </dl></div><div class="section level2">
       
       <h3 id="summarise-patient-large-scale-characteristics">Summarise patient large scale characteristics<a class="anchor" aria-label="anchor" href="#summarise-patient-large-scale-characteristics"></a></h3>
@@ -437,14 +442,29 @@ cohort table</dd>
         <dd>Format a summarised_characteristics object into a visual table.</dd>
       </dl><dl><dt>
           
+          <code><a href="tableCohortIntersect.html">tableCohortIntersect()</a></code> 
+        </dt>
+        <dd>Format a summariseCohortIntersect result into a visual table.</dd>
+      </dl><dl><dt>
+          
           <code><a href="tableCohortOverlap.html">tableCohortOverlap()</a></code> 
         </dt>
-        <dd>Format a cohort_overlap object into a visual table.</dd>
+        <dd>Format a summariseOverlapCohort result into a visual table.</dd>
       </dl><dl><dt>
           
           <code><a href="tableCohortTiming.html">tableCohortTiming()</a></code> 
         </dt>
-        <dd>Format a cohort_timing object into a visual table.</dd>
+        <dd>Format a summariseCohortTiming result into a visual table.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="tableDemographics.html">tableDemographics()</a></code> 
+        </dt>
+        <dd>Format a summariseDemographics result into a visual table.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="tableTableIntersect.html">tableTableIntersect()</a></code> 
+        </dt>
+        <dd>Format a summariseTableIntersect result into a visual table.</dd>
       </dl></div><div class="section level2">
       
       <h3 id="generate-ggplots-from-summarised-result-objects">Generate ggplots from summarised_result objects<a class="anchor" aria-label="anchor" href="#generate-ggplots-from-summarised-result-objects"></a></h3>
@@ -464,14 +484,19 @@ cohort table</dd>
 `r lifecycle::badge("experimental")`</dd>
       </dl><dl><dt>
           
+          <code><a href="plotCohortIntersect.html">plotCohortIntersect()</a></code> 
+        </dt>
+        <dd>Plot summariseCohortIntersect output.</dd>
+      </dl><dl><dt>
+          
           <code><a href="plotCohortOverlap.html">plotCohortOverlap()</a></code> 
         </dt>
-        <dd>Plot cohort_overlap objects.</dd>
+        <dd>Plot the result of summariseCohortOverlap.</dd>
       </dl><dl><dt>
           
           <code><a href="plotCohortTiming.html">plotCohortTiming()</a></code> 
         </dt>
-        <dd>Plot cohort_overlap objects.</dd>
+        <dd>Plot summariseCohortTiming results.</dd>
       </dl><dl><dt>
           
           <code><a href="plotDemographics.html">plotDemographics()</a></code> 
@@ -482,6 +507,11 @@ cohort table</dd>
           <code><a href="plotLargeScaleCharacteristics.html">plotLargeScaleCharacteristics()</a></code> 
         </dt>
         <dd>create a ggplot from the output of summariseLargeScaleCharacteristics.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plotTableIntersect.html">plotTableIntersect()</a></code> 
+        </dt>
+        <dd>Plot summariseTableIntersect output.</dd>
       </dl></div><div class="section level2">
       
       <h3 id="other-functions">Other functions<a class="anchor" aria-label="anchor" href="#other-functions"></a></h3>
@@ -549,7 +579,7 @@ supported (numeric, date, binary and categorical)</dd>
           
           <code><a href="optionsTableCharacteristics.html">optionsTableCharacteristics()</a></code> 
         </dt>
-        <dd>Additional arguments for the function formatCharacteristics.</dd>
+        <dd>Additional arguments for the function tableCharacteristics.</dd>
       </dl><dl><dt>
           
           <code><a href="optionsTableCohortOverlap.html">optionsTableCohortOverlap()</a></code> 

@@ -93,264 +93,49 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="large-scale-characteristics-plot--first-we-create-a-mock-data-for-the-plot">Large scale characteristics plot. First we create a mock data for
-the plot<a class="anchor" aria-label="anchor" href="#large-scale-characteristics-plot--first-we-create-a-mock-data-for-the-plot"></a>
-</h2>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                       dbdir <span class="op">=</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span><span class="va">con</span>,</span>
+<span>                                   cdm_schem <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>                                   write_schema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">meds_cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
+<span>                                  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acetaminophen"</span>,</span>
+<span>                                           <span class="st">"morphine"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span></span>
+<span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"meds"</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">meds_cs</span>,</span>
+<span>  end <span class="op">=</span> <span class="st">"event_end_date"</span>,</span>
+<span>  limit <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">person</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  person_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  gender_concept_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8507</span>, <span class="fl">8532</span><span class="op">)</span>,</span>
-<span>  year_of_birth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1990</span>, <span class="fl">1992</span><span class="op">)</span>,</span>
-<span>  month_of_birth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  day_of_birth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  race_concept_id <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  ethnicity_concept_id <span class="op">=</span> <span class="fl">0</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">observation_period</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  observation_period_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  person_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  observation_period_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2011-10-07"</span>, <span class="st">"2000-01-01"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  observation_period_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2031-10-07"</span>, <span class="st">"2030-01-01"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  period_type_concept_id <span class="op">=</span> <span class="fl">44814724</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cohort_interest</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"2012-10-10"</span>, <span class="st">"2015-01-01"</span>, <span class="st">"2013-10-10"</span>, <span class="st">"2015-01-01"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"2012-10-10"</span>, <span class="st">"2015-01-01"</span>, <span class="st">"2013-10-10"</span>, <span class="st">"2015-01-01"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">drug_exposure</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  drug_exposure_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>  person_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">8</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  drug_concept_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1125315</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1503328</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">1516978</span>, <span class="fl">1125315</span>, <span class="fl">1503328</span>, <span class="fl">1516978</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  drug_exposure_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"2010-10-01"</span>, <span class="st">"2012-12-31"</span>, <span class="st">"2010-01-01"</span>, <span class="st">"2012-09-01"</span>, <span class="st">"2013-04-01"</span>,</span>
-<span>    <span class="st">"2014-10-31"</span>, <span class="st">"2015-05-01"</span>, <span class="st">"2015-10-01"</span>, <span class="st">"2012-01-01"</span>, <span class="st">"2012-10-01"</span>,</span>
-<span>    <span class="st">"2014-10-12"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  drug_exposure_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"2010-12-01"</span>, <span class="st">"2013-05-12"</span>, <span class="st">"2011-01-01"</span>, <span class="st">"2012-10-01"</span>, <span class="st">"2013-05-01"</span>,</span>
-<span>    <span class="st">"2014-12-31"</span>, <span class="st">"2015-05-02"</span>, <span class="st">"2016-10-01"</span>, <span class="st">"2012-01-01"</span>, <span class="st">"2012-10-30"</span>,</span>
-<span>    <span class="st">"2015-01-10"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  drug_type_concept_id <span class="op">=</span> <span class="fl">38000177</span>,</span>
-<span>  quantity <span class="op">=</span> <span class="fl">1</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">condition_occurrence</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  condition_occurrence_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>,</span>
-<span>  person_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  condition_concept_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="fl">317009</span>, <span class="fl">378253</span>, <span class="fl">378253</span>, <span class="fl">4266367</span>, <span class="fl">317009</span>, <span class="fl">317009</span>, <span class="fl">378253</span>, <span class="fl">4266367</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  condition_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"2012-10-01"</span>, <span class="st">"2012-01-01"</span>, <span class="st">"2014-01-01"</span>, <span class="st">"2010-01-01"</span>, <span class="st">"2015-02-01"</span>,</span>
-<span>    <span class="st">"2012-01-01"</span>, <span class="st">"2013-10-01"</span>, <span class="st">"2014-10-10"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  condition_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"2013-01-01"</span>, <span class="st">"2012-04-01"</span>, <span class="st">"2014-10-12"</span>, <span class="st">"2015-01-01"</span>, <span class="st">"2015-03-01"</span>,</span>
-<span>    <span class="st">"2012-04-01"</span>, <span class="st">"2013-12-01"</span>, <span class="cn">NA</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  condition_type_concept_id <span class="op">=</span> <span class="fl">32020</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span></span>
-<span>  person <span class="op">=</span> <span class="va">person</span>, observation_period <span class="op">=</span> <span class="va">observation_period</span>,</span>
-<span>  cohort_interest <span class="op">=</span> <span class="va">cohort_interest</span>, drug_exposure <span class="op">=</span> <span class="va">drug_exposure</span>,</span>
-<span>  condition_occurrence <span class="op">=</span> <span class="va">condition_occurrence</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">concept</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  concept_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1125315</span>, <span class="fl">1503328</span>, <span class="fl">1516978</span>, <span class="fl">317009</span>, <span class="fl">378253</span>, <span class="fl">4266367</span><span class="op">)</span>,</span>
-<span>  domain_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
-<span>  vocabulary_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
-<span>  concept_class_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
-<span>  concept_code <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
-<span>  valid_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"1900-01-01"</span><span class="op">)</span>,</span>
-<span>  valid_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2099-01-01"</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>concept_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"concept: "</span>, <span class="va">.data</span><span class="op">$</span><span class="va">concept_id</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/insertTable.html" class="external-link">insertTable</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"concept"</span>, <span class="va">concept</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">largeScaleCharacteristicsResult</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort_interest</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addDemographics.html">addDemographics</a></span><span class="op">(</span></span>
-<span>    ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">24</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">lsc</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">meds</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics</a></span><span class="op">(</span></span>
-<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    episodeInWindow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span>, <span class="st">"drug_exposure"</span><span class="op">)</span>,</span>
-<span>    minimumFrequency <span class="op">=</span> <span class="fl">0</span></span>
+<span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>,<span class="fl">0</span><span class="op">)</span>,</span>
+<span>    eventInWindow <span class="op">=</span><span class="st">"condition_occurrence"</span>,</span>
+<span>    minimumFrequency <span class="op">=</span> <span class="fl">0.05</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> `result_id` column is missing, please add it as it is</span></span>
-<span><span class="co">#&gt; a compulsory column.</span></span></code></pre></div>
-<p>Use <code><a href="../reference/plotLargeScaleCharacteristics.html">plotLargeScaleCharacteristics()</a></code> to generate a
-scatterplot for large scale characteristics. User can specify x-axis
-(xAxis), y-axis (yAxis), variables to facet by (facetVars), variables to
-color by (colorVars), the order of facets (facetOrder), and whether to
-display the strings on x-axis vertically, as some concept id strings may
-be too long. It’s worth noted if providing facetOrder, used need to make
-sure: 1. facetVars is specified 2. all values in facetOrder are in the
-unique combinations of facetVars. Below is an example.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">levels_ordered</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"-365 to -31"</span>, <span class="st">"-30 to -1"</span>, <span class="st">"0 to 0"</span>, <span class="st">"1 to 30"</span>, <span class="st">"31 to 365"</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="fu"><a href="../reference/plotLargeScaleCharacteristics.html">plotLargeScaleCharacteristics</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span>  <span class="va">largeScaleCharacteristicsResult</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">group_level</span>  <span class="op">==</span>  <span class="st">"cohort_1"</span><span class="op">)</span>,</span>
-<span>    xAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
-<span>    yAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
-<span>    facetVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable_level"</span><span class="op">)</span>,</span>
-<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span>, <span class="st">"strata_level"</span>, <span class="st">"strata_name"</span><span class="op">)</span>,</span>
-<span>    facetOrder <span class="op">=</span> <span class="va">levels_ordered</span>,</span>
-<span>    vertical_x <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<span></span>
+<span><span class="fu"><a href="../reference/plotLargeScaleCharacteristics.html">plotLargeScaleCharacteristics</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span>  <span class="va">lsc</span> <span class="op">|&gt;</span> </span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">estimate_name</span> <span class="op">==</span> <span class="st">"percentage"</span><span class="op">)</span>, </span>
+<span>    colorVars<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Percentage"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"top"</span>, legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="a07_summariseLargeScaleCharacteristics_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="characteristics-plots">Characteristics plots<a class="anchor" aria-label="anchor" href="#characteristics-plots"></a>
-</h2>
-<p><code>plotCharacteristics</code> can plot the
-summariseCharacteristics results, with boxplot or barplot. First we
-create a mock data.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">observation_period</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  observation_period_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>  person_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>  observation_period_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"1985-01-01"</span>, <span class="st">"1989-04-29"</span>, <span class="st">"1974-12-03"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  observation_period_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"2011-03-04"</span>, <span class="st">"2022-03-14"</span>, <span class="st">"2023-07-10"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  period_type_concept_id <span class="op">=</span> <span class="fl">0</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">dus_cohort</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"1990-04-19"</span>, <span class="st">"1991-04-19"</span>, <span class="st">"2010-11-14"</span>, <span class="st">"2000-05-25"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"1990-04-19"</span>, <span class="st">"1991-04-19"</span>, <span class="st">"2010-11-14"</span>, <span class="st">"2000-05-25"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">comorbidities</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"1990-01-01"</span>, <span class="st">"1990-06-01"</span>, <span class="st">"2000-01-01"</span>, <span class="st">"2000-06-01"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"1990-01-01"</span>, <span class="st">"1990-06-01"</span>, <span class="st">"2000-01-01"</span>, <span class="st">"2000-06-01"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">medication</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"1990-02-01"</span>, <span class="st">"1990-08-01"</span>, <span class="st">"2009-01-01"</span>, <span class="st">"1995-06-01"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span>,</span>
-<span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"1990-02-01"</span>, <span class="st">"1990-08-01"</span>, <span class="st">"2009-01-01"</span>, <span class="st">"1995-06-01"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">emptyCohort</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span></span>
-<span>  dus_cohort <span class="op">=</span> <span class="va">dus_cohort</span>, cohort1 <span class="op">=</span> <span class="va">emptyCohort</span>,</span>
-<span>  cohort2 <span class="op">=</span> <span class="va">emptyCohort</span>, observation_period <span class="op">=</span> <span class="va">observation_period</span>,</span>
-<span>  comorbidities <span class="op">=</span> <span class="va">comorbidities</span>, medication <span class="op">=</span> <span class="va">medication</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_cohort</span> <span class="op">&lt;-</span> <span class="fu">omopgenerics</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/newCohortTable.html" class="external-link">newCohortTable</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">cdm</span><span class="op">$</span><span class="va">dus_cohort</span>, cohortSetRef <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>    cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, cohort_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exposed"</span>, <span class="st">"unexposed"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">comorbidities</span> <span class="op">&lt;-</span> <span class="fu">omopgenerics</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/newCohortTable.html" class="external-link">newCohortTable</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">cdm</span><span class="op">$</span><span class="va">comorbidities</span>, cohortSetRef <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>    cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, cohort_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"covid"</span>, <span class="st">"headache"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">medication</span> <span class="op">&lt;-</span> <span class="fu">omopgenerics</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/newCohortTable.html" class="external-link">newCohortTable</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">cdm</span><span class="op">$</span><span class="va">medication</span>,</span>
-<span>  cohortSetRef <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>    cohort_definition_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>    cohort_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acetaminophen"</span>, <span class="st">"ibuprophen"</span>, <span class="st">"naloxone"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  cohortAttritionRef <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">characteristicsResult</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summariseCharacteristics.html">summariseCharacteristics</a></span><span class="op">(</span></span>
-<span>  <span class="va">cdm</span><span class="op">$</span><span class="va">dus_cohort</span>,</span>
-<span>  cohortIntersect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Medications"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      targetCohortTable <span class="op">=</span> <span class="st">"medication"</span>, value <span class="op">=</span> <span class="st">"flag"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span>    <span class="op">)</span>, <span class="st">"Comorbidities"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      targetCohortTable <span class="op">=</span> <span class="st">"comorbidities"</span>, value <span class="op">=</span> <span class="st">"flag"</span>, window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> adding demographics columns</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> adding cohort intersect columns for table: medication</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> adding cohort intersect columns for table: comorbidities</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> summarising data</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::summarise()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> In argument: `dplyr::across(...)`.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> In group 2: `strata_id = 2`.</span></span>
-<span><span class="co">#&gt; Caused by warning in `base::min()`:</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> no non-missing arguments to min; returning Inf</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> summariseCharacteristics finished!</span></span></code></pre></div>
-<p>Now we show barplot example by setting plotStyle = “barplot” in
-<code>plotCharacteristics</code>. Similar to previous function, user can
-define axes, facetVars and colorVars. Currently, barplot is only
-plotting percentage.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span>,</span>
-<span>    xAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
-<span>    yAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
-<span>    plotStyle <span class="op">=</span> <span class="st">"barplot"</span>,</span>
-<span>    facetVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span><span class="op">)</span>,</span>
-<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable_name"</span>, <span class="st">"variable_level"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="a07_summariseLargeScaleCharacteristics_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<p>User can plot boxplot based on q25 q75 median min max in data, using
-<code>plotCharacteristics</code> and set plotStyle = “boxplot”.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span>,</span>
-<span>    xAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
-<span>    yAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
-<span>    plotStyle <span class="op">=</span> <span class="st">"boxplot"</span>,</span>
-<span>    facetVars <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
-<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_segment()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_segment()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_segment()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_segment()`).</span></span></code></pre></div>
-<p><img src="a07_summariseLargeScaleCharacteristics_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-</div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
-    </nav></aside>
+  </main>
 </div>
 
 
