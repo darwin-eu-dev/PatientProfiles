@@ -73,7 +73,7 @@ summariseCohortOverlap <- function(cohort,
   cohort_counts <- omopgenerics::cohortCount(cdm[[name]]) |>
     dplyr::inner_join(omopgenerics::settings(cdm[[name]]),
                       by = "cohort_definition_id") |>
-    dplyr::select(!"cohort_definition_id")
+    dplyr::select(cohort_name, number_subjects, number_records)
   # get inner join counts
   overlap <- overlapData |>
     dplyr::group_by(.data$cohort_name_reference,
