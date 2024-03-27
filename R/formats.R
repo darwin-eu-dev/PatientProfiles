@@ -100,7 +100,15 @@ assertClassification <- function(x) {
 #'
 availableFunctions <- function(variableType = NULL) {
   lifecycle::deprecate_warn("0.7.0", what = "availableFunctions()", with = "availableEstimates()")
-  availableEstimates(variableType = variableType)
+  if (is.null(variableType)) {
+    return(formatsOld)
+  } else {
+    checkVariableType(variableType)
+    x <- formatsOld %>%
+      dplyr::filter(.data$variable_type == .env$variableType) %>%
+      dplyr::select(-"variable_type")
+    return(x)
+  }
 }
 
 #' Show the available estimates that can be used for the different variable_type
