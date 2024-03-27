@@ -100,23 +100,12 @@ assertClassification <- function(x) {
 #'
 availableFunctions <- function(variableType = NULL) {
   lifecycle::deprecate_warn("0.7.0", what = "availableFunctions()", with = "availableEstimates()")
-
-  formats <- read_csv(
-    here("extras", "formats.csv"),
-    col_types = list(
-      variable_classification = "c",
-      format_key = "c",
-      applied_function = "c",
-      result = "c"
-    )
-  )
   formatsOld <- formats |>
     dplyr::rename(
       "format_key" = "estimate_name",
       "applied_function" = "estimate_description",
-      "estimate_type" = "result"
+      "result" = "estimate_type"
     )
-
   if (is.null(variableType)) {
     return(formatsOld)
   } else {
