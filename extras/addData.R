@@ -43,5 +43,7 @@ namesTable <- read_csv(
   )
 )
 
-use_data(formats, namesTable, internal = TRUE, overwrite = TRUE)
+formatsOld <- read_csv(here("extras", "formats_old.csv"), col_types = "c")
+
+use_data(formats, namesTable, formatsOld, internal = TRUE, overwrite = TRUE)
 
