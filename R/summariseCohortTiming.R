@@ -41,7 +41,11 @@ summariseCohortTiming <- function(cohort,
 
   # add cohort names
   cdm <- omopgenerics::cdmReference(cohort)
-  name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
+  name <- omopgenerics::tableName(cohort)
+
+  if (is.na(name)) {
+    cli::cli_abort("Please provide a permanent cohort table.")
+  }
 
   ids <- cdm[[name]] |>
     omopgenerics::settings() |>

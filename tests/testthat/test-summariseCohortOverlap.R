@@ -38,7 +38,7 @@ test_that("summariseCohortOverlap", {
                colnames(overlap1))
   expect_equal(overlap1$group_name |> unique(),
                "cohort_name_reference &&& cohort_name_comparator")
-  expect_true(nrow(overlap1) == 5*4*12)
+  expect_true(nrow(overlap1) == 5*4*6)
   expect_true(overlap1 |> dplyr::filter(grepl("cohort_5", .data$group_level)) |> dplyr::pull(estimate_value) |> unique() == "0")
   expect_equal(unique(overlap1$strata_name), "overall")
   expect_equal(unique(overlap1$strata_level), "overall")
@@ -50,7 +50,7 @@ test_that("summariseCohortOverlap", {
   # strata and cohortID ----
   overlap2 <- summariseCohortOverlap(cdm$table,
                                      cohortId = 1:2)
-  expect_true(nrow(overlap2) == 2*12)
+  expect_true(nrow(overlap2) == 2*6)
   expect_true(all(
     c("cohort_2 &&& cohort_1", "cohort_1 &&& cohort_2") %in%
     unique(overlap2$group_level)))
@@ -72,7 +72,7 @@ test_that("summariseCohortOverlap", {
                     unique(overlap1$group_level)))
   expect_true(all(c("overall", "age_group", "age_group &&& sex") %in%
                     unique(overlap3$strata_name)))
-  expect_true(nrow(overlap3) == 2*12 + 2*12*s1 + 2*12*s2)
+  expect_true(nrow(overlap3) == 2*6 + 2*6*s1 + 2*6*s2)
 
   CDMConnector::cdm_disconnect(cdm)
 })
@@ -97,8 +97,8 @@ test_that("plotCohortOverlap", {
                    16, 15, 20, 17, 3, 14, 6, 11, 8, 7, 20, 19, 5, 2, 18,
                    5, 12, 3, 14, 13),
     cohort_start_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
-                          rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
-                          rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5))),
+                                  rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
+                                  rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5))),
     cohort_end_date = as.Date(c(rep("2000-01-01",5), rep("2010-09-05",5), rep("2006-05-01",5),
                                 rep("2003-03-31",5), rep("2008-07-02",5), rep("2000-01-01",5),
                                 rep("2012-09-05",5), rep("1996-05-01",5), rep("1989-03-31",5)))
@@ -120,7 +120,7 @@ test_that("plotCohortOverlap", {
                            overlapLabel = "{cdm_name}; {cohort_name_reference}; {cohort_name_comparator}")
   expect_true("ggplot" %in% class(gg1))
   expect_false("cohort_4" %in% gg1$data$cohort_name_reference)
-  expect_true(all(c("number_records", "number_subjects") %in% unique(gg1$data$facet_var)))
+  expect_true(all(c("number_subjects") %in% unique(gg1$data$facet_var)))
 
 
   gg2 <- plotCohortOverlap(overlap |> dplyr::filter(.data$variable_name == "number_subjects"),
@@ -130,8 +130,8 @@ test_that("plotCohortOverlap", {
   expect_true(gg2$data |> dplyr::filter(variable_name == "number subjects") |> nrow() == 0)
   expect_true(gg2$data$facet_var |> unique() == "PP_MOCK")
   expect_true(nrow(gg2$data |>
-                dplyr::filter(.data$cohort_name_reference %in% c("Cohort 1", "Cohort 2") &
-                                .data$cohort_name_comparator %in% c("Cohort 1", "Cohort 2"))) == 2)
+                     dplyr::filter(.data$cohort_name_reference %in% c("Cohort 1", "Cohort 2") &
+                                     .data$cohort_name_comparator %in% c("Cohort 1", "Cohort 2"))) == 2)
   # strata ----
   cdm$table <- cdm$table |>
     addAge(ageGroup = list(c(0,40), c(41,150))) |>

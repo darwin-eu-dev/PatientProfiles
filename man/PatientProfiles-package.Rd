@@ -6,6 +6,8 @@
 \alias{PatientProfiles-package}
 \title{PatientProfiles: Identify Characteristics of Patients in the OMOP Common Data Model}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.
 }
 \seealso{
