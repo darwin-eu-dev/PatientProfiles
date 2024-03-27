@@ -101,7 +101,7 @@ test_that("basic functionality summarise large scale characteristics", {
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
-        .data$concept == .env$conceptId[k] &
+        .data$concept_id == .env$conceptId[k] &
           .data$variable_level == .env$windowName[k] &
           .data$group_level == .env$cohortName[k]
       )
@@ -131,7 +131,7 @@ test_that("basic functionality summarise large scale characteristics", {
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
-        .data$concept == .env$conceptId[k] &
+        .data$concept_id == .env$conceptId[k] &
           .data$variable_level == .env$windowName[k] &
           .data$group_level == .env$cohortName[k]
       )
@@ -173,7 +173,7 @@ test_that("basic functionality summarise large scale characteristics", {
   for (k in seq_along(conceptId)) {
     r <- result %>%
       dplyr::filter(
-        .data$concept == .env$conceptId[k] &
+        .data$concept_id == .env$conceptId[k] &
           .data$variable_level == .env$windowName[k] &
           .data$group_level == .env$cohortName[k]
       )
