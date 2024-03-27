@@ -38,7 +38,7 @@ test_that("summariseCohortOverlap", {
                colnames(overlap1))
   expect_equal(overlap1$group_name |> unique(),
                "cohort_name_reference &&& cohort_name_comparator")
-  expect_true(nrow(overlap1) == 5*4*12)
+  expect_true(nrow(overlap1) == 5*4*6)
   expect_true(overlap1 |> dplyr::filter(grepl("cohort_5", .data$group_level)) |> dplyr::pull(estimate_value) |> unique() == "0")
   expect_equal(unique(overlap1$strata_name), "overall")
   expect_equal(unique(overlap1$strata_level), "overall")
@@ -50,7 +50,7 @@ test_that("summariseCohortOverlap", {
   # strata and cohortID ----
   overlap2 <- summariseCohortOverlap(cdm$table,
                                      cohortId = 1:2)
-  expect_true(nrow(overlap2) == 2*12)
+  expect_true(nrow(overlap2) == 2*6)
   expect_true(all(
     c("cohort_2 &&& cohort_1", "cohort_1 &&& cohort_2") %in%
     unique(overlap2$group_level)))
@@ -72,11 +72,7 @@ test_that("summariseCohortOverlap", {
                     unique(overlap1$group_level)))
   expect_true(all(c("overall", "age_group", "age_group &&& sex") %in%
                     unique(overlap3$strata_name)))
-  expect_true(nrow(overlap3) == 2*12 + 2*12*s1 + 2*12*s2)
+  expect_true(nrow(overlap3) == 2*6 + 2*6*s1 + 2*6*s2)
 
   CDMConnector::cdm_disconnect(cdm)
 })
-
-
-
-
