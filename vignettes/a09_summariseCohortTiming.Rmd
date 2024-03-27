@@ -1,6 +1,12 @@
 ---
 title: "Summarise cohort timing"
-output: rmarkdown::html_vignette
+output: 
+  html_document:
+    pandoc_args: [
+      "--number-offset=1,0"
+      ]
+    number_sections: yes
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{a09_summariseCohortTiming}
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,10 +16,85 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>", message = FALSE, warning = FALSE
 )
 ```
 
-```{r setup}
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(CDMConnector)
+if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
+if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
+if (!eunomia_is_available()) downloadEunomiaData()
+```
+
+We saw in the previous vignette how we can summarise the overlap between cohorts. In addition to this, we might also be interested in timings between cohorts. That is, the time between an individual entering one cohort and another. For this we can use the `summariseCohortTiming()`. In this example we'll look at the time between entering cohorts for acetaminophen, morphine, and oxycodone.
+
+```{r}
+library(CDMConnector)
+library(CodelistGenerator)
 library(PatientProfiles)
+library(dplyr)
+library(ggplot2)
+
+con <- DBI::dbConnect(duckdb::duckdb(),
+                       dbdir = CDMConnector::eunomia_dir())
+cdm <- CDMConnector::cdm_from_con(con,
+                                  cdm_schem = "main",
+                                  write_schema = "main", 
+                                  cdm_name = "Eunomia")
+
+meds_cs <- getDrugIngredientCodes(cdm = cdm, 
+                                  name = c("acetaminophen",
+                                           "morphine",
+                                           "warfarin"))
+
+cdm <- generateConceptCohortSet(
+  cdm = cdm,
+  name = "meds",
+  conceptSet = meds_cs,
+  end = "event_end_date",
+  limit = "all",
+  overwrite = TRUE
+)
+```
+
+Now we have our cohorts we can summarise the timing between cohort entry. Note setting restrictToFirstEntry to TRUE will mean that we only consider timing between an individual's first record in each cohort.
+
+```{r}
+meds_timing <- cdm$meds |> 
+  summariseCohortTiming(restrictToFirstEntry = TRUE)
+meds_timing |> 
+  glimpse()
+```
+
+As with cohort overlap, we have table and plotting functions to help view our results.
+
+```{r}
+tableCohortTiming(meds_timing, 
+                  .options = list(decimals = c(numeric = 0)))
+```
+
+```{r}
+plotCohortTiming(meds_timing, 
+                 facetBy = "cdm_name") + 
+  theme_bw() +
+  theme(legend.position = "none",
+       axis.text.x = element_text(angle = 90,
+                                  vjust = 0.5, 
+                                  hjust=1))
+```
+
+If we want to see an even more granular summary of cohort timings we can make a desity plot instead of a box plot. Note, for this we'll need to set density as TRUE when getting our initial results.
+
+```{r}
+meds_timing <- cdm$meds |> 
+  summariseCohortTiming(restrictToFirstEntry = TRUE, 
+                        density = TRUE)
+plotCohortTiming(meds_timing, type = "density")
 ```
