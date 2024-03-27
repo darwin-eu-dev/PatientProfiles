@@ -25,19 +25,6 @@
 #'
 #' @examples
 #' \donttest{
-#' library(PatientProfiles)
-#'
-#' cdm <- mockPatientProfiles()
-#'
-#' summariseTableIntersect(
-#'   cohort = cdm$cohort1,
-#'   tableIntersect = list(
-#'     "Number visits prior year" = list(
-#'       tableName = "visit_occurrence", value = "count", window = c(-Inf, -1)
-#'     )
-#'   )
-#' )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 summariseTableIntersect <- function(cohort,
                                     tableIntersect = list(),
