@@ -2,7 +2,7 @@
 % Please edit documentation in R/tableSummarised.R
 \name{tableCohortTiming}
 \alias{tableCohortTiming}
-\title{Format a cohort_timing object into a visual table.}
+\title{Format a summariseCohortTiming result into a visual table.}
 \usage{
 tableCohortTiming(
   result,
@@ -19,7 +19,7 @@ tableCohortTiming(
 )
 }
 \arguments{
-\item{result}{A cohort_overlap object.}
+\item{result}{A summariseCohortTiming result}
 
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", "tibble".}
@@ -45,7 +45,7 @@ PatientProfiles::optionsTableCohortTiming() shows allowed arguments and
 their default values.}
 }
 \value{
-A formatted table of the cohort_timing summarised object.
+A formatted table of the summariseCohortTiming result.
 }
 \description{
 `r lifecycle::badge("experimental")`

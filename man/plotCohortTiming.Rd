@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSummarised.R
 \name{plotCohortTiming}
 \alias{plotCohortTiming}
-\title{Plot cohort_overlap objects.}
+\title{Plot summariseCohortTiming results.}
 \usage{
 plotCohortTiming(
   result,
@@ -14,7 +14,7 @@ plotCohortTiming(
 )
 }
 \arguments{
-\item{result}{A cohort_overlap object.}
+\item{result}{A summariseCohortTiming result.}
 
 \item{type}{Type of desired formatted table, possibilities are "boxplot" and
 "density".}
@@ -31,7 +31,7 @@ overlap.}
 comparator plots will be plotted.}
 }
 \value{
-A ggplot2.
+A ggplot.
 }
 \description{
 `r lifecycle::badge("experimental")`

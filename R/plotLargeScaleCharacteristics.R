@@ -273,6 +273,7 @@ plotfunction <- function(data,
         ggplot2::labs(title = "Empty Data Provided", subtitle = "No data available for plotting.")
     }
 
+    p_dates <- NULL
     if (nrow(df_dates_wide) > 0) {
       p_dates <- df_dates_wide %>% ggplot2::ggplot(
         ggplot2::aes_string(x = dplyr::if_else(xAxis == "estimate_value", yAxis, xAxis))
@@ -302,7 +303,7 @@ plotfunction <- function(data,
         stat = "identity"
       ) +
         ggplot2::labs(
-          title = "Non-Date Data", x = "Variable and Group Level",
+          title = "Date Data", x = "Variable and Group Level",
           y = "Quantile Values"
         ) +
         ggplot2::theme_minimal() +
@@ -315,7 +316,11 @@ plotfunction <- function(data,
       }
     }
 
-    p <- ggpubr::ggarrange(p_dates, p_non_dates, nrow = 2)
+    if (!is.null(p_dates)) {
+      p <- ggpubr::ggarrange(p_dates, p_non_dates, nrow = 2)
+    } else {
+      p <- p_non_dates
+    }
   }
 
 
