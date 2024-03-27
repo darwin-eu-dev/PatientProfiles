@@ -49,26 +49,31 @@ summariseCohortOverlap <- function(cohort,
     dplyr::compute()
 
   overlapData <- cdm[[name]] |>
-    dplyr::distinct(dplyr.data$subject_id, .data$cohort_name) |>
+    dplyr::group_by(.data$subject_id, .data$cohort_name) |>
+    dplyr::mutate(record_id = dplyr::row_number()) |>
+    dplyr::ungroup() |>
     dplyr::rename("cohort_name_reference" = "cohort_name") |>
     dplyr::select(dplyr::all_of(c("subject_id",
-                                "cohort_name_reference",
-                                unique(unlist(strata))))) |>
+                                  "record_id",
+                                  "cohort_name_reference",
+                                  unique(unlist(strata))))) |>
     dplyr::inner_join(cdm[[name]] |>
-                        dplyr::distinct(.data$subject_id, .data$cohort_name) |>
+                        dplyr::group_by(.data$subject_id, .data$cohort_name) |>
+                        dplyr::mutate(record_id = dplyr::row_number()) |>
+                        dplyr::ungroup() |>
                         dplyr::rename("cohort_name_comparator" = "cohort_name") |>
                         dplyr::select(dplyr::all_of(c("subject_id",
-                                                    "record_id",
-                                                    "cohort_name_comparator",
-                                                    unique(unlist(strata))))),
-                      by = c("subject_id", unique(unlist(strata)))) |>
+                                                      "record_id",
+                                                      "cohort_name_comparator",
+                                                      unique(unlist(strata))))),
+                      by = c("subject_id", "record_id", unique(unlist(strata)))) |>
     dplyr::compute()
 
   # overall
   cohort_counts <- omopgenerics::cohortCount(cdm[[name]]) |>
     dplyr::inner_join(omopgenerics::settings(cdm[[name]]),
                       by = "cohort_definition_id") |>
-    dplyr::select(cohort_name, number_subjects, number_records)
+    dplyr::select(!"cohort_definition_id")
   # get inner join counts
   overlap <- overlapData |>
     dplyr::group_by(.data$cohort_name_reference,
@@ -88,7 +93,7 @@ summariseCohortOverlap <- function(cohort,
     visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator")) |>
     visOmopResults::uniteStrata(cols = character())
 
-   # strata
+  # strata
   if (!is.null(unlist(strata))) {
     overlap <- overlap |>
       dplyr::union_all(
@@ -134,7 +139,7 @@ summariseCohortOverlap <- function(cohort,
   cohortCombinations <- tidyr::expand_grid(
     cohort_name_reference = names,
     cohort_name_comparator = names
-    ) |>
+  ) |>
     dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) |>
     visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator"))
 

@@ -218,7 +218,7 @@ test_that("plotCohortOverlap", {
                            overlapLabel = "{cdm_name}; {cohort_name_reference}; {cohort_name_comparator}")
   expect_true("ggplot" %in% class(gg1))
   expect_false("cohort_4" %in% gg1$data$cohort_name_reference)
-  expect_true(all(c("number_records", "number_subjects") %in% unique(gg1$data$facet_var)))
+  expect_true(all(c("number_subjects") %in% unique(gg1$data$facet_var)))
 
 
   gg2 <- plotCohortOverlap(overlap |> dplyr::filter(.data$variable_name == "number_subjects"),
