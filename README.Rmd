@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# PatientProfiles <img src='man/figures/Hex.png' align="right" height="139"/>
+# PatientProfiles <img src="man/figures/logo.png" align="right" height="200"/>
 
 [![CRAN status](https://www.r-pkg.org/badges/version/PatientProfiles)](https://CRAN.R-project.org/package=PatientProfiles)
 [![codecov.io](https://codecov.io/github/darwin-eu-dev/PatientProfiles/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu-dev/PatientProfiles?branch=main)

@@ -48,8 +48,8 @@
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A tibble with a tidy version of the summarised_characteristics
-#' object.
+#' @return A table with a formatted version of the summariseCharacteristics
+#' result.
 #'
 #' @export
 #'
@@ -59,6 +59,7 @@ tableCharacteristics <- function(result,
                                    "N (%)" = "<count> (<percentage>%)",
                                    "N" = "<count>",
                                    "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                   "[Q05 - Q95]" = "[<q05> - <q95>]",
                                    "Mean (SD)" = "<mean> (<sd>)",
                                    "Range" = "<min> to <max>"
                                  ),
@@ -76,8 +77,8 @@ tableCharacteristics <- function(result,
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type %in%
                     c("summarised_characteristics", "summarised_demographics",
-                      "summarised_cohort_insersect", "summarised_concept_insersect",
-                      "summarised_table_insersect"))
+                      "summarised_cohort_intersect", "summarised_concept_intersect",
+                      "summarised_table_intersect"))
   checkmate::assertList(.options)
 
   # add default options
@@ -103,7 +104,7 @@ defaultCharacteristicsOptions <- function(.options) {
     "decimals" = c(integer = 0, numeric = 2, percentage = 1, proportion = 3),
     "decimalMark" = ".",
     "bigMark" = ",",
-    "keepNotFormatted" = FALSE,
+    "keepNotFormatted" = TRUE,
     "useFormatOrder" = TRUE,
     "delim" = "\n",
     "style" = "default",
@@ -122,11 +123,11 @@ defaultCharacteristicsOptions <- function(.options) {
   return(defaults)
 }
 
-#' Additional arguments for the function formatCharacteristics.
+#' Additional arguments for the function tableCharacteristics.
 #'
 #' @description
 #' It provides a list of allowed inputs for .option argument in
-#' formatCharacteristics. and their given default values.
+#' tableCharacteristics, and their given default values.
 #'
 #'
 #' @return The default .options named list.
@@ -138,16 +139,15 @@ defaultCharacteristicsOptions <- function(.options) {
 #' optionsTableCharacteristics()
 #' }
 #'
-#'
 optionsTableCharacteristics <- function() {
   return(defaultCharacteristicsOptions(NULL))
 }
 
-#' Format a cohort_overlap object into a visual table.
+#' Format a summariseOverlapCohort result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A cohort_overlap object.
+#' @param result A summariseOverlapCohort result.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -173,7 +173,7 @@ optionsTableCharacteristics <- function() {
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A formatted table of the overlap_cohort summarised object.
+#' @return A formatted table of the summariseOverlapCohort result.
 #'
 #' @export
 #'
@@ -231,11 +231,72 @@ tableCohortOverlap  <- function(result,
   return(result)
 }
 
-#' Format a cohort_timing object into a visual table.
+defaultOverlapOptions <- function(userOptions) {
+  defaultOpts <- list(
+    uniqueCombinations = TRUE,
+    c(integer = 0, percentage = 2, numeric = 2, proportion = 2),
+    decimalMark = ".",
+    bigMark = ",",
+    style = "default",
+    na = "-",
+    title = NULL,
+    subtitle = NULL,
+    caption = NULL,
+    groupNameCol = NULL,
+    groupNameAsColumn = FALSE,
+    groupOrder = NULL,
+    colsToMergeRows = "all_columns"
+  )
+
+  for (opt in names(userOptions)) {
+    defaultOpts[[opt]] <- userOptions[[opt]]
+  }
+
+  return(defaultOpts)
+}
+
+#' Additional arguments for the function tableCohortOverlap.
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in
+#' tableCohortOverlap and their given default value.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' optionsTableCohortOverlap()
+#' }
+#'
+optionsTableCohortOverlap <- function() {
+  return(defaultOverlapOptions(NULL))
+}
+
+formatOverlapEstimate <- function(count, percentage, .options) {
+  paste0(
+    niceNum(count, .options, "integer"),
+    " (",
+    niceNum(percentage, .options, "percentage"),
+    "%)"
+  )
+
+}
+niceNum <- function(num, .options, type) {
+  trimws(format(round(num, .options$decimals[[type]]),
+                big.mark = .options$bigMark,
+                decimal.mark = .options$decimalMark,
+                nsmall = .options$decimals[[type]],
+                scientific = FALSE))
+}
+
+#' Format a summariseCohortTiming result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A cohort_overlap object.
+#' @param result A summariseCohortTiming result
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -261,7 +322,7 @@ tableCohortOverlap  <- function(result,
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-#' @return A formatted table of the cohort_timing summarised object.
+#' @return A formatted table of the summariseCohortTiming result.
 #'
 #' @export
 #'
@@ -314,48 +375,6 @@ tableCohortTiming <- function(result,
   return(result)
 }
 
-
-formatOverlapEstimate <- function(count, percentage, .options) {
-  paste0(
-    niceNum(count, .options, "integer"),
-    " (",
-    niceNum(percentage, .options, "percentage"),
-    "%)"
-  )
-
-}
-niceNum <- function(num, .options, type) {
-  trimws(format(round(num, .options$decimals[[type]]),
-                big.mark = .options$bigMark,
-                decimal.mark = .options$decimalMark,
-                nsmall = .options$decimals[[type]],
-                scientific = FALSE))
-}
-
-defaultOverlapOptions <- function(userOptions) {
-  defaultOpts <- list(
-    uniqueCombinations = TRUE,
-    c(integer = 0, percentage = 2, numeric = 2, proportion = 2),
-    decimalMark = ".",
-    bigMark = ",",
-    style = "default",
-    na = "-",
-    title = NULL,
-    subtitle = NULL,
-    caption = NULL,
-    groupNameCol = NULL,
-    groupNameAsColumn = FALSE,
-    groupOrder = NULL,
-    colsToMergeRows = "all_columns"
-  )
-
-  for (opt in names(userOptions)) {
-    defaultOpts[[opt]] <- userOptions[[opt]]
-  }
-
-  return(defaultOpts)
-}
-
 defaultTimingOptions <- function(userOptions) {
   defaultOpts <- list(
     uniqueCombinations = TRUE,
@@ -384,45 +403,6 @@ defaultTimingOptions <- function(userOptions) {
 }
 
 
-# defaultColumnSelectors <- function(data, selectors) {
-#   outSelectors <- list()
-#   for (selector in names(selectors)) {
-#     column <- data[[selector]]
-#     input <- selectors[[selector]]
-#     if (is.null(input)) {
-#       input <- unique(column)
-#     } else {
-#       notIn <- which(!input %in% unique(column))
-#       if (length(notIn) > 0) {
-#         cli::cli_warn("The following are not in {selector} and will not be included:
-#                     {paste0(input[notIn], collapse = ', ')}")
-#       }
-#     }
-#     outSelectors[[selector]] <- input
-#   }
-#   return(outSelectors)
-# }
-
-#' Additional arguments for the function tableCohortOverlap.
-#'
-#' @description
-#' It provides a list of allowed inputs for .option argument in
-#' tableCohortOverlap and their given default value.
-#'
-#'
-#' @return The default .options named list.
-#'
-#' @export
-#'
-#' @examples
-#' {
-#' optionsTableCohortOverlap()
-#' }
-#'
-#'
-optionsTableCohortOverlap <- function() {
-  return(defaultOverlapOptions(NULL))
-}
 
 #' Additional arguments for the function tableCohortTiming.
 #'
@@ -443,6 +423,161 @@ optionsTableCohortOverlap <- function() {
 #'
 optionsTableCohortTiming <- function() {
   return(defaultTimingOptions(NULL))
+}
+
+#' Format a summariseTableIntersect result into a visual table.
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param result A result from summariseTableIntersect.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", "tibble".
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
+#' `variable`, `estimate`, `settings`.
+#' @param split A vector containing the name-level groups to split ("group",
+#' "strata", "additional"), or an empty character vector to not split.
+#' @param groupColumn Column to use as group labels.
+#' @param minCellCount Counts below which results will be clouded.
+#' @param excludeColumns Columns to drop from the output table.
+#' @param .options Named list with additional formatting options.
+#' PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
+#' their default values.
+#'
+#'
+#' @return A table with a formatted version of a summariseTableIntersect
+#' result.
+#'
+tableTableIntersect <- function(result,
+                                 type = "gt",
+                                 formatEstimateName = c(
+                                   "N (%)" = "<count> (<percentage>%)",
+                                   "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                   "Mean (SD)" = "<mean> (<sd>)",
+                                   "Range" = "<min> to <max>"
+                                 ),
+                                 header = c("group"),
+                                 split = c("group", "strata"),
+                                 groupColumn = NULL,
+                                 minCellCount = 5,
+                                 excludeColumns = c("result_id", "result_type",
+                                                    "package_name", "package_version",
+                                                    "estimate_type", "variable_level",
+                                                    "additional_name", "additional_level"),
+                                 .options = list()) {
+
+  # check input
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type %in%
+                    c("summarised_table_intersect"))
+  checkmate::assertList(.options)
+
+  # add default options
+  .options <- defaultCharacteristicsOptions(.options)
+
+  # format table
+  result <- visOmopResults::formatTable(
+    result = result,
+    formatEstimateName = formatEstimateName,
+    header = header,
+    groupColumn = groupColumn,
+    split = split,
+    type = type,
+    minCellCount = minCellCount,
+    excludeColumns = excludeColumns,
+    .options = .options)
+
+  return(result)
+}
+
+
+#' Format a summariseCohortIntersect result into a visual table.
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param result A result from summariseCohortIntersect.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", "tibble".
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
+#' `variable`, `estimate`, `settings`.
+#' @param split A vector containing the name-level groups to split ("group",
+#' "strata", "additional"), or an empty character vector to not split.
+#' @param groupColumn Column to use as group labels.
+#' @param minCellCount Counts below which results will be clouded.
+#' @param excludeColumns Columns to drop from the output table.
+#' @param .options Named list with additional formatting options.
+#' PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
+#' their default values.
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#'
+#' cdm <- mockPatientProfiles()
+#'
+#' cdm$cohort1 |>
+#'  summariseCohortIntersect(
+#'   cohortIntersect = list(
+#'     "Medications in the prior year" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     )
+#'    )
+#'   ) |>
+#'   tableCohortIntersect()
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+#'
+#' @return A table with a formatted version of a summariseCohortIntersect
+#' result.
+#'
+#' @export
+#'
+tableCohortIntersect <- function(result,
+                                type = "gt",
+                                formatEstimateName = c(
+                                  "N (%)" = "<count> (<percentage>%)",
+                                  "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                  "Mean (SD)" = "<mean> (<sd>)",
+                                  "Range" = "<min> to <max>"
+                                ),
+                                header = c("group"),
+                                split = c("group", "strata"),
+                                groupColumn = NULL,
+                                minCellCount = 5,
+                                excludeColumns = c("result_id", "result_type",
+                                                   "package_name", "package_version",
+                                                   "estimate_type", "additional_name",
+                                                   "additional_level"),
+                                .options = list()) {
+
+  # check input
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type %in%
+                    c("summarised_cohort_intersect"))
+  checkmate::assertList(.options)
+
+  # add default options
+  .options <- defaultCharacteristicsOptions(.options)
+
+  # format table
+  result <- visOmopResults::formatTable(
+    result = result,
+    formatEstimateName = formatEstimateName,
+    header = header,
+    groupColumn = groupColumn,
+    split = split,
+    type = type,
+    minCellCount = minCellCount,
+    excludeColumns = excludeColumns,
+    .options = .options)
+
+  return(result)
 }
 
 #' Format a summarised_large_scale_characteristics object into a visual table.
@@ -602,4 +737,85 @@ orderWindow <- function(res) {
   res <- res |>
     dplyr::left_join(tib, by = "window_name")
   return(res)
+}
+
+#' Format a summariseDemographics result into a visual table.
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param result A result from summariseDemographics.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", "tibble".
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `additional`,
+#' `variable`, `estimate`, `settings`.
+#' @param split A vector containing the name-level groups to split ("group",
+#' "strata", "additional"), or an empty character vector to not split.
+#' @param groupColumn Column to use as group labels.
+#' @param minCellCount Counts below which results will be clouded.
+#' @param excludeColumns Columns to drop from the output table.
+#' @param .options Named list with additional formatting options.
+#' PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
+#' their default values.
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#'
+#' cdm <- mockPatientProfiles()
+#'
+#' cdm$cohort1 |>
+#'  summariseDemographics() |>
+#'  tableDemographics()
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+#'
+#' @return A table with a formatted version of a summariseDemographics result.
+#'
+#' @export
+#'
+tableDemographics <- function(result,
+                                 type = "gt",
+                                 formatEstimateName = c(
+                                   "N (%)" = "<count> (<percentage>%)",
+                                   "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]",
+                                   "[Q05 - Q95]" = "[<q05> - <q95>]",
+                                   "Mean (SD)" = "<mean> (<sd>)",
+                                   "Range" = "<min> to <max>"
+                                 ),
+                                 header = c("group"),
+                                 split = c("group", "strata"),
+                                 groupColumn = NULL,
+                                 minCellCount = 5,
+                                 excludeColumns = c("result_id", "result_type",
+                                                    "package_name", "package_version",
+                                                    "estimate_type", "additional_name",
+                                                    "additional_level"),
+                                 .options = list()) {
+
+  # check input
+  result <- omopgenerics::newSummarisedResult(result) |>
+    dplyr::filter(.data$result_type %in%
+                    c("summarised_demographics"))
+  checkmate::assertList(.options)
+
+  # add default options
+  .options <- defaultCharacteristicsOptions(.options)
+
+  # format table
+  result <- visOmopResults::formatTable(
+    result = result,
+    formatEstimateName = formatEstimateName,
+    header = header,
+    groupColumn = groupColumn,
+    split = split,
+    type = type,
+    minCellCount = minCellCount,
+    excludeColumns = excludeColumns,
+    .options = .options)
+
+  return(result)
 }

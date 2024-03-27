@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSummarised.R
 \name{plotCohortOverlap}
 \alias{plotCohortOverlap}
-\title{Plot cohort_overlap objects.}
+\title{Plot the result of summariseCohortOverlap.}
 \usage{
 plotCohortOverlap(
   result,
@@ -12,9 +12,9 @@ plotCohortOverlap(
 )
 }
 \arguments{
-\item{result}{A cohort_overlap object.}
+\item{result}{A summariseCohortOverlap result.}
 
-\item{facetBy}{Names of columns in the cohort_overlap table for faceting the
+\item{facetBy}{Names of columns in the result table for faceting the
 ggplot object.}
 
 \item{overlapLabel}{A glue expression to identify each plotted cohort
@@ -24,7 +24,7 @@ overlap.}
 comparator plots will be plotted.}
 }
 \value{
-A ggplot2.
+A ggplot.
 }
 \description{
 `r lifecycle::badge("experimental")`

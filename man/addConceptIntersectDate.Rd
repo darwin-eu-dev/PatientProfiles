@@ -11,13 +11,13 @@ addConceptIntersectDate(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = list(c(0, Inf)),
-  targetDate = "cohort_start_date",
+  targetDate = "event_start_date",
   order = "first",
   nameStyle = "{concept_name}_{window_name}"
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{conceptSet}{Concept set list.}
 
@@ -28,12 +28,12 @@ intersection.}
 
 \item{window}{window to consider events in.}
 
-\item{targetDate}{date of reference in cohort table}
+\item{targetDate}{Event date to use for the intersection.}
 
-\item{order}{last or first date to use for date/time calculations.}
+\item{order}{last or first date to use for date/days calculations.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with overlap information

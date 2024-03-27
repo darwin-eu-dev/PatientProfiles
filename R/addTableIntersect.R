@@ -29,8 +29,8 @@
 #' @param window window to consider events in.
 #' @param order which record is considered in case of multiple records (only
 #' required for date and days options).
-#' @param overlap Whether to consider end date or only end date for the
-#' intersection.
+#' @param targetStartDate Column name with start date for comparison.
+#' @param targetEndDate Column name with end date for comparison.
 #' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
 #' intersection.
 #' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
@@ -61,7 +61,8 @@ addTableIntersect <- function(x,
                               censorDate = NULL,
                               window = list(c(0, Inf)),
                               order = "first",
-                              overlap = TRUE,
+                              targetStartDate = startDateColumn(tableName),
+                              targetEndDate = endDateColumn(tableName),
                               flag = TRUE,
                               count = TRUE,
                               date = TRUE,
@@ -79,7 +80,8 @@ addTableIntersect <- function(x,
   )
   .addTableIntersect(
     x = x, tableName = tableName, indexDate = indexDate,
-    censorDate = censorDate, window = window, order = order, overlap = overlap,
+    censorDate = censorDate, window = window, order = order,
+    targetStartDate = targetStartDate, targetEndDate = targetEndDate,
     flag = flag, count = count, date = date, days = days, field = field,
     nameStyle = nameStyle
   )
@@ -91,7 +93,8 @@ addTableIntersect <- function(x,
                                censorDate = NULL,
                                window = list(c(0, Inf)),
                                order = "first",
-                               overlap = TRUE,
+                               targetStartDate = startDateColumn(tableName),
+                               targetEndDate = endDateColumn(tableName),
                                flag = TRUE,
                                count = TRUE,
                                date = TRUE,
@@ -105,14 +108,10 @@ addTableIntersect <- function(x,
   checkmate::assertLogical(count, any.missing = FALSE, len = 1)
   checkmate::assertLogical(date, any.missing = FALSE, len = 1)
   checkmate::assertLogical(days, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(overlap, any.missing = FALSE, len = 1)
   checkmate::assertTRUE(flag | count | date | days | length(field)>0)
   value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
   value <- c(value, field)
 
-  end <- endDateColumn(tableName)
-  start <- startDateColumn(tableName)
-  targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
     .addIntersect(
@@ -122,8 +121,8 @@ addTableIntersect <- function(x,
       idName = NULL,
       value = value,
       indexDate = indexDate,
-      targetStartDate = start,
-      targetEndDate = end,
+      targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate,
       window = window,
       order = order,
       nameStyle = nameStyle,
@@ -144,8 +143,8 @@ addTableIntersect <- function(x,
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x.
 #' @param window window to consider events in.
-#' @param overlap Whether to consider end date or only end date for the
-#' intersection.
+#' @param targetStartDate Column name with start date for comparison.
+#' @param targetEndDate Column name with end date for comparison.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
 #'
@@ -166,16 +165,12 @@ addTableIntersectFlag <- function(x,
                                   indexDate = "cohort_start_date",
                                   censorDate = NULL,
                                   window = list(c(0, Inf)),
-                                  overlap = TRUE,
+                                  targetStartDate = startDateColumn(tableName),
+                                  targetEndDate = endDateColumn(tableName),
                                   nameStyle = "{table_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
-  checkmate::assertLogical(overlap, any.missing = FALSE, len = 1)
-
-  end <- endDateColumn(tableName)
-  start <- startDateColumn(tableName)
-  targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
     .addIntersect(
@@ -185,8 +180,8 @@ addTableIntersectFlag <- function(x,
       idName = NULL,
       value = "flag",
       indexDate = indexDate,
-      targetStartDate = start,
-      targetEndDate = end,
+      targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate,
       window = window,
       order = "first",
       nameStyle = nameStyle,
@@ -207,8 +202,8 @@ addTableIntersectFlag <- function(x,
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x.
 #' @param window window to consider events in.
-#' @param overlap Whether to consider end date or only end date for the
-#' intersection.
+#' @param targetStartDate Column name with start date for comparison.
+#' @param targetEndDate Column name with end date for comparison.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
 #'
@@ -230,16 +225,12 @@ addTableIntersectCount <- function(x,
                                    indexDate = "cohort_start_date",
                                    censorDate = NULL,
                                    window = list(c(0, Inf)),
-                                   overlap = TRUE,
+                                   targetStartDate = startDateColumn(tableName),
+                                   targetEndDate = endDateColumn(tableName),
                                    nameStyle = "{table_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
-  checkmate::assertLogical(overlap, any.missing = FALSE, len = 1)
-
-  end <- endDateColumn(tableName)
-  start <- startDateColumn(tableName)
-  targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
     .addIntersect(
@@ -249,8 +240,8 @@ addTableIntersectCount <- function(x,
       idName = NULL,
       value = "count",
       indexDate = indexDate,
-      targetStartDate = start,
-      targetEndDate = end,
+      targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate,
       window = window,
       order = "first",
       nameStyle = nameStyle,

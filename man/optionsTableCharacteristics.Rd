@@ -2,7 +2,7 @@
 % Please edit documentation in R/tableSummarised.R
 \name{optionsTableCharacteristics}
 \alias{optionsTableCharacteristics}
-\title{Additional arguments for the function formatCharacteristics.}
+\title{Additional arguments for the function tableCharacteristics.}
 \usage{
 optionsTableCharacteristics()
 }
@@ -11,12 +11,11 @@ The default .options named list.
 }
 \description{
 It provides a list of allowed inputs for .option argument in
-formatCharacteristics. and their given default values.
+tableCharacteristics, and their given default values.
 }
 \examples{
 {
 optionsTableCharacteristics()
 }
-
 
 }

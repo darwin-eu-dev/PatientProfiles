@@ -51,5 +51,6 @@ summariseCohortIntersect <- function(cohort,
     tableIntersect = list(),
     conceptIntersect = list(),
     otherVariables = character()
-  )
+  ) |>
+    dplyr::filter(.data$result_type == "summarised_cohort_intersect")
 }

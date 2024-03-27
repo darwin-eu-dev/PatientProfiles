@@ -145,7 +145,7 @@ summariseCharacteristics <- function(cohort,
   dic <- dplyr::tibble(
     short_name = character(), new_variable_name = character(),
     new_variable_level = character(), table = character(), window = character(),
-    value = character()
+    value = character(), result_type = character()
   )
   variables <- list()
 
@@ -172,7 +172,8 @@ summariseCharacteristics <- function(cohort,
           new_variable_level = as.character(NA),
           table = as.character(NA),
           window = as.character(NA),
-          value = as.character(NA)
+          value = as.character(NA),
+          result_type = "summarised_demographics"
         ))
       names(ageGroup) <- newNames
       demographicsCategorical <- c(demographicsCategorical, newNames)
@@ -186,7 +187,8 @@ summariseCharacteristics <- function(cohort,
         new_variable_level = as.character(NA),
         table = as.character(NA),
         window = as.character(NA),
-        value = as.character(NA)
+        value = as.character(NA),
+        result_type = "summarised_demographics"
       ))
 
     # add demographics
@@ -224,7 +226,7 @@ summariseCharacteristics <- function(cohort,
     addDic <- updateDic(
       tableIntersect[[k]]$value, shortNames, fullNames,
       arguments$tableName, NA_character_, arguments$tableName,
-      names(tableIntersect)[k]
+      names(tableIntersect)[k], "summarised_table_intersect"
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -236,12 +238,13 @@ summariseCharacteristics <- function(cohort,
         indexDate = arguments$indexDate,
         censorDate = arguments$censorDate,
         order = arguments$order,
+        targetStartDate = arguments$targetStartDate,
+        targetEndDate = arguments$targetEndDate,
         flag = arguments$flag,
         count = arguments$count,
         date = arguments$date,
         days = arguments$days,
         field = arguments$field,
-        overlap = arguments$overlap,
         nameStyle = "{value}_{table_name}_{window_name}"
       )
 
@@ -311,7 +314,7 @@ summariseCharacteristics <- function(cohort,
     addDic <- updateDic(
       cohortIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
       shortNamesCohort, fullNamesCohort, arguments$targetCohortTable,
-      names(cohortIntersect)[k]
+      names(cohortIntersect)[k], "summarised_cohort_intersect"
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -371,7 +374,7 @@ summariseCharacteristics <- function(cohort,
     addDic <- updateDic(
       conceptIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
       shortNamesConcept, fullNamesConcept, NA_character_,
-      names(conceptIntersect)[k]
+      names(conceptIntersect)[k],"summarised_concept_intersect"
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -385,10 +388,7 @@ summariseCharacteristics <- function(cohort,
         targetStartDate = arguments$targetStartDate,
         targetEndDate = arguments$targetEndDate,
         order = arguments$order,
-        flag = arguments$flag,
-        count = arguments$count,
-        date = arguments$date,
-        days = arguments$days,
+        value = arguments$value,
         nameStyle = "{value}_{concept_name}_{window_name}"
       )
 
@@ -450,7 +450,7 @@ summariseCharacteristics <- function(cohort,
       verbose = FALSE
     ) %>%
     addCdmName(cdm = cdm) %>%
-    dplyr::mutate(result_type = "summarised_characteristics")
+    dplyr::select(!"result_type")
 
   # rename variables
   results <- results %>%
@@ -468,6 +468,11 @@ summariseCharacteristics <- function(cohort,
         is.na(.data$new_variable_level),
         .data$variable_level,
         .data$new_variable_level
+      ),
+      "result_type" = dplyr::if_else(
+        is.na(.data$result_type),
+        "summarised_characteristics",
+        .data$result_type
       )
     ) %>%
     dplyr::select(-c(
@@ -575,7 +580,8 @@ updateDic <- function(value,
                       shortCohort,
                       fullCohort,
                       tableName,
-                      nam) {
+                      nam,
+                      resultType) {
   expand.grid("value" = value, "short_window" = shortWindow) %>%
     dplyr::as_tibble() %>%
     dplyr::inner_join(
@@ -603,9 +609,10 @@ updateDic <- function(value,
       ),
       "table" = .env$tableName,
       "window" = correctWindowName(.data$full_window),
+      "result_type" = resultType
     ) |>
     dplyr::select(
       "short_name", "new_variable_name", "new_variable_level", "table",
-      "window", "value"
+      "window", "value", "result_type"
     )
 }
