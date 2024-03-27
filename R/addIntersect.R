@@ -92,6 +92,10 @@ addIntersect <- function(x,
   if (!is.list(window)) {
     window <- list(window)
   }
+
+  targetStartDate <- eval(targetStartDate)
+  targetEndDate <- eval(targetEndDate)
+
   cdm <- omopgenerics::cdmReference(x)
   # initial checks
   personVariable <- checkX(x)

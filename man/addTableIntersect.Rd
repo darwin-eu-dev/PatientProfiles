@@ -13,7 +13,8 @@ addTableIntersect(
   censorDate = NULL,
   window = list(c(0, Inf)),
   order = "first",
-  overlap = TRUE,
+  targetStartDate = startDateColumn(tableName),
+  targetEndDate = endDateColumn(tableName),
   flag = TRUE,
   count = TRUE,
   date = TRUE,
@@ -40,8 +41,9 @@ or a column date of x.}
 \item{order}{which record is considered in case of multiple records (only
 required for date and days options).}
 
-\item{overlap}{Whether to consider end date or only end date for the
-intersection.}
+\item{targetStartDate}{Column name with start date for comparison.}
+
+\item{targetEndDate}{Column name with end date for comparison.}
 
 \item{flag}{TRUE or FALSE. If TRUE, flag will calculated for this
 intersection.}
