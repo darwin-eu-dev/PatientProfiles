@@ -44,7 +44,3 @@ A ggplot.
 \description{
 `r lifecycle::badge("experimental")`
 }
-\examples{
-\donttest{
-}
-}

@@ -22,10 +22,7 @@
 #' @param strata Stratification list.
 #'
 #' @return A summary of the table intersections.
-#'
-#' @examples
-#' \donttest{
-#' }
+
 summariseTableIntersect <- function(cohort,
                                     tableIntersect = list(),
                                     strata = list()){

@@ -452,9 +452,7 @@ plotCohortIntersect <- function(data,
 #' @param vertical_x whether to display x axis string vertically.
 #' @param options Other plot options in a list.
 #' @return A ggplot.
-#' @examples
-#' \donttest{
-#' }
+
 plotTableIntersect <- function(data,
                                xAxis = "variable_name",
                                yAxis = "estimate_value",

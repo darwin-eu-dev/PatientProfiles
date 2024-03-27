@@ -20,7 +20,3 @@ A summary of the table intersections.
 \description{
 Summarise table intersection information
 }
-\examples{
-\donttest{
-}
-}
