@@ -446,24 +446,6 @@ optionsTableCohortTiming <- function() {
 #' PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
 #' their default values.
 #'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#'
-#' cdm <- mockPatientProfiles()
-#'
-#' cdm$cohort1 |>
-#'   summariseTableIntersect(
-#'    tableIntersect = list(
-#'     "Number visits prior year" = list(
-#'       tableName = "visit_occurrence", value = "count", window = c(-365, -1)
-#'     )
-#'    )
-#'   ) |>
-#'   tableTableIntersect()
-#'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
-#' }
 #'
 #' @return A table with a formatted version of a summariseTableIntersect
 #' result.

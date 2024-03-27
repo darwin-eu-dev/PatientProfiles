@@ -454,18 +454,6 @@ plotCohortIntersect <- function(data,
 #' @return A ggplot.
 #' @examples
 #' \donttest{
-#' library(PatientProfiles)
-#' cdm <- mockPatientProfiles()
-#' results <- summariseTableIntersect(
-#'   cohort = cdm$cohort1,
-#'   tableIntersect = list(
-#'     "Number visits prior year" = list(
-#'       tableName = "visit_occurrence", value = "count", window = c(-365, -1)
-#'     )
-#'   )
-#' )
-#' graph <- plotTableIntersect(results)
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 plotTableIntersect <- function(data,
                                xAxis = "variable_name",
