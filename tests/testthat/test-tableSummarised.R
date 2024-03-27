@@ -463,7 +463,7 @@ test_that("tableDemographics", {
   fx1 <- tableDemographics(result1, header = c("cdm_name", "group", "strata"), type = "flextable")
   expect_true(class(fx1) == "flextable")
   expect_true(all(c("Variable name", "Variable level", "Estimate name",
-                    "CDM name\nPP_MOCK\nCohort name\nExposed", "CDM name\nPP_MOCK\nCohort name\nUnexposed") %in%
+                    "CDM name\nPP_MOCK\nCohort name\nCohort 2", "CDM name\nPP_MOCK\nCohort name\nCohort 1") %in%
                     colnames(fx1$body$dataset)))
   expect_true(all(fx1$body$dataset$`Variable name` %>% unique() %in%
                     c( "Age", "Sex", "Prior observation",
