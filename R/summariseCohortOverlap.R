@@ -87,7 +87,7 @@ summariseCohortOverlap <- function(cohort,
     visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator")) |>
     visOmopResults::uniteStrata(cols = character())
 
-   # strata
+  # strata
   if (!is.null(unlist(strata))) {
     overlapStrataData <- cdm[[name]] |>
       dplyr::distinct(dplyr::across(dplyr::all_of(c("subject_id", "cohort_name", unique(unlist(strata)))))) |>
@@ -144,7 +144,7 @@ summariseCohortOverlap <- function(cohort,
   cohortCombinations <- tidyr::expand_grid(
     cohort_name_reference = names,
     cohort_name_comparator = names
-    ) |>
+  ) |>
     dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) |>
     visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator"))
 

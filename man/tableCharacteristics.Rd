@@ -8,8 +8,8 @@ tableCharacteristics(
   result,
   type = "gt",
   formatEstimateName = c(`N (\%)` = "<count> (<percentage>\%)", N = "<count>",
-    `Median [Q25 - Q75]` = "<median> [<q25> - <q75>]", `Mean (SD)` = "<mean> (<sd>)",
-    Range = "<min> to <max>"),
+    `Median [Q25 - Q75]` = "<median> [<q25> - <q75>]", `[Q05 - Q95]` = "[<q05> - <q95>]",
+    `Mean (SD)` = "<mean> (<sd>)", Range = "<min> to <max>"),
   header = c("group"),
   split = c("group", "strata"),
   groupColumn = NULL,
@@ -46,8 +46,8 @@ PatientProfiles::optionsTableCharacteristics() shows allowed arguments and
 their default values.}
 }
 \value{
-A tibble with a tidy version of the summarised_characteristics
-object.
+A table with a formatted version of the summariseCharacteristics
+result.
 }
 \description{
 `r lifecycle::badge("experimental")`
