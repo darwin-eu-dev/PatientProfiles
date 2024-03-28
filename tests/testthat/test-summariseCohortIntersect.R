@@ -1,5 +1,5 @@
 test_that("summarise cohortIntersect", {
-
+  skip_on_cran()
   cdm <- PatientProfiles::mockPatientProfiles()
   expect_error(res <- PatientProfiles::summariseCohortIntersect(
     cohort = cdm$cohort1

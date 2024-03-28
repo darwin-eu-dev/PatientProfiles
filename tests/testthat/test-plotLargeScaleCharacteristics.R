@@ -1,5 +1,6 @@
 # Test 1: Function returns a ggplot object
 test_that("Function returns a ggplot object", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = c(8507, 8532),

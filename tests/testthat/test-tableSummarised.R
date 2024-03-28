@@ -1,4 +1,5 @@
 test_that("tableCharacteristics", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
@@ -110,6 +111,7 @@ test_that("tableCharacteristics", {
 })
 
 test_that("tableCohortOverlap", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = 1:20,
     gender_concept_id = 8532,
@@ -231,6 +233,7 @@ test_that("tableCohortOverlap", {
 })
 
 test_that("tableCohortTiming", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = 1:20,
     gender_concept_id = 8532,
@@ -349,6 +352,7 @@ test_that("tableCohortTiming", {
 })
 
 test_that("tableDemographics", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
@@ -443,7 +447,8 @@ test_that("tableDemographics", {
   CDMConnector::cdm_disconnect(cdm)
 })
 
- test_that("tableCohortIntersect", {
+test_that("tableCohortIntersect", {
+   skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
@@ -546,6 +551,7 @@ test_that("tableDemographics", {
 })
 
 test_that("tableTabletIntersect", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),

@@ -1,4 +1,5 @@
 test_that("basic functionality summarise large scale characteristics", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = c(8507, 8532),
@@ -200,6 +201,7 @@ test_that("basic functionality summarise large scale characteristics", {
 })
 
 test_that("basic functionality add large scale characteristics", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = c(8507, 8532),
@@ -373,4 +375,3 @@ test_that("basic functionality add large scale characteristics", {
   )
   expect_false(any(cols %in% colnames(result4)))
 })
-
