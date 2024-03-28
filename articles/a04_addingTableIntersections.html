@@ -121,19 +121,19 @@ sprain.</p>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;ankle_sprain&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        245 1996-07-21        1996-08-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        263 1958-03-31        1958-04-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        404 1962-06-04        1962-07-09     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        778 1985-01-10        1985-01-31     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        782 1949-12-14        1950-01-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        895 1971-11-18        1971-12-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        950 1985-05-26        1985-06-16     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1       <span style="text-decoration: underline;">1</span>046 1988-06-13        1988-07-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">1</span>338 2007-11-30        2007-12-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">1</span>459 2006-10-26        2006-11-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        412 1958-03-20        1958-04-03     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        673 1978-09-28        1978-10-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        673 2012-05-26        2012-06-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1       <span style="text-decoration: underline;">1</span>508 1934-03-09        1934-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1       <span style="text-decoration: underline;">1</span>622 2000-10-28        2000-12-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1       <span style="text-decoration: underline;">1</span>623 1952-08-23        1952-09-20     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1       <span style="text-decoration: underline;">1</span>703 1995-09-02        1995-09-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1       <span style="text-decoration: underline;">1</span>819 1991-06-10        1991-07-08     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">2</span>445 1928-08-28        1928-09-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">2</span>597 1973-01-12        1973-01-26     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -143,7 +143,7 @@ sprain.</p>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [1 x 1]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span></span>
 <span><span class="co">#&gt;       n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>  <span style="text-decoration: underline;">1</span>915</span></span></code></pre></div>
@@ -164,11 +164,11 @@ individual had an ongoing drug exposure record in the window.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ subject_id              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 263, 895, 1046, 1338, 1641, 1670, 1982, 2…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1958-03-31, 1971-11-18, 1988-06-1…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1958-04-14, 1971-12-02, 1988-07-1…</span></span>
+<span><span class="co">#&gt; $ subject_id              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 673, 673, 1622, 1623, 1819, 2445, 2597, 2917, …</span></span>
+<span><span class="co">#&gt; $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-09-28, 2012-05-26, 2000-10-28, 1952-08-2…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-10-12, 2012-06-16, 2000-12-02, 1952-09-2…</span></span>
 <span><span class="co">#&gt; $ drug_exposure_m30_to_m1 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span></code></pre></div>
 <p>Meanwhile if we set we set targetStartDate to
 “drug_exposure_start_date” and targetEndDate to
@@ -184,11 +184,11 @@ a drug exposure record that started during the window.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ subject_id              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 263, 895, 1046, 1338, 1641, 1670, 1982, 2…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1958-03-31, 1971-11-18, 1988-06-1…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1958-04-14, 1971-12-02, 1988-07-1…</span></span>
+<span><span class="co">#&gt; $ subject_id              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 673, 673, 1622, 1623, 1819, 2445, 2597, 2917, …</span></span>
+<span><span class="co">#&gt; $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-09-28, 2012-05-26, 2000-10-28, 1952-08-2…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-10-12, 2012-06-16, 2000-12-02, 1952-09-2…</span></span>
 <span><span class="co">#&gt; $ drug_exposure_m30_to_m1 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span></code></pre></div>
 <p>As before, instead of a flag, we could also add count, date, or days
 variables.</p>
@@ -202,12 +202,12 @@ variables.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3092, 4452, 5200, 4026, 4682, 430, 1971, 1709…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1956-05-22, 1958-08-16, 1960-08-20, 1977-04-…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1956-06-05, 1958-08-30, 1960-09-03, 1977-05-…</span></span>
-<span><span class="co">#&gt; $ drug_exposure_m180_to_m1 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 1, 3, 2, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 5215, 197, 763, 2145, 859, 4696, 1709, 2292, …</span></span>
+<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2008-08-06, 1973-01-11, 1987-06-21, 2015-06-…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2008-09-10, 1973-02-08, 1987-07-05, 2015-06-…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_m180_to_m1 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 2, 1, 3, 1, 1, 4, 1, 2, 1, 1, 2, 1, …</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/addTableIntersectDate.html">addTableIntersectDate</a></span><span class="op">(</span></span>
@@ -219,12 +219,12 @@ variables.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 950, 3092, 4452, 5200, 4026, 4682, 430, 1971,…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-26, 1956-05-22, 1958-08-16, 1960-08-…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-16, 1956-06-05, 1958-08-30, 1960-09-…</span></span>
-<span><span class="co">#&gt; $ drug_exposure_m180_to_m1 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1984-12-20, 1956-04-04, 1958-05-07, 1960-07-…</span></span>
+<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 412, 1508, 3208, 3967, 5215, 197, 763, 1258, …</span></span>
+<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1958-03-20, 1934-03-09, 1986-04-07, 1966-01-…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1958-04-03, 1934-03-30, 1986-05-12, 1966-02-…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_m180_to_m1 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1957-10-10, 1933-09-11, 1985-12-18, 1965-09-…</span></span>
 <span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op">|&gt;</span> </span>
@@ -237,12 +237,12 @@ variables.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 950, 3092, 4452, 5200, 4026, 4682, 430, 1971,…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-26, 1956-05-22, 1958-08-16, 1960-08-…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-16, 1956-06-05, 1958-08-30, 1960-09-…</span></span>
-<span><span class="co">#&gt; $ drug_exposure_m180_to_m1 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1984-12-20, 1956-04-04, 1958-05-07, 1960-07-…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 412, 1508, 3208, 3967, 5215, 197, 763, 1258, …</span></span>
+<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1958-03-20, 1934-03-09, 1986-04-07, 1966-01-…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1958-04-03, 1934-03-30, 1986-05-12, 1966-02-…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_m180_to_m1 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1957-10-10, 1933-09-11, 1985-12-18, 1965-09-…</span></span></code></pre></div>
 <p>In these examples we’ve been adding intersections using the entire
 drug exposure concept table. However, we could have subsetted it before
 adding our table intersection. For example, let’s say we want to add a
@@ -269,11 +269,11 @@ acetaminophen records and add a table intersection.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/Rtmp0hxc8U/file204d137d4866.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpYoTaCt/file204462922ce5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id                        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 263, 895, 1046, 1338, 1641, 167…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date                 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1958-03-31, 1971-11-18,…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date                   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1958-04-14, 1971-12-02,…</span></span>
+<span><span class="co">#&gt; $ subject_id                        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 673, 673, 1622, 1623, 1819, 2445, 25…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date                 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-09-28, 2012-05-26, 2000-10-28,…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date                   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-10-12, 2012-06-16, 2000-12-02,…</span></span>
 <span><span class="co">#&gt; $ acetaminophen_records_minf_to_inf <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span></code></pre></div>
   </main>
 </div>
