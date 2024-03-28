@@ -192,27 +192,21 @@ checkWindow <- function(window) {
           use it as both window start and window end")
   }
 
-  windowTbl <- dplyr::tibble(
-    lower = lapply(window, function(x) {
-      x[1]
-    }) %>% unlist(),
-    upper = lapply(window, function(x) {
-      x[2]
-    }) %>% unlist(),
-    window_name = getWindowNames(window) %>% unlist()
-  )
+  names(window) <- getWindowNames(window)
+  lower <- lapply(window, function(x) {x[1]}) %>% unlist()
+  upper <- lapply(window, function(x) {x[2]}) %>% unlist()
 
-  if (any(windowTbl$lower > windowTbl$upper)) {
+  if (any(lower > upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
   }
-  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == 1)) {
+  if (any(is.infinite(lower) & lower == upper & sign(upper) == 1)) {
     cli::cli_abort("Not both elements in the window can be +Inf")
   }
-  if (any(is.infinite(windowTbl$lower) & windowTbl$lower == windowTbl$upper & sign(windowTbl$upper) == -1)) {
+  if (any(is.infinite(lower) & lower == upper & sign(upper) == -1)) {
     cli::cli_abort("Not both elements in the window can be -Inf")
   }
 
-  invisible(windowTbl)
+  invisible(window)
 }
 
 #' @noRd
@@ -522,19 +516,85 @@ checkSignificantDecimals <- function(significantDecimals) {
 checkTableIntersect <- function(tableIntersect, cdm) {
   checkmate::assertList(tableIntersect)
   arguments <- getArguments(addTableIntersect)
-  if (length(tableIntersect) > 0) {
-    if (!is.list(tableIntersect[[1]])) {
-      tableIntersect <- list(tableIntersect)
-    }
-  }
-  lapply(tableIntersect, function(x) {
-    checkmate::assertList(x, names = "named")
-    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
-    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
-  })
+  tableIntersect <- assertInputIntersect(
+    inputList = tableIntersect,
+    possibleArguments = c(arguments$all, "value"),
+    compulsoryArguments = arguments$compulsory,
+    nameFunction = "tableIntersect",
+    cdm = cdm
+  )
+  tableIntersect <- editNamesIntersect(tableIntersect)
   return(tableIntersect)
 }
 
+assertInputIntersect <- function(inputList,
+                                 possibleArguments,
+                                 compulsoryArguments,
+                                 nameFunction,
+                                 cdm = NULL) {
+  if (length(inputList) > 0) {
+    if (!is.list(inputList[[1]])) {
+      inputList <- list(inputList)
+    }
+  }
+  lapply(inputList, function(x) {
+    if (!is.list(x) | length(names(x)) != length(x)) {
+      cli::cli_abort(
+        "inputs of {nameFunction} must be a named list, see examples."
+      )
+    }
+    allArgs <- names(x)
+    notValidArgs <- allArgs[!allArgs %in% possibleArguments]
+    if (length(notValidArgs) > 0) {
+      cli::cli_alert_danger(
+        "Not valid args for {nameFunction}: {paste0(notValidArgs, collapse = ', ')}."
+      )
+    }
+    notPresent <- compulsoryArguments[!compulsoryArguments %in% names(x)]
+    if (length(notPresent) > 0) {
+      cli::cli_abort(
+        "Required arguments not provided for {nameFunction}: {paste0(notPresent, collapse = ', ')}"
+      )
+    }
+    if (!is.null(cdm)) {
+      values <- c("count", "flag", "date", "days", colnames(cdm[[x$tableName]]))
+    } else {
+      values <- c("count", "flag", "date", "days")
+    }
+    val <- x$value[!x$value %in% values]
+    if (length(val) > 0) {
+      cli::cli_abort(
+        "Wrong value for {nameFunction}: {paste0(val, collapse = ', ')}. Possible values: {paste0(values, collapse = ', ')}"
+      )
+    }
+  })
+  return(inputList)
+}
+editNamesIntersect <- function(inputList) {
+  if (length(inputList) > 0) {
+    nms <- names(inputList)
+    if (is.null(nms)) {
+      nms <- rep("", length(nms))
+    }
+    for (k in seq_along(nms)) {
+      if (nms[k] == "") {
+        nams <- names(inputList[[k]])
+        if ("tableName" %in% nams) {
+          tblName <- inputList[[k]]$tableName
+        } else if ("conceptSet" %in% nams) {
+          tblName <- "Concepts"
+        } else {
+          tblName <- inputList[[k]]$targetCohortTable
+        }
+        value <- inputList[[k]]$value |> paste0(collapse = "+")
+        winName <- getWindowNames(inputList[[k]]$window) |> paste0(collapse = "+")
+        nms[k] <- paste(tblName, value, winName)
+      }
+    }
+    names(inputList) <- nms
+  }
+  return(inputList)
+}
 getArguments <- function(fun) {
   arguments <- formals(fun)
   compulsory <- character()
@@ -552,34 +612,28 @@ getArguments <- function(fun) {
 #' @noRd
 checkCohortIntersect <- function(cohortIntersect, cdm) {
   checkmate::assertList(cohortIntersect)
-  arguments <- getArguments(addCohortIntersect)
-  if (length(cohortIntersect) > 0) {
-    if (!is.list(cohortIntersect[[1]])) {
-      cohortIntersect <- list(cohortIntersect)
-    }
-  }
-  lapply(cohortIntersect, function(x) {
-    checkmate::assertList(x, names = "named")
-    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
-    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
-  })
+  arguments <- getArguments(.addCohortIntersect)
+  cohortIntersect <- assertInputIntersect(
+    inputList = cohortIntersect,
+    possibleArguments = c(arguments$all, "value"),
+    compulsoryArguments = arguments$compulsory,
+    nameFunction = "cohortIntersect"
+  )
+  cohortIntersect <- editNamesIntersect(cohortIntersect)
   return(cohortIntersect)
 }
 
 #' @noRd
 checkConceptIntersect <- function(conceptIntersect, cdm) {
-  checkmate::assertList(conceptIntersect, names = "named")
+  checkmate::assertList(conceptIntersect)
   arguments <- getArguments(.addConceptIntersect)
-  if (length(conceptIntersect) > 0) {
-    if (!identical(lapply(conceptIntersect, class) |> unlist() |> unname() |> unique(), "list")) {
-      conceptIntersect <- list(conceptIntersect)
-    }
-  }
-  lapply(conceptIntersect, function(x) {
-    checkmate::assertList(x, names = "named")
-    checkmate::assertTRUE(all(names(x) %in% c(arguments$all, "value")))
-    checkmate::assertTRUE(all(arguments$compulsory %in% names(x)))
-  })
+  conceptIntersect <- assertInputIntersect(
+    inputList = conceptIntersect,
+    possibleArguments = c(arguments$all, "value"),
+    compulsoryArguments = arguments$compulsory,
+    nameFunction = "conceptIntersect"
+  )
+  conceptIntersect <- editNamesIntersect(conceptIntersect)
   return(conceptIntersect)
 }
 
@@ -674,7 +728,7 @@ assertNameStyle <- function(nameStyle,
                             call = parent.frame()) {
   # initial checks
   checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
-  checkmate::assertList(values, any.missing = FALSE, names = "named")
+  checkmate::assertList(values, names = "named")
   checkmate::assertClass(call, "environment")
 
   # check name style
@@ -699,7 +753,7 @@ assertNameStyle <- function(nameStyle,
   return(invisible(nameStyle))
 }
 
-warnOverwriteColumns <- function(cols, nameStyle, values = list()) {
+warnOverwriteColumns <- function(x, nameStyle, values = list()) {
   if (length(values) > 0) {
     nameStyle <- tidyr::expand_grid(!!!values) |>
       dplyr::mutate("tmp_12345" = glue::glue(.env$nameStyle)) |>
@@ -707,15 +761,18 @@ warnOverwriteColumns <- function(cols, nameStyle, values = list()) {
       as.character() |>
       unique()
   }
-  extraColumns <- cols[cols %in% nameStyle]
+
+  extraColumns <- colnames(x)[colnames(x) %in% nameStyle]
   if (length(extraColumns) > 0) {
     ms <- extraColumns
     names(ms) <- rep("*", length(ms))
     cli::cli_inform(message = c(
       "!" = "The following columns will be overwritten:", ms
     ))
+    x <- x |> dplyr::select(!dplyr::all_of(extraColumns))
   }
-  return(invisible(extraColumns))
+
+  return(x)
 }
 assertCharacter <- function(x,
                             length = NULL,

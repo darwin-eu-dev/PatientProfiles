@@ -11,14 +11,13 @@ addConceptIntersectCount(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = list(c(0, Inf)),
-  targetStartDate = "cohort_start_date",
-  targetEndDate = NULL,
-  order = "first",
+  targetStartDate = "event_start_date",
+  targetEndDate = "event_end_date",
   nameStyle = "{concept_name}_{window_name}"
 )
 }
 \arguments{
-\item{x}{Table with individuals in the cdm}
+\item{x}{Table with individuals in the cdm.}
 
 \item{conceptSet}{Concept set list.}
 
@@ -29,16 +28,12 @@ intersection.}
 
 \item{window}{window to consider events in.}
 
-\item{targetStartDate}{date of reference in cohort table, either for start
-(in overlap) or on its own (for incidence)}
+\item{targetStartDate}{Event start date to use for the intersection.}
 
-\item{targetEndDate}{date of reference in cohort table, either for end
-(overlap) or NULL (if incidence)}
-
-\item{order}{last or first date to use for date/time calculations.}
+\item{targetEndDate}{Event end date to use for the intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with overlap information
@@ -50,14 +45,26 @@ and a concept
 \examples{
 \donttest{
 library(PatientProfiles)
-library(CodelistGenerator)
-
 cdm <- mockPatientProfiles()
-# result <- cdm$cohort1 \%>\%
-#   addConceptIntersectCount(
-#     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#  ) \%>\%
-#   dplyr::collect()
-}
+ concept <- dplyr::tibble(
+  concept_id = c(1125315),
+  domain_id = "Drug",
+  vocabulary_id = NA_character_,
+  concept_class_id = "Ingredient",
+  standard_concept = "S",
+  concept_code = NA_character_,
+  valid_start_date = as.Date("1900-01-01"),
+  valid_end_date = as.Date("2099-01-01"),
+  invalid_reason = NA_character_
+ ) \%>\%
+ dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+ cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+result <- cdm$cohort1 \%>\%
+ addConceptIntersectCount(
+  conceptSet = list("acetaminophen"=1125315)
+  ) \%>\%
+ dplyr::collect()
+ CDMConnector::cdmDisconnect(cdm = cdm)
+ }
 
 }

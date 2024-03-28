@@ -16,23 +16,21 @@
 
 #' Categorize a numeric variable
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param variable Target variable that we want to categorize.
 #' @param categories List of lists of named categories with lower and upper
 #' limit.
 #' @param missingCategoryValue Value to assign to those individuals not in
 #' any named category. If NULL or NA, missing will values will be
 #' given.
-#' @param overlap TRUE if the categories given overlap
+#' @param overlap TRUE if the categories given overlap.
 #'
 #' @return tibble with the categorical variable added.
 #'
 #' @export
 #'
 #' @examples
-#' #'
 #' \donttest{
-#'
 #' cdm <- mockPatientProfiles()
 #'
 #' result <- cdm$cohort1 %>%
@@ -43,6 +41,7 @@
 #'       "0 to 39" = c(0, 39), "40 to 79" = c(40, 79), "80 to 150" = c(80, 150)
 #'     ))
 #'   )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addCategories <- function(x,
                           variable,
@@ -58,16 +57,6 @@ addCategories <- function(x,
     types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
 
-  for (i in seq_along(categories)) {
-    if (!is.null(names(categories)) && variable == names(categories)[i]) {
-      cli::cli_warn(paste0(
-        "Categories name '",
-        names(categories)[i],
-        "' already existed, the original variable has been overwritten."
-      ))
-    }
-  }
-
   if (length(unique(names(categories))) < length((names(categories)))) {
     cli::cli_abort(
       "Categories have repeated names, please rename the groups."
@@ -79,6 +68,8 @@ addCategories <- function(x,
   } else {
     nam <- names(categories)
   }
+
+  x <- warnOverwriteColumns(x, nameStyle = nam)
 
   if (
     utils::head(x, 1) %>%

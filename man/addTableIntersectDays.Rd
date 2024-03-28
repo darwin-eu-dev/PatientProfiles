@@ -36,7 +36,7 @@ or a column date of x.}
 required for date and days options).}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with intersect information.
@@ -50,6 +50,8 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addTableIntersectDays(tableName = "visit_occurrence")
+
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

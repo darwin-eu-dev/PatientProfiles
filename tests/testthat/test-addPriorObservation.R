@@ -169,6 +169,28 @@ test_that("different name", {
       priorObservationName = "ph"
     )
   expect_true("ph" %in% colnames(cdm$condition_occurrence))
+
+  x <- cdm$cohort1 |>
+    addPriorObservation(priorObservationType = "days") |>
+    addPriorObservation(
+      priorObservationType = "date", priorObservationName = "col"
+    ) |>
+    dplyr::left_join(
+      cdm$observation_period |>
+        dplyr::select(
+          "subject_id" = "person_id",
+          "obs_start" = "observation_period_start_date"
+        ),
+      by = "subject_id"
+    ) %>%
+    dplyr::mutate("diff" = !!CDMConnector::datediff(
+      "cohort_start_date", "obs_start"
+    )) |>
+    dplyr::collect()
+
+  expect_equal(x$prior_observation, -x$diff)
+  expect_equal(x$col, x$obs_start)
+
 })
 
 test_that("multiple observation periods", {

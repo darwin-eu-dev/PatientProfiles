@@ -16,17 +16,17 @@
 
 #' Add a column with the individual birth date
 #'
-#' @param x Table in the cdm that contains 'person_id' or 'subject_id'
+#' @param x Table in the cdm that contains 'person_id' or 'subject_id'.
 #' @param cdm A cdm_reference object.
-#' @param name Name of the column to be added with the date of birth
-#' @param missingDay Day of the individuals with no or imposed day of birth
+#' @param name Name of the column to be added with the date of birth.
+#' @param missingDay Day of the individuals with no or imposed day of birth.
 #' @param missingMonth Month of the individuals with no or imposed month of
-#' birth
-#' @param imposeDay Whether to impose day of birth
-#' @param imposeMonth Whether to impose month of birth
+#' birth.
+#' @param imposeDay Whether to impose day of birth.
+#' @param imposeMonth Whether to impose month of birth.
 #'
 #' @return The function returns the table x with an extra column that contains
-#' the date of birth
+#' the date of birth.
 #'
 #' @export
 #'
@@ -36,6 +36,7 @@
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDateOfBirth()
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addDateOfBirth <- function(x,
                            cdm = lifecycle::deprecated(),

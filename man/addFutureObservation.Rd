@@ -9,7 +9,8 @@ addFutureObservation(
   x,
   cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
-  futureObservationName = "future_observation"
+  futureObservationName = "future_observation",
+  futureObservationType = "days"
 )
 }
 \arguments{
@@ -20,11 +21,14 @@ addFutureObservation(
 \item{indexDate}{Variable in x that contains the date to compute the future
 observation.}
 
-\item{futureObservationName}{name of the new column to be added}
+\item{futureObservationName}{name of the new column to be added.}
+
+\item{futureObservationType}{Whether to return a "date" or the number of
+"days".}
 }
 \value{
 cohort table with added column containing future observation of the
-individuals
+individuals.
 }
 \description{
 Compute the number of days till the end of the observation period at a
@@ -36,5 +40,6 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addFutureObservation()
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

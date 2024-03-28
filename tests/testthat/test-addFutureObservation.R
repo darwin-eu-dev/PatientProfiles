@@ -212,6 +212,28 @@ test_that("different name", {
       futureObservationName = "fh"
     )
   expect_true("fh" %in% colnames(cdm$condition_occurrence))
+
+  x <- cdm$cohort1 |>
+    addFutureObservation(futureObservationType = "days") |>
+    addFutureObservation(
+      futureObservationType = "date", futureObservationName = "col"
+    ) |>
+    dplyr::left_join(
+      cdm$observation_period |>
+        dplyr::select(
+          "subject_id" = "person_id",
+          "obs_end" = "observation_period_end_date"
+        ),
+      by = "subject_id"
+    ) %>%
+    dplyr::mutate("diff" = !!CDMConnector::datediff(
+      "cohort_start_date", "obs_end"
+    )) |>
+    dplyr::collect()
+
+  expect_equal(x$future_observation, x$diff)
+  expect_equal(x$col, x$obs_end)
+
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {

@@ -2,7 +2,9 @@
 % Please edit documentation in R/addTableIntersect.R
 \name{addTableIntersectField}
 \alias{addTableIntersectField}
-\title{Obtain a column's value of the intersect with an omop table,}
+\title{Intersecting the cohort with columns of an OMOP table of user's choice.
+It will add an extra column to the cohort, indicating the intersected
+entries with the target columns in a window of the user's choice.}
 \usage{
 addTableIntersectField(
   x,
@@ -23,7 +25,9 @@ addTableIntersectField(
 visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
 device_exposure, measurement, observation, drug_era, condition_era, specimen.}
 
-\item{field}{Other columns from the table to intersect.}
+\item{field}{The columns from the table in tableName to intersect over.
+For example, if the user uses visit_occurrence in tableName then for field the possible
+options include visit_occurrence_id, visit_concept_id, visit_type_concept_id.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
@@ -31,33 +35,35 @@ intersection.}
 \item{censorDate}{whether to censor overlap events at a specific date
 or a column date of x.}
 
-\item{window}{window to consider events in.}
+\item{window}{window to consider events in when intersecting with the chosen column.}
 
-\item{targetDate}{Target date in tableName.}
+\item{targetDate}{The dates in the target columns in tableName that the user may want to restrict to.}
 
 \item{order}{which record is considered in case of multiple records (only
 required for date and days options).}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with intersect information.
 }
 \description{
-Obtain a column's value of the intersect with an omop table,
+Intersecting the cohort with columns of an OMOP table of user's choice.
+It will add an extra column to the cohort, indicating the intersected
+entries with the target columns in a window of the user's choice.
 }
 \examples{
 \donttest{
 cdm <- mockPatientProfiles()
-
 cdm$cohort1 \%>\%
   addTableIntersectField(
-    tableName = "visit_occurrence",
-    field = "visit_concept_id",
-    order = "last",
-    window = c(-Inf, -1)
-  )
+   tableName = "visit_occurrence",
+   field = "visit_concept_id",
+   order = "last",
+   window = c(-Inf, -1)
+)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

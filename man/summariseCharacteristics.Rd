@@ -17,18 +17,18 @@ summariseCharacteristics(
 )
 }
 \arguments{
-\item{cohort}{A cohort in the cdm}
+\item{cohort}{A cohort in the cdm.}
 
 \item{cdm}{A cdm reference.}
 
-\item{strata}{Stratification list}
+\item{strata}{Stratification list.}
 
 \item{demographics}{Whether to summarise demographics data.}
 
 \item{ageGroup}{A list of age groups.}
 
 \item{tableIntersect}{A list of arguments that uses addTableIntersect
-function to add variables to summarise}
+function to add variables to summarise.}
 
 \item{cohortIntersect}{A list of arguments that uses addCohortIntersect
 function to add variables to summarise.}
@@ -40,7 +40,7 @@ function to add variables to summarise.}
 summarised.}
 }
 \value{
-A summary of the characteristics of the individuals
+A summary of the characteristics of the individuals.
 }
 \description{
 Summarise characteristics of individuals
@@ -55,11 +55,19 @@ summariseCharacteristics(
   cohort = cdm$cohort1,
   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
   tableIntersect = list(
-    tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+    "Number visits prior year" = list(
+      tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+    )
   ),
   cohortIntersect = list(
-    targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+    "Drugs prior year" = list(
+      targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+    ),
+    "Conditions any time prior" = list(
+      targetCohortTable = "cohort2", value = "flag", window = c(-Inf, -1)
+    )
   )
 )
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

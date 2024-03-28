@@ -29,19 +29,19 @@
 #' @param window window to consider events in.
 #' @param order which record is considered in case of multiple records (only
 #' required for date and days options).
-#' @param overlap Whether to consider end date or only end date for the
-#' intersection.
+#' @param targetStartDate Column name with start date for comparison.
+#' @param targetEndDate Column name with end date for comparison.
 #' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
-#' intersection
+#' intersection.
 #' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
-#' for this intersection
+#' for this intersection.
 #' @param date TRUE or FALSE. If TRUE, date will be calculated for this
-#' intersection
+#' intersection.
 #' @param days TRUE or FALSE. If TRUE, time difference in days will be
-#' calculated for this intersection
+#' calculated for this intersection.
 #' @param field Other columns from the table to intersect.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -52,6 +52,7 @@
 #'
 #' cdm$cohort1 %>%
 #'   addTableIntersect(tableName = "visit_occurrence")
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersect <- function(x,
@@ -60,7 +61,8 @@ addTableIntersect <- function(x,
                               censorDate = NULL,
                               window = list(c(0, Inf)),
                               order = "first",
-                              overlap = TRUE,
+                              targetStartDate = startDateColumn(tableName),
+                              targetEndDate = endDateColumn(tableName),
                               flag = TRUE,
                               count = TRUE,
                               date = TRUE,
@@ -78,7 +80,8 @@ addTableIntersect <- function(x,
   )
   .addTableIntersect(
     x = x, tableName = tableName, indexDate = indexDate,
-    censorDate = censorDate, window = window, order = order, overlap = overlap,
+    censorDate = censorDate, window = window, order = order,
+    targetStartDate = targetStartDate, targetEndDate = targetEndDate,
     flag = flag, count = count, date = date, days = days, field = field,
     nameStyle = nameStyle
   )
@@ -90,7 +93,8 @@ addTableIntersect <- function(x,
                                censorDate = NULL,
                                window = list(c(0, Inf)),
                                order = "first",
-                               overlap = TRUE,
+                               targetStartDate = startDateColumn(tableName),
+                               targetEndDate = endDateColumn(tableName),
                                flag = TRUE,
                                count = TRUE,
                                date = TRUE,
@@ -104,25 +108,21 @@ addTableIntersect <- function(x,
   checkmate::assertLogical(count, any.missing = FALSE, len = 1)
   checkmate::assertLogical(date, any.missing = FALSE, len = 1)
   checkmate::assertLogical(days, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(overlap, any.missing = FALSE, len = 1)
   checkmate::assertTRUE(flag | count | date | days | length(field)>0)
   value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
   value <- c(value, field)
 
-  end <- endDateColumn(tableName)
-  start <- startDateColumn(tableName)
-  targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
       idName = NULL,
       value = value,
       indexDate = indexDate,
-      targetStartDate = start,
-      targetEndDate = end,
+      targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate,
       window = window,
       order = order,
       nameStyle = nameStyle,
@@ -143,10 +143,10 @@ addTableIntersect <- function(x,
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x.
 #' @param window window to consider events in.
-#' @param overlap Whether to consider end date or only end date for the
-#' intersection..
+#' @param targetStartDate Column name with start date for comparison.
+#' @param targetEndDate Column name with end date for comparison.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -157,6 +157,7 @@ addTableIntersect <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addTableIntersectFlag(tableName = "visit_occurrence")
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectFlag <- function(x,
@@ -164,27 +165,23 @@ addTableIntersectFlag <- function(x,
                                   indexDate = "cohort_start_date",
                                   censorDate = NULL,
                                   window = list(c(0, Inf)),
-                                  overlap = TRUE,
+                                  targetStartDate = startDateColumn(tableName),
+                                  targetEndDate = endDateColumn(tableName),
                                   nameStyle = "{table_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
-  checkmate::assertLogical(overlap, any.missing = FALSE, len = 1)
-
-  end <- endDateColumn(tableName)
-  start <- startDateColumn(tableName)
-  targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
       idName = NULL,
       value = "flag",
       indexDate = indexDate,
-      targetStartDate = start,
-      targetEndDate = end,
+      targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate,
       window = window,
       order = "first",
       nameStyle = nameStyle,
@@ -205,10 +202,10 @@ addTableIntersectFlag <- function(x,
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x.
 #' @param window window to consider events in.
-#' @param overlap Whether to consider end date or only end date for the
-#' intersection.
+#' @param targetStartDate Column name with start date for comparison.
+#' @param targetEndDate Column name with end date for comparison.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -219,6 +216,8 @@ addTableIntersectFlag <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addTableIntersectCount(tableName = "visit_occurrence")
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectCount <- function(x,
@@ -226,27 +225,23 @@ addTableIntersectCount <- function(x,
                                    indexDate = "cohort_start_date",
                                    censorDate = NULL,
                                    window = list(c(0, Inf)),
-                                   overlap = TRUE,
+                                   targetStartDate = startDateColumn(tableName),
+                                   targetEndDate = endDateColumn(tableName),
                                    nameStyle = "{table_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
-  checkmate::assertLogical(overlap, any.missing = FALSE, len = 1)
-
-  end <- endDateColumn(tableName)
-  start <- startDateColumn(tableName)
-  targetEndDate <- ifelse(overlap & !is.na(end), end, start)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
       idName = NULL,
       value = "count",
       indexDate = indexDate,
-      targetStartDate = start,
-      targetEndDate = end,
+      targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate,
       window = window,
       order = "first",
       nameStyle = nameStyle,
@@ -271,7 +266,7 @@ addTableIntersectCount <- function(x,
 #' @param order which record is considered in case of multiple records (only
 #' required for date and days options).
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -282,6 +277,8 @@ addTableIntersectCount <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addTableIntersectDate(tableName = "visit_occurrence")
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectDate <- function(x,
@@ -297,7 +294,7 @@ addTableIntersectDate <- function(x,
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -330,7 +327,7 @@ addTableIntersectDate <- function(x,
 #' @param order which record is considered in case of multiple records (only
 #' required for date and days options).
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -341,6 +338,8 @@ addTableIntersectDate <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addTableIntersectDays(tableName = "visit_occurrence")
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectDays <- function(x,
@@ -356,7 +355,7 @@ addTableIntersectDays <- function(x,
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,
@@ -374,23 +373,27 @@ addTableIntersectDays <- function(x,
   return(x)
 }
 
-#' Obtain a column's value of the intersect with an omop table,
+#' Intersecting the cohort with columns of an OMOP table of user's choice.
+#' It will add an extra column to the cohort, indicating the intersected
+#' entries with the target columns in a window of the user's choice.
 #'
 #' @param x Table with individuals in the cdm.
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
 #' device_exposure, measurement, observation, drug_era, condition_era, specimen.
-#' @param field Other columns from the table to intersect.
+#' @param field The columns from the table in tableName to intersect over.
+#' For example, if the user uses visit_occurrence in tableName then for field the possible
+#' options include visit_occurrence_id, visit_concept_id, visit_type_concept_id.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
 #' or a column date of x.
-#' @param window window to consider events in.
-#' @param targetDate Target date in tableName.
+#' @param window window to consider events in when intersecting with the chosen column.
+#' @param targetDate The dates in the target columns in tableName that the user may want to restrict to.
 #' @param order which record is considered in case of multiple records (only
 #' required for date and days options).
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -398,14 +401,14 @@ addTableIntersectDays <- function(x,
 #' @examples
 #' \donttest{
 #' cdm <- mockPatientProfiles()
-#'
 #' cdm$cohort1 %>%
 #'   addTableIntersectField(
-#'     tableName = "visit_occurrence",
-#'     field = "visit_concept_id",
-#'     order = "last",
-#'     window = c(-Inf, -1)
-#'   )
+#'    tableName = "visit_occurrence",
+#'    field = "visit_concept_id",
+#'    order = "last",
+#'    window = c(-Inf, -1)
+#' )
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectField <- function(x,
@@ -423,7 +426,7 @@ addTableIntersectField <- function(x,
   nameStyle <- gsub("\\{extra_value\\}", "\\{value\\}", nameStyle)
 
   x <- x %>%
-    addIntersect(
+    .addIntersect(
       tableName = tableName,
       filterVariable = NULL,
       filterId = NULL,

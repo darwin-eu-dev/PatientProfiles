@@ -17,28 +17,18 @@
 #' It creates columns to indicate overlap information between a table and a
 #' concept
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param conceptSet Concept set list.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a date column of x
 #' @param window window to consider events in.
-#' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
-#' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
-#' @param order last or first date to use for date/time calculations.
-#' @param order which record is considered in case of multiple records
-#' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
-#' intersection
-#' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
-#' for this intersection
-#' @param date TRUE or FALSE. If TRUE, date will be calculated for this
-#' intersection
-#' @param days TRUE or FALSE. If TRUE, time difference in days will be
-#' calculated for this intersection
+#' @param targetStartDate Event start date to use for the intersection.
+#' @param targetEndDate Event end date to use for the intersection.
+#' @param order last or first date to use for date/days calculations.
+#' @param value Choices between c("value", "flag", "days", "date").
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -47,28 +37,37 @@
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersect(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersect(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersect <- function(x,
                                 conceptSet,
                                 indexDate = "cohort_start_date",
                                 censorDate = NULL,
                                 window = list(c(0, Inf)),
-                                targetStartDate = "cohort_start_date",
-                                targetEndDate = "cohort_end_date",
+                                targetStartDate = "event_start_date",
+                                targetEndDate = "event_end_date",
                                 order = "first",
-                                flag = TRUE,
-                                count = TRUE,
-                                date = TRUE,
-                                days = TRUE,
+                                value = c("flag", "count", "date", "days"),
                                 nameStyle = "{value}_{concept_name}_{window_name}") {
   lifecycle::deprecate_warn(
     when = "0.6.0",
@@ -80,99 +79,166 @@ addConceptIntersect <- function(x,
     )
   )
   .addConceptIntersect(
-    x = x, conceptSet = conceptSet, indexDate = indexDate,
-    censorDate = censorDate, window = window, targetStartDate = targetStartDate,
-    targetEndDate = targetEndDate, order = order, flag = flag, count = count,
-    date = date, days = days, nameStyle = nameStyle
-  )
-}
-
-.addConceptIntersect <- function(x,
-                                conceptSet,
-                                indexDate = "cohort_start_date",
-                                censorDate = NULL,
-                                window = list(c(0, Inf)),
-                                targetStartDate = "cohort_start_date",
-                                targetEndDate = NULL,
-                                order = "first",
-                                flag = TRUE,
-                                count = TRUE,
-                                date = TRUE,
-                                days = TRUE,
-                                nameStyle = "{value}_{concept_name}_{window_name}") {
-  cdm <- omopgenerics::cdmReference(x)
-  nameCohort <- paste0("concept_cohort_", sample(letters, 5) |> paste0(collapse = ""))
-  tempCohort <- paste0("temp_cohort_", sample(letters, 5) |> paste0(collapse = ""))
-  personVariable <- colnames(x)[colnames(x) %in% c("person_id", "subject_id")]
-  cdm[[tempCohort]] <- cdm[["observation_period"]] |>
-    dplyr::inner_join(
-      x |>
-        dplyr::select("person_id" = dplyr::all_of(personVariable)) |>
-        dplyr::distinct(),
-      by = "person_id"
-    ) |>
-    dplyr::mutate("cohort_definition_id" = 1) |>
-    dplyr::select(
-      "cohort_definition_id", "subject_id" = "person_id",
-      "cohort_start_date" = "observation_period_start_date",
-      "cohort_end_date" = "observation_period_end_date"
-    ) |>
-    dplyr::compute(temporary = FALSE, name = tempCohort) |>
-    omopgenerics::newCohortTable()
-  if (!is.null(targetEndDate) && targetEndDate == "cohort_end_date") {
-    end <- "event_end_date"
-  } else {
-    end <- 0
-  }
-  cdm <- CDMConnector::generateConceptCohortSet(
-    cdm = cdm,
-    conceptSet = conceptSet,
-    subsetCohort = tempCohort,
-    name = nameCohort,
-    limit = "all",
-    end = end,
-    overwrite = TRUE
-  )
-  attr(x, "cdm_reference") <- cdm
-  x <- .addCohortIntersect(
     x = x,
-    targetCohortTable = nameCohort,
+    conceptSet = conceptSet,
     indexDate = indexDate,
     censorDate = censorDate,
     window = window,
     targetStartDate = targetStartDate,
     targetEndDate = targetEndDate,
     order = order,
-    flag = flag,
-    count = count,
-    date = date,
-    days = days,
-    nameStyle = gsub("\\{concept_name\\}", "\\{cohort_name\\}", nameStyle)
+    value = value,
+    nameStyle = nameStyle
   )
-  toDrop <- c(
-    paste0(nameCohort, c("", "_set", "_attrition")),
-    paste0(tempCohort, c("", "_set", "_attrition"))
-  )
-  cdm <- omopgenerics::dropTable(cdm = cdm, name = dplyr::any_of(toDrop))
+}
+
+.addConceptIntersect <- function(x,
+                                 conceptSet,
+                                 indexDate = "cohort_start_date",
+                                 censorDate = NULL,
+                                 window,
+                                 targetStartDate = "event_start_date",
+                                 targetEndDate = "event_end_date",
+                                 order = "first",
+                                 value,
+                                 nameStyle = "{value}_{concept_name}_{window_name}") {
+  # initial checks
+  omopgenerics::newCodelist(conceptSet)
+  assertChoice(targetStartDate, choices = c("event_start_date", "event_end_date"), length = 1)
+  assertChoice(targetEndDate, choices = c("event_start_date", "event_end_date"), length = 1, null = TRUE)
+
+  cdm <- omopgenerics::cdmReference(x)
+  tablePrefix <- omopgenerics::tmpPrefix()
+
+  nameStyle <- gsub("\\{concept_name\\}", "\\{id_name\\}", nameStyle)
+
+  # concepts table
+  conceptsTable <- getConceptsTable(conceptSet)
+  nm <- omopgenerics::uniqueTableName(tablePrefix)
+  cdm <- omopgenerics::insertTable(cdm = cdm, name = nm, table = conceptsTable)
+
+  # ids
+  conceptSetId <- conceptSetId(conceptSet)
+
+  # subset table
+  cdm[[nm]] <- subsetTable(cdm[[nm]]) |>
+    dplyr::compute(name = nm, temporary = FALSE)
+  attr(x, "cdm_reference") <- cdm
+  x <- x |>
+    .addIntersect(
+      tableName = nm,
+      value = value,
+      filterVariable = "concept_set_id",
+      filterId = conceptSetId$concept_set_id,
+      idName = conceptSetId$concept_set_name,
+      window = window,
+      order = order,
+      indexDate = indexDate,
+      censorDate = censorDate,
+      targetStartDate = targetStartDate,
+      targetEndDate = targetEndDate,
+      nameStyle = nameStyle
+    )
+
+  # drop intermediate tables
+  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
+
   return(x)
+}
+getConceptsTable <- function(conceptSet) {
+  purrr::map(conceptSet, dplyr::as_tibble) |>
+    dplyr::bind_rows(.id = "concept_set_name") |>
+    dplyr::inner_join(conceptSetId(conceptSet), by = "concept_set_name") |>
+    dplyr::select("concept_id" = "value", "concept_set_id")
+}
+conceptSetId <- function(conceptSet) {
+  dplyr::tibble(
+    "concept_set_name" = names(conceptSet),
+    "concept_set_id" = as.integer(seq_along(conceptSet))
+  )
+}
+subsetTable <- function(x) {
+  cdm <- omopgenerics::cdmReference(x)
+
+  # domains
+  x <- x |>
+    dplyr::inner_join(
+      cdm[["concept"]] |> dplyr::select("concept_id", "domain_id"),
+      by = "concept_id"
+    ) |>
+    dplyr::compute()
+  domains <- x |>
+    dplyr::select("domain_id") |>
+    dplyr::distinct() |>
+    dplyr::pull() |>
+    tolower() |>
+    strsplit(split = "/") |>
+    unlist()
+  domains[domains == "obs"] <- "observation"
+  domains <- unique(domains)
+
+  lapply(domains, function(domain) {
+    tableName <- switch(
+      domain,
+      "device" = "device_exposure",
+      "specimen" = "specimen",
+      "measurement" = "measurement",
+      "drug" = "drug_exposure",
+      "condition" = "condition_occurrence",
+      "observation" = "observation",
+      "procedure" = "procedure_occurrence",
+      NA_character_
+    )
+    if (tableName %in% names(cdm)) {
+      concept <- standardConceptIdColumn(tableName)
+      start <- startDateColumn(tableName)
+      end <- endDateColumn(tableName)
+      if (is.na(end)) {
+        end <- start
+      }
+      res <- cdm[[tableName]] |>
+        dplyr::select(
+          "event_start_date" = .env$start, "event_end_date" = .env$end,
+          "concept_id" = .env$concept, "person_id"
+        ) |>
+        dplyr::inner_join(
+          x |> dplyr::select("concept_id", "concept_set_id"),
+          by = "concept_id"
+        )
+    } else {
+      if (!is.na(tableName)) {
+        cli::cli_alert_warning("{.pkg tableName} not found in cdm object.")
+      } else {
+        cli::cli_alert_warning("domain {domain} not supported.")
+      }
+      res <- cdm[["concept"]] |>
+        dplyr::select("concept_id") |>
+        dplyr::mutate(
+          "event_start_date" = as.Date("2000-01-01"),
+          "event_end_date" = as.Date("2000-01-01"),
+          "concept_set_id" = as.integer(0),
+          "person_id" = as.integer(0)
+        ) |>
+        utils::head(0)
+    }
+    return(res)
+  }) |>
+    purrr::reduce(dplyr::union_all)
 }
 
 #' It creates column to indicate the flag overlap information between a table
 #' and a concept
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param conceptSet Concept set list.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a date column of x
 #' @param window window to consider events in.
-#' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
-#' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
-#' @param order last or first date to use for date/time calculations.
+#' @param targetStartDate Event start date to use for the intersection.
+#' @param targetEndDate Event end date to use for the intersection.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -181,24 +247,35 @@ addConceptIntersect <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectFlag(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectFlag(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersectFlag <- function(x,
                                     conceptSet,
                                     indexDate = "cohort_start_date",
                                     censorDate = NULL,
                                     window = list(c(0, Inf)),
-                                    targetStartDate = "cohort_start_date",
-                                    targetEndDate = NULL,
-                                    order = "first",
+                                    targetStartDate = "event_start_date",
+                                    targetEndDate = "event_end_date",
                                     nameStyle = "{concept_name}_{window_name}") {
   .addConceptIntersect(
     x = x,
@@ -208,11 +285,8 @@ addConceptIntersectFlag <- function(x,
     window = window,
     targetStartDate = targetStartDate,
     targetEndDate = targetEndDate,
-    order = order,
-    flag = TRUE,
-    count = FALSE,
-    date = FALSE,
-    days = FALSE,
+    order = "first",
+    value = "flag",
     nameStyle = nameStyle
   )
 }
@@ -220,19 +294,16 @@ addConceptIntersectFlag <- function(x,
 #' It creates column to indicate the count overlap information between a table
 #' and a concept
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param conceptSet Concept set list.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a date column of x
 #' @param window window to consider events in.
-#' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence)
-#' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence)
-#' @param order last or first date to use for date/time calculations.
+#' @param targetStartDate Event start date to use for the intersection.
+#' @param targetEndDate Event end date to use for the intersection.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -241,25 +312,36 @@ addConceptIntersectFlag <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectCount(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectCount(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersectCount <- function(x,
-                                    conceptSet,
-                                    indexDate = "cohort_start_date",
-                                    censorDate = NULL,
-                                    window = list(c(0, Inf)),
-                                    targetStartDate = "cohort_start_date",
-                                    targetEndDate = NULL,
-                                    order = "first",
-                                    nameStyle = "{concept_name}_{window_name}") {
+                                     conceptSet,
+                                     indexDate = "cohort_start_date",
+                                     censorDate = NULL,
+                                     window = list(c(0, Inf)),
+                                     targetStartDate = "event_start_date",
+                                     targetEndDate = "event_end_date",
+                                     nameStyle = "{concept_name}_{window_name}") {
   .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
@@ -268,11 +350,8 @@ addConceptIntersectCount <- function(x,
     window = window,
     targetStartDate = targetStartDate,
     targetEndDate = targetEndDate,
-    order = order,
-    flag = FALSE,
-    count = TRUE,
-    date = FALSE,
-    days = FALSE,
+    order = "first",
+    value = "count",
     nameStyle = nameStyle
   )
 }
@@ -280,16 +359,16 @@ addConceptIntersectCount <- function(x,
 #' It creates column to indicate the date overlap information between a table
 #' and a concept
 #'
-#' @param x Table with individuals in the cdm
+#' @param x Table with individuals in the cdm.
 #' @param conceptSet Concept set list.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a date column of x
 #' @param window window to consider events in.
-#' @param targetDate date of reference in cohort table
-#' @param order last or first date to use for date/time calculations.
+#' @param targetDate Event date to use for the intersection.
+#' @param order last or first date to use for date/days calculations.
 #' @param nameStyle naming of the added column or columns, should include
-#' required parameters
+#' required parameters.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -298,78 +377,34 @@ addConceptIntersectCount <- function(x,
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
 #' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectDate(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectDate(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
 #'
 addConceptIntersectDate <- function(x,
-                                     conceptSet,
-                                     indexDate = "cohort_start_date",
-                                     censorDate = NULL,
-                                     window = list(c(0, Inf)),
-                                     targetDate = "cohort_start_date",
-                                     order = "first",
-                                     nameStyle = "{concept_name}_{window_name}") {
-  .addConceptIntersect(
-    x = x,
-    conceptSet = conceptSet,
-    indexDate = indexDate,
-    censorDate = censorDate,
-    window = window,
-    targetStartDate = targetDate,
-    targetEndDate = NULL,
-    order = order,
-    flag = FALSE,
-    count = FALSE,
-    date = TRUE,
-    days = FALSE,
-    nameStyle = nameStyle
-  )
-}
-
-#' It creates column to indicate the days of difference from an index date to a
-#' concept
-#'
-#' @param x Table with individuals in the cdm
-#' @param conceptSet Concept set list.
-#' @param indexDate Variable in x that contains the date to compute the
-#' intersection.
-#' @param censorDate whether to censor overlap events at a date column of x
-#' @param window window to consider events in.
-#' @param targetDate date of reference in cohort table
-#' @param order last or first date to use for date/time calculations.
-#' @param nameStyle naming of the added column or columns, should include
-#' required parameters
-#'
-#' @return table with added columns with overlap information
-#'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#' library(CodelistGenerator)
-#'
-#' cdm <- mockPatientProfiles()
-#' # result <- cdm$cohort1 %>%
-#' #   addConceptIntersectDays(
-#' #     conceptSet = getDrugIngredientCodes(cdm, "acetaminophen")
-#' #  ) %>%
-#' #   dplyr::collect()
-#' }
-#'
-addConceptIntersectDays <- function(x,
                                     conceptSet,
                                     indexDate = "cohort_start_date",
                                     censorDate = NULL,
                                     window = list(c(0, Inf)),
-                                    targetDate = "cohort_start_date",
+                                    targetDate = "event_start_date",
                                     order = "first",
                                     nameStyle = "{concept_name}_{window_name}") {
   .addConceptIntersect(
@@ -381,10 +416,72 @@ addConceptIntersectDays <- function(x,
     targetStartDate = targetDate,
     targetEndDate = NULL,
     order = order,
-    flag = FALSE,
-    count = FALSE,
-    date = FALSE,
-    days = TRUE,
+    value = "date",
+    nameStyle = nameStyle
+  )
+}
+
+#' It creates column to indicate the days of difference from an index date to a
+#' concept
+#'
+#' @param x Table with individuals in the cdm.
+#' @param conceptSet Concept set list.
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
+#' @param censorDate whether to censor overlap events at a date column of x
+#' @param window window to consider events in.
+#' @param targetDate Event date to use for the intersection.
+#' @param order last or first date to use for date/days calculations.
+#' @param nameStyle naming of the added column or columns, should include
+#' required parameters.
+#'
+#' @return table with added columns with overlap information
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#'  concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#'  ) %>%
+#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'  addConceptIntersectDays(
+#'   conceptSet = list("acetaminophen"=1125315)
+#'   ) %>%
+#'  dplyr::collect()
+#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  }
+#'
+addConceptIntersectDays <- function(x,
+                                    conceptSet,
+                                    indexDate = "cohort_start_date",
+                                    censorDate = NULL,
+                                    window = list(c(0, Inf)),
+                                    targetDate = "event_start_date",
+                                    order = "first",
+                                    nameStyle = "{concept_name}_{window_name}") {
+  .addConceptIntersect(
+    x = x,
+    conceptSet = conceptSet,
+    indexDate = indexDate,
+    censorDate = censorDate,
+    window = window,
+    targetStartDate = targetDate,
+    targetEndDate = NULL,
+    order = order,
+    value = "days",
     nameStyle = nameStyle
   )
 }

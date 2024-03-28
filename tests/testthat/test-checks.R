@@ -145,13 +145,13 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
 test_that(" test checkWindow in addIntersect", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 2)
 
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
-  expect_warning(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-365), -c(0), -c(30)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
+  expect_warning(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-365), -c(0), -c(30)), value = "date"))
 
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(30, -365)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
-  expect_error(cdm$cohort1 %>% addIntersect(tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(30, -365)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
+  expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
 })
 
 test_that("test checkSnakeCase", {
@@ -167,12 +167,11 @@ test_that("test checkSnakeCase", {
 
 test_that("check window", {
   window <- list("short" = c(0, 9), c(10, 20), c(20, 35), "long" = c(-50, 10))
-  windowName <- checkWindow(window)
-  expect_true("tbl" %in% class(windowName))
-  expect_true(all(names(windowName) == c("lower", "upper", "window_name")))
-  expect_true(all(windowName$lower == c(0, 10, 20, -50)))
-  expect_true(all(windowName$upper == c(9, 20, 35, 10)))
-  expect_true(all(windowName$window_name == c("short", "10_to_20", "20_to_35", "long")))
+  windowCorrected <- checkWindow(window)
+  expect_true("list" %in% class(windowCorrected))
+  expect_true(all(lapply(windowCorrected, function(x){x[1]}) |> unlist() == c(0, 10, 20, -50)))
+  expect_true(all(lapply(windowCorrected, function(x){x[2]}) |> unlist() == c(9, 20, 35, 10)))
+  expect_true(all(names(windowCorrected) == c("short", "10_to_20", "20_to_35", "long")))
 })
 
 test_that("checkAgeGroup", {
@@ -246,7 +245,7 @@ test_that("checkNameStyle", {
     observation_period = op, cohort2 = cohort2
   )
 
-  expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% addIntersect(
+  expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% .addIntersect(
     tableName = "cohort2", value = c("flag", "count"),
     nameStyle = "{value}_{id_name}"
   ))))
@@ -280,23 +279,29 @@ test_that("test assertNameStyle", {
 
 test_that("test warnOverwriteColumns", {
   # no glue expression
+  x <- dplyr::tibble("my_columns" = character(), "no_column" = character())
   expect_message(
-    x <- warnOverwriteColumns(c("my_columns", "no_column"), "no_column")
+    y <- warnOverwriteColumns(x, "no_column")
   )
-  expect_identical(x, "no_column")
+  expect_identical(colnames(y), "my_columns")
   expect_no_message(
-    x <- warnOverwriteColumns(c("my_columns", "no_column"), c("asdfd", "safvf"))
+    y <- warnOverwriteColumns(x, c("asdfd", "safvf"))
   )
-  expect_identical(x, character())
+  expect_identical(x, y)
 
   # glue expression
   expect_no_message(warnOverwriteColumns(
-    c("my_col"), "column_{a}_{b}", list(a = c("abcd", "defg"), b = "hi", x = "a")
+    x, "column_{a}_{b}", list(a = c("abcd", "defg"), b = "hi", x = "a")
   ))
-  expect_message(x <- warnOverwriteColumns(
-    cols = c("my_col", "column_abcd_hi", "column_sadf_ha", "column_defg_hu"),
+  x <- dplyr::tibble(
+    my_col = character(), column_abcd_hi = character(),
+    column_sadf_ha = character(), column_defg_hu = character()
+  )
+  expect_message(y <- warnOverwriteColumns(
+    x,
     nameStyle = "column_{a}_{b}",
     values = list(a = c("abcd", "defg"), b = c("hi", "ha", "hu"), x = "a")
   ))
-  expect_identical(x, c("column_abcd_hi", "column_defg_hu"))
+  yy <- dplyr::tibble(my_col = character(), column_sadf_ha = character())
+  expect_identical(y, yy)
 })

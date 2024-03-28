@@ -2,16 +2,11 @@
 % Please edit documentation in R/plotSummarised.R
 \name{plotCohortTiming}
 \alias{plotCohortTiming}
-\title{Plot cohort_overlap objects.}
+\title{Plot summariseCohortTiming results.}
 \usage{
 plotCohortTiming(
   result,
   type = "boxplot",
-  cohortNameReference = NULL,
-  cohortNameComparator = NULL,
-  strataName = NULL,
-  strataLevel = NULL,
-  cdmName = NULL,
   facetBy = NULL,
   color = c("cohort_name_reference", "cohort_name_comparator"),
   timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
@@ -19,20 +14,10 @@ plotCohortTiming(
 )
 }
 \arguments{
-\item{result}{A cohort_overlap object.}
+\item{result}{A summariseCohortTiming result.}
 
 \item{type}{Type of desired formatted table, possibilities are "boxplot" and
 "density".}
-
-\item{cohortNameReference}{Names of the reference cohorts to include.}
-
-\item{cohortNameComparator}{Names of the comparator cohorts to include.}
-
-\item{strataName}{Names of the strata names to include.}
-
-\item{strataLevel}{Names of the strata levels to include.}
-
-\item{cdmName}{Names of the databases to include.}
 
 \item{facetBy}{Vector of column names  in the cohort_overlap table for faceting the
 ggplot object.}
@@ -46,13 +31,18 @@ overlap.}
 comparator plots will be plotted.}
 }
 \value{
-A ggplot2.
+A ggplot.
 }
 \description{
-Plot cohort_overlap objects.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{
+library(PatientProfiles)
+cdm <- PatientProfiles::mockPatientProfiles()
+timing <- summariseCohortTiming(cdm$cohort2)
+plotCohortTiming(timing)
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

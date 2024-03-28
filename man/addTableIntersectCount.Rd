@@ -10,7 +10,8 @@ addTableIntersectCount(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = list(c(0, Inf)),
-  overlap = TRUE,
+  targetStartDate = startDateColumn(tableName),
+  targetEndDate = endDateColumn(tableName),
   nameStyle = "{table_name}_{window_name}"
 )
 }
@@ -29,11 +30,12 @@ or a column date of x.}
 
 \item{window}{window to consider events in.}
 
-\item{overlap}{Whether to consider end date or only end date for the
-intersection.}
+\item{targetStartDate}{Column name with start date for comparison.}
+
+\item{targetEndDate}{Column name with end date for comparison.}
 
 \item{nameStyle}{naming of the added column or columns, should include
-required parameters}
+required parameters.}
 }
 \value{
 table with added columns with intersect information.
@@ -47,6 +49,8 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addTableIntersectCount(tableName = "visit_occurrence")
+
+CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

@@ -1,21 +1,25 @@
 #' Summarise cohort timing
 #'
-#' @param cohort  A cohort table in a cdm reference
+#' @param cohort  A cohort table in a cdm reference.
 #' @param cohortId  Vector of cohort definition ids to include, if NULL, all
 #' cohort definition ids will be used.
 #' @param strata List of the stratifications within each group to be considered.
 #' Must be column names in the cohort table provided.
 #' @param restrictToFirstEntry If TRUE only an individual's first entry per
 #' cohort will be considered. If FALSE all entries per individual will be
-#' considered
+#' considered.
 #' @param timing Summary statistics for timing.
 #' @param density Get data for density plot.
 #'
-#' @return A summarised result
+#' @return A summarised result.
 #' @export
 #'
 #' @examples
 #' \donttest{
+#' library(PatientProfiles)
+#' cdm <- PatientProfiles::mockPatientProfiles()
+#' results <- summariseCohortTiming(cdm$cohort2)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 summariseCohortTiming <- function(cohort,
@@ -37,7 +41,11 @@ summariseCohortTiming <- function(cohort,
 
   # add cohort names
   cdm <- omopgenerics::cdmReference(cohort)
-  name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
+  name <- omopgenerics::tableName(cohort)
+
+  if (is.na(name)) {
+    cli::cli_abort("Please provide a permanent cohort table.")
+  }
 
   ids <- cdm[[name]] |>
     omopgenerics::settings() |>

@@ -937,7 +937,7 @@ test_that("addCategories input", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 1, patient_size = 5)
 
   # overwrite when categories named same as variable, throw warning
-  expect_warning(
+  expect_error(
     cdm$cohort1 %>%
       addAge() %>%
       addCategories(
@@ -946,7 +946,7 @@ test_that("addCategories input", {
       )
   )
 
-  expect_warning(
+  expect_error(
     cdm$cohort1 %>%
       addDemographics(
         sex = FALSE,
@@ -1253,5 +1253,17 @@ test_that("overwriting obs period variables", {
                    PatientProfiles::addFutureObservation())
   expect_warning(cdm$cohort1 %>%
     PatientProfiles::addInObservation())
+
+})
+
+
+test_that("addDemographics, date of birth option", {
+  cdm <- mockPatientProfiles()
+
+  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T) |> dplyr::select("date_of_birth"))
+  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T,dateOfBirthName = "abc") |> dplyr::select("abc"))
+  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = F))
+
+
 
 })

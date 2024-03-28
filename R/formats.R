@@ -17,9 +17,9 @@
 #' Classify the variables between 5 types: "numeric", "categorical", "binary",
 #' "date", or NA.
 #'
-#' @param table Tibble
+#' @param table Tibble.
 #'
-#' @return Tibble with the variables type and classification
+#' @return Tibble with the variables type and classification.
 #'
 #' @examples
 #' \donttest{
@@ -82,7 +82,7 @@ assertClassification <- function(x) {
 #' or "categorical".
 #'
 #' @return A tibble with the available functions for a certain variable
-#' classification (or all if NULL)
+#' classification (or all if NULL).
 #'
 #' @examples
 #' \donttest{
@@ -100,7 +100,15 @@ assertClassification <- function(x) {
 #'
 availableFunctions <- function(variableType = NULL) {
   lifecycle::deprecate_warn("0.7.0", what = "availableFunctions()", with = "availableEstimates()")
-  availableEstimates(variableType = variableType)
+  if (is.null(variableType)) {
+    return(formatsOld)
+  } else {
+    checkVariableType(variableType)
+    x <- formatsOld %>%
+      dplyr::filter(.data$variable_type == .env$variableType) %>%
+      dplyr::select(-"variable_type")
+    return(x)
+  }
 }
 
 #' Show the available estimates that can be used for the different variable_type
