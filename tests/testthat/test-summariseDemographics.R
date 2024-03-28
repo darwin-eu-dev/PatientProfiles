@@ -92,7 +92,11 @@ test_that("plotDemographics", {
 
   results <- summariseDemographics(cdm$cohort2)
 
-  gg1 <- plotDemographics(results)
+  gg1 <- plotDemographics(results,
+                          xAxis = "estimate_value",
+                          yAxis = "variable_name",
+                          plotStyle = "boxplot",
+                          vertical_x = TRUE)
   expect_true(ggplot2::is.ggplot(gg1))
 
   gg2 <- plotDemographics(
@@ -100,7 +104,7 @@ test_that("plotDemographics", {
     xAxis = "estimate_value",
     yAxis = "variable_name",
     plotStyle = "barplot",
-    facetVars = c("group_level"),
+    facetVarX = c("group_level"),
     colorVars = c("variable_name", "variable_level")
   )
 
@@ -108,10 +112,10 @@ test_that("plotDemographics", {
 
   gg3 <- plotCharacteristics(
     data =  results,
-    xAxis = "variable_name",
-    yAxis = "estimate_value",
+    xAxis = "estimate_value",
+    yAxis = "variable_name",
     plotStyle = "boxplot",
-    facetVars = "variable_name",
+    facetVarX = "variable_name",
     colorVars = c("group_level")
   )
 
