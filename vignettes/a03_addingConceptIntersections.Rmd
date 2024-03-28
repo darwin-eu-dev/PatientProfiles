@@ -29,11 +29,11 @@ if (!eunomia_is_available()) downloadEunomiaData()
 
 ## Introduction
 
-Concept sets play an important role when working with data in the format of the OMOP CDM. They can be used to create cohorts after which, as we've seen in the previous vignette, we can identifying intersections between these cohorts. However, PatientProfiles adds another option for working with concept sets which is use them directly for adding associated variables.
+Concept sets play an important role when working with data in the format of the OMOP CDM. They can be used to create cohorts after which, as we've seen in the previous vignette, we can identify intersections between the cohorts. PatientProfiles adds another option for working with concept sets which is use them for adding associated variables directly without first having to create a cohort.
 
 It is important to note, and is explained more below, that results may differ when generating a cohort and then identifying intersections between two cohorts compared to working directly with concept sets. The creation of cohorts will involve the collapsing of overlapping records as well as imposing certain requirements such as only including records that were observed during an individuals observation period. When adding variables based on concept sets we will be working directly with record-level data in the OMOP CDM clinical tables.
 
-## Adding concept based variables
+## Adding variables from concept sets
 
 For this vignette we'll use the Eunomia synthetic dataset. First lets create our cohort of interest, individuals with an ankle sprain.
 
@@ -71,9 +71,10 @@ acetaminophen_cs <- getDrugIngredientCodes(cdm = cdm,
 acetaminophen_cs
 ```
 
-Once we have our codes for acetaminophen we can create variables based on these. As with cohort intersections, PatientProfiles provides four types of functions for concept intersections. 
+Once we have our codes for acetaminophen we can create variables based on these. As with cohort intersections, PatientProfiles provides four types of functions for concept intersections.
 
-First, we can add a binary flag variable indicating whether an individual had a record of acetaminophen on the day of their ankle sprain or up to 30 days afterwards.  
+First, we can add a binary flag variable indicating whether an individual had a record of acetaminophen on the day of their ankle sprain or up to 30 days afterwards.
+
 ```{r}
 cdm$ankle_sprain %>%
   addConceptIntersectFlag(conceptSet = acetaminophen_cs, 
@@ -83,6 +84,7 @@ cdm$ankle_sprain %>%
 ```
 
 Second, we can count the number of records of acetaminophen in this same window for each individual.
+
 ```{r}
 cdm$ankle_sprain %>%
   addConceptIntersectCount(conceptSet = acetaminophen_cs, 
@@ -92,6 +94,7 @@ cdm$ankle_sprain %>%
 ```
 
 Third, we could identify the first start date of acetaminophen in this window.
+
 ```{r}
 cdm$ankle_sprain %>%
   addConceptIntersectDate(conceptSet = acetaminophen_cs, 
@@ -102,6 +105,7 @@ cdm$ankle_sprain %>%
 ```
 
 Or fourth, we can get the number of days to the start date of acetaminophen in the window.
+
 ```{r}
 cdm$ankle_sprain %>%
   addConceptIntersectDays(conceptSet = acetaminophen_cs, 
@@ -113,7 +117,7 @@ cdm$ankle_sprain %>%
 
 ## Adding multiple concept based variables
 
-We can add more than one variable at a time when using these functions. For example, we might want to add variables for multiple time windows. 
+We can add more than one variable at a time when using these functions. For example, we might want to add variables for multiple time windows.
 
 ```{r}
 cdm$ankle_sprain %>%
@@ -125,7 +129,7 @@ cdm$ankle_sprain %>%
   dplyr::glimpse()
 ```
 
-Or we might want to get variables for multiple drug ingredients of interest. 
+Or we might want to get variables for multiple drug ingredients of interest.
 
 ```{r}
 meds_cs <- getDrugIngredientCodes(cdm = cdm, 
@@ -147,7 +151,7 @@ cdm$ankle_sprain %>%
 
 ## Cohort-based versus concept-based intersections
 
-In the previous vignette we saw that we can add an intersection variable using a cohort we have created. Meanwhile in this vignette we see that we can instead create an intersection variable using a concept set directly. It is important to note that these two approaches can lead to different results.
+In the previous vignette we saw that we can add an intersection variable using a cohort we have created. Meanwhile in this vignette we see that we can instead create an intersection variable using a concept set directly. It is important to note that under some circumstances these two approaches can lead to different results.
 
 When creating a cohort we combine overlapping records, as cohort entries cannot overlap. Thus when adding an intersection count, `addCohortIntersectCount()` will return a count of cohort entries in the window of interest while `addConceptIntersectCount()` will return a count of records withing the window. We can see the impact for acetaminophen for our example data below, where we have slightly more records than cohort entries.
 
