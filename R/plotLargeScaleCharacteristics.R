@@ -634,7 +634,7 @@ plotfunction <- function(data,
       } else if (!is.null(p_non_percent)) {
         p_non_percent
       } else {
-        gplot2::ggplot() +
+        ggplot2::ggplot() +
           ggplot2::theme_void() +
           ggplot2::labs(
             title = "No Numeric Data Provided",
@@ -651,7 +651,7 @@ plotfunction <- function(data,
       } else if (!is.null(p_non_percent)) {
         p_non_percent
       } else {
-        gplot2::ggplot() +
+        ggplot2::ggplot() +
           ggplot2::theme_void() +
           ggplot2::labs(
             title = "No Numeric Data Provided",
@@ -676,7 +676,7 @@ plotfunction <- function(data,
       } else if (!is.null(p_non_percent)) {
         p_non_percent
       } else {
-        gplot2::ggplot() +
+        ggplot2::ggplot() +
           ggplot2::theme_void() +
           ggplot2::labs(
             title = "No Numeric Data Provided",
