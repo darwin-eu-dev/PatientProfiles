@@ -65,7 +65,6 @@ Imports:
     visOmopResults (>= 0.2.0),
     lifecycle,
     purrr
-VignetteBuilder: knitr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 BugReports: https://github.com/darwin-eu-dev/PatientProfiles/issues
 Language: en-US

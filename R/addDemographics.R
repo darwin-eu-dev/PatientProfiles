@@ -539,7 +539,7 @@ addPriorObservation <- function(x,
 #' @param window window to consider events of.
 #' @param completeInterval If the individuals are in observation for the full window.
 #' @param nameStyle Name of the new columns to create, it must contain
-#' "{window_name}" if multiple windows are provided.
+#' "window_name" if multiple windows are provided.
 #' @param name deprecated.
 #'
 #' @return cohort table with the added binary column assessing inObservation.

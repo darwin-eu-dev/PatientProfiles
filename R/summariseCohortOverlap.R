@@ -120,10 +120,22 @@ summariseCohortOverlap <- function(cohort,
                  overlap.strata <- overlap.strata |>
                    dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) |>
                    dplyr::rename_with(.fn = ~paste0(.x, "_overlap"), .cols = dplyr::starts_with("number")) |>
-                   dplyr::left_join(cohort_counts.strata |> dplyr::rename_with(.fn = ~paste0(.x, "_reference"), .cols = c("cohort_name", "number_subjects")),
-                                    by = c("cohort_name_reference", strataName)) |>
-                   dplyr::left_join(cohort_counts.strata |> dplyr::rename_with(.fn = ~paste0(.x, "_comparator"), .cols = c("cohort_name", "number_subjects")),
-                                    by = c("cohort_name_comparator", strataName))
+                   dplyr::left_join(
+                     cohort_counts.strata |>
+                       dplyr::rename_with(
+                         .fn = ~paste0(.x, "_reference"),
+                         .cols = dplyr::all_of(c("cohort_name", "number_subjects"))
+                       ),
+                     by = c("cohort_name_reference", strataName)
+                   ) |>
+                   dplyr::left_join(
+                     cohort_counts.strata |>
+                       dplyr::rename_with(
+                         .fn = ~paste0(.x, "_comparator"),
+                         .cols = dplyr::all_of(c("cohort_name", "number_subjects"))
+                       ),
+                     by = c("cohort_name_comparator", strataName)
+                   )
                  overlap.strata <- overlap.strata |>
                    getOverlapEstimates() |>
                    visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator")) |>
