@@ -14,7 +14,7 @@ vignette: >
 ---
 
 ## Introduction
-The OMOP CDM is a person-centric model. The person table contains records that uniquely identify each individual along with some of their demographic information. Below we create a mock CDM reference which, as is standard, has a person table which contains fields which indicate an individuals date of birth, gender, race, and ethnicity. Each of the latter are represented by a concept ID, and as the person table contains one record per person these fields are treated as time-invariant.
+The OMOP CDM is a person-centric model. The person table contains records that uniquely identify each individual along with some of their demographic information. Below we create a mock CDM reference which, as is standard, has a person table which contains fields which indicate an individual's date of birth, gender, race, and ethnicity. Each of these, except for date of birthh, are represented by a concept ID (and as the person table contains one record per person these fields are treated as time-invariant).
 
 ```{r, message= FALSE, warning=FALSE}
 library(PatientProfiles)
@@ -74,7 +74,7 @@ cdm$condition_occurrence %>%
 ```
 
 
-By default when adding age the new column will have been called "age" and will have been calculated using all available information on date of birth contained in the person. We can, however, alter these defaults like so (where we impose month of birth to be January and day of birth to be the 1st for all individuals)
+By default, when adding age the new column will have been called "age" and will have been calculated using all available information on date of birth contained in the person. We can though also alter these defaults. Here, for example, we impose that month of birth is January and day of birth is the 1st for all individuals.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$condition_occurrence <- cdm$condition_occurrence %>%
@@ -99,7 +99,7 @@ cdm$condition_occurrence %>%
   glimpse()
 ```
 
-Similarly we could also identify whether an individual was in observation at the time of their diagnosis (i.e. had an observation period that overlaps with their diagnosis date), as well as identifying how much prior observation time they had on this date and how much they have following it. 
+Similarly, we could also identify whether an individual was in observation at the time of their diagnosis (i.e. had an observation period that overlaps with their diagnosis date), as well as identifying how much prior observation time they had on this date and how much they have following it. 
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$condition_occurrence <- cdm$condition_occurrence %>%
@@ -111,11 +111,29 @@ cdm$condition_occurrence %>%
   glimpse()
 ```
 
-For these latter functions which work with information from the observation table, it is important to note that the results will be based on the observation period during which the index date falls within. Moreover, if a patient is not under observation at the specified date, `addPriorObservation()` and `addFutureObservation()` functions will return NA.
+For these functions which work with information from the observation table, it is important to note that the results will be based on the observation period during which the index date falls within. Moreover, if a patient is not under observation at the specified date, `addPriorObservation()` and `addFutureObservation()` functions will return NA.
+
+When checking whether someone is in observation the default is that we are checking whether someone was in observation on the index date. We could though expand this and consider a window of time around this date. For example here we add a variable indicating whether someone was in observation from 180 days before the index date to 30 days following it.
+
+```{r, message= FALSE, warning=FALSE}
+ cdm$condition_occurrence %>%
+  addInObservation(indexDate = "condition_start_date", 
+                   window = c(-180, 30)) %>%
+  glimpse()
+```
+
+We can also specify a window and require that an individual is present for only some days within it. Here we add a variable incating whether the individual was in observation at least a year in the future,
+```{r, message= FALSE, warning=FALSE}
+ cdm$condition_occurrence %>%
+  addInObservation(indexDate = "condition_start_date", 
+                   window = c(365, Inf), 
+                   completeInterval = FALSE) %>%
+  glimpse()
+```
 
 ## Adding characteristics to a cohort tables
 
-The above functions can be used on both standard OMOP CDM tables and cohort tables. Note as the default index date in the functions is "cohort_start_date" we can now omit this function.
+The above functions can be used on both standard OMOP CDM tables and cohort tables. Note as the default index date in the functions is "cohort_start_date" we can now omit this.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1 %>%
@@ -138,7 +156,7 @@ cdm$cohort1 %>%
 
 ## Getting multiple characteristics at once
 
-The above functions each fetch the related information one by one. In the cases where we are interested in adding multiple characteristics, we can add these all at the same time using `addDemographics()`. This is more efficient as it requires fewer joins between our table of interest and the person and observation period table.
+The above functions, which are chained together, each fetch the related information one by one. In the cases where we are interested in adding multiple characteristics, we can add these all at the same time using the more general `addDemographics()` functions. This will be more efficient that adding characteristics as it requires fewer joins between our table of interest and the person and observation period tables.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort2 %>%

@@ -1,6 +1,12 @@
 ---
 title: "Summarise cohort overlap"
-output: rmarkdown::html_vignette
+output: 
+  html_document:
+    pandoc_args: [
+      "--number-offset=1,0"
+      ]
+    number_sections: yes
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{a08_summariseCohortOverlap}
   %\VignetteEngine{knitr::rmarkdown}
