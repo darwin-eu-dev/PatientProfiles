@@ -368,7 +368,7 @@ interest and the person and observation period table.</p>
 <span>  <span class="fu"><a href="../reference/addInObservation.html">addInObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addFutureObservation.html">addFutureObservation</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_023_1711576569&gt; [5 x 10]</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_023_1711620073&gt; [5 x 10]</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">##   cohort_definition_id subject_id cohort_start_date cohort_end_date   age</span></span>
 <span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -381,7 +381,7 @@ interest and the person and observation period table.</p>
 <span><span class="co">## <span style="color: #949494;">#   prior_observation &lt;dbl&gt;, future_observation &lt;dbl&gt;</span></span></span></code></pre>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 1.757 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 1.703 sec elapsed</span></span></code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -412,7 +412,7 @@ interest and the person and observation period table.</p>
 <span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "18 to 65", "&gt;= 66", "18 to 65", "18…</span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 0.78 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 0.76 sec elapsed</span></span></code></pre>
 <p>In our small mock dataset we see a small improvement in performance,
 but this difference will become much more noticeable when working with
 real data that will typically be far larger.</p>
