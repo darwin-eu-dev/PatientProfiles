@@ -1,4 +1,5 @@
 test_that("test user define table", {
+  skip_on_cran()
   test_table1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 3),
     subject_id = c(1, 1, 1, 1),
@@ -43,6 +44,7 @@ test_that("test user define table", {
 })
 
 test_that("check working example with defaults", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(connectionDetails)
 
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 10)
@@ -50,6 +52,7 @@ test_that("check working example with defaults", {
 })
 
 test_that("check dug exposure and patient table size", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(connectionDetails, drug_exposure_size = 200, patient_size = 200)
 
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 200)
@@ -57,6 +60,7 @@ test_that("check dug exposure and patient table size", {
 })
 
 test_that("add cdm with person, cohort1 and observation_period", {
+  skip_on_cran()
   expect_no_error(cdm <- mockPatientProfiles(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4),
@@ -88,6 +92,7 @@ test_that("add cdm with person, cohort1 and observation_period", {
 })
 
 test_that("attributes for cohort table", {
+  skip_on_cran()
   test_table1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 3),
     subject_id = 1,
