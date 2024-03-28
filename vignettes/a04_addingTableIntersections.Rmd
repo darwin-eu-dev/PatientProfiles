@@ -144,3 +144,26 @@ cdm$ankle_sprain |>
   ) |> 
   glimpse()
 ```
+
+Beyond this table intersection provides a means if implementing a wide range of custom analyses. One more example to show this is provided below, where we check whether individuals have a measurement or procedure record on the date of their ankle sprain.
+
+```{r}
+cdm$proc_or_meas <- union_all(cdm$procedure_occurrence |> 
+  select("person_id", 
+         "record_date" = "procedure_date"),
+cdm$measurement |> 
+  select("person_id", 
+         "record_date" = "measurement_date")) |> 
+  compute()
+
+cdm$ankle_sprain |> 
+  addTableIntersectFlag(
+    tableName = "proc_or_meas",
+    indexDate = "cohort_start_date", 
+    targetStartDate = "record_date",
+    targetEndDate = "record_date",
+    window = c(0, 0)
+  ) |> 
+  glimpse()
+
+```
