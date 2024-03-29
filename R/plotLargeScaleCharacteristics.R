@@ -473,7 +473,7 @@ plotfunction <- function(data,
             ifelse(facet_x_exists, "facet_combined_x", ".")
           )
           p_percent <- p_percent + ggplot2::facet_grid(
-            facets = facet_formula,
+            rows = facet_formula,
             scales = "free"
           )
           if (vertical_x) {
@@ -492,7 +492,7 @@ plotfunction <- function(data,
             ifelse(facet_x_exists, "facet_combined_x", ".")
           )
           p_non_percent <- p_non_percent + ggplot2::facet_grid(
-            facets = facet_formula,
+            rows = facet_formula,
             scales = "free"
           )
           if (vertical_x) {
@@ -529,7 +529,7 @@ plotfunction <- function(data,
         )
 
         p_dates <- p_dates +
-          ggplot2::facet_grid(facets = facet_formula, scales = "free")
+          ggplot2::facet_grid(rows = facet_formula, scales = "free")
         if (vertical_x) {
           p_dates <- p_dates + ggplot2::theme(axis.text.x = ggplot2::element_text(
             angle = 90,
@@ -550,7 +550,7 @@ plotfunction <- function(data,
         )
 
         p_non_dates <- p_non_dates +
-          ggplot2::facet_grid(facets = facet_formula, scales = "free")
+          ggplot2::facet_grid(rows = facet_formula, scales = "free")
         if (vertical_x) {
           p_non_dates <- p_non_dates + ggplot2::theme(
             axis.text.x =
@@ -591,7 +591,7 @@ plotfunction <- function(data,
         )
 
         p_percent <- p_percent +
-          ggplot2::facet_grid(facets = facet_formula, scales = "free")
+          ggplot2::facet_grid(rows = facet_formula, scales = "free")
 
         if (vertical_x) {
           p_percent <- p_percent + ggplot2::theme(axis.text.x = ggplot2::element_text(
@@ -615,7 +615,7 @@ plotfunction <- function(data,
 
 
         p_non_percent <- p_non_percent +
-          ggplot2::facet_grid(facets = facet_formula, scales = "free")
+          ggplot2::facet_grid(rows = facet_formula, scales = "free")
         if (vertical_x) {
           p_non_percent <- p_non_percent + ggplot2::theme(axis.text.x = ggplot2::element_text(
             angle = 90,

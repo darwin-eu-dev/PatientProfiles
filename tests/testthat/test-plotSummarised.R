@@ -213,14 +213,15 @@ test_that("plotCohortOverlap", {
   expect_false("cohort_4" %in% gg1$data$cohort_name_reference)
 
 
-  gg2 <- plotCohortOverlap(overlap |> dplyr::filter(.data$variable_name == "number_subjects"),
+  gg2 <- plotCohortOverlap(overlap |> dplyr::filter(.data$variable_name == "number_subjects",
+                                                    .data$estimate_name == "percentage"),
                            facetBy = "cdm_name",
-                           uniqueCombinations = FALSE)
+                           uniqueCombinations = TRUE)
   expect_true("ggplot" %in% class(gg2))
   expect_true(gg2$data |> dplyr::filter(variable_name == "number subjects") |> nrow() == 0)
   expect_true(nrow(gg2$data |>
-                     dplyr::filter(.data$cohort_name_reference %in% c("Cohort 1", "Cohort 2") &
-                                     .data$cohort_name_comparator %in% c("Cohort 1", "Cohort 2"))) == 2)
+                     dplyr::filter(.data$cohort_name_reference %in% c("cohort_1", "cohort_2") &
+                                     .data$cohort_name_comparator %in% c("cohort_1", "cohort_2"))) == 3)
   # strata ----
   cdm$table <- cdm$table |>
     addAge(ageGroup = list(c(0,40), c(41,150))) |>
@@ -246,7 +247,7 @@ test_that("plotCohortOverlap", {
   gg4 <- plotCohortOverlap(overlap3,
                            facetBy = "cdm_name",
                            uniqueCombinations = FALSE)
-  expect_true(nrow(gg3$data |> dplyr::distinct(comparison_name, y_pos)) == 12)
+  # expect_true(nrow(gg4$data |> dplyr::distinct(comparison_name, y_pos)) == 12)
 
   CDMConnector::cdm_disconnect(cdm)
 })

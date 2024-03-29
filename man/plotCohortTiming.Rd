@@ -19,8 +19,7 @@ plotCohortTiming(
 \item{type}{Type of desired formatted table, possibilities are "boxplot" and
 "density".}
 
-\item{facetBy}{Vector of column names  in the cohort_overlap table for faceting the
-ggplot object.}
+\item{facetBy}{column in data to facet by on horizontal axis}
 
 \item{color}{Vector of column names to distinct by colors.}
 

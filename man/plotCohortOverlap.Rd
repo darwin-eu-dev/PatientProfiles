@@ -7,7 +7,7 @@
 plotCohortOverlap(
   result,
   facetBy = "variable_name",
-  overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+  overlapLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",
   uniqueCombinations = TRUE
 )
 }

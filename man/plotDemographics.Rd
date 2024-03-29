@@ -26,7 +26,7 @@ plotDemographics(
 
 \item{facetVarX}{column in data to facet by on horizontal axis}
 
-\item{facetVarY}{column in data to facet by on vertical axis#'}
+\item{facetVarY}{column in data to facet by on vertical axis}
 
 \item{colorVars}{column in data to color by.}
 

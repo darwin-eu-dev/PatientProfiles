@@ -23,7 +23,8 @@
 #'
 plotCohortOverlap <- function(result,
                               facetBy = "variable_name",
-                              overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+                              # facetVarY = "strata_level",
+                              overlapLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",
                               uniqueCombinations = TRUE) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
@@ -35,9 +36,7 @@ plotCohortOverlap <- function(result,
   # split table
   x <- result |>
     visOmopResults::tidy(splitStrata = FALSE) %>%
-    dplyr::mutate(group_level = paste0(.data$cohort_name_reference,
-                                       " &&& ",
-                                       .data$cohort_name_comparator))
+    dplyr::mutate(group_level = glue::glue(.env$overlapLabel))
 
   if (uniqueCombinations) {
     x <- x |>
@@ -70,8 +69,7 @@ plotCohortOverlap <- function(result,
 #' @param result A summariseCohortTiming result.
 #' @param type Type of desired formatted table, possibilities are "boxplot" and
 #' "density".
-#' @param facetBy Vector of column names  in the cohort_overlap table for faceting the
-#' ggplot object.
+#' @param facetBy column in data to facet by on horizontal axis
 #' @param color Vector of column names to distinct by colors.
 #' @param timingLabel A glue expression to identify each plotted cohort
 #' overlap.
@@ -277,7 +275,7 @@ plotCohortTiming <- function(result,
 #' @param yAxis what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.
 #' @param plotStyle Now allows boxplot or barplot only.
 #' @param facetVarX column in data to facet by on horizontal axis
-#' @param facetVarY column in data to facet by on vertical axis#'
+#' @param facetVarY column in data to facet by on vertical axis
 #' @param colorVars column in data to color by.
 #' @param vertical_x whether to display x axis string vertically.
 #' @return A ggplot.
