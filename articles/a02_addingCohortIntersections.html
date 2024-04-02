@@ -96,11 +96,11 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Cohorts are often a key component in studies that use the OMOP CDM.
-Cohorts may be created to represent various clinical events of interest
-and we often use cohorts in combination, whether it is to identify
-outcomes among people with an exposure of interest, report baseline
-comorbidites among a certain study population, or for many other
-possible reasons.</p>
+They may be created to represent various clinical events of interest and
+we often use cohorts in combination, whether it is to identify outcomes
+among people with an exposure of interest, report baseline comorbidites
+among a certain study population, or for many other possible
+reasons.</p>
 <p>Cohorts have a particular format in the OMOP CDM, which we can see
 for two cohort tables created by the <code><a href="../reference/mockPatientProfiles.html">mockPatientProfiles()</a></code>
 function provided by PatientProfiles, which mimics a database in the
@@ -118,7 +118,6 @@ while the second contains 3 cohorts.</p>
 <span>  drug_exposure_size <span class="op">=</span> <span class="fl">1000</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># In this mock dataset there are the following cohort tables:</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
@@ -165,13 +164,13 @@ appeared in the other cohort during a time window. The second,
 someone appeared in the other cohort in the window. A third,
 <code><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate()</a></code>, adds the date when the
 intersection occurred. And the fourth,
-<code><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays()</a></code>, add the number of days to the
+<code><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays()</a></code>, adds the number of days to the
 intersection.</p>
 <p>We can see each of these below. Note that they add variables to our
 cohort table of interest, and identify intersections over a given
-window. As we can see below, if our target cohort table contains
-multiple cohorts, by default these functions will add one new variable
-per cohort.</p>
+window. As we can see, if our target cohort table contains multiple
+cohorts then by default these functions will add one new variable per
+cohort.</p>
 <p>Let’s start by adding flag and count variables using a window of 180
 days before to 180 days after the cohort start date in our table of
 interest. By default the cohort start date of our cohort of interest
@@ -194,8 +193,8 @@ of the target cohort then used to check for an intersection.</p>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-06-01, 2020-01-02, 2020-01-01, 2020-01-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-08-01, 2020-02-02, 2020-03-01, 2020-04-01</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 1, 1</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1</span></span></code></pre>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span>indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
@@ -216,10 +215,10 @@ of the target cohort then used to check for an intersection.</p>
 <span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1</span></span>
 <span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0</span></span></code></pre>
 <p>Next we can add the date of the intersection and the days to the
-intersection. Note that when identifying these variables we look at only
-one date in our target table, which by default will be the cohort start
-date. In addition by default the first intersection that occurs within
-our window will be used.</p>
+intersection. When identifying these variables we use only one date in
+our target table, which by default will be the cohort start date. In
+addition by default the first intersection that occurs within our window
+will be used.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span>indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
@@ -255,9 +254,9 @@ our window will be used.</p>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 2, 3</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01, 2020-06-01, 2020-01-02, 2020-01-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-04-01, 2020-08-01, 2020-02-02, 2020-03-01</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, -1, NA</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> -2, -154, NA, 0</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 145, -7, NA, NA</span></span></code></pre>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 145, -7, NA, NA</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, -1, NA</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="options-for-identifying-cohort-intersection">Options for identifying cohort intersection<a class="anchor" aria-label="anchor" href="#options-for-identifying-cohort-intersection"></a>
@@ -265,9 +264,9 @@ our window will be used.</p>
 <p>To consider the impact of the different options we can choose when
 identifying cohort intersections let´s consider a toy example with a
 single patient with common cold (diagnosed on the 1st February 2020 and
-ending on the 15th February 2020). Let’s say this person had two records
-for aspirin, one ending shortly before their start date for common cold
-and the other starting during their record for common cold.</p>
+ending on the 15th February 2020). This person had two records for
+aspirin, one ending shortly before their start date for common cold and
+the other starting during their record for common cold.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">common_cold</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>    cohort_definition_id <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -281,28 +280,36 @@ and the other starting during their record for common cold.</p>
 <span>    subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    cohort_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2020-01-01"</span>, <span class="st">"2020-02-10"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    cohort_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2020-01-28"</span>, <span class="st">"2020-03-15"</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span> </span>
-<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">common_cold</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cohort <span class="op">=</span> <span class="st">"common cold"</span><span class="op">)</span>,</span>
-<span>          <span class="va">aspirin</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cohort <span class="op">=</span> <span class="st">"aspirin"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>We can visualise what this person’s timeline looks like.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="va">common_cold</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cohort <span class="op">=</span> <span class="st">"common cold"</span><span class="op">)</span>,</span>
+<span>  <span class="va">aspirin</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cohort <span class="op">=</span> <span class="st">"aspirin"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>record <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_segment.html" class="external-link">geom_segment</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cohort_start_date</span>, </span>
-<span>                 y <span class="op">=</span> <span class="va">cohort</span>,</span>
-<span>                 xend <span class="op">=</span> <span class="va">cohort_end_date</span>, </span>
-<span>                 yend <span class="op">=</span> <span class="va">cohort</span>, col <span class="op">=</span> <span class="va">cohort</span>, fill <span class="op">=</span> <span class="va">cohort</span><span class="op">)</span>,</span>
-<span>            size <span class="op">=</span> <span class="fl">4.5</span>, alpha <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_segment.html" class="external-link">geom_segment</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
+<span>      x <span class="op">=</span> <span class="va">cohort_start_date</span>,</span>
+<span>      y <span class="op">=</span> <span class="va">cohort</span>,</span>
+<span>      xend <span class="op">=</span> <span class="va">cohort_end_date</span>,</span>
+<span>      yend <span class="op">=</span> <span class="va">cohort</span>, col <span class="op">=</span> <span class="va">cohort</span>, fill <span class="op">=</span> <span class="va">cohort</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">4.5</span>, alpha <span class="op">=</span> <span class="fl">.5</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cohort_start_date</span>, y <span class="op">=</span> <span class="va">cohort</span>, color <span class="op">=</span> <span class="va">cohort</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cohort_end_date</span>, y <span class="op">=</span> <span class="va">cohort</span>, color <span class="op">=</span> <span class="va">cohort</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a02_addingCohortIntersections_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
-<p>Whether we consider there to be a cohort intersection will depend on
-what options we choose. To see this let’s first create a cdm reference
-containing our example.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<p><img src="a02_addingCohortIntersections_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p>Whether we consider there to be a cohort intersection between the
+common cold and aspirin cohorts will depend on what options we choose.
+To see this let’s first create a cdm reference containing our
+example.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    con <span class="op">=</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span>,</span>
@@ -316,7 +323,7 @@ containing our example.</p>
 common cold with a window of 0 to 0 (ie only the index date) then no
 intersection will be identified as the individual did not have an
 ongoing record for aspirin on that date.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
@@ -336,14 +343,14 @@ ongoing record for aspirin on that date.</p>
 <span><span class="co">## $ cohort_1_0_to_0      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0</span></span></code></pre>
 <p>We could, however, change the index date to cohort end date in which
 case an intersection would be found.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
 <span>    indexDate <span class="op">=</span> <span class="st">"cohort_end_date"</span>, </span>
 <span>    targetStartDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>    targetEndDate <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
-<span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> </span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
@@ -357,7 +364,7 @@ case an intersection would be found.</p>
 <p>Or we could also extend the window to include more time before or
 after which in both cases would lead to cohort intersections being
 found.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectFlag.html">addCohortIntersectFlag</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
@@ -377,7 +384,7 @@ found.</p>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span></code></pre>
 <p>With a window of 90 days before to 90 days after cohort start, the
 person would have a count of two cohort intersections.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
@@ -397,7 +404,7 @@ person would have a count of two cohort intersections.</p>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2</span></span></code></pre>
 <p>With this same window, if we add the first cohort intersect date we
 will get the start date of the first record of aspirin.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
@@ -417,7 +424,7 @@ will get the start date of the first record of aspirin.</p>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01</span></span></code></pre>
 <p>But if we instead set order to last, we get the start date of the
 second record of aspirin.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
@@ -441,7 +448,7 @@ second record of aspirin.</p>
 </h2>
 <p>One last option relates to the naming convention used to for the new
 variables.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
@@ -463,7 +470,7 @@ variables.</p>
 <p>We can instead choose a specific name (but this will only work if
 only one new variable will be added, otherwise we will get an error to
 avoid duplicate names).</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
@@ -485,7 +492,7 @@ avoid duplicate names).</p>
 <p>In the other direction we could also include the estimate type in the
 name. This will be useful, for example, if we’re adding multiple
 different types of intersection values.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDate.html">addCohortIntersectDate</a></span><span class="op">(</span></span>
 <span>    targetCohortTable <span class="op">=</span> <span class="st">"cohort2"</span>,</span>
