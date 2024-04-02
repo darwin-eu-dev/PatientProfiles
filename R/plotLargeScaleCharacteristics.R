@@ -158,10 +158,10 @@ plotfunction <- function(data,
   # Start constructing the plot
   if (plotStyle == "scatterplot") {
     if ("color_combined" %in% names(df_non_dates)) {
-      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes_string(x = yAxis, y = xAxis, color = "color_combined")) +
+      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes(x = .data[[yAxis]], y = .data[[xAxis]], color = .data$color_combined)) +
         ggplot2::geom_point()
     } else {
-      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes_string(x = yAxis, y = xAxis)) +
+      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes(x = .data[[yAxis]], y = .data[[xAxis]])) +
         ggplot2::geom_point()
     }
   } else if (plotStyle == "barplot") {
@@ -169,12 +169,12 @@ plotfunction <- function(data,
     # Check if 'color_combined' exists in the dataframe
     if ("color_combined" %in% names(df_non_dates)) {
       # If it exists, include it in the aesthetics
-      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes_string(x = yAxis, y = xAxis, fill = "color_combined")) +
+      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes(x = .data[[yAxis]], y = .data[[xAxis]], fill = .data$color_combined)) +
         ggplot2::geom_col() +
         ggplot2::coord_flip()
     } else {
       # If not, exclude the fill aesthetic
-      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes_string(x = yAxis, y = xAxis)) +
+      p <- ggplot2::ggplot(df_non_dates, ggplot2::aes(x = .data[[yAxis]], y = .data[[xAxis]])) +
         ggplot2::geom_col() +
         ggplot2::coord_flip()
     }
@@ -227,8 +227,9 @@ plotfunction <- function(data,
 
     # Check if the dataframe has rows to plot
     if (nrow(df_non_dates_wide) > 0) {
+      xcol <- ifelse(xAxis == "estimate_value", yAxis, xAxis)
       p_non_dates <- df_non_dates_wide %>% ggplot2::ggplot(
-        ggplot2::aes_string(x = dplyr::if_else(xAxis == "estimate_value", yAxis, xAxis))
+        ggplot2::aes(x = .data[[xcol]])
       ) +
         ggplot2::labs(
           title = "Non-Date Data",
@@ -275,8 +276,9 @@ plotfunction <- function(data,
 
     p_dates <- NULL
     if (nrow(df_dates_wide) > 0) {
+      xcol <- ifelse(xAxis == "estimate_value", yAxis, xAxis)
       p_dates <- df_dates_wide %>% ggplot2::ggplot(
-        ggplot2::aes_string(x = dplyr::if_else(xAxis == "estimate_value", yAxis, xAxis))
+        ggplot2::aes(x = .data[[xcol]])
       ) +
         ggplot2::labs(
           title = "Non-Date Data",
@@ -376,9 +378,8 @@ plotfunction <- function(data,
       plots <- lapply(names(split_data), function(data_name) {
         data <- split_data[[data_name]]
 
-        plot <- ggplot2::ggplot(data, ggplot2::aes_string(
-          x = yAxis, y = xAxis,
-          fill = "color_combined"
+        plot <- ggplot2::ggplot(data, ggplot2::aes(
+          x = .data[[yAxis]], y = .data[[xAxis]], fill = .data$color_combined
         )) +
           ggplot2::geom_col() +
           ggplot2::coord_flip() +
