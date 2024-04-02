@@ -157,13 +157,13 @@ test_that("basic functionality summarise large scale characteristics", {
       )
   )
   expect_true(all(c("cohort_1", "cohort_2") %in% result$group_level))
-  expect_true(all(c("overall", "age_group", "age_group and sex") %in% result$strata_name))
+  expect_true(all(c("overall", "age_group", "age_group &&& sex") %in% result$strata_name))
   expect_true(all(c(
-    "overall", "0 to 24", "25 to 150", "0 to 24 and Female",
-    "25 to 150 and Male", "0 to 24 and Male"
+    "overall", "0 to 24", "25 to 150", "0 to 24 &&& Female",
+    "25 to 150 &&& Male", "0 to 24 &&& Male"
   ) %in% result$strata_level))
   result <- result %>%
-    dplyr::filter(strata_level == "0 to 24 and Female")
+    dplyr::filter(strata_level == "0 to 24 &&& Female")
   result <- result |> visOmopResults::splitAdditional()
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
