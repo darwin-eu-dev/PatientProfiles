@@ -444,6 +444,15 @@ checkVariablesFunctions <- function(variables, estimates, table) {
     estimates <- estimates[order(names(estimates))]
   }
 
+  if (length(variables) == 0) {
+    return(dplyr::tibble(
+      "variable_name" = character(),
+      "estimate_name" = character(),
+      "variable_type" = character(),
+      "estimate_type" = character()
+    ))
+  }
+
   functions <- lapply(seq_along(variables), function(k){
     tidyr::expand_grid(
       variable_name = variables[[k]],
