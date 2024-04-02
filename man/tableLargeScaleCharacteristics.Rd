@@ -22,7 +22,7 @@ tableLargeScaleCharacteristics(
 \item{formatEstimateName}{Named list of estimate name's to join, sorted by
 computation order. Indicate estimate_name's between <...>.}
 
-\item{splitStrata}{Whether to split strata_group and starta_level to multiple
+\item{splitStrata}{Whether to split strata_group and strata_level to multiple
 columns.}
 
 \item{header}{Specify the headers of the table.}

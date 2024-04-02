@@ -588,7 +588,7 @@ tableCohortIntersect <- function(result,
 #' @param type Output type ("gt" or "flextable").
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
 #' computation order. Indicate estimate_name's between <...>.
-#' @param splitStrata Whether to split strata_group and starta_level to multiple
+#' @param splitStrata Whether to split strata_group and strata_level to multiple
 #' columns.
 #' @param header Specify the headers of the table.
 #' @param topConcepts Number of concepts to restrict the table.
