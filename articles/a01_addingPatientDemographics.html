@@ -308,7 +308,7 @@ it.</p>
 <span>                   window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
-<span><span class="co">## Columns: 11</span></span>
+<span><span class="co">## Columns: 13</span></span>
 <span><span class="co">## Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span>
 <span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 5, 6, 8, 12, 13, 14, 17, 18, 23, 25, 2…</span></span>
 <span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 5, 6, 8, 12, 13, 14, 17, 18, 23, 25, 2…</span></span>
@@ -320,7 +320,9 @@ it.</p>
 <span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "18 to 65", "&gt;= 66", …</span></span>
 <span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 38, 10, 20, 89, 56, 71, 56, 49, 10, 21, 13, …</span></span>
 <span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Female", "Male", "F…</span></span>
-<span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span></code></pre>
+<span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
+<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1204, 1116, 2404, 3082, 2644, 2623, 5158, 16…</span></span>
+<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 32101, 46760, 11870, 19230, 30583, 13946, 90…</span></span></code></pre>
 <p>We can also specify a window and require that an individual is
 present for only some days within it. Here we add a variable incating
 whether the individual was in observation at least a year in the
@@ -332,7 +334,7 @@ future,</p>
 <span>                   completeInterval <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
-<span><span class="co">## Columns: 11</span></span>
+<span><span class="co">## Columns: 13</span></span>
 <span><span class="co">## Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span>
 <span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 5, 6, 8, 12, 13, 14, 17, 18, 23, 25, 2…</span></span>
 <span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 5, 6, 8, 12, 13, 14, 17, 18, 23, 25, 2…</span></span>
@@ -344,7 +346,9 @@ future,</p>
 <span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "18 to 65", "&gt;= 66", …</span></span>
 <span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 38, 10, 20, 89, 56, 71, 56, 49, 10, 21, 13, …</span></span>
 <span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Female", "Male", "F…</span></span>
-<span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span></code></pre>
+<span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
+<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1204, 1116, 2404, 3082, 2644, 2623, 5158, 16…</span></span>
+<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 32101, 46760, 11870, 19230, 30583, 13946, 90…</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="adding-characteristics-to-a-cohort-tables">Adding characteristics to a cohort tables<a class="anchor" aria-label="anchor" href="#adding-characteristics-to-a-cohort-tables"></a>
@@ -420,7 +424,7 @@ period tables.</p>
 <span>  <span class="fu"><a href="../reference/addInObservation.html">addInObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addFutureObservation.html">addFutureObservation</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_027_1712058664&gt; [5 x 10]</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_027_1712064755&gt; [5 x 10]</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">##   cohort_definition_id subject_id cohort_start_date cohort_end_date   age</span></span>
 <span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -433,7 +437,7 @@ period tables.</p>
 <span><span class="co">## <span style="color: #949494;">#   prior_observation &lt;dbl&gt;, future_observation &lt;dbl&gt;</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 1.622 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 1.689 sec elapsed</span></span></code></pre>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -464,7 +468,7 @@ period tables.</p>
 <span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "18 to 65", "&gt;= 66", "18 to 65", "18…</span></span></code></pre>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 0.743 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 0.739 sec elapsed</span></span></code></pre>
 <p>In our small mock dataset we see a small improvement in performance,
 but this difference will become much more noticeable when working with
 real data that will typically be far larger.</p>
