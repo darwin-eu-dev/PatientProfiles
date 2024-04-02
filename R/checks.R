@@ -417,7 +417,13 @@ checkStrata <- function(list, table, type = "strata") {
       cli::cli_abort(errorMessage)
     }
     if (!all(unlist(list) %in% colnames(table))) {
-      cli::cli_abort(errorMessage)
+      notPresent <- list |> unlist() |> unique()
+      notPresent <- notPresent[! notPresent %in% colnames(table)]
+      cli::cli_abort(paste0(
+        errorMessage,
+        ". The following columns were not found in the data: ",
+        paste0(notPresent, collapse = ", ")
+      ))
     }
   }
 }
