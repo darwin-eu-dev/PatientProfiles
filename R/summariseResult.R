@@ -231,16 +231,37 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
 
   # group by relevant variables
   strataGroupk <- unique(c(groupk, stratak))
-  strataGroup <- table |>
-    dplyr::select(dplyr::all_of(strataGroupk)) |>
-    dplyr::distinct() |>
-    dplyr::mutate("strata_id" = dplyr::row_number())
-  if (strataGroup |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull() == 1) {
+
+  if (length(strataGroupk) == 0) {
     table <- table |>
       dplyr::mutate("strata_id" = as.integer(1))
+    strataGroup <- dplyr::tibble(
+      "strata_id" = as.integer(1),
+      "group_name" = "overall",
+      "group_level" = "overall",
+      "strata_name" = "overall",
+      "strata_level" = "overall"
+    )
   } else {
-    table <- table |>
-      dplyr::inner_join(strataGroup, by = strataGroupk)
+    strataGroup <- table |>
+      dplyr::select(dplyr::all_of(strataGroupk)) |>
+      dplyr::distinct() |>
+      dplyr::mutate("strata_id" = dplyr::row_number())
+    if (strataGroup |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull() == 1) {
+      table <- table |>
+        dplyr::mutate("strata_id" = as.integer(1))
+    } else {
+      table <- table |>
+        dplyr::inner_join(strataGroup, by = strataGroupk)
+    }
+    # format group strata
+    strataGroup <- strataGroup |>
+      dplyr::collect() |>
+      visOmopResults::uniteGroup(cols = groupk, keep = TRUE) |>
+      visOmopResults::uniteStrata(cols = stratak, keep = TRUE) |>
+      dplyr::select(
+        "strata_id", "group_name", "group_level", "strata_name", "strata_level"
+      )
   }
   table <- table |>
     dplyr::select(dplyr::any_of(c(
@@ -265,14 +286,6 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
   # summariseMissings
   result$missings <- summariseMissings(table, functions)
 
-  # format group strata
-  strataGroup <- strataGroup |>
-    dplyr::collect() |>
-    visOmopResults::uniteGroup(cols = groupk, keep = TRUE) |>
-    visOmopResults::uniteStrata(cols = stratak, keep = TRUE) |>
-    dplyr::select(
-      "strata_id", "group_name", "group_level", "strata_name", "strata_level"
-    )
   result <- result |>
     dplyr::bind_rows() |>
     dplyr::inner_join(strataGroup, by = "strata_id") |>
