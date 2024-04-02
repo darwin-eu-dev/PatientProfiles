@@ -356,6 +356,10 @@ summariseNumeric <- function(table, functions) {
           .groups = "drop"
         ) |>
         dplyr::collect() |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(paste0("estimate_", varEst)),
+          .fns = as.numeric
+        )) |>
         tidyr::pivot_longer(
           cols = dplyr::all_of(paste0("estimate_", varEst)),
           names_to = "variable_name",
@@ -382,6 +386,10 @@ summariseNumeric <- function(table, functions) {
           .groups = "drop"
         ) |>
         dplyr::collect() |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(paste0("variable_", estVar)),
+          .fns = as.numeric
+        )) |>
         tidyr::pivot_longer(
           cols = dplyr::all_of(paste0("variable_", estVar)),
           names_to = "estimate_name",
@@ -427,7 +435,11 @@ summariseBinary <- function(table, functions) {
         ~ sum(.x, na.rm = TRUE),
         .names = "counts_{.col}"
       )) |>
-      dplyr::collect()
+      dplyr::collect() |>
+      dplyr::mutate(dplyr::across(
+        .cols = dplyr::all_of(paste0("counts_", binNum)),
+        .fns = as.numeric
+      ))
     binDen <- binFuns |>
       dplyr::filter(.data$estimate_name == "percentage") |>
       dplyr::pull("variable_name")
@@ -449,7 +461,11 @@ summariseBinary <- function(table, functions) {
           ~ sum(as.integer(!is.na(.x)), na.rm = TRUE),
           .names = "den_{.col}"
         )) |>
-        dplyr::collect()
+        dplyr::collect() |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(paste0("den_", binDen)),
+          .fns = as.numeric
+        ))
       percentages <- num |>
         tidyr::pivot_longer(
           cols = dplyr::all_of(paste0("counts_", binNum)),
@@ -559,6 +575,10 @@ summariseMissings <- function(table, functions) {
         "den" = dplyr::n()
       ) |>
       dplyr::collect() |>
+      dplyr::mutate(dplyr::across(
+        .cols = dplyr::all_of(c("den", paste0("cm_", mVars))),
+        .fns = as.numeric
+      )) |>
       tidyr::pivot_longer(
         cols = dplyr::all_of(paste0("cm_", mVars)),
         names_to = "variable_name",
