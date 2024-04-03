@@ -6,28 +6,31 @@
 \usage{
 plotCohortTiming(
   result,
-  type = "boxplot",
-  facetBy = NULL,
-  color = c("cohort_name_reference", "cohort_name_comparator"),
-  timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+  plotType = "boxplot",
+  facetVarX = NULL,
+  facetVarY = "group_level",
+  colorVars = "group_level",
+  timingLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",
   uniqueCombinations = TRUE
 )
 }
 \arguments{
 \item{result}{A summariseCohortTiming result.}
 
-\item{type}{Type of desired formatted table, possibilities are "boxplot" and
-"density".}
+\item{facetVarX}{column in data to facet by on horizontal axis}
 
-\item{facetBy}{column in data to facet by on horizontal axis}
+\item{facetVarY}{column in data to facet by on vertical axis}
 
-\item{color}{Vector of column names to distinct by colors.}
+\item{colorVars}{Column names to distinct by colors. default set to group_level}
 
 \item{timingLabel}{A glue expression to identify each plotted cohort
 overlap.}
 
 \item{uniqueCombinations}{If TRUE, only unique combinations of reference and
 comparator plots will be plotted.}
+
+\item{type}{Type of desired formatted table, possibilities are "boxplot" and
+"density".}
 }
 \value{
 A ggplot.

@@ -6,13 +6,13 @@
 \usage{
 plotCohortIntersect(
   data,
-  xAxis = "variable_name",
-  yAxis = "estimate_value",
+  xAxis = "estimate_value",
+  yAxis = "variable_name",
   plotStyle = "barplot",
   facetVarX = "variable_name",
   facetVarY = c("group_level", "strata_level"),
-  colorVars = NULL,
-  vertical_x = FALSE
+  colorVars = "variable_level",
+  vertical_x = TRUE
 )
 }
 \arguments{

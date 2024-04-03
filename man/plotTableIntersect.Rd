@@ -12,7 +12,7 @@ plotTableIntersect(
   facetVarX = "variable_name",
   facetVarY = c("group_level", "strata_level"),
   colorVars = NULL,
-  vertical_x = FALSE
+  vertical_x = TRUE
 )
 }
 \arguments{

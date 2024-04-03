@@ -58,7 +58,7 @@ plotCharacteristics <- function(data,
                                 vertical_x = FALSE) {
   errorMessage <- checkmate::makeAssertCollection()
 
-  checkmate::assertTRUE(plotStyle %in% c("boxplot", "barplot"), add = errorMessage)
+  checkmate::assertTRUE(plotStyle %in% c("boxplot", "barplot", "density"), add = errorMessage)
 
   checkmate::reportAssertions(collection = errorMessage)
 

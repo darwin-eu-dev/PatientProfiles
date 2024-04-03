@@ -3,8 +3,8 @@
 #' `r lifecycle::badge("experimental")`
 #'
 #' @param result A summariseCohortOverlap result.
-#' @param facetBy Names of columns in the result table for faceting the
-#' ggplot object.
+#' @param facetVarX column in data to facet by on horizontal axis
+#' @param facetVarY column in data to facet by on vertical axis
 #' @param overlapLabel A glue expression to identify each plotted cohort
 #' overlap.
 #' @param uniqueCombinations If TRUE, only unique combinations of reference and
@@ -22,16 +22,21 @@
 #' }
 #'
 plotCohortOverlap <- function(result,
-                              facetBy = "variable_name",
-                              # facetVarY = "strata_level",
+                              facetVarX = "variable_name",
+                              facetVarY = "strata_level",
+                              colorVars = "variable_level",
                               overlapLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",
                               uniqueCombinations = TRUE) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type == "cohort_overlap")
-  checkmate::assertCharacter(facetBy, null.ok = TRUE)
+  checkmate::assertCharacter(facetVarX, null.ok = TRUE)
+  checkmate::assertCharacter(facetVarY, null.ok = TRUE)
   checkmate::assertCharacter(overlapLabel)
   checkmate::assertLogical(uniqueCombinations)
+
+
+
 
   # split table
   x <- result |>
@@ -43,23 +48,20 @@ plotCohortOverlap <- function(result,
       getUniqueCombinations(order = sort(unique(x$cohort_name_reference)))
   }
 
-  data_to_plot <- result %>%
-    dplyr::inner_join(x, by = c(
-      "result_id", "cdm_name", "result_type",
-      "package_name", "package_version",
-      "group_level", "strata_name", "strata_level",
-      "variable_name", "variable_level"
-    )) %>%
-    dplyr::filter(.data$estimate_type == "percentage")
+  suppressMessages(data_to_plot <- result %>%
+    dplyr::inner_join(x) %>%
+    dplyr::filter(.data$estimate_type == "percentage") %>%
+    dplyr::select(names(result)))
 
-  return(plotCharacteristics(data_to_plot,
-    xAxis = "estimate_value",
-    yAxis = "group_level",
-    facetVarX = "variable_name",
-    facetVarY = "strata_level",
-    colorVars = "variable_level",
-    plotStyle = "barplot"
-  ))
+  return(
+    plotCharacteristics(data_to_plot,
+                        xAxis = "estimate_value",
+                        yAxis = "group_level",
+                        facetVarX = facetVarX,
+                        facetVarY = facetVarY,
+                        colorVars = colorVars,
+                        plotStyle = "barplot")
+    )
 }
 
 #' Plot summariseCohortTiming results.
@@ -69,8 +71,9 @@ plotCohortOverlap <- function(result,
 #' @param result A summariseCohortTiming result.
 #' @param type Type of desired formatted table, possibilities are "boxplot" and
 #' "density".
-#' @param facetBy column in data to facet by on horizontal axis
-#' @param color Vector of column names to distinct by colors.
+#' @param facetVarX column in data to facet by on horizontal axis
+#' @param facetVarY column in data to facet by on vertical axis
+#' @param colorVars Column names to distinct by colors. default set to group_level
 #' @param timingLabel A glue expression to identify each plotted cohort
 #' overlap.
 #' @param uniqueCombinations If TRUE, only unique combinations of reference and
@@ -89,178 +92,63 @@ plotCohortOverlap <- function(result,
 #' }
 #'
 plotCohortTiming <- function(result,
-                             type = "boxplot",
-                             facetBy = NULL,
-                             color = c("cohort_name_reference", "cohort_name_comparator"),
-                             timingLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+                             plotType = "boxplot",
+                             facetVarX = NULL,
+                             facetVarY = "group_level",
+                             colorVars = "group_level",
+                             timingLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",
                              uniqueCombinations = TRUE) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
     dplyr::filter(.data$result_type == "cohort_timing")
-  checkmate::assertChoice(type, c("boxplot", "density"))
-  checkmate::assertCharacter(facetBy, null.ok = TRUE)
-  checkmate::assertCharacter(color, null.ok = TRUE)
+  checkmate::assertChoice(plotType, c("boxplot", "density"))
+  checkmate::assertCharacter(facetVarX, null.ok = TRUE)
+  checkmate::assertCharacter(facetVarY, null.ok = TRUE)
+  checkmate::assertCharacter(colorVars, null.ok = TRUE)
   checkmate::assertCharacter(timingLabel)
   checkmate::assertLogical(uniqueCombinations)
 
+
+
+
   # split table
-  x <- result |>
-    visOmopResults::splitGroup() |>
-    visOmopResults::splitAdditional()
+  x <- result |> visOmopResults::tidy(splitStrata = FALSE) |>
+    dplyr::mutate(group_level = glue::glue(.env$timingLabel))
+
+
 
   if (uniqueCombinations) {
     x <- x |>
       getUniqueCombinations(order = sort(unique(x$cohort_name_reference)))
   }
 
-  # prepare data
-  x <- x |>
-    dplyr::mutate(
-      estimate_value = as.numeric(.data$estimate_value),
-      dplyr::across(
-        dplyr::all_of(c(
-          "strata_name", "strata_level",
-          "cohort_name_reference", "cohort_name_comparator"
-        )),
-        ~ stringr::str_to_sentence(gsub("_", " ", gsub("&&&", "and", .x)))
-      )
-    ) |>
-    dplyr::arrange(dplyr::across(
-      dplyr::all_of(c(
-        "result_id", "cdm_name", "cohort_name_reference",
-        "cohort_name_comparator"
-      )),
-      dplyr::desc
-    )) |>
-    dplyr::mutate(timing_label = glue::glue(.env$timingLabel))
+  suppressMessages(data_to_plot <- result %>%
+    dplyr::inner_join(x) %>%
+    dplyr::select(names(result)))
+
 
   # Plotting
-  if (type == "boxplot") {
-    # assert and get data
-    x <- assertBoxplotEstimats(x)
-    # color
-    if (!is.null(color)) {
-      gg <- x |>
-        tidyr::unite("group",
-          dplyr::all_of(.env$color),
-          remove = FALSE, sep = "; "
-        ) |>
-        ggplot2::ggplot(ggplot2::aes(x = .data$timing_label, fill = .data$group))
-    } else {
-      (
-        gg <- x |>
-          ggplot2::ggplot(ggplot2::aes(x = .data$timing_label))
-      )
-    }
-    # plot
-    gg <- gg +
-      ggplot2::geom_boxplot(
-        ggplot2::aes(
-          ymin = .data$q0, lower = .data$q25, middle = .data$q50,
-          upper = .data$q75, ymax = .data$q100
-        ),
-        stat = "identity"
-      ) +
-      ggplot2::scale_x_discrete(labels = ggplot2::label_wrap_gen(15)) +
-      ggplot2::ylab("Time (days)") +
-      ggplot2::xlab("") +
-      ggplot2::theme(legend.title = ggplot2::element_blank())
-    # facet
-    if (!is.null(facetBy)) {
-      gg$data <- gg$data |>
-        tidyr::unite("facet_var",
-          dplyr::all_of(.env$facetBy),
-          remove = FALSE, sep = "; "
-        )
-      gg <- gg +
-        ggplot2::facet_wrap(ggplot2::vars(.data$facet_var))
-    }
-  } else if (type == "density") {
-    x <- assertDensityEstimates(x)
-
-    # vertical position
-    assingY <- c(
-      "result_id", "cdm_name", "cohort_name_reference", "cohort_name_comparator",
-      "strata_name", "strata_level"
+  if (plotType == "boxplot") {
+    return(
+      gg <- plotCharacteristics(data_to_plot,
+                          xAxis = "estimate_value",
+                          yAxis = "group_level",
+                          facetVarX = facetVarX,
+                          facetVarY = facetVarY,
+                          colorVars = colorVars,
+                          plotStyle = "boxplot")
     )
-    if (!is.null(facetBy)) {
-      x <- x |>
-        tidyr::unite("facet_var",
-          dplyr::all_of(.env$facetBy),
-          remove = FALSE, sep = "; "
-        )
-      assingY <- assingY[!assingY %in% facetBy]
-    }
-    x <- x |>
-      dplyr::distinct(dplyr::across(dplyr::all_of(assingY))) |>
-      dplyr::arrange(dplyr::across(
-        dplyr::all_of(assingY),
-        dplyr::desc
-      )) |>
-      dplyr::mutate(y_pos = dplyr::row_number()) |>
-      dplyr::left_join(x, by = assingY)
+    } else if (plotType == "density") {
+      data_to_plot <- data_to_plot %>% dplyr::filter(.data$variable_name == "density")
+      gg <- plotCharacteristics(data_to_plot,
+                          xAxis = "estimate_value",
+                          yAxis = "group_level",
+                          facetVarX = facetVarX,
+                          facetVarY = facetVarY,
+                          colorVars = colorVars,
+                          vertical_x = TRUE,
+                          plotStyle = "density")
 
-    x <- x |>
-      dplyr::mutate(height = max(.data$y) * 1.05) |>
-      dplyr::group_by(.data$plot_id) |>
-      dplyr::mutate(
-        y_pos = .data$y_pos * .data$height - .data$height,
-        y = .data$y + .data$y_pos
-      )
-
-    # plot
-    if (!is.null(color)) {
-      x <- x |>
-        tidyr::unite("color_var",
-          dplyr::all_of(.env$color),
-          remove = FALSE, sep = "; "
-        )
-      gg <- x |>
-        ggplot2::ggplot(ggplot2::aes(
-          x = .data$x, y = .data$y,
-          group = .data$plot_id,
-          color = .data$color_var,
-          fill = .data$color_var
-        ))
-    } else {
-      gg <- x |>
-        ggplot2::ggplot(ggplot2::aes(x = .data$x, y = .data$y, group = .data$plot_id))
-    }
-
-    maxPlot <- max(x$y)
-    maxLabel <- max(x$y_pos) + max(2 * x$height / 3)
-    maxLim <- max(maxPlot, maxLabel)
-
-    gg <- gg +
-      ggplot2::geom_line() +
-      ggplot2::geom_polygon(alpha = 0.5) +
-      ggplot2::geom_hline(yintercept = unique(x$y_pos), color = "gray") +
-      ggplot2::geom_line(
-        data = x |>
-          dplyr::group_by(.data$plot_id) |>
-          dplyr::filter(abs(.data$q50 - .data$x) == min(abs(.data$q50 - .data$x))) |>
-          tidyr::pivot_longer(cols = c("y", "y_pos"), values_to = "y") |>
-          dplyr::ungroup() |>
-          dplyr::select(-x) |>
-          dplyr::rename("x" = "q50"),
-        linewidth = 0.8
-      ) +
-      ggplot2::geom_vline(xintercept = 0, linetype = "dashed", color = "#7f7f7f") +
-      ggplot2::scale_y_continuous(
-        breaks = x$y_pos + x$height / 3,
-        labels = x$timing_label,
-        limits = c(0, maxLim)
-      ) +
-      ggplot2::xlab("Time (days)") +
-      ggplot2::ylab("") +
-      ggplot2::theme(legend.title = ggplot2::element_blank()) +
-      ggplot2::theme_light()
-
-    # facet
-    if (!is.null(facetBy)) {
-      gg <- gg +
-        ggplot2::facet_wrap(ggplot2::vars(.data$facet_var))
-    }
   }
 
   return(gg)
@@ -365,13 +253,13 @@ plotDemographics <- function(data,
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 plotCohortIntersect <- function(data,
-                                xAxis = "variable_name",
-                                yAxis = "estimate_value",
+                                xAxis = "estimate_value",
+                                yAxis = "variable_name",
                                 plotStyle = "barplot",
                                 facetVarX = "variable_name",
                                 facetVarY = c("group_level", "strata_level"),
-                                colorVars = NULL,
-                                vertical_x = FALSE) {
+                                colorVars = "variable_level",
+                                vertical_x = TRUE) {
   # check input
   data <- omopgenerics::newSummarisedResult(data) |>
     dplyr::filter(.data$result_type %in%
@@ -412,7 +300,7 @@ plotTableIntersect <- function(data,
                                facetVarX = "variable_name",
                                facetVarY = c("group_level", "strata_level"),
                                colorVars = NULL,
-                               vertical_x = FALSE) {
+                               vertical_x = TRUE) {
   # check input
   data <- omopgenerics::newSummarisedResult(data) |>
     dplyr::filter(.data$result_type %in%
@@ -483,27 +371,27 @@ getTidyOverlap <- function(x) {
   return(x)
 }
 
-assertBoxplotEstimats <- function(x) {
-  x <- x |>
-    dplyr::mutate(
-      estimate_name = dplyr::case_when(
-        .data$estimate_name == "min" ~ "q0",
-        .data$estimate_name == "max" ~ "q100",
-        .data$estimate_name == "median" ~ "q50",
-        .default = .data$estimate_name
-      )
-    ) |>
-    dplyr::filter(.data$estimate_name %in% c("q0", "q25", "q50", "q75", "q100"))
-
-  if (!all(c("q0", "q25", "q50", "q75", "q100") %in% unique(x$estimate_name))) {
-    cli::cli_abort("To generate a boxplot cohort_timing must have the estimates:
-                   q0 (or min), q25, q50 (or median), q75, and q100 (or max)")
-  } else {
-    x <- x |>
-      tidyr::pivot_wider(names_from = "estimate_name", values_from = "estimate_value")
-  }
-  return(x)
-}
+# assertBoxplotEstimats <- function(x) {
+#   x <- x |>
+#     dplyr::mutate(
+#       estimate_name = dplyr::case_when(
+#         .data$estimate_name == "min" ~ "q0",
+#         .data$estimate_name == "max" ~ "q100",
+#         .data$estimate_name == "median" ~ "q50",
+#         .default = .data$estimate_name
+#       )
+#     ) |>
+#     dplyr::filter(.data$estimate_name %in% c("q0", "q25", "q50", "q75", "q100"))
+#
+#   if (!all(c("q0", "q25", "q50", "q75", "q100") %in% unique(x$estimate_name))) {
+#     cli::cli_abort("To generate a boxplot cohort_timing must have the estimates:
+#                    q0 (or min), q25, q50 (or median), q75, and q100 (or max)")
+#   } else {
+#     x <- x |>
+#       tidyr::pivot_wider(names_from = "estimate_name", values_from = "estimate_value")
+#   }
+#   return(x)
+# }
 
 assertDensityEstimates <- function(x) {
   x <- x |>

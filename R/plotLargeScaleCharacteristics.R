@@ -84,6 +84,10 @@ plotfunction <- function(data,
   checkmate::assertTRUE(inherits(data, "summarised_result"))
   all_vars <- c(xAxis, yAxis, facetVarX, facetVarY, colorVars)
   checkmate::assertTRUE(all(all_vars[!is.null(all_vars)] %in% colnames(data)))
+  if (plotStyle == "density" & xAxis != "estimate_value") {
+    stop(sprintf("If plotStyle is set to 'density', xAxis must be 'estimate_value'."))
+  }
+
   checkmate::assertVector(facetVarX, add = errorMessage, null.ok = TRUE)
   checkmate::assertVector(facetVarY, add = errorMessage, null.ok = TRUE)
   # checkmate::assertList(options, add = errorMessage, null.ok = TRUE)
@@ -110,6 +114,7 @@ plotfunction <- function(data,
   # } else if (!is.null(facetVars)) {
   #   data <- data %>% dplyr::mutate(facet_combined = .data[[facetVars]])
   # }
+
   if (plotStyle == "boxplot") {
     if (!all(c("q25", "median", "q75", "min", "max") %in% data$estimate_name)) {
       return(
@@ -161,17 +166,26 @@ plotfunction <- function(data,
 
 
   df_dates <- data %>% dplyr::filter(.data$estimate_type == "date")
-  df_non_dates <- data %>%
-    dplyr::filter(!(.data$estimate_type %in% c("date", "logical"))) %>%
-    dplyr::mutate(estimate_value = round(as.numeric(.data$estimate_value), 2))
-
-  if (nrow(df_non_dates) > 0) {
-    df_non_dates <- df_non_dates %>%
-      dplyr::mutate(estimate_value = dplyr::if_else(.data$estimate_name == "percentage",
-        .data$estimate_value / 100,
-        .data$estimate_value
-      ))
+  if (plotStyle != "density") {
+    df_non_dates <- data %>%
+      dplyr::filter(!(.data$estimate_type %in% c("date", "logical"))) %>%
+      dplyr::mutate(estimate_value = round(as.numeric(.data$estimate_value), 2))
+    if (nrow(df_non_dates) > 0) {
+      df_non_dates <- df_non_dates %>%
+        dplyr::mutate(
+          estimate_value =
+            dplyr::if_else(.data$estimate_name == "percentage",
+              .data$estimate_value / 100,
+              .data$estimate_value
+            )
+        )
+    }
+  } else {
+    df_non_dates <- data %>%
+      dplyr::filter(!(.data$estimate_type %in% c("date", "logical")))
   }
+
+
 
   # # Prepare for custom colors if provided
   # custom_colors <- NULL
@@ -192,7 +206,6 @@ plotfunction <- function(data,
       make_plot <- function(data, is_percent = FALSE) {
         if ("color_combined" %in% names(data)) {
           plot <- data %>% ggplot2::ggplot() +
-            ggplot2::theme_minimal() +
             ggplot2::geom_point(ggplot2::aes(
               x = !!rlang::sym(xAxis),
               y = !!rlang::sym(yAxis),
@@ -201,7 +214,6 @@ plotfunction <- function(data,
           plot <- plot + ggplot2::labs(color = "Color")
         } else {
           plot <- data %>% ggplot2::ggplot() +
-            ggplot2::theme_minimal() +
             ggplot2::geom_point(ggplot2::aes(
               x = !!rlang::sym(xAxis),
               y = !!rlang::sym(yAxis)
@@ -223,86 +235,145 @@ plotfunction <- function(data,
         return(plot)
       }
 
-      p_percent <- if (nrow(df_percent) > 0) make_plot(df_percent, TRUE) else NULL
-      p_non_percent <- if (nrow(df_non_percent) > 0) make_plot(df_non_percent, FALSE) else NULL
+      p_percent <- if (nrow(df_percent) > 0) {
+        make_plot(df_percent, TRUE)
+      } else {
+        NULL
+      }
+      p_non_percent <- if (nrow(df_non_percent) > 0) {
+        make_plot(df_non_percent, FALSE)
+      } else {
+        NULL
+      }
     } else {
       p_percent <- p_non_percent <- NULL
     }
-  } else if (plotStyle == "barplot") {
+  } else if (plotStyle == "barplot" || plotStyle == "density") {
     if (nrow(df_non_dates) > 0) {
       # Separate data based on 'estimate_name'
       df_percent <- df_non_dates %>% dplyr::filter(.data$estimate_name == "percentage")
       df_non_percent <- df_non_dates %>% dplyr::filter(.data$estimate_name != "percentage")
 
       # Function to create bar plots
-      create_bar_plot <- function(data, is_percent = FALSE) {
-        if ("color_combined" %in% names(data)) {
-          plot <- data %>% ggplot2::ggplot(ggplot2::aes(
-            x = !!rlang::sym(xAxis),
-            y = !!rlang::sym(yAxis),
-            fill = .data$color_combined
-          )) +
-            ggplot2::geom_col() +
-            ggplot2::theme_minimal() +
-            ggplot2::labs(fill = "Color")
-        } else {
-          plot <- ggplot2::ggplot(data, ggplot2::aes(
-            x = !!rlang::sym(xAxis),
-            y = !!rlang::sym(yAxis)
-          )) +
-            ggplot2::geom_col() +
-            ggplot2::theme_minimal()
-        }
+      create_bar_plot <- function(data, plotStyle, is_percent = FALSE) {
+        if (plotStyle == "barplot") {
+          if ("color_combined" %in% names(data)) {
+            plot <- data %>% ggplot2::ggplot(ggplot2::aes(
+              x = !!rlang::sym(xAxis),
+              y = !!rlang::sym(yAxis),
+              fill = .data$color_combined
+            )) +
+              ggplot2::geom_col() +
+              ggplot2::labs(fill = "Color")
+          } else {
+            plot <- ggplot2::ggplot(data, ggplot2::aes(
+              x = !!rlang::sym(xAxis),
+              y = !!rlang::sym(yAxis)
+            )) +
+              ggplot2::geom_col()
+          }
 
 
-        # Apply percent formatting if data is 'percentage' and for the correct axis
-        if (is_percent) {
-          if (xAxis == "estimate_value") {
-            plot <- plot + ggplot2::scale_x_continuous(
-              labels = scales::percent_format(accuracy = 1)
-            )
-          } else if (yAxis == "estimate_value") {
-            plot <- plot + ggplot2::scale_y_continuous(
-              labels = scales::percent_format(accuracy = 1)
-            )
+          # Apply percent formatting if data is 'percentage' and for the correct axis
+          if (is_percent) {
+            if (xAxis == "estimate_value") {
+              plot <- plot + ggplot2::scale_x_continuous(
+                labels = scales::percent_format(accuracy = 1)
+              )
+            } else if (yAxis == "estimate_value") {
+              plot <- plot + ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1)
+              )
+            }
+          }
+        } else if (plotStyle == "density") {
+          data <- data %>%
+            dplyr::filter(variable_name == "density") %>%
+            dplyr::mutate(estimate_value = as.numeric(estimate_value))
+          group_columns <- data %>%
+            dplyr::select(-c(
+              "estimate_value", "estimate_name", "variable_level",
+              if ("facet_combined_x" %in% names(df_non_dates)) "facet_combined_x" else NULL,
+              if ("facet_combined_y" %in% names(df_non_dates)) "facet_combined_y" else NULL,
+              if ("color_combined" %in% names(df_non_dates)) "color_combined" else NULL
+            )) %>%
+            dplyr::summarise(dplyr::across(dplyr::everything(), ~ dplyr::n_distinct(.) > 1)) %>%
+            dplyr::select(dplyr::where(~.)) %>%
+            names()
+
+          data$group_identifier <- interaction(data %>%
+            dplyr::select(dplyr::all_of(group_columns)))
+
+          density_data_wide <- data %>%
+            dplyr::mutate(estimate_value = as.list(estimate_value)) %>%
+            tidyr::pivot_wider(names_from = estimate_name, values_from = estimate_value) %>%
+            tidyr::unnest(dplyr::everything())
+
+          if ("color_combined" %in% names(density_data_wide)) {
+            plot <- density_data_wide %>% ggplot2::ggplot() +
+              ggplot2::geom_density(
+                ggplot2::aes(
+                  x = x,
+                  y = y,
+                  group = .data$group_identifier,
+                  fill = .data$color_combined
+                ),
+                stat = "identity"
+              ) + # Density plot
+              ggplot2::labs(fill = "Color")
+          } else {
+            plot <- density_data_wide %>% ggplot2::ggplot() +
+              ggplot2::geom_density(
+                ggplot2::aes(
+                  x = x,
+                  y = y,
+                  group = .data$group_identifier
+                ),
+                stat = "identity"
+              ) + # Density plot
+              ggplot2::labs(fill = "Color")
           }
         }
 
         return(plot)
       }
 
-      # Create plots
-      p_percent <- if (nrow(df_percent) > 0) {
-        create_bar_plot(df_percent, is_percent = TRUE)
-      } else {
-        NULL
+      if (plotStyle == "barplot") {
+        # Create plots
+        p_percent <- if (nrow(df_percent) > 0) {
+          create_bar_plot(df_percent,
+            plotStyle = "barplot",
+            is_percent = TRUE
+          )
+        } else {
+          NULL
+        }
+        p_non_percent <- if (nrow(df_non_percent) > 0) {
+          create_bar_plot(df_non_percent,
+            plotStyle = "barplot",
+            is_percent = FALSE
+          )
+        } else {
+          NULL
+        }
+      } else if (plotStyle == "density") {
+        p_percent <- NULL
+        p_non_percent <- if (nrow(df_non_percent) > 0) {
+          create_bar_plot(df_non_percent,
+            is_percent = FALSE,
+            plotStyle = "density"
+          )
+        }
       }
-      p_non_percent <- if (nrow(df_non_percent) > 0) {
-        create_bar_plot(df_non_percent)
-      } else {
-        NULL
-      }
-    } else {
-      return(ggplot2::ggplot() +
-        ggplot2::theme_void() +
-        ggplot2::labs(
-          title = "Barplot requires non-date data",
-          subtitle = "No non-date data available for plotting."
-        ))
     }
   } else if (plotStyle == "boxplot") {
-    df_non_dates <- df_non_dates %>%
-      dplyr::filter(.data$estimate_name %in% c("q25", "median", "q75", "min", "max")) %>%
-      dplyr::mutate(
-        estimate_value = as.numeric(.data$estimate_value),
-        estimate_type = "numeric"
-      )
-
-    df_dates <- df_dates %>%
-      dplyr::filter(.data$estimate_name %in% c("q25", "median", "q75", "min", "max")) %>%
-      dplyr::mutate(estimate_value = as.Date(.data$estimate_value))
-
     if (nrow(df_non_dates) > 0) {
+      df_non_dates <- df_non_dates %>%
+        dplyr::filter(.data$estimate_name %in% c("q25", "median", "q75", "min", "max")) %>%
+        dplyr::mutate(
+          estimate_value = as.numeric(.data$estimate_value),
+          estimate_type = "numeric"
+        )
       non_numeric_cols <- df_non_dates %>%
         dplyr::select(-c(
           "estimate_value", "estimate_name",
@@ -331,6 +402,10 @@ plotfunction <- function(data,
     }
 
     if (nrow(df_dates) > 0) {
+      df_dates <- df_dates %>%
+        dplyr::filter(.data$estimate_name %in% c("q25", "median", "q75", "min", "max")) %>%
+        dplyr::mutate(estimate_value = as.Date(.data$estimate_value))
+
       df_dates_wide <- df_dates %>%
         tidyr::pivot_wider(
           id_cols = dplyr::all_of(colnames(df_dates %>%
@@ -357,8 +432,7 @@ plotfunction <- function(data,
           title = "Non-Date Data",
           x = "Variable and Group Level",
           y = "Quantile Values"
-        ) +
-        ggplot2::theme_minimal()
+        )
       # +
       # ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
@@ -383,8 +457,7 @@ plotfunction <- function(data,
         ggplot2::labs(
           title = "Non-Date Data", x = "Variable and Group Level",
           y = "Quantile Values"
-        ) +
-        ggplot2::theme_minimal()
+        )
 
       # Determine if the plot should be horizontal or vertical based on 'estimate_value'
       if (xAxis == "estimate_value") {
@@ -406,8 +479,7 @@ plotfunction <- function(data,
           title = "Date Data",
           x = "Variable and Group Level",
           y = "Quantile Values"
-        ) +
-        ggplot2::theme_minimal()
+        )
 
       if ("color_combined" %in% names(df_dates_wide)) {
         if (!all(is.na(df_dates_wide$color_combined))) {
@@ -429,9 +501,7 @@ plotfunction <- function(data,
         ggplot2::labs(
           title = "Date Data", x = "Variable and Group Level",
           y = "Quantile Values"
-        ) +
-        ggplot2::theme_minimal()
-
+        )
       # Determine if the plot should be horizontal or vertical based on 'estimate_value'
       if (xAxis == "estimate_value") {
         # Horizontal plot
@@ -456,12 +526,18 @@ plotfunction <- function(data,
 
 
 
-  if (!is.null(data$facet_combined_x) || !is.null(data$facet_combined_y)) {
+  if (suppressWarnings(!is.null(data$facet_combined_x) || !is.null(data$facet_combined_y))) {
     if (plotStyle == "scatterplot") {
       # Apply facet grid if either plot exists
       if (!is.null(p_percent) || !is.null(p_non_percent)) {
         if (!is.null(p_percent)) {
-          theme_modification <- ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+          theme_modification <- ggplot2::theme(
+            axis.text.x = ggplot2::element_text(
+              angle = 90,
+              hjust = 1,
+              vjust = 0.5
+            )
+          )
 
           facet_x_exists <- "facet_combined_x" %in% names(df_percent)
           facet_y_exists <- "facet_combined_y" %in% names(df_percent)
@@ -578,7 +654,7 @@ plotfunction <- function(data,
             subtitle = "Boxplot needs to have min max q25 q75 in estimate_name"
           )
       }
-    } else if (plotStyle == "barplot") {
+    } else if (plotStyle == "barplot" || plotStyle == "density") {
       if (!is.null(p_percent)) {
         facet_x_exists <- "facet_combined_x" %in% names(df_percent)
         facet_y_exists <- "facet_combined_y" %in% names(df_percent)
@@ -617,11 +693,12 @@ plotfunction <- function(data,
         p_non_percent <- p_non_percent +
           ggplot2::facet_grid(rows = facet_formula, scales = "free")
         if (vertical_x) {
-          p_non_percent <- p_non_percent + ggplot2::theme(axis.text.x = ggplot2::element_text(
-            angle = 90,
-            hjust = 1,
-            vjust = 0.5
-          ))
+          p_non_percent <- p_non_percent +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(
+              angle = 90,
+              hjust = 1,
+              vjust = 0.5
+            ))
         }
       }
 
@@ -643,12 +720,42 @@ plotfunction <- function(data,
       }
     }
   } else {
-    if (plotStyle == "barplot") {
+    if (plotStyle == "barplot" || plotStyle == "density") {
       p <- if (!is.null(p_percent) && !is.null(p_non_percent)) {
+        if (vertical_x) {
+          p_percent <- p_percent +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(
+              angle = 90,
+              hjust = 1,
+              vjust = 0.5
+            ))
+          p_non_percent <- p_non_percent +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(
+              angle = 90,
+              hjust = 1,
+              vjust = 0.5
+            ))
+        }
         ggpubr::ggarrange(p_percent, p_non_percent, nrow = 2)
       } else if (!is.null(p_percent)) {
+        if (vertical_x) {
+          p_percent <- p_percent +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(
+              angle = 90,
+              hjust = 1,
+              vjust = 0.5
+            ))
+        }
         p_percent
       } else if (!is.null(p_non_percent)) {
+        if (vertical_x) {
+          p_non_percent <- p_non_percent +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(
+              angle = 90,
+              hjust = 1,
+              vjust = 0.5
+            ))
+        }
         p_non_percent
       } else {
         ggplot2::ggplot() +
@@ -661,10 +768,40 @@ plotfunction <- function(data,
     } else if (plotStyle == "boxplot") {
       if (!is.null(p_dates) || !is.null(p_non_dates)) {
         if (!is.null(p_dates) && is.null(p_non_dates)) {
+          if (vertical_x) {
+            p_dates <- p_dates +
+              ggplot2::theme(axis.text.x = ggplot2::element_text(
+                angle = 90,
+                hjust = 1,
+                vjust = 0.5
+              ))
+          }
           p <- p_dates
         } else if (is.null(p_dates) && !is.null(p_non_dates)) {
+          if (vertical_x) {
+            p_non_dates <- p_non_dates +
+              ggplot2::theme(axis.text.x = ggplot2::element_text(
+                angle = 90,
+                hjust = 1,
+                vjust = 0.5
+              ))
+          }
           p <- p_non_dates
         } else {
+          if (vertical_x) {
+            p_dates <- p_dates +
+              ggplot2::theme(axis.text.x = ggplot2::element_text(
+                angle = 90,
+                hjust = 1,
+                vjust = 0.5
+              ))
+            p_non_dates <- p_non_dates +
+              ggplot2::theme(axis.text.x = ggplot2::element_text(
+                angle = 90,
+                hjust = 1,
+                vjust = 0.5
+              ))
+          }
           p <- ggpubr::ggarrange(p_dates, p_non_dates, nrow = 2)
         }
       }
