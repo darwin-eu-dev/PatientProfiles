@@ -218,10 +218,10 @@ plotfunction <- function(data,
       )
 
     df_non_dates_wide$group_identifier <- interaction(df_non_dates_wide %>%
-                                                        dplyr::select("non_numeric_cols"))
+                                                        dplyr::select(dplyr::all_of(non_numeric_cols)))
 
     df_dates_wide$group_identifier <- interaction(df_dates_wide %>%
-                                                    dplyr::select("non_numeric_cols"))
+                                                    dplyr::select(dplyr::all_of(non_numeric_cols)))
 
 
 
