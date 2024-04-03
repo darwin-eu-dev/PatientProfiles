@@ -176,7 +176,7 @@ plotCohortTiming <- function(result,
   checkmate::assertCharacter(timingLabel)
   checkmate::assertLogical(uniqueCombinations)
   if (type == "density" & !"density"%in% result$variable_name) {
-    cli::cli_abort("Please provide a cohort timing summarised result with density estimates.")
+    cli::cli_abort("Please provide a cohort timing summarised result with density estimates (use `density = TRUE` in summariseCohortTiming).")
   }
 
   # split table
