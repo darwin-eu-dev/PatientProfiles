@@ -108,6 +108,9 @@ plotCohortTiming <- function(result,
   checkmate::assertCharacter(colorVars, null.ok = TRUE)
   checkmate::assertCharacter(timingLabel)
   checkmate::assertLogical(uniqueCombinations)
+  if (type == "density" & !"density"%in% result$variable_name) {
+    cli::cli_abort("Please provide a cohort timing summarised result with density estimates (use `density = TRUE` in summariseCohortTiming).")
+  }
 
 
 
@@ -126,6 +129,7 @@ plotCohortTiming <- function(result,
   suppressMessages(data_to_plot <- result %>%
     dplyr::inner_join(x) %>%
     dplyr::select(names(result)))
+
 
 
   # Plotting

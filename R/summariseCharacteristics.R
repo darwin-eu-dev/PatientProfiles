@@ -122,6 +122,7 @@ summariseCharacteristics <- function(cohort,
       variables <- "number records"
     }
     result <- dplyr::tibble(
+      "result_id" = as.integer(1),
       "cdm_name" = CDMConnector::cdmName(cdm),
       "result_type" = "summarised_characteristics",
       "package_name" = "PatientProfiles",

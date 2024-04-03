@@ -432,6 +432,7 @@ plotfunction <- function(data,
 
 
 
+
     # Check if the dataframe has rows to plot
     if (nrow(df_non_dates) > 0) {
       xcol <- ifelse(xAxis == "estimate_value", yAxis, xAxis)
