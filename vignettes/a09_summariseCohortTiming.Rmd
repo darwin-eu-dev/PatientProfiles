@@ -82,7 +82,7 @@ tableCohortTiming(meds_timing,
 
 ```{r}
 plotCohortTiming(meds_timing, 
-                 facetBy = "cdm_name") + 
+                 facetVarX = "cdm_name") + 
   theme_bw() +
   theme(legend.position = "none",
        axis.text.x = element_text(angle = 90,
@@ -96,5 +96,5 @@ If we want to see an even more granular summary of cohort timings we can make a 
 meds_timing <- cdm$meds |> 
   summariseCohortTiming(restrictToFirstEntry = TRUE, 
                         density = TRUE)
-plotCohortTiming(meds_timing, type = "density")
+plotCohortTiming(meds_timing, plotType = "density")
 ```

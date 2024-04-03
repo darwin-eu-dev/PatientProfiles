@@ -131,13 +131,15 @@ plotfunction <- function(data,
     dplyr::mutate(color_combined = construct_color_variable(data, colorVars))
 
   if (is.null(facetVarX)) {
-    facetVarX <- "variable_name"
-    warning("facetVarX cannot be NULL, set to variable_name")
+    warning("facetVarX put as NULL, plot overall")
+    data$overall <- "overall"
+    facetVarX <- "overall"
   }
 
   if (is.null(facetVarY)) {
-    facetVarY <- c("group_level", "strata_level")
-    warning("facetVarY cannot be NULL, set to group_level and strata_level")
+    warning("facetVarY put as NULL, plot overall")
+    data$overall <- "overall"
+    facetVarY <- "overall"
   }
 
   data <- data %>%
@@ -310,28 +312,30 @@ plotfunction <- function(data,
             tidyr::unnest(dplyr::everything())
 
           if ("color_combined" %in% names(density_data_wide)) {
-            plot <- density_data_wide %>% ggplot2::ggplot() +
-              ggplot2::geom_density(
+            plot <- density_data_wide %>%
+              ggplot2::ggplot() +
+              ggplot2::geom_line( # or geom_area() for filled areas
                 ggplot2::aes(
-                  x = data$x,
-                  y = .data$y,
-                  group = .data$group_identifier,
-                  fill = .data$color_combined
-                ),
-                stat = "identity"
-              ) + # Density plot
-              ggplot2::labs(fill = "Color")
+                  x = .data$x, # Assuming 'x' is your data column
+                  y = .data$y, # Pre-calculated density or other metric
+                  group = .data$group_identifier, # Grouping variable
+                  color = .data$color_combined # Use color to differentiate if it's a line plot
+                  # fill = color_combined # Use fill instead of color if it's geom_area()
+                )
+              ) +
+              ggplot2::labs(color = "Color")
           } else {
-            plot <- density_data_wide %>% ggplot2::ggplot() +
-              ggplot2::geom_density(
+            plot <- density_data_wide %>%
+              ggplot2::ggplot() +
+              ggplot2::geom_line( # or geom_area() for filled areas
                 ggplot2::aes(
-                  x = .data$x,
-                  y = .data$y,
-                  group = .data$group_identifier
-                ),
-                stat = "identity"
-              ) + # Density plot
-              ggplot2::labs(fill = "Color")
+                  x = .data$x, # Assuming 'x' is your data column
+                  y = .data$y, # Pre-calculated density or other metric
+                  group = .data$group_identifier, # Grouping variable
+                  # fill = color_combined # Use fill instead of color if it's geom_area()
+                )
+              ) +
+              ggplot2::labs(color = "Color")
           }
         }
 
@@ -442,7 +446,9 @@ plotfunction <- function(data,
 
       if ("color_combined" %in% names(df_non_dates_wide)) {
         if (!all(is.na(df_non_dates_wide$color_combined))) {
-          p_non_dates <- p_non_dates + ggplot2::aes(color = .data$color_combined)
+          p_non_dates <- p_non_dates + ggplot2::aes(color = .data$color_combined) +
+            ggplot2::labs(color = "Color")
+
         }
       }
 
@@ -488,7 +494,8 @@ plotfunction <- function(data,
 
       if ("color_combined" %in% names(df_dates_wide)) {
         if (!all(is.na(df_dates_wide$color_combined))) {
-          p_dates <- p_dates + ggplot2::aes(color = .data$color_combined)
+          p_dates <- p_dates + ggplot2::aes(color = .data$color_combined) +
+            ggplot2::labs(color = "Color")
         }
       }
 
