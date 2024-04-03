@@ -82,6 +82,7 @@ tableCohortTiming(meds_timing,
 
 ```{r}
 plotCohortTiming(meds_timing, 
+                 plotType = "boxplot",
                  facetVarX = "cdm_name") + 
   theme_bw() +
   theme(legend.position = "none",
