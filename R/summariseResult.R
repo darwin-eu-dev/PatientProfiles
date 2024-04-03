@@ -128,12 +128,13 @@ summariseResult <- function(table,
     checkStrata(strata, table)
     functions <- checkVariablesFunctions(variables, estimates, table)
 
-    if (nrow(functions) == 0) {
-      cli::cli_alert_warning(
-        "No estimate can be computed with the current arguments, check `availableEstimates()` for the estimates that this function supports"
-      )
-      return(omopgenerics::emptySummarisedResult())
-    } else if (verbose) {
+    # if (nrow(functions) == 0) {
+    #   cli::cli_alert_warning(
+    #     "No estimate can be computed with the current arguments, check `availableEstimates()` for the estimates that this function supports"
+    #   )
+    #   #return(omopgenerics::emptySummarisedResult())
+    # } else
+    if (verbose) {
       mes <- c("i" = "The following estimates will be computed:")
       variables <- functions$variable_name |> unique()
       for (vark in variables) {
@@ -622,6 +623,9 @@ summariseMissings <- function(table, functions) {
 }
 
 orderVariables <- function(res, cols, est) {
+  if (length(est) == 0) {
+    return(res)
+  }
   orderVars <- dplyr::tibble("variable_name" = c(
     "number_records", "number_subjects", cols
   )) |>

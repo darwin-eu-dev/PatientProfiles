@@ -110,13 +110,13 @@ gtResult <- function(summarisedResult,
 #' @param result A summarised_characteristics object.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
-#' @param splitStrata Whether or not to split the strata, deault is True.
+#' @param splitStrata Whether or not to split the strata, default is True.
 #' @param format The columns that the user wishes to see for the
 #' formatted table.
 #' @param cdmName Whether or not to display the cdm name, default is TRUE.
 #' @param cohortName Weather or not to display the cohort name, default is TRUE.
 #' @param style The style of the table output.
-#' @param minCellCount Default is 5, meaing results that are more than
+#' @param minCellCount Default is 5, meaning results that are more than
 #' 0 but less than 5 will not be reported.
 #' @param .options See optionsTableCharacteristics() for default values.
 #'

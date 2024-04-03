@@ -265,10 +265,12 @@ test_that("test summariseCharacteristics", {
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
       "Future observation") %in% result$variable_name
   ))
-  expect_error(summariseCharacteristics(
-    cdm$dus_cohort,
-    demographics = FALSE
-  ))
+  expect_identical(
+    summariseCharacteristics(cdm$dus_cohort, demographics = FALSE) |>
+      dplyr::arrange(.data$group_level, .data$variable_name),
+    summariseCohortCounts(cdm$dus_cohort) |>
+      dplyr::arrange(.data$group_level, .data$variable_name)
+  )
 
 })
 
