@@ -191,6 +191,9 @@ plotCohortTiming <- function(result,
 
   # prepare data
   x <- x |>
+    dplyr::filter(.data$estimate_type %in% c(
+      "numeric", "integer", "proportion", "percentage"
+    )) |>
     dplyr::mutate(estimate_value = as.numeric(.data$estimate_value),
                   dplyr::across(
                     dplyr::all_of(c("strata_name", "strata_level",
