@@ -56,7 +56,7 @@ test_that("test all functions", {
   )
   expect_no_error(
     result <- summariseResult(
-      x = cohort, variables = variables, estimates = functions
+      table = cohort, variables = variables, estimates = functions
     )
   )
 })
