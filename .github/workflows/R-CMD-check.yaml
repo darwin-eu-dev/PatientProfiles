@@ -21,9 +21,6 @@ jobs:
           - {os: ubuntu-latest,   r: 'release'}
 
     env:
-      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
-#      CDM5_REDSHIFT_DBNAME: ${{ secrets.CDM5_REDSHIFT_DBNAME }}
-#      CDM5_REDSHIFT_OHDSI_SCHEMA: ${{ secrets.CDM5_REDSHIFT_OHDSI_SCHEMA }}
       R_KEEP_PKG_SOURCE: yes
 
     steps:
