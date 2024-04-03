@@ -827,3 +827,55 @@ test_that("cohortIntersect after observation", {
   }
 
 })
+
+test_that("issue 612", {
+  cohort <- dplyr::tibble(
+    cohort_definition_id = c(1, 2, 3, 1, 2, 3, 1, 2),
+    subject_id = c(1, 1, 1, 2, 3, 3, 4, 4),
+    cohort_start_date = as.Date(c(
+      "2020-03-01", "2020-04-01", "2020-01-01", "2020-02-01", "2020-03-01",
+      "2020-04-01", "2020-02-01", "2020-06-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-05-01", "2020-06-01", "2020-05-01", "2020-05-01", "2020-05-01",
+      "2020-07-01", "2020-02-04", "2020-06-08"
+    ))
+  )
+  person <- dplyr::tibble(
+    person_id = c(1, 2, 3, 4),
+    gender_concept_id = c(8507, 8532, 8507, 8532),
+    year_of_birth = 2000,
+    month_of_birth = 1,
+    day_of_birth = 1,
+    race_concept_id = NA_character_,
+    ethnicity_concept_id = NA_character_
+
+  )
+  observation_period <- dplyr::tibble(
+    observation_period_id = 1:4,
+    person_id = 1:4,
+    observation_period_start_date = as.Date("2010-01-01"),
+    observation_period_end_date = as.Date("2020-12-31"),
+    period_type_concept_id = 32880
+  )
+  cdm <- PatientProfiles::mockPatientProfiles(
+    observation_period = observation_period, person = person, cohort1 = cohort
+  )
+
+  x <- cdm$cohort1 |>
+    addCohortIntersectFlag(
+      targetCohortTable = "cohort1",
+      window = c(0, 0),
+      nameStyle = "{cohort_name}"
+    ) |>
+    dplyr::collect() |>
+    dplyr::arrange(
+      .data$cohort_definition_id, .data$subject_id, .data$cohort_start_date
+    )
+
+  expect_true(all(x$cohort_1 == c(1, 1, 1, 1, 0, 0, 0, 0)))
+  expect_true(all(x$cohort_2 == c(0, 0, 0, 1, 1, 1, 0, 1)))
+  expect_true(all(x$cohort_3 == c(1, 0, 0, 1, 0, 0, 1, 1)))
+
+  CDMConnector::cdmDisconnect(cdm)
+})
