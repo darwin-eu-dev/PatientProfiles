@@ -1,4 +1,5 @@
 test_that("plotCohortTiming, boxplot", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = 1:20,
     gender_concept_id = 8532,
@@ -78,6 +79,7 @@ test_that("plotCohortTiming, boxplot", {
   CDMConnector::cdm_disconnect(cdm)
 })
 test_that("plotCohortTiming, density", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = 1:20,
     year_of_birth = runif(n=20, min=1950, max=2000),
@@ -174,6 +176,7 @@ test_that("plotCohortTiming, density", {
   CDMConnector::cdm_disconnect(cdm)
 })
 test_that("plotCohortOverlap", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = 1:20,
     gender_concept_id = 8532,
@@ -257,6 +260,7 @@ test_that("plotCohortOverlap", {
   CDMConnector::cdm_disconnect(cdm)
 })
 test_that("plotTableIntersect", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
@@ -330,6 +334,7 @@ test_that("plotTableIntersect", {
   CDMConnector::cdm_disconnect(cdm)
 })
 test_that("plotCohortIntersect", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),
@@ -425,6 +430,7 @@ test_that("plotCohortIntersect", {
   CDMConnector::cdm_disconnect(cdm)
 })
 test_that("plotDemographics", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),

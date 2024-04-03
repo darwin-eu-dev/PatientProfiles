@@ -142,24 +142,25 @@ summariseCohortTiming <- function(cohort,
         }
       }
     }
-    timingsResult <- timingsResult |>
-      dplyr::union_all(
-        timingDensity |>
-          dplyr::bind_rows() |>
-          dplyr::mutate(
-            result_id = as.integer(1),
-            cdm_name = CDMConnector::cdmName(cdm),
-            result_type = "cohort_timing",
-            package_name = "PatientProfiles",
-            package_version = as.character(utils::packageVersion("PatientProfiles")),
-            group_name = "cohort_name_reference &&& cohort_name_comparator",
-            variable_name = "density",
-            estimate_type = "numeric",
-            additional_name ="overall",
-            additional_level = "overall"
-          )
-      ) |>
-      dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result")))
+
+      timingsResult <- timingsResult |>
+        dplyr::union_all(
+          timingDensity |>
+            dplyr::bind_rows() |>
+            dplyr::mutate(
+              result_id = as.integer(1),
+              cdm_name = CDMConnector::cdmName(cdm),
+              result_type = "cohort_timing",
+              package_name = "PatientProfiles",
+              package_version = as.character(utils::packageVersion("PatientProfiles")),
+              group_name = "cohort_name_reference &&& cohort_name_comparator",
+              variable_name = "density",
+              estimate_type = "numeric",
+              additional_name ="overall",
+              additional_level = "overall"
+            )
+        ) |>
+        dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result")))
   }
 
   # add settings
@@ -202,7 +203,7 @@ getDensityData <- function(sLevel, data) {
   ) |>
     dplyr::union_all(
       dplyr::tibble(
-        variable_level = as.character(1:length(d$y)),
+        variable_level = as.character(1:length(d$x)),
         estimate_name = "y",
         estimate_value = as.character(d$y)
       )

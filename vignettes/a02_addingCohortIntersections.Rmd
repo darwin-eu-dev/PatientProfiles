@@ -15,7 +15,7 @@ vignette: >
 
 ## Introduction
 
-Cohorts are often a key component in studies that use the OMOP CDM. Cohorts may be created to represent various clinical events of interest and we often use cohorts in combination, whether it is to identify outcomes among people with an exposure of interest, report baseline comorbidites among a certain study population, or for many other possible reasons.
+Cohorts are often a key component in studies that use the OMOP CDM. They may be created to represent various clinical events of interest and we often use cohorts in combination, whether it is to identify outcomes among people with an exposure of interest, report baseline comorbidites among a certain study population, or for many other possible reasons.
 
 Cohorts have a particular format in the OMOP CDM, which we can see for two cohort tables created by the `mockPatientProfiles()` function provided by PatientProfiles, which mimics a database in the OMOP CDM format. We can see the first cohort table contains 2 cohorts while the second contains 3 cohorts.
 
@@ -31,7 +31,6 @@ cdm <- mockPatientProfiles(
   drug_exposure_size = 1000
 )
 
-# In this mock dataset there are the following cohort tables:
 cdm$cohort1 %>%
   glimpse()
 settings(cdm$cohort1)
@@ -43,9 +42,9 @@ settings(cdm$cohort2)
 
 ## Identifying cohort intersections
 
-PatientProfiles provides four functions for identifying cohort intersections (the presence of an individual in two cohorts). The first `addCohortIntersectFlag()` adds a flag of whether someone appeared in the other cohort during a time window. The second, `addCohortIntersectCount()`, counts the number of times someone appeared in the other cohort in the window. A third, `addCohortIntersectDate()`, adds the date when the intersection occurred. And the fourth, `addCohortIntersectDays()`, add the number of days to the intersection. 
+PatientProfiles provides four functions for identifying cohort intersections (the presence of an individual in two cohorts). The first `addCohortIntersectFlag()` adds a flag of whether someone appeared in the other cohort during a time window. The second, `addCohortIntersectCount()`, counts the number of times someone appeared in the other cohort in the window. A third, `addCohortIntersectDate()`, adds the date when the intersection occurred. And the fourth, `addCohortIntersectDays()`, adds the number of days to the intersection. 
 
-We can see each of these below. Note that they add variables to our cohort table of interest, and identify intersections over a given window. As we can see below, if our target cohort table contains multiple cohorts, by default these functions will add one new variable per cohort.
+We can see each of these below. Note that they add variables to our cohort table of interest, and identify intersections over a given window. As we can see, if our target cohort table contains multiple cohorts then by default these functions will add one new variable per cohort.
 
 Let's start by adding flag and count variables using a window of 180 days before to 180 days after the cohort start date in our table of interest. By default the cohort start date of our cohort of interest will be used as the index date, with the cohort start to cohort end date of the target cohort then used to check for an intersection.
 
@@ -69,7 +68,7 @@ cdm$cohort1 %>%
   glimpse()
 ```
 
-Next we can add the date of the intersection and the days to the intersection. Note that when identifying these variables we look at only one date in our target table, which by default will be the cohort start date. In addition by default the first intersection that occurs within our window will be used.   
+Next we can add the date of the intersection and the days to the intersection. When identifying these variables we use only one date in our target table, which by default will be the cohort start date. In addition by default the first intersection that occurs within our window will be used.   
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1 %>%
@@ -93,7 +92,7 @@ cdm$cohort1 %>%
 
 
 ## Options for identifying cohort intersection
-To consider the impact of the different options we can choose when identifying cohort intersections let´s consider a toy example with a single patient with common cold (diagnosed on the 1st February 2020 and ending on the 15th February 2020). Let's say this person had two records for aspirin, one ending shortly before their start date for common cold and the other starting during their record for common cold.
+To consider the impact of the different options we can choose when identifying cohort intersections let´s consider a toy example with a single patient with common cold (diagnosed on the 1st February 2020 and ending on the 15th February 2020). This person had two records for aspirin, one ending shortly before their start date for common cold and the other starting during their record for common cold.
 
 ```{r, message= FALSE, warning=FALSE}
 common_cold <- dplyr::tibble(
@@ -109,25 +108,35 @@ aspirin <- dplyr::tibble(
     cohort_start_date = as.Date(c("2020-01-01", "2020-02-10")),
     cohort_end_date = as.Date(c("2020-01-28", "2020-03-15"))
   )
- 
-bind_rows(common_cold |> mutate(cohort = "common cold"),
-          aspirin |> mutate(cohort = "aspirin")) |> 
+```  
+
+We can visualise what this person's timeline looks like.
+
+```{r, message= FALSE, warning=FALSE}
+bind_rows(
+  common_cold |> mutate(cohort = "common cold"),
+  aspirin |> mutate(cohort = "aspirin")
+) |>
   mutate(record = as.character(row_number())) |>
   ggplot() +
-geom_segment(aes(x = cohort_start_date, 
-                 y = cohort,
-                 xend = cohort_end_date, 
-                 yend = cohort, col = cohort, fill = cohort),
-            size = 4.5, alpha = .5) +
+  geom_segment(
+    aes(
+      x = cohort_start_date,
+      y = cohort,
+      xend = cohort_end_date,
+      yend = cohort, col = cohort, fill = cohort
+    ),
+    size = 4.5, alpha = .5
+  ) +
   geom_point(aes(x = cohort_start_date, y = cohort, color = cohort), size = 4) +
   geom_point(aes(x = cohort_end_date, y = cohort, color = cohort), size = 4) +
   ylab("") +
-  xlab("")+
+  xlab("") +
   theme_minimal() +
   theme(legend.position = "none")
 ```  
   
-Whether we consider there to be a cohort intersection will depend on what options we choose. To see this let's first create a cdm reference containing our example.
+Whether we consider there to be a cohort intersection between the common cold and aspirin cohorts will depend on what options we choose. To see this let's first create a cdm reference containing our example.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm <- mockPatientProfiles(
@@ -164,7 +173,7 @@ cdm$cohort1 %>%
     indexDate = "cohort_end_date", 
     targetStartDate = "cohort_start_date",
     targetEndDate = "cohort_end_date",
-    window = list(c(0, 0)), 
+    window = list(c(0, 0)) 
   ) |> 
   glimpse()
 ```

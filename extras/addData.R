@@ -20,6 +20,7 @@ formats <- variables |>
   rename("estimate_name" = "value") |>
   inner_join(formats, by = "estimate_name") |>
   mutate(estimate_type = if_else(estimate_type == "same", variable_type, estimate_type)) |>
+  mutate(estimate_type = if_else(estimate_name %in% c("mean", "sd") & variable_type == "integer", "numeric", estimate_type)) |>
   mutate(estimate_description = case_when(
     variable_type %in% c("numeric", "integer") & estimate_name == "count" ~
       "count number of `1`.",

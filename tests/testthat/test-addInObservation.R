@@ -6,8 +6,8 @@ test_that("addInObservation, input length and type", {
   expect_error(addInObservation(cdm$cohort1, indexDate = 3))
   expect_error(addInObservation(cdm$cohort1, indexDate = "2002-01-02"))
   expect_error(addInObservation(cdm$cohort1, indexDate = c("cohort", "cohort_end")))
-  expect_error(addInObservation(cdm$cohort2, name = 3))
-  expect_error(addInObservation(cdm$cohort2, name = c("name1", "name2")))
+  expect_error(addInObservation(cdm$cohort2, nameStyle = 3))
+  expect_error(addInObservation(cdm$cohort2, nameStyle = c("name1", "name2")))
 })
 
 test_that("addInObservation, cohort and condition_occurrence", {
@@ -41,7 +41,7 @@ test_that("addInObservation, cohort and condition_occurrence", {
 test_that("addInObservation, parameters", {
   cdm <- mockPatientProfiles(connectionDetails)
 
-  result1 <- addInObservation(cdm$condition_occurrence, indexDate = "condition_end_date", name = "observ")
+  result1 <- addInObservation(cdm$condition_occurrence, indexDate = "condition_end_date", nameStyle = "observ")
   expect_true("observ" %in% colnames(result1))
   expect_false("in_observation" %in% colnames(result1))
 

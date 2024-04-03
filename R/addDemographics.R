@@ -592,9 +592,11 @@ addInObservation <- function(x,
       age = FALSE,
       sex = FALSE,
       priorObservation = TRUE,
-      futureObservation = TRUE
+      priorObservationName = "tmp_prior",
+      futureObservation = TRUE,
+      futureObservationName = "tmp_future"
     ) |>
-    dplyr::mutate("prior_observation" = - .data$prior_observation)
+    dplyr::mutate("tmp_prior" = - .data$tmp_prior)
 
   for (k in seq_along(window)) {
 
@@ -606,7 +608,7 @@ addInObservation <- function(x,
 
       x <- x %>%
         dplyr::mutate(!!nam := as.numeric(
-          dplyr::if_else(is.na(.data$prior_observation), 0, 1)
+          dplyr::if_else(is.na(.data$tmp_prior), 0, 1)
         ))
 
     } else {
@@ -620,9 +622,9 @@ addInObservation <- function(x,
         } else {
           x <- x %>%
             dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-              !is.na(.data$prior_observation) &
-                .data$prior_observation <= .env$lower &
-                .env$upper <= .data$future_observation,
+              !is.na(.data$tmp_prior) &
+                .data$tmp_prior <= .env$lower &
+                .env$upper <= .data$tmp_future,
               1,
               0
             )))
@@ -632,13 +634,13 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation), 1, 0
+                !is.na(.data$tmp_prior), 1, 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation) &
-                  .data$prior_observation <= .env$upper,
+                !is.na(.data$tmp_prior) &
+                  .data$tmp_prior <= .env$upper,
                 1,
                 0
               )))
@@ -647,17 +649,17 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation) &
-                  .env$lower <= .data$future_observation,
+                !is.na(.data$tmp_prior) &
+                  .env$lower <= .data$tmp_future,
                 1,
                 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation) &
-                  .data$prior_observation <= .env$upper &
-                  .env$lower <= .data$future_observation,
+                !is.na(.data$tmp_prior) &
+                  .data$tmp_prior <= .env$upper &
+                  .env$lower <= .data$tmp_future,
                 1,
                 0
               )))
@@ -670,7 +672,7 @@ addInObservation <- function(x,
   }
 
   x <- x |>
-    dplyr::select(-"prior_observation", -"future_observation") |>
+    dplyr::select(-"tmp_prior", -"tmp_future") |>
     dplyr::compute()
 
   return(x)
