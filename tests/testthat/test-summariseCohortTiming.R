@@ -61,6 +61,9 @@ test_that("summariseCohortTiming", {
   expect_true(all(c("x", "y") %in%
                     unique(timing3$estimate_name)))
   expect_true("overall" == unique(timing3$strata_level))
+  expect_no_error(res1 <- tidyr::pivot_wider(timing3, names_from = "estimate_name", values_from = "estimate_value"))
+  expect_true(all(c("x", "y") %in% colnames(res1)))
+  expect_true(class(res1$x) == "character")
 
   ## Strata and cohortId----
   cdm$table <- cdm$table |>
@@ -82,6 +85,9 @@ test_that("summariseCohortTiming", {
   expect_true(all(unique(timing5$estimate_name[timing5$strata_name == "age_group &&& sex"]) %in% c("x", "y", "count")))
   expect_true(all(unique(timing5$estimate_name[timing5$strata_name == "overall"]) %in% c("x", "y", "count")))
   expect_true(all(unique(timing5$estimate_name[timing5$strata_name == "age_group"]) %in% c("x", "y", "count")))
+  expect_no_error(res2 <- tidyr::pivot_wider(timing5, names_from = "estimate_name", values_from = "estimate_value"))
+  expect_true(all(c("x", "y") %in% colnames(res2)))
+  expect_true(class(res2$x) == "character")
 
   timing6 <- summariseCohortTiming(cdm$table, cohortId = 1)
   expect_true(nrow(timing6) == 0)
@@ -94,8 +100,4 @@ test_that("summariseCohortTiming", {
   expect_true(nrow(timing8) == 0)
 
   CDMConnector::cdm_disconnect(cdm)
-
 })
-
-
-

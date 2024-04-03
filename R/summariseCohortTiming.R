@@ -154,7 +154,6 @@ summariseCohortTiming <- function(cohort,
               package_version = as.character(utils::packageVersion("PatientProfiles")),
               group_name = "cohort_name_reference &&& cohort_name_comparator",
               variable_name = "density",
-              variable_level = NA_character_,
               estimate_type = "numeric",
               additional_name ="overall",
               additional_level = "overall"
@@ -197,11 +196,13 @@ getDensityData <- function(sLevel, data) {
   dStrata <- data$diff_days[data$strata_level == sLevel]
   d <- stats::density(dStrata)
   densityResult <- dplyr::tibble(
+    variable_level = as.character(1:length(d$x)),
     estimate_name = "x",
     estimate_value = as.character(d$x)
   ) |>
     dplyr::union_all(
       dplyr::tibble(
+        variable_level = as.character(1:length(d$x)),
         estimate_name = "y",
         estimate_value = as.character(d$y)
       )
