@@ -208,14 +208,14 @@ addIntersect <- function(x,
       if (is.infinite(win[2])) {
         resultW <- result
       } else {
-        resultW <- result %>% dplyr::filter(.data$end <= !!win[2])
+        resultW <- result %>% dplyr::filter(.data$start <= !!win[2])
       }
     } else {
       if (is.infinite(win[2])) {
-        resultW <- result %>% dplyr::filter(.data$start >= !!win[1])
+        resultW <- result %>% dplyr::filter(.data$end >= !!win[1])
       } else {
         resultW <- result %>%
-          dplyr::filter(.data$start >= !!win[1] & .data$end <= !!win[2])
+          dplyr::filter(.data$end >= !!win[1] & .data$start <= !!win[2])
       }
     }
 
