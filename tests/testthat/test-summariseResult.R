@@ -51,13 +51,12 @@ test_that("test all functions", {
     categorical = c("sex")
   )
   functions <- list(
-    numeric = c("median", "q25", "q75", "missing"),
+    numeric = c("median", "q25", "q75", "count_missing", "percentage_missing"),
     categorical = c("count", "percentage")
   )
   expect_no_error(
     result <- summariseResult(
-      cohort,
-      variables = variables, functions = functions
+      x = cohort, variables = variables, estimates = functions
     )
   )
 })
@@ -413,7 +412,7 @@ test_that("data is ordered", {
   expect_no_error(
     result <- summariseResult(
       table = testTable, strata = list("sex"), variables = variables,
-      functions = functions
+      estimates = functions
     )
   )
   # check first overall, second sex
@@ -453,7 +452,7 @@ test_that("data is ordered", {
   expect_no_error(
     result <- summariseResult(
       table = testTable, strata = list("sex"), variables = variables,
-      functions = functions
+      estimates = functions
     )
   )
   # check first overall, second sex
