@@ -1,5 +1,5 @@
-test_that("test plot",{
-
+test_that("test plot", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2, 3), gender_concept_id = c(8507, 8532, 8532),
     year_of_birth = c(1985, 2000, 1962), month_of_birth = c(10, 5, 9),

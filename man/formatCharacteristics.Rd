@@ -23,7 +23,7 @@ formatCharacteristics(
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", "tibble".}
 
-\item{splitStrata}{Whether or not to split the strata, deault is True.}
+\item{splitStrata}{Whether or not to split the strata, default is True.}
 
 \item{format}{The columns that the user wishes to see for the
 formatted table.}
@@ -34,7 +34,7 @@ formatted table.}
 
 \item{style}{The style of the table output.}
 
-\item{minCellCount}{Default is 5, meaing results that are more than
+\item{minCellCount}{Default is 5, meaning results that are more than
 0 but less than 5 will not be reported.}
 
 \item{.options}{See optionsTableCharacteristics() for default values.}

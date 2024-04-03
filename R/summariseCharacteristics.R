@@ -87,15 +87,15 @@ summariseCharacteristics <- function(cohort,
   checkOtherVariables(otherVariables, cohort)
 
   # check empty
-  if (demographics == FALSE &
-      length(tableIntersect) == 0 &
-      length(cohortIntersect) == 0 &
-      length(conceptIntersect) == 0 ) {
-    cli::cli_abort(
-      "Please fill demographics, tableIntersect, cohortIntersect or
-      conceptIntersect"
-    )
-  }
+  # if (demographics == FALSE &
+  #     length(tableIntersect) == 0 &
+  #     length(cohortIntersect) == 0 &
+  #     length(conceptIntersect) == 0 ) {
+  #   cli::cli_abort(
+  #     "Please fill demographics, tableIntersect, cohortIntersect or
+  #     conceptIntersect"
+  #   )
+  # }
 
   # functions
   functions <- list(
@@ -490,6 +490,34 @@ summariseCharacteristics <- function(cohort,
   cli::cli_alert_success("summariseCharacteristics finished!")
 
   return(results)
+}
+
+#' Summarise counts for each different cohort. You can add a list of
+#' stratifications.
+#'
+#' @param cohort A cohort in the cdm.
+#' @param strata Stratification list.
+#'
+#' @return A summary of the number of individuals in each cohrot and strata.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' cdm <- mockPatientProfiles()
+#'
+#' cdm$cohort1 |>
+#'   addSex() |>
+#'   summariseCohortCounts(strata = "sex")
+#' }
+#'
+summariseCohortCounts <- function(cohort,
+                                  strata = list()) {
+  summariseCharacteristics(
+    cohort = cohort, strata = strata, demographics = FALSE, ageGroup = NULL,
+    tableIntersect = list(), cohortIntersect = list(),
+    conceptIntersect = list(), otherVariables = character()
+  )
 }
 
 #' Summarise concept intersect with a cohort_table

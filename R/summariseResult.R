@@ -128,12 +128,13 @@ summariseResult <- function(table,
     checkStrata(strata, table)
     functions <- checkVariablesFunctions(variables, estimates, table)
 
-    if (nrow(functions) == 0) {
-      cli::cli_alert_warning(
-        "No estimate can be computed with the current arguments, check `availableEstimates()` for the estimates that this function supports"
-      )
-      return(omopgenerics::emptySummarisedResult())
-    } else if (verbose) {
+    # if (nrow(functions) == 0) {
+    #   cli::cli_alert_warning(
+    #     "No estimate can be computed with the current arguments, check `availableEstimates()` for the estimates that this function supports"
+    #   )
+    #   #return(omopgenerics::emptySummarisedResult())
+    # } else
+    if (verbose) {
       mes <- c("i" = "The following estimates will be computed:")
       variables <- functions$variable_name |> unique()
       for (vark in variables) {
@@ -231,16 +232,37 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
 
   # group by relevant variables
   strataGroupk <- unique(c(groupk, stratak))
-  strataGroup <- table |>
-    dplyr::select(dplyr::all_of(strataGroupk)) |>
-    dplyr::distinct() |>
-    dplyr::mutate("strata_id" = dplyr::row_number())
-  if (strataGroup |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull() == 1) {
+
+  if (length(strataGroupk) == 0) {
     table <- table |>
       dplyr::mutate("strata_id" = as.integer(1))
+    strataGroup <- dplyr::tibble(
+      "strata_id" = as.integer(1),
+      "group_name" = "overall",
+      "group_level" = "overall",
+      "strata_name" = "overall",
+      "strata_level" = "overall"
+    )
   } else {
-    table <- table |>
-      dplyr::inner_join(strataGroup, by = strataGroupk)
+    strataGroup <- table |>
+      dplyr::select(dplyr::all_of(strataGroupk)) |>
+      dplyr::distinct() |>
+      dplyr::mutate("strata_id" = dplyr::row_number())
+    if (strataGroup |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull() == 1) {
+      table <- table |>
+        dplyr::mutate("strata_id" = as.integer(1))
+    } else {
+      table <- table |>
+        dplyr::inner_join(strataGroup, by = strataGroupk)
+    }
+    # format group strata
+    strataGroup <- strataGroup |>
+      dplyr::collect() |>
+      visOmopResults::uniteGroup(cols = groupk, keep = TRUE) |>
+      visOmopResults::uniteStrata(cols = stratak, keep = TRUE) |>
+      dplyr::select(
+        "strata_id", "group_name", "group_level", "strata_name", "strata_level"
+      )
   }
   table <- table |>
     dplyr::select(dplyr::any_of(c(
@@ -265,14 +287,6 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
   # summariseMissings
   result$missings <- summariseMissings(table, functions)
 
-  # format group strata
-  strataGroup <- strataGroup |>
-    dplyr::collect() |>
-    visOmopResults::uniteGroup(cols = groupk, keep = TRUE) |>
-    visOmopResults::uniteStrata(cols = stratak, keep = TRUE) |>
-    dplyr::select(
-      "strata_id", "group_name", "group_level", "strata_name", "strata_level"
-    )
   result <- result |>
     dplyr::bind_rows() |>
     dplyr::inner_join(strataGroup, by = "strata_id") |>
@@ -356,6 +370,10 @@ summariseNumeric <- function(table, functions) {
           .groups = "drop"
         ) |>
         dplyr::collect() |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(paste0("estimate_", varEst)),
+          .fns = as.numeric
+        )) |>
         tidyr::pivot_longer(
           cols = dplyr::all_of(paste0("estimate_", varEst)),
           names_to = "variable_name",
@@ -382,6 +400,10 @@ summariseNumeric <- function(table, functions) {
           .groups = "drop"
         ) |>
         dplyr::collect() |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(paste0("variable_", estVar)),
+          .fns = as.numeric
+        )) |>
         tidyr::pivot_longer(
           cols = dplyr::all_of(paste0("variable_", estVar)),
           names_to = "estimate_name",
@@ -427,7 +449,11 @@ summariseBinary <- function(table, functions) {
         ~ sum(.x, na.rm = TRUE),
         .names = "counts_{.col}"
       )) |>
-      dplyr::collect()
+      dplyr::collect() |>
+      dplyr::mutate(dplyr::across(
+        .cols = dplyr::all_of(paste0("counts_", binNum)),
+        .fns = as.numeric
+      ))
     binDen <- binFuns |>
       dplyr::filter(.data$estimate_name == "percentage") |>
       dplyr::pull("variable_name")
@@ -449,7 +475,11 @@ summariseBinary <- function(table, functions) {
           ~ sum(as.integer(!is.na(.x)), na.rm = TRUE),
           .names = "den_{.col}"
         )) |>
-        dplyr::collect()
+        dplyr::collect() |>
+        dplyr::mutate(dplyr::across(
+          .cols = dplyr::all_of(paste0("den_", binDen)),
+          .fns = as.numeric
+        ))
       percentages <- num |>
         tidyr::pivot_longer(
           cols = dplyr::all_of(paste0("counts_", binNum)),
@@ -559,6 +589,10 @@ summariseMissings <- function(table, functions) {
         "den" = dplyr::n()
       ) |>
       dplyr::collect() |>
+      dplyr::mutate(dplyr::across(
+        .cols = dplyr::all_of(c("den", paste0("cm_", mVars))),
+        .fns = as.numeric
+      )) |>
       tidyr::pivot_longer(
         cols = dplyr::all_of(paste0("cm_", mVars)),
         names_to = "variable_name",
@@ -589,6 +623,9 @@ summariseMissings <- function(table, functions) {
 }
 
 orderVariables <- function(res, cols, est) {
+  if (length(est) == 0) {
+    return(res)
+  }
   orderVars <- dplyr::tibble("variable_name" = c(
     "number_records", "number_subjects", cols
   )) |>

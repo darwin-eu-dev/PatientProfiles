@@ -4,7 +4,7 @@
 \alias{summariseCohortIntersect}
 \title{Summarise cohort intersection information}
 \usage{
-summariseCohortIntersect(cohort, cohortIntersect = list(), strata = list())
+summariseCohortIntersect(cohort, cohortIntersect, strata = list())
 }
 \arguments{
 \item{cohort}{A cohort in the cdm.}
