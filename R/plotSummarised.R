@@ -5,6 +5,7 @@
 #' @param result A summariseCohortOverlap result.
 #' @param facetVarX column in data to facet by on horizontal axis
 #' @param facetVarY column in data to facet by on vertical axis
+#' @param colorVars column in data to color by
 #' @param overlapLabel A glue expression to identify each plotted cohort
 #' overlap.
 #' @param uniqueCombinations If TRUE, only unique combinations of reference and
@@ -69,7 +70,7 @@ plotCohortOverlap <- function(result,
 #' `r lifecycle::badge("experimental")`
 #'
 #' @param result A summariseCohortTiming result.
-#' @param type Type of desired formatted table, possibilities are "boxplot" and
+#' @param plotType Type of desired formatted table, possibilities are "boxplot" and
 #' "density".
 #' @param facetVarX column in data to facet by on horizontal axis
 #' @param facetVarY column in data to facet by on vertical axis
@@ -93,7 +94,7 @@ plotCohortOverlap <- function(result,
 #'
 plotCohortTiming <- function(result,
                              plotType = "boxplot",
-                             facetVarX = NULL,
+                             facetVarX = "variable_name",
                              facetVarY = "group_level",
                              colorVars = "group_level",
                              timingLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",

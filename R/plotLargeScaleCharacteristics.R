@@ -288,8 +288,8 @@ plotfunction <- function(data,
           }
         } else if (plotStyle == "density") {
           data <- data %>%
-            dplyr::filter(variable_name == "density") %>%
-            dplyr::mutate(estimate_value = as.numeric(estimate_value))
+            dplyr::filter(.data$variable_name == "density") %>%
+            dplyr::mutate(estimate_value = as.numeric(.data$estimate_value))
           group_columns <- data %>%
             dplyr::select(-c(
               "estimate_value", "estimate_name", "variable_level",
@@ -305,16 +305,16 @@ plotfunction <- function(data,
             dplyr::select(dplyr::all_of(group_columns)))
 
           density_data_wide <- data %>%
-            dplyr::mutate(estimate_value = as.list(estimate_value)) %>%
-            tidyr::pivot_wider(names_from = estimate_name, values_from = estimate_value) %>%
+            dplyr::mutate(estimate_value = as.list(.data$estimate_value)) %>%
+            tidyr::pivot_wider(names_from = "estimate_name", values_from = "estimate_value") %>%
             tidyr::unnest(dplyr::everything())
 
           if ("color_combined" %in% names(density_data_wide)) {
             plot <- density_data_wide %>% ggplot2::ggplot() +
               ggplot2::geom_density(
                 ggplot2::aes(
-                  x = x,
-                  y = y,
+                  x = data$x,
+                  y = .data$y,
                   group = .data$group_identifier,
                   fill = .data$color_combined
                 ),
@@ -325,8 +325,8 @@ plotfunction <- function(data,
             plot <- density_data_wide %>% ggplot2::ggplot() +
               ggplot2::geom_density(
                 ggplot2::aes(
-                  x = x,
-                  y = y,
+                  x = .data$x,
+                  y = .data$y,
                   group = .data$group_identifier
                 ),
                 stat = "identity"
@@ -396,9 +396,11 @@ plotfunction <- function(data,
         )
 
 
-
+      if(length(non_numeric_cols) > 0){
       df_non_dates_wide$group_identifier <- interaction(df_non_dates_wide %>%
-        dplyr::select(dplyr::all_of(non_numeric_cols)))
+        dplyr::select(dplyr::all_of(non_numeric_cols)))} else{
+          df_non_dates_wide$group_identifier <- "overall"
+        }
     }
 
     if (nrow(df_dates) > 0) {
@@ -415,20 +417,22 @@ plotfunction <- function(data,
             )))),
           names_from = "estimate_name", values_from = "estimate_value"
         )
+      if(length(non_numeric_cols) > 0){
       df_dates_wide$group_identifier <- interaction(df_dates_wide %>%
         dplyr::select(
           dplyr::all_of(non_numeric_cols)
-        ))
+        ))} else {
+          df_dates_wide$group_identifier <- "overall"
+        }
     }
 
 
 
     # Check if the dataframe has rows to plot
     if (nrow(df_non_dates) > 0) {
+      xcol <- ifelse(xAxis == "estimate_value", yAxis, xAxis)
       p_non_dates <- df_non_dates_wide %>% ggplot2::ggplot(
-        ggplot2::aes_string(x = dplyr::if_else(xAxis == "estimate_value", yAxis, xAxis))
-      ) +
-        ggplot2::labs(
+        ggplot2::aes(x = .data[[xcol]])) + ggplot2::labs(
           title = "Non-Date Data",
           x = "Variable and Group Level",
           y = "Quantile Values"
@@ -472,9 +476,10 @@ plotfunction <- function(data,
 
 
     if (nrow(df_dates) > 0) {
+      xcol <- ifelse(xAxis == "estimate_value", yAxis, xAxis)
+
       p_dates <- df_dates_wide %>% ggplot2::ggplot(
-        ggplot2::aes_string(x = dplyr::if_else(xAxis == "estimate_value", yAxis, xAxis))
-      ) +
+        ggplot2::aes(x = .data[[xcol]])) +
         ggplot2::labs(
           title = "Date Data",
           x = "Variable and Group Level",

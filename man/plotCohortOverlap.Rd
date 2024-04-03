@@ -20,6 +20,8 @@ plotCohortOverlap(
 
 \item{facetVarY}{column in data to facet by on vertical axis}
 
+\item{colorVars}{column in data to color by}
+
 \item{overlapLabel}{A glue expression to identify each plotted cohort
 overlap.}
 
