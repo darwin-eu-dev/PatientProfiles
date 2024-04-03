@@ -40,8 +40,11 @@
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 summariseCohortIntersect <- function(cohort,
-                                     cohortIntersect = list(),
+                                     cohortIntersect,
                                      strata = list()){
+  if (length(cohortIntersect) == 0) {
+    cli::cli_abort("Please provide at least a cohort to intersect with, see addCohortIntersect arguments and examples for help.")
+  }
   summariseCharacteristics(
     cohort = cohort,
     strata = strata,
