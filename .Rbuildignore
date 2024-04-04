@@ -14,4 +14,3 @@
 ^vignettes/articles$
 ^codecov\.yml$
 ^CRAN-SUBMISSION$
-^vignettes
