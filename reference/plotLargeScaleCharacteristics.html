@@ -66,12 +66,10 @@
 <span>  <span class="va">data</span>,</span>
 <span>  xAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
 <span>  yAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
-<span>  facetVars <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  colorVars <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  facetOrder <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  colorNames <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  vertical_x <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  facetVarX <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable_name"</span><span class="op">)</span>,</span>
+<span>  facetVarY <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span>, <span class="st">"strata_level"</span>, <span class="st">"estimate_name"</span><span class="op">)</span>,</span>
+<span>  colorVars <span class="op">=</span> <span class="st">"variable_level"</span>,</span>
+<span>  vertical_x <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -91,29 +89,20 @@ Has to be a column in data.</p></dd>
 Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.</p></dd>
 
 
-<dt>facetVars</dt>
-<dd><p>column in data to facet by.</p></dd>
+<dt>facetVarX</dt>
+<dd><p>column in data to facet by on horizontal axis</p></dd>
+
+
+<dt>facetVarY</dt>
+<dd><p>column in data to facet by on vertical axis</p></dd>
 
 
 <dt>colorVars</dt>
 <dd><p>column in data to color by.</p></dd>
 
 
-<dt>facetOrder</dt>
-<dd><p>order of facet, make  sure multiple facets are separated
-by period and in the order provided in facetVars.</p></dd>
-
-
-<dt>colorNames</dt>
-<dd><p>A vector or pre-selected color.</p></dd>
-
-
 <dt>vertical_x</dt>
 <dd><p>whether to display x axis string vertically.</p></dd>
-
-
-<dt>options</dt>
-<dd><p>Other plot options in a list.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -130,21 +119,21 @@ by period and in the order provided in facetVars.</p></dd>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">PatientProfiles</span><span class="fu">::</span><span class="fu"><a href="mockPatientProfiles.html">mockPatientProfiles</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">concept</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>concept_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1125315</span>, <span class="fl">1503328</span>, <span class="fl">1516978</span>, <span class="fl">317009</span>, <span class="fl">378253</span>, <span class="fl">4266367</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>domain_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
-<span class="r-in"><span>vocabulary_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
-<span class="r-in"><span>concept_class_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
-<span class="r-in"><span>concept_code <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
-<span class="r-in"><span>valid_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"1900-01-01"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>valid_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2099-01-01"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  concept_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1125315</span>, <span class="fl">1503328</span>, <span class="fl">1516978</span>, <span class="fl">317009</span>, <span class="fl">378253</span>, <span class="fl">4266367</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  domain_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
+<span class="r-in"><span>  vocabulary_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
+<span class="r-in"><span>  concept_class_id <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
+<span class="r-in"><span>  concept_code <span class="op">=</span> <span class="cn">NA_character_</span>,</span></span>
+<span class="r-in"><span>  valid_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"1900-01-01"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  valid_end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2099-01-01"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>concept_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"concept: "</span>, <span class="va">.data</span><span class="op">$</span><span class="va">concept_id</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>concept_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"concept: "</span>, <span class="va">.data</span><span class="op">$</span><span class="va">concept_id</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/insertTable.html" class="external-link">insertTable</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"concept"</span>, <span class="va">concept</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span><span class="fu"><a href="summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  episodeInWindow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  minimumFrequency <span class="op">=</span> <span class="fl">0</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    episodeInWindow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    minimumFrequency <span class="op">=</span> <span class="fl">0</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">graphs</span> <span class="op">&lt;-</span> <span class="fu">plotLargeScaleCharacteristics</span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>

@@ -197,36 +197,53 @@ create a mock data.</p>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> summariseCharacteristics finished!</span></span></code></pre></div>
 <p>Now we show barplot example by setting plotStyle = “barplot” in
 <code>plotCharacteristics</code>. Similar to previous function, user can
-define axes, facetVars and colorVars. Currently, barplot is only
-plotting percentage.</p>
+define axes, facetVars and colorVars. Barplot shows both percentage and
+count, user can filter to only percentage, or plot both.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">estimate_type</span> <span class="op">==</span> <span class="st">"percentage"</span><span class="op">)</span>,</span>
+<span>    xAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
+<span>    yAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
+<span>    plotStyle <span class="op">=</span> <span class="st">"barplot"</span>,</span>
+<span>    facetVarX <span class="op">=</span> <span class="st">"group_level"</span>,</span>
+<span>    facetVarY <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable_level"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in plotfunction(data, xAxis, yAxis, plotStyle = plotStyle, facetVarX, :</span></span>
+<span><span class="co">#&gt; facetVarY put as NULL, plot overall</span></span></code></pre></div>
+<p><img src="a06_summarisePatientCharacteristics_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span>,</span>
 <span>    xAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
 <span>    yAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
 <span>    plotStyle <span class="op">=</span> <span class="st">"barplot"</span>,</span>
-<span>    facetVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span><span class="op">)</span>,</span>
-<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable_name"</span>, <span class="st">"variable_level"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="a06_summarisePatientCharacteristics_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<span>    facetVarX <span class="op">=</span> <span class="st">"group_level"</span>,</span>
+<span>    facetVarY <span class="op">=</span> <span class="st">"estimate_type"</span>,</span>
+<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable_level"</span><span class="op">)</span>,</span>
+<span>    vertical_x <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_col()`).</span></span></code></pre></div>
+<p><img src="a06_summarisePatientCharacteristics_files/figure-html/unnamed-chunk-3-2.png" width="700"></p>
 <p>User can plot boxplot based on q25 q75 median min max in data, using
 <code>plotCharacteristics</code> and set plotStyle = “boxplot”. Boxplot
 will be horizontal if the xAxis is set to estimate_value, and vertical
 if yAxis is set to estimate_value. But for all the plots, at least one
 of the xAxis or yAxis has to be estimate_value.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotCharacteristics.html">plotCharacteristics</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span>  <span class="va">characteristicsResult</span>,</span>
 <span>    xAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
 <span>    yAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
 <span>    plotStyle <span class="op">=</span> <span class="st">"boxplot"</span>,</span>
-<span>    facetVars <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
-<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span><span class="op">)</span></span>
+<span>    facetVarX <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
+<span>    colorVars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group_level"</span><span class="op">)</span>,</span>
+<span>    vertical_x <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_segment()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_segment()`).</span></span>
+<span><span class="co">#&gt; Warning in plotfunction(data, xAxis, yAxis, plotStyle = plotStyle, facetVarX, :</span></span>
+<span><span class="co">#&gt; facetVarY put as NULL, plot overall</span></span>
 <span><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_segment()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>

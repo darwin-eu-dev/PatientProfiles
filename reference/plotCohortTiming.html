@@ -64,10 +64,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotCohortTiming</span><span class="op">(</span></span>
 <span>  <span class="va">result</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"boxplot"</span>,</span>
-<span>  facetBy <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cohort_name_reference"</span>, <span class="st">"cohort_name_comparator"</span><span class="op">)</span>,</span>
-<span>  timingLabel <span class="op">=</span> <span class="st">"{cohort_name_reference}; {cohort_name_comparator}"</span>,</span>
+<span>  plotType <span class="op">=</span> <span class="st">"boxplot"</span>,</span>
+<span>  facetVarX <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
+<span>  facetVarY <span class="op">=</span> <span class="st">"group_level"</span>,</span>
+<span>  colorVars <span class="op">=</span> <span class="st">"group_level"</span>,</span>
+<span>  timingLabel <span class="op">=</span> <span class="st">"{cohort_name_reference} &amp;&amp;&amp; {cohort_name_comparator}"</span>,</span>
 <span>  uniqueCombinations <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -78,18 +79,21 @@
 <dd><p>A summariseCohortTiming result.</p></dd>
 
 
-<dt>type</dt>
+<dt>plotType</dt>
 <dd><p>Type of desired formatted table, possibilities are "boxplot" and
 "density".</p></dd>
 
 
-<dt>facetBy</dt>
-<dd><p>Vector of column names  in the cohort_overlap table for faceting the
-ggplot object.</p></dd>
+<dt>facetVarX</dt>
+<dd><p>column in data to facet by on horizontal axis</p></dd>
 
 
-<dt>color</dt>
-<dd><p>Vector of column names to distinct by colors.</p></dd>
+<dt>facetVarY</dt>
+<dd><p>column in data to facet by on vertical axis</p></dd>
+
+
+<dt>colorVars</dt>
+<dd><p>Column names to distinct by colors. default set to group_level</p></dd>
 
 
 <dt>timingLabel</dt>
@@ -117,8 +121,8 @@ comparator plots will be plotted.</p></dd>
 <span class="r-in"><span><span class="va">timing</span> <span class="op">&lt;-</span> <span class="fu"><a href="summariseCohortTiming.html">summariseCohortTiming</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> diff_days: min, q25, median, q75, max</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-04-05 09:45:53.484974</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-04-05 09:45:53.540514</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-04-05 11:33:56.3742</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-04-05 11:33:56.42598</span>
 <span class="r-in"><span><span class="fu">plotCohortTiming</span><span class="op">(</span><span class="va">timing</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotCohortTiming-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>

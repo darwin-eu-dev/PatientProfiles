@@ -73,12 +73,10 @@
 <span>  xAxis <span class="op">=</span> <span class="st">"variable_name"</span>,</span>
 <span>  yAxis <span class="op">=</span> <span class="st">"estimate_value"</span>,</span>
 <span>  plotStyle <span class="op">=</span> <span class="st">"barplot"</span>,</span>
-<span>  facetVars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  facetVarX <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  facetVarY <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colorVars <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  facetOrder <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  colorNames <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  vertical_x <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  vertical_x <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,28 +98,20 @@
 <dd><p>Now allows boxplot or barplot only.</p></dd>
 
 
-<dt>facetVars</dt>
-<dd><p>column in data to facet by.</p></dd>
+<dt>facetVarX</dt>
+<dd><p>column in data to facet by on horizontal axis</p></dd>
+
+
+<dt>facetVarY</dt>
+<dd><p>column in data to facet by on vertical axis</p></dd>
 
 
 <dt>colorVars</dt>
 <dd><p>column in data to color by.</p></dd>
 
 
-<dt>facetOrder</dt>
-<dd><p>order of facet, make sure multiple facets are separated by period and in the order provided in facetVars.</p></dd>
-
-
-<dt>colorNames</dt>
-<dd><p>A vector or pre-selected color.</p></dd>
-
-
 <dt>vertical_x</dt>
 <dd><p>whether to display x axis string vertically.</p></dd>
-
-
-<dt>options</dt>
-<dd><p>Other plot options in a list.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -155,6 +145,8 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> summariseCharacteristics finished!</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">plotCharacteristics</span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>facetVarX put as NULL, plot overall</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>facetVarY put as NULL, plot overall</span>
 <span class="r-plt img"><img src="plotCharacteristics-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
