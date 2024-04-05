@@ -9,12 +9,10 @@ plotDemographics(
   xAxis = "variable_name",
   yAxis = "estimate_value",
   plotStyle = "barplot",
-  facetVars = NULL,
+  facetVarX = "variable_name",
+  facetVarY = c("group_level", "strata_level"),
   colorVars = "variable_level",
-  facetOrder = NULL,
-  colorNames = NULL,
-  vertical_x = FALSE,
-  options = list()
+  vertical_x = FALSE
 )
 }
 \arguments{
@@ -26,17 +24,13 @@ plotDemographics(
 
 \item{plotStyle}{Now allows boxplot or barplot only.}
 
-\item{facetVars}{column in data to facet by.}
+\item{facetVarX}{column in data to facet by on horizontal axis}
+
+\item{facetVarY}{column in data to facet by on vertical axis}
 
 \item{colorVars}{column in data to color by.}
 
-\item{facetOrder}{order of facet, make sure multiple facets are separated by period and in the order provided in facetVars.}
-
-\item{colorNames}{A vector or pre-selected color.}
-
 \item{vertical_x}{whether to display x axis string vertically.}
-
-\item{options}{Other plot options in a list.}
 }
 \value{
 A ggplot.

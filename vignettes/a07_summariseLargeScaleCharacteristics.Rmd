@@ -62,16 +62,15 @@ lsc <- cdm$meds %>%
     minimumFrequency = 0.05
   )
 
-
 plotLargeScaleCharacteristics(
-    data =  lsc |> 
-      filter(estimate_name == "percentage"), 
-    colorVars= c("group_level")
-  ) + 
-  ylab("") +
-  xlab("Percentage") +
-  theme_minimal() +
-  theme(legend.position = "top", legend.title = element_blank())
+  data =  lsc |> 
+        filter(estimate_name == "percentage"), 
+  xAxis = "estimate_value",
+  yAxis = "variable_name", 
+  facetVarX = NULL, 
+  facetVarY = NULL,
+  colorVars= "group_level"
+)
 
 ```
 

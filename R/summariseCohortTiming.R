@@ -77,17 +77,17 @@ summariseCohortTiming <- function(cohort,
   cohort_timings <- cdm[[name]] |>
     dplyr::rename("cohort_name_reference" = "cohort_name") |>
     dplyr::select(dplyr::all_of(c(strataCols, "cohort_name_reference",
-                                "cohort_start_date", "cohort_end_date",
-                                "subject_id"))) |>
+                                  "cohort_start_date", "cohort_end_date",
+                                  "subject_id"))) |>
     dplyr::inner_join(
       cdm[[name]] |>
         dplyr::rename_with(~ paste0(.x, "_comparator"),
                            .cols = c("cohort_definition_id", "cohort_start_date",
                                      "cohort_end_date", "cohort_name")) |>
         dplyr::select(dplyr::all_of(c(strataCols, "cohort_name_comparator",
-                                    "cohort_start_date_comparator", "cohort_end_date_comparator",
-                                    "subject_id"))),
-                      by = c("subject_id", unique(strataCols))) |>
+                                      "cohort_start_date_comparator", "cohort_end_date_comparator",
+                                      "subject_id"))),
+      by = c("subject_id", unique(strataCols))) |>
     dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) %>%
     dplyr::mutate(diff_days = !!CDMConnector::datediff("cohort_start_date",
                                                        "cohort_start_date_comparator",
@@ -112,7 +112,7 @@ summariseCohortTiming <- function(cohort,
       visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator"))
     forDensity <- lapply(c(list(character(0)), strata), function(levels, data = forDensity) {
       data |> visOmopResults::uniteStrata(cols = levels)
-      }) |>
+    }) |>
       dplyr::bind_rows() |>
       dplyr::select(!dplyr::all_of(c(strataCols)))
 
@@ -142,6 +142,7 @@ summariseCohortTiming <- function(cohort,
         }
       }
     }
+
       timingsResult <- timingsResult |>
         dplyr::union_all(
           timingDensity |>

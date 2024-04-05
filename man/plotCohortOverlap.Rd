@@ -6,16 +6,21 @@
 \usage{
 plotCohortOverlap(
   result,
-  facetBy = "variable_name",
-  overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+  facetVarX = "variable_name",
+  facetVarY = "strata_level",
+  colorVars = "variable_level",
+  overlapLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",
   uniqueCombinations = TRUE
 )
 }
 \arguments{
 \item{result}{A summariseCohortOverlap result.}
 
-\item{facetBy}{Names of columns in the result table for faceting the
-ggplot object.}
+\item{facetVarX}{column in data to facet by on horizontal axis}
+
+\item{facetVarY}{column in data to facet by on vertical axis}
+
+\item{colorVars}{column in data to color by}
 
 \item{overlapLabel}{A glue expression to identify each plotted cohort
 overlap.}

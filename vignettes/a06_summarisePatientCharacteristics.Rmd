@@ -108,16 +108,28 @@ characteristicsResult <- summariseCharacteristics(
 )
 ```
 
-Now we show barplot example by setting plotStyle = "barplot" in `plotCharacteristics`. Similar to previous function, user can define axes, facetVars and colorVars. Currently, barplot is only plotting percentage.
+Now we show barplot example by setting plotStyle = "barplot" in `plotCharacteristics`. Similar to previous function, user can define axes, facetVars and colorVars. Barplot shows both percentage and count, user can filter to only percentage, or plot both.
 
 ```{r, eval=TRUE}
+plotCharacteristics(
+    data =  characteristicsResult %>% dplyr::filter(estimate_type == "percentage"),
+    xAxis = "estimate_value",
+    yAxis = "variable_name",
+    plotStyle = "barplot",
+    facetVarX = "group_level",
+    facetVarY = NULL,
+    colorVars = c("variable_level")
+  )
+
 plotCharacteristics(
     data =  characteristicsResult,
     xAxis = "estimate_value",
     yAxis = "variable_name",
     plotStyle = "barplot",
-    facetVars = c("group_level"),
-    colorVars = c("variable_name", "variable_level")
+    facetVarX = "group_level",
+    facetVarY = "estimate_type",
+    colorVars = c("variable_level"),
+    vertical_x = TRUE
   )
 
 ```
@@ -130,7 +142,8 @@ plotCharacteristics(
     xAxis = "estimate_value",
     yAxis = "variable_name",
     plotStyle = "boxplot",
-    facetVars = "variable_name",
-    colorVars = c("group_level")
+    facetVarX = "variable_name",
+    colorVars = c("group_level"),
+    vertical_x = TRUE
   )
 ```
