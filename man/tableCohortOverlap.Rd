@@ -47,7 +47,7 @@ their default values.}
 A formatted table of the summariseOverlapCohort result.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

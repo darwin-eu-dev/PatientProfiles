@@ -18,5 +18,5 @@ function to add variables to summarise.}
 A summary of the concept intersect of the individuals
 }
 \description{
-Summarise concept intersect with a cohort_table
+`r lifecycle::badge("deprecated")`
 }

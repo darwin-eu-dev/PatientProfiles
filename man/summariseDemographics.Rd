@@ -17,7 +17,7 @@ summariseDemographics(cohort, strata = list(), ageGroup = NULL)
 A summary of the demographics of the individuals.
 }
 \description{
-Summarise demographics of individuals
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

@@ -1,5 +1,7 @@
 #' Summarise cohort timing
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort  A cohort table in a cdm reference.
 #' @param cohortId  Vector of cohort definition ids to include, if NULL, all
 #' cohort definition ids will be used.
@@ -30,7 +32,11 @@ summariseCohortTiming <- function(cohort,
                                              "median","q75",
                                              "max"),
                                   density = FALSE){
-
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCohortTiming()",
+    with = "CohortCharacteristics::summariseCohortTiming()"
+  )
   # validate inputs
   assertClass(cohort, "cohort_table")
   checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)

@@ -35,7 +35,7 @@ Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.}
 A ggplot.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

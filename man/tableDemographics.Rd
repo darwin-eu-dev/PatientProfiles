@@ -49,7 +49,7 @@ their default values.}
 A table with a formatted version of a summariseDemographics result.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

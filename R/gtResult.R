@@ -14,28 +14,6 @@
 #'
 #' @export
 #'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#'
-#' cdm <- mockPatientProfiles()
-#'
-#' summariseCharacteristics(
-#'   cohort = cdm$cohort1,
-#'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
-#'   tableIntersect = list(
-#'     "Visits" = list(
-#'       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
-#'     )
-#'   ),
-#'   cohortIntersect = list(
-#'     "Medications" = list(
-#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
-#'     )
-#'   )
-#' )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
-#' }
 gtCharacteristics <- function(summarisedCharacteristics,
                               pivotWide = c("CDM Name", "Group", "Strata"),
                               format = c(

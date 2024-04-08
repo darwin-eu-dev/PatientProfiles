@@ -19,7 +19,7 @@ Must be column names in the cohort table provided.}
 A summarised result.
 }
 \description{
-Summarise cohort overlap
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

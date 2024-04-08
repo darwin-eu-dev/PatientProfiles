@@ -16,6 +16,8 @@
 
 #' Summarise characteristics of individuals
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort A cohort in the cdm.
 #' @param cdm A cdm reference.
 #' @param strata Stratification list.
@@ -68,6 +70,11 @@ summariseCharacteristics <- function(cohort,
                                      cohortIntersect = list(),
                                      conceptIntersect = list(),
                                      otherVariables = character()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCharacteristics()",
+    with = "CohortCharacteristics::summariseCharacteristics()"
+  )
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "summariseCharacteristics(cdm)")
   }
@@ -496,6 +503,8 @@ summariseCharacteristics <- function(cohort,
 #' Summarise counts for each different cohort. You can add a list of
 #' stratifications.
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort A cohort in the cdm.
 #' @param strata Stratification list.
 #'
@@ -514,6 +523,11 @@ summariseCharacteristics <- function(cohort,
 #'
 summariseCohortCounts <- function(cohort,
                                   strata = list()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCohortCounts()",
+    with = "CohortCharacteristics::summariseCohortCounts()"
+  )
   summariseCharacteristics(
     cohort = cohort, strata = strata, demographics = FALSE, ageGroup = NULL,
     tableIntersect = list(), cohortIntersect = list(),
@@ -522,6 +536,8 @@ summariseCohortCounts <- function(cohort,
 }
 
 #' Summarise concept intersect with a cohort_table
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param cohort A cohort in the cdm
 #' @param strata Stratification list
@@ -535,6 +551,11 @@ summariseCohortCounts <- function(cohort,
 summariseConceptIntersect <- function(cohort,
                                       conceptIntersect,
                                       strata = list()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseConceptIntersect()",
+    with = "CohortCharacteristics::summariseConceptIntersect()"
+  )
   if (length(conceptIntersect) == 0) {
     cli::cli_abort("Please provide at least one cocneptSet to insersect with.")
   }

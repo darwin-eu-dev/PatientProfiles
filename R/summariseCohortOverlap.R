@@ -1,5 +1,7 @@
 #' Summarise cohort overlap
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort  A cohort table in a cdm reference.
 #' @param cohortId  Vector of cohort definition ids to include, if NULL, all
 #' cohort definition ids will be used.
@@ -20,7 +22,11 @@
 summariseCohortOverlap <- function(cohort,
                                    cohortId = NULL,
                                    strata = list()) {
-
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCohortOverlap()",
+    with = "CohortCharacteristics::summariseCohortOverlap()"
+  )
   # validate inputs
   assertClass(cohort, "cohort_table")
   checkmate::assertTRUE(all(c("cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date") %in% colnames(cohort)))

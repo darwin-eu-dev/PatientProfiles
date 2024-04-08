@@ -43,7 +43,7 @@ summarised.}
 A summary of the characteristics of the individuals.
 }
 \description{
-Summarise characteristics of individuals
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{
