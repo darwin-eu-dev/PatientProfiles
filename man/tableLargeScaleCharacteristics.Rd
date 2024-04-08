@@ -35,7 +35,7 @@ columns.}
 A formatted table.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \dontrun{

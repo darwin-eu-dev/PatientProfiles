@@ -50,7 +50,7 @@ A table with a formatted version of the summariseCharacteristics
 result.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

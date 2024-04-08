@@ -16,6 +16,8 @@
 
 #' Summarise demographics of individuals
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort A cohort in the cdm.
 #' @param strata Stratification list.
 #' @param ageGroup A list of age groups.
@@ -40,7 +42,11 @@
 summariseDemographics <- function(cohort,
                                   strata = list(),
                                   ageGroup = NULL) {
-
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseDemographics()",
+    with = "CohortCharacteristics::summariseDemographics()"
+  )
   results <- PatientProfiles::summariseCharacteristics(
     cohort = cohort,
     strata = strata,

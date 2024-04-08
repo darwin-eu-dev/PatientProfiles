@@ -17,7 +17,7 @@ summariseCohortIntersect(cohort, cohortIntersect, strata = list())
 A summary of the cohort intersection informations.
 }
 \description{
-Summarise cohort intersection information
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

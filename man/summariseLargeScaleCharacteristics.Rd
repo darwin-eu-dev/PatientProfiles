@@ -50,8 +50,7 @@ The output of this function is a `ResultSummary` containing the
 relevant information.
 }
 \description{
-This function is used to summarise the large scale characteristics of a
-cohort table
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

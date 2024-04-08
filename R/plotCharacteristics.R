@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #' Create a ggplot from the output of summariseCharacteristics.
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param data output of summariseCharacteristics.
 #' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.

@@ -3,7 +3,7 @@
 \name{plotCharacteristics}
 \alias{plotCharacteristics}
 \title{Create a ggplot from the output of summariseCharacteristics.
-`r lifecycle::badge("experimental")`}
+`r lifecycle::badge("deprecated")`}
 \usage{
 plotCharacteristics(
   data,
@@ -38,7 +38,7 @@ A ggplot.
 }
 \description{
 Create a ggplot from the output of summariseCharacteristics.
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

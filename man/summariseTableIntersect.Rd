@@ -18,5 +18,5 @@ function to add variables to summarise.}
 A summary of the table intersections.
 }
 \description{
-Summarise table intersection information
+`r lifecycle::badge("deprecated")`
 }

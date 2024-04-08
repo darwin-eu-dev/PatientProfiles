@@ -36,7 +36,7 @@ plotDemographics(
 A ggplot.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

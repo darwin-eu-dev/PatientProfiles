@@ -48,7 +48,7 @@ their default values.}
 A formatted table of the summariseCohortTiming result.
 }
 \description{
-`r lifecycle::badge("experimental")`
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

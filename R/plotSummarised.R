@@ -1,6 +1,6 @@
 #' Plot the result of summariseCohortOverlap.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param result A summariseCohortOverlap result.
 #' @param facetVarX column in data to facet by on horizontal axis
@@ -67,7 +67,7 @@ plotCohortOverlap <- function(result,
 
 #' Plot summariseCohortTiming results.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param result A summariseCohortTiming result.
 #' @param plotType Type of desired formatted table, possibilities are "boxplot" and
@@ -161,7 +161,7 @@ plotCohortTiming <- function(result,
 
 #' Plot summariseDemographics output.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param data output of summariseCharacteristics.
 #' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.
@@ -230,7 +230,7 @@ plotDemographics <- function(data,
 
 #' Plot summariseCohortIntersect output.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param data output of summariseCohortIntersect
 #' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.
@@ -286,7 +286,7 @@ plotCohortIntersect <- function(data,
 
 #' Plot summariseTableIntersect output.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param data output of summariseTableIntersect
 #' @param xAxis what to plot on x axis, default as variable_name column. Has to be a column in data.

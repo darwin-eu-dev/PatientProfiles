@@ -17,6 +17,8 @@
 #' This function is used to summarise the large scale characteristics of a
 #' cohort table
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort The cohort to characterise.
 #' @param strata Stratification list.
 #' @param window Temporal windows that we want to characterize.
@@ -74,6 +76,11 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                minimumFrequency = 0.005,
                                                excludedCodes = c(0),
                                                cdm = lifecycle::deprecated()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseLargeScaleCharacteristics()",
+    with = "CohortCharacteristics::summariseLargeScaleCharacteristics()"
+  )
   if (!is.list(window)) {
     window <- list(window)
   }

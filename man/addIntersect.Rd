@@ -2,8 +2,7 @@
 % Please edit documentation in R/addIntersect.R
 \name{addIntersect}
 \alias{addIntersect}
-\title{It creates columns to indicate overlap information between two tables
-`r lifecycle::badge("deprecated")`}
+\title{It creates columns to indicate overlap information between two tables}
 \usage{
 addIntersect(
   x,
@@ -59,7 +58,6 @@ required parameters.}
 table with added columns with overlap information.
 }
 \description{
-It creates columns to indicate overlap information between two tables
 `r lifecycle::badge("deprecated")`
 }
 \examples{

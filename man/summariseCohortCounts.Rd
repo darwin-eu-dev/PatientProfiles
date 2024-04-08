@@ -16,8 +16,7 @@ summariseCohortCounts(cohort, strata = list())
 A summary of the number of individuals in each cohrot and strata.
 }
 \description{
-Summarise counts for each different cohort. You can add a list of
-stratifications.
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

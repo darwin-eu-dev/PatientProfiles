@@ -47,10 +47,8 @@
 #' @param min_days_to_visit_end the minimum number of days of the visit integer.
 #' @param max_days_to_condition_end the maximum number of days of the condition integer.
 #' @param max_days_to_visit_end the maximum number of days of the visit integer.
-
 #' @param concept_ancestor the concept ancestor table.
 #' @param ancestor_concept_id_size the size of concept ancestor table.
-
 #' @param cohort1 cohort table for test to run in getindication.
 #' @param cohort2 cohort table for test to run in getindication.
 #' @param ... user self defined tibble table to put in cdm, it can input as many as the user want.

@@ -16,7 +16,7 @@
 
 #' create a ggplot from the output of summariseLargeScaleCharacteristics.
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param data output of summariseLargeScaleCharacteristics.
 #' @param xAxis what to plot on x axis, default as variable_name column.

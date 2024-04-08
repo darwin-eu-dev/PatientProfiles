@@ -16,6 +16,8 @@
 
 #' Summarise table intersection information
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort A cohort in the cdm.
 #' @param tableIntersect A list of arguments that uses addTableIntersect
 #' function to add variables to summarise.
@@ -26,6 +28,11 @@
 summariseTableIntersect <- function(cohort,
                                     tableIntersect = list(),
                                     strata = list()){
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseTableIntersect()",
+    with = "CohortCharacteristics::summariseTableIntersect()"
+  )
   summariseCharacteristics(
     cohort = cohort,
     strata = strata,

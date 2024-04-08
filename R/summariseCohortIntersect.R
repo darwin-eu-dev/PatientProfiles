@@ -16,6 +16,8 @@
 
 #' Summarise cohort intersection information
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort A cohort in the cdm.
 #' @param cohortIntersect The settings for cohort intersection settings.
 #' @param strata Stratification list.
@@ -42,6 +44,11 @@
 summariseCohortIntersect <- function(cohort,
                                      cohortIntersect,
                                      strata = list()){
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCohortIntersect()",
+    with = "CohortCharacteristics::summariseCohortIntersect()"
+  )
   if (length(cohortIntersect) == 0) {
     cli::cli_abort("Please provide at least a cohort to intersect with, see addCohortIntersect arguments and examples for help.")
   }
