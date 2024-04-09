@@ -3,7 +3,8 @@
 #' Add date of death for individuals
 #'
 #' @param x Table with individuals in the cdm.
-#' @param indexDate Variable in x that contains the date to compute the age.
+#' @param indexDate Variable in x that contains the window origin.
+#' @param censorDate Name of a column to stop followup.
 #' @param window window to consider events over.
 #' @param deathDateName name of the new column to be added.
 #'
@@ -20,12 +21,14 @@
 #'
 addDeathDate <- function(x,
                          indexDate = "cohort_start_date",
+                         censorDate = NULL,
                          window = c(0, Inf),
                          deathDateName = "date_of_death") {
   addDeath(
     x = x,
-    type = "date",
+    value = "date",
     indexDate = indexDate,
+    censorDate = censorDate,
     window = window,
     deathName = deathDateName
   )
@@ -34,7 +37,8 @@ addDeathDate <- function(x,
 #' Add days to death for individuals
 #'
 #' @param x Table with individuals in the cdm.
-#' @param indexDate Variable in x that contains the date to compute the age.
+#' @param indexDate Variable in x that contains the window origin.
+#' @param censorDate Name of a column to stop followup.
 #' @param window window to consider events over.
 #' @param deathDaysName name of the new column to be added.
 #'
@@ -51,12 +55,14 @@ addDeathDate <- function(x,
 #'
 addDeathDays <- function(x,
                          indexDate = "cohort_start_date",
+                         censorDate = NULL,
                          window = c(0, Inf),
                          deathDaysName = "days_to_death") {
   addDeath(
     x = x,
-    type = "days",
+    value = "days",
     indexDate = indexDate,
+    censorDate = censorDate,
     window = window,
     deathName = deathDaysName
   )
@@ -66,7 +72,8 @@ addDeathDays <- function(x,
 #' Add flag for death for individuals
 #'
 #' @param x Table with individuals in the cdm.
-#' @param indexDate Variable in x that contains the date to compute the age.
+#' @param indexDate Variable in x that contains the window origin.
+#' @param censorDate Name of a column to stop followup.
 #' @param window window to consider events over.
 #' @param deathFlagName name of the new column to be added.
 #'
@@ -83,12 +90,14 @@ addDeathDays <- function(x,
 #'
 addDeathFlag <- function(x,
                          indexDate = "cohort_start_date",
+                         censorDate = NULL,
                          window = c(0, Inf),
                          deathFlagName = "death") {
   addDeath(
     x = x,
-    type = "flag",
+    value = "flag",
     indexDate = indexDate,
+    censorDate = censorDate,
     window = window,
     deathName = deathFlagName
   )
@@ -97,8 +106,9 @@ addDeathFlag <- function(x,
 
 
 addDeath <- function(x,
-                     type,
+                     value,
                      indexDate,
+                     censorDate,
                      window,
                      deathName) {
 
@@ -119,114 +129,23 @@ addDeath <- function(x,
   if (deathName %in% colnames(x)) {
     cli::cli_warn("{deathName} variable already exists and will be overwritten")
     x <- x |>
-      dplyr::select(!deathName)
-  }
-  if ("working_record_id" %in% colnames(x)) {
-    cli::cli_warn("variable working_record_id already exists and will be dropped (variable of this name is created internally when adding death information)")
-    x <- x |>
-      dplyr::select(!"working_record_id")
+      dplyr::select(!dplyr::all_of(deathName))
   }
 
-  # get the person variable
-  personVariable <- checkX(x)
+  deathName <- checkSnakeCase(deathName)
 
-  # add a record id that we will later use in join
   x <- x |>
-    dplyr::mutate(working_record_id = dplyr::row_number())
+    .addIntersect(
+      tableName = "death",
+      value = value,
+      indexDate = indexDate,
+      censorDate = censorDate,
+      window = window,
+      targetStartDate = "death_date",
+      targetEndDate = NULL,
+      order = "first",
+      nameStyle = deathName
+    )
 
-  # table with death info
-  records <- x |>
-    dplyr::select(
-      personVariable,
-      indexDate,
-      "working_record_id"
-    ) |>
-    dplyr::left_join(
-      cdm[["death"]] |>
-        dplyr::select(!!personVariable := "person_id",
-                      "death_date"),
-      by = personVariable
-    ) %>%
-    dplyr::distinct() |>
-    dplyr::compute()
-
-  # keep death records if within window
-  records <- records %>%
-    dplyr::mutate(days_to_death = !!CDMConnector::datediff(indexDate, "death_date"))
-
-  # note if minus inf to inf then we don´t do any filtering
-  if (is.infinite(window[1]) & !is.infinite(window[2])) { # minus Inf to number
-    records <- records %>%
-      dplyr::filter(.data$days_to_death <= !!window[2])
-  }
-  if (!is.infinite(window[1]) & is.infinite(window[2])) { # number to Inf
-    records <- records %>%
-      dplyr::filter(.data$days_to_death >= !!window[1])
-  }
-  if (!is.infinite(window[1]) & !is.infinite(window[2])) { # number to number
-    records <- records %>%
-      dplyr::filter(
-        .data$days_to_death >= !!window[1],
-        .data$days_to_death <= !!window[2]
-      )
-  }
-
-  # people might have multiple death records, so keep first (in window)
-  records <- records |>
-    dplyr::group_by(
-      !!!rlang::syms(personVariable),
-      !!!rlang::syms(indexDate),
-      .data$working_record_id
-    ) |>
-    dplyr::summarise(
-      death_date = min(.data$death_date, na.rm = TRUE),
-      days_to_death = min(.data$days_to_death, na.rm = TRUE)
-    ) |>
-    dplyr::ungroup()
-
-  # return selected type
-  if (type == "date") {
-    records <- records |>
-      dplyr::select(
-        personVariable,
-        "working_record_id",
-        "death_date"
-      ) |>
-      dplyr::rename(!!deathName := "death_date")
-  }
-  if (type == "days") {
-    records <- records |>
-      dplyr::select(
-        personVariable,
-        "working_record_id",
-        "days_to_death"
-      ) |>
-      dplyr::rename(!!deathName := "days_to_death")
-  }
-  if (type == "flag") {
-    records <- records |>
-      dplyr::select(
-        personVariable,
-        "working_record_id"
-      ) |>
-      dplyr::mutate(!!deathName := 1L)
-  }
-
-  # join with target table
-  x <- x |>
-    dplyr::left_join(records,
-      by = c(personVariable, "working_record_id")
-    ) |>
-    dplyr::select(!"working_record_id")
-
-  if (type == "flag") {
-    x <- x |>
-      dplyr::mutate(!!deathName :=
-        dplyr::if_else(is.na(!!!rlang::syms(deathName)), 0, 1))
-  }
-
-  x <- x %>%
-    dplyr::compute()
-
-  x
+  return(x)
 }

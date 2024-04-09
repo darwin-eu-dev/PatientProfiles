@@ -20,16 +20,12 @@ test_that("addDeathDate", {
 
 
   # warning if variable already exists
- expect_warning(cdm$cohort1 |>
+  expect_warning(cdm$cohort1 |>
     addDeathFlag(deathFlagName = "dflag2") |>
     addDeathFlag(deathFlagName = "dflag2"))
 
- expect_warning(cdm$cohort1 |>
-                dplyr::mutate(working_record_id = 1) |>
-                addDeathFlag(deathFlagName = "death_flag"))
-
   # expected errors
- expect_error(addDeathDate(x = "not a table",
+  expect_error(addDeathDate(x = "not a table",
               indexDate = "cohort_start_date",
               window = c(0, Inf),
               deathDateName = "ddate"))
@@ -61,7 +57,7 @@ test_that("addDeathDate", {
                            indexDate = "cohort_start_date",
                            window = list(c(0, Inf),c(1, Inf)),
                            deathDateName = "ddate"))
- expect_error(addDeathDate(x = cdm$cohort1,
+ expect_message(addDeathDate(x = cdm$cohort1,
                            indexDate = "cohort_start_date",
                            window = c(0, Inf),
                            deathDateName = "NotSnakeCase"))
@@ -184,7 +180,7 @@ test_that("check window logic", {
                dplyr::tally() |>
                dplyr::pull("n") == 1)
 
-  })
+})
 
 test_that("check with omop table", {
 

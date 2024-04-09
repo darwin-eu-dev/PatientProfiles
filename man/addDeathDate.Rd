@@ -7,6 +7,7 @@
 addDeathDate(
   x,
   indexDate = "cohort_start_date",
+  censorDate = NULL,
   window = c(0, Inf),
   deathDateName = "date_of_death"
 )
@@ -14,7 +15,9 @@ addDeathDate(
 \arguments{
 \item{x}{Table with individuals in the cdm.}
 
-\item{indexDate}{Variable in x that contains the date to compute the age.}
+\item{indexDate}{Variable in x that contains the window origin.}
+
+\item{censorDate}{Name of a column to stop followup.}
 
 \item{window}{window to consider events over.}
 
