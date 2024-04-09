@@ -142,20 +142,24 @@ test_that("check window logic", {
                              indexDate = "cohort_end_date",
                              window = c(1, Inf),
                              deathDaysName = "ddays2")
+ # only 2 are observed as only events in observation period are considered
+ # otherwise 4 would be observed
  expect_true(cdm$cohort1 |>
                dplyr::filter(!is.na(ddays2)) |>
                dplyr::tally() |>
-               dplyr::pull("n") == 4)
+               dplyr::pull("n") == 2)
 
  # with window of -inf days to inf for cohort end, we should death days for all
  cdm$cohort1 <- addDeathDays(x = cdm$cohort1,
                              indexDate = "cohort_end_date",
                              window = c(-Inf, Inf),
                              deathDaysName = "ddays3")
+ # only 3 are observed as only events in observation period are considered
+ # otherwise 5 would be observed
  expect_true(cdm$cohort1 |>
                dplyr::filter(!is.na(ddays3)) |>
                dplyr::tally() |>
-               dplyr::pull("n") == 5)
+               dplyr::pull("n") == 3)
 
 
  # with window of -inf days to -1 for cohort end, we should have no death days for anyone
@@ -250,11 +254,14 @@ test_that("check functionality in presence of multiple death records", {
   expect_true(nrow_start == nrow_end)
 
   # all are the first death date for subject 1
-  expect_equal(cdm$cohort1 |>
-    dplyr::filter(subject_id == 1) |>
-    dplyr::select("death_date") |>
-    dplyr::distinct() |>
-    dplyr::pull(), as.Date("2022-06-30"))
+  expect_true(all(
+    cdm$cohort1 |>
+      dplyr::filter(subject_id == 1) |>
+      dplyr::select("death_date") |>
+      dplyr::distinct() |>
+      dplyr::pull() %in%
+      as.Date(c("2022-06-30", NA))
+  ))
 
   # now in the last case, starting window from 1 will result in last record having second death date
   cdm$cohort1 <- addDeathDate(x = cdm$cohort1,

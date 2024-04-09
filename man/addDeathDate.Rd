@@ -2,7 +2,8 @@
 % Please edit documentation in R/addDeath.R
 \name{addDeathDate}
 \alias{addDeathDate}
-\title{Add date of death for individuals}
+\title{Add date of death for individuals. Only death within the same observation
+period than `indeDate` will be observed.}
 \usage{
 addDeathDate(
   x,
@@ -27,7 +28,8 @@ addDeathDate(
 table x with the added column with death information added.
 }
 \description{
-Add date of death for individuals
+Add date of death for individuals. Only death within the same observation
+period than `indeDate` will be observed.
 }
 \examples{
 \donttest{

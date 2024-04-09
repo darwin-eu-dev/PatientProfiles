@@ -2,7 +2,8 @@
 % Please edit documentation in R/addDeath.R
 \name{addDeathFlag}
 \alias{addDeathFlag}
-\title{Add flag for death for individuals}
+\title{Add flag for death for individuals. Only death within the same observation
+period than `indeDate` will be observed.}
 \usage{
 addDeathFlag(
   x,
@@ -27,7 +28,8 @@ addDeathFlag(
 table x with the added column with death information added.
 }
 \description{
-Add flag for death for individuals
+Add flag for death for individuals. Only death within the same observation
+period than `indeDate` will be observed.
 }
 \examples{
 \donttest{
