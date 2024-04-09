@@ -23,6 +23,7 @@
 #' @param condition_occurrence default null user can define its own table.
 #' @param visit_occurrence default null user can define its own visit_occurrence table.
 #' @param person default null user can define its own table.
+#' @param death default null user can define its own table
 #' @param drug_concept_id_size number of unique drug concept id.
 #' @param ingredient_concept_id_size number of unique drug ingredient concept id.
 #' @param drug_exposure_size number of unique drug exposure.
@@ -74,6 +75,7 @@ mockPatientProfiles <- function(connectionDetails = list(
                                 visit_occurrence = NULL,
                                 concept_ancestor = NULL,
                                 person = NULL,
+                                death = NULL,
                                 cohort1 = NULL,
                                 cohort2 = NULL,
                                 drug_concept_id_size = 5,
@@ -513,6 +515,12 @@ mockPatientProfiles <- function(connectionDetails = list(
     )
   }
 
+  # death table
+  if (is.null(death)) {
+    death <- dplyr::tibble(person_id = c(1),
+                           death_date = as.Date("2020-04-01"))
+  }
+
   # cohort table 1
   if (is.null(cohort1)) {
     cohort1 <- dplyr::tibble(
@@ -546,7 +554,7 @@ mockPatientProfiles <- function(connectionDetails = list(
 
   tablesToInsert <- c(
     "drug_strength", "drug_exposure", "person", "observation_period",
-    "condition_occurrence", "visit_occurrence", "concept_ancestor"
+    "condition_occurrence", "visit_occurrence", "concept_ancestor", "death"
   )
 
   src <- CDMConnector::dbSource(
