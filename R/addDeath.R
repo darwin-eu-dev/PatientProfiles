@@ -153,17 +153,15 @@ addDeath <- function(x,
     dplyr::mutate(days_to_death = !!CDMConnector::datediff(indexDate, "death_date"))
 
   # note if minus inf to inf then we don´t do any filtering
-  if (is.infinite(window[1]) & !is.infinite(window[2])) {
+  if (is.infinite(window[1]) & !is.infinite(window[2])) { # minus Inf to number
     records <- records %>%
-      dplyr::filter(
-        .data$days_to_death >= !!window[1]
-      )
+      dplyr::filter(.data$days_to_death <= !!window[2])
   }
-  if (!is.infinite(window[1]) & is.infinite(window[2])) {
+  if (!is.infinite(window[1]) & is.infinite(window[2])) { # number to Inf
     records <- records %>%
       dplyr::filter(.data$days_to_death >= !!window[1])
   }
-  if (!is.infinite(window[1]) & !is.infinite(window[2])) {
+  if (!is.infinite(window[1]) & !is.infinite(window[2])) { # number to number
     records <- records %>%
       dplyr::filter(
         .data$days_to_death >= !!window[1],
