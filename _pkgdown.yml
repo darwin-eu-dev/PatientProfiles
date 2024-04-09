@@ -3,7 +3,8 @@ template:
   bootstrap: 5
 
 articles:
-  title: PatientProfiles
+- title: PatientProfiles
+  navbar: PatientProfiles
   contents:
   - demographics
   - cohort-intersect
