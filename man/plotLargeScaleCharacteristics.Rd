@@ -2,44 +2,40 @@
 % Please edit documentation in R/plotLargeScaleCharacteristics.R
 \name{plotLargeScaleCharacteristics}
 \alias{plotLargeScaleCharacteristics}
-\title{plot large scale characteristics}
+\title{create a ggplot from the output of summariseLargeScaleCharacteristics.}
 \usage{
 plotLargeScaleCharacteristics(
   data,
   xAxis = "variable_name",
   yAxis = "estimate_value",
-  facetVars = NULL,
-  colorVars = NULL,
-  facetOrder = NULL,
-  colorNames = NULL,
-  vertical_x = FALSE,
-  options = list()
+  facetVarX = c("variable_name"),
+  facetVarY = c("group_level", "strata_level", "estimate_name"),
+  colorVars = "variable_level",
+  vertical_x = FALSE
 )
 }
 \arguments{
 \item{data}{output of summariseLargeScaleCharacteristics.}
 
-\item{xAxis}{what to plot on x axis, default as variable_name column. Has to be a column in data.}
+\item{xAxis}{what to plot on x axis, default as variable_name column.
+Has to be a column in data.}
 
-\item{yAxis}{what to plot on y axis, default as estimate_value column. Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.}
+\item{yAxis}{what to plot on y axis, default as estimate_value column.
+Has to be a column in data. One of the xAxis or yAxis has to be estimate_value.}
 
-\item{facetVars}{column in data to facet by.}
+\item{facetVarX}{column in data to facet by on horizontal axis}
+
+\item{facetVarY}{column in data to facet by on vertical axis}
 
 \item{colorVars}{column in data to color by.}
 
-\item{facetOrder}{order of facet, make  sure multiple facets are separated by period and in the order provided in facetVars.}
-
-\item{colorNames}{A vector or pre-selected color.}
-
 \item{vertical_x}{whether to display x axis string vertically.}
-
-\item{options}{Other plot options in a list.}
 }
 \value{
 A ggplot.
 }
 \description{
-plot large scale characteristics
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{
@@ -47,23 +43,23 @@ library(PatientProfiles)
 cdm <- PatientProfiles::mockPatientProfiles()
 
 concept <- dplyr::tibble(
-concept_id = c(1125315, 1503328, 1516978, 317009, 378253, 4266367),
-domain_id = NA_character_,
-vocabulary_id = NA_character_,
-concept_class_id = NA_character_,
-concept_code = NA_character_,
-valid_start_date = as.Date("1900-01-01"),
-valid_end_date = as.Date("2099-01-01")
+  concept_id = c(1125315, 1503328, 1516978, 317009, 378253, 4266367),
+  domain_id = NA_character_,
+  vocabulary_id = NA_character_,
+  concept_class_id = NA_character_,
+  concept_code = NA_character_,
+  valid_start_date = as.Date("1900-01-01"),
+  valid_end_date = as.Date("2099-01-01")
 ) \%>\%
- dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
 cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 results <- cdm$cohort2 \%>\%
-summariseLargeScaleCharacteristics(
- episodeInWindow = c("condition_occurrence"),
- minimumFrequency = 0
- )
+  summariseLargeScaleCharacteristics(
+    episodeInWindow = c("condition_occurrence"),
+    minimumFrequency = 0
+  )
 graphs <- plotLargeScaleCharacteristics(results)
 CDMConnector::cdmDisconnect(cdm = cdm)
- }
+}
 
 }

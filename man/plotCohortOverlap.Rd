@@ -2,38 +2,25 @@
 % Please edit documentation in R/plotSummarised.R
 \name{plotCohortOverlap}
 \alias{plotCohortOverlap}
-\title{Plot cohort_overlap objects.}
+\title{Plot the result of summariseCohortOverlap.}
 \usage{
 plotCohortOverlap(
   result,
-  cohortNameReference = NULL,
-  cohortNameComparator = NULL,
-  strataName = NULL,
-  strataLevel = NULL,
-  cdmName = NULL,
-  variableName = "number subjects",
-  facetBy = NULL,
-  overlapLabel = "{cohort_name_reference}; {cohort_name_comparator}",
+  facetVarX = "variable_name",
+  facetVarY = "strata_level",
+  colorVars = "variable_level",
+  overlapLabel = "{cohort_name_reference} &&& {cohort_name_comparator}",
   uniqueCombinations = TRUE
 )
 }
 \arguments{
-\item{result}{A cohort_overlap object.}
+\item{result}{A summariseCohortOverlap result.}
 
-\item{cohortNameReference}{Names of the reference cohorts to include.}
+\item{facetVarX}{column in data to facet by on horizontal axis}
 
-\item{cohortNameComparator}{Names of the comparator cohorts to include.}
+\item{facetVarY}{column in data to facet by on vertical axis}
 
-\item{strataName}{Names of the strata names to include.}
-
-\item{strataLevel}{Names of the strata levels to include.}
-
-\item{cdmName}{Names of the databases to include.}
-
-\item{variableName}{Names of the variable names to include.}
-
-\item{facetBy}{Names of columns in the cohort_overlap table for faceting the
-ggplot object.}
+\item{colorVars}{column in data to color by}
 
 \item{overlapLabel}{A glue expression to identify each plotted cohort
 overlap.}
@@ -42,10 +29,10 @@ overlap.}
 comparator plots will be plotted.}
 }
 \value{
-A ggplot2.
+A ggplot.
 }
 \description{
-Plot cohort_overlap objects.
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

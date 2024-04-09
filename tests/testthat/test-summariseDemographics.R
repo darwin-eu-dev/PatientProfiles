@@ -86,3 +86,40 @@ test_that("test summariseCharacteristics", {
 
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
+
+test_that("plotDemographics", {
+  cdm <- mockPatientProfiles()
+
+  results <- summariseDemographics(cdm$cohort2)
+
+  gg1 <- plotDemographics(results,
+                          xAxis = "estimate_value",
+                          yAxis = "variable_name",
+                          plotStyle = "boxplot",
+                          vertical_x = TRUE)
+  expect_true(ggplot2::is.ggplot(gg1))
+
+  gg2 <- plotDemographics(
+    data =  results,
+    xAxis = "estimate_value",
+    yAxis = "variable_name",
+    plotStyle = "barplot",
+    facetVarX = c("group_level"),
+    colorVars = c("variable_name", "variable_level")
+  )
+
+  expect_true(ggplot2::is.ggplot(gg2))
+
+  gg3 <- plotCharacteristics(
+    data =  results,
+    xAxis = "estimate_value",
+    yAxis = "variable_name",
+    plotStyle = "boxplot",
+    facetVarX = "variable_name",
+    colorVars = c("group_level")
+  )
+
+  expect_true(ggplot2::is.ggplot(gg3))
+
+  CDMConnector::cdm_disconnect(cdm)
+})

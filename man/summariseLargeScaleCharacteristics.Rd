@@ -16,7 +16,7 @@ summariseLargeScaleCharacteristics(
   censorDate = NULL,
   includeSource = FALSE,
   minimumFrequency = 0.005,
-  excludedCodes = NULL,
+  excludedCodes = c(0),
   cdm = lifecycle::deprecated()
 )
 }
@@ -50,8 +50,7 @@ The output of this function is a `ResultSummary` containing the
 relevant information.
 }
 \description{
-This function is used to summarise the large scale characteristics of a
-cohort table
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

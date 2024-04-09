@@ -2,6 +2,16 @@ url: https://darwin-eu-dev.github.io/PatientProfiles/
 template:
   bootstrap: 5
 
+articles:
+- title: PatientProfiles
+  navbar: PatientProfiles
+  contents:
+  - demographics
+  - cohort-intersect
+  - concept-intersect
+  - table-intersect
+  - summarise
+
 reference:
 - subtitle: Add individual patient characteristics
   desc: Add patient characteristics to a table in the OMOP Common Data Model
@@ -11,6 +21,10 @@ reference:
   desc: Add a set of patient characteristics to a table in the OMOP Common Data Model
 - contents:
   - matches("addDemographics")
+- subtitle: Add death information
+  desc: Add patient death information to a table in the OMOP Common Data Model
+- contents:
+  - matches("addDeathDate|addDeathDays|addDeathFlag")
 - subtitle: Add a value from a cohort intersection
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
@@ -50,7 +64,7 @@ reference:
 - subtitle: Summarise patient characteristic standard function
   desc: Function that allow the user to summarise patient characteristics based on some paramters
 - contents:
-  - matches("summariseCharacteristics|summariseDemographics|summariseConceptIntersect")
+  - matches("summariseCharacteristics|summariseCohortCounts|summariseDemographics|summariseConceptIntersect|summariseCohortIntersect|summariseTableIntersect")
 - subtitle: Summarise patient large scale characteristics
   desc: Summarise large scale characteristics
 - contents:

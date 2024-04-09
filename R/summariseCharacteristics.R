@@ -1,4 +1,4 @@
-# Copyright 2022 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
 # This file is part of PatientProfiles
 #
@@ -15,6 +15,8 @@
 # limitations under the License.
 
 #' Summarise characteristics of individuals
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param cohort A cohort in the cdm.
 #' @param cdm A cdm reference.
@@ -44,10 +46,17 @@
 #'   cohort = cdm$cohort1,
 #'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
 #'   tableIntersect = list(
-#'     tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+#'     "Number visits prior year" = list(
+#'       tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+#'     )
 #'   ),
 #'   cohortIntersect = list(
-#'     targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     "Drugs prior year" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+#'     ),
+#'     "Conditions any time prior" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-Inf, -1)
+#'     )
 #'   )
 #' )
 #' CDMConnector::cdmDisconnect(cdm = cdm)
@@ -61,6 +70,11 @@ summariseCharacteristics <- function(cohort,
                                      cohortIntersect = list(),
                                      conceptIntersect = list(),
                                      otherVariables = character()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCharacteristics()",
+    with = "CohortCharacteristics::summariseCharacteristics()"
+  )
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "summariseCharacteristics(cdm)")
   }
@@ -80,15 +94,15 @@ summariseCharacteristics <- function(cohort,
   checkOtherVariables(otherVariables, cohort)
 
   # check empty
-  if (demographics == FALSE &
-      length(tableIntersect) == 0 &
-      length(cohortIntersect) == 0 &
-      length(conceptIntersect) == 0 ) {
-    cli::cli_abort(
-      "Please fill demographics, tableIntersect, cohortIntersect or
-      conceptIntersect"
-    )
-  }
+  # if (demographics == FALSE &
+  #     length(tableIntersect) == 0 &
+  #     length(cohortIntersect) == 0 &
+  #     length(conceptIntersect) == 0 ) {
+  #   cli::cli_abort(
+  #     "Please fill demographics, tableIntersect, cohortIntersect or
+  #     conceptIntersect"
+  #   )
+  # }
 
   # functions
   functions <- list(
@@ -115,6 +129,7 @@ summariseCharacteristics <- function(cohort,
       variables <- "number records"
     }
     result <- dplyr::tibble(
+      "result_id" = as.integer(1),
       "cdm_name" = CDMConnector::cdmName(cdm),
       "result_type" = "summarised_characteristics",
       "package_name" = "PatientProfiles",
@@ -137,7 +152,8 @@ summariseCharacteristics <- function(cohort,
 
   dic <- dplyr::tibble(
     short_name = character(), new_variable_name = character(),
-    new_variable_level = character(), table = character(), window = character()
+    new_variable_level = character(), table = character(), window = character(),
+    value = character(), result_type = character()
   )
   variables <- list()
 
@@ -163,7 +179,9 @@ summariseCharacteristics <- function(cohort,
           new_variable_name = names(ageGroup),
           new_variable_level = as.character(NA),
           table = as.character(NA),
-          window = as.character(NA)
+          window = as.character(NA),
+          value = as.character(NA),
+          result_type = "summarised_demographics"
         ))
       names(ageGroup) <- newNames
       demographicsCategorical <- c(demographicsCategorical, newNames)
@@ -176,7 +194,9 @@ summariseCharacteristics <- function(cohort,
         ),
         new_variable_level = as.character(NA),
         table = as.character(NA),
-        window = as.character(NA)
+        window = as.character(NA),
+        value = as.character(NA),
+        result_type = "summarised_demographics"
       ))
 
     # add demographics
@@ -213,8 +233,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       tableIntersect[[k]]$value, shortNames, fullNames,
-      arguments$tableName, paste("any", arguments$tableName),
-      arguments$tableName
+      arguments$tableName, NA_character_, arguments$tableName,
+      names(tableIntersect)[k], "summarised_table_intersect"
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -226,12 +246,13 @@ summariseCharacteristics <- function(cohort,
         indexDate = arguments$indexDate,
         censorDate = arguments$censorDate,
         order = arguments$order,
+        targetStartDate = arguments$targetStartDate,
+        targetEndDate = arguments$targetEndDate,
         flag = arguments$flag,
         count = arguments$count,
         date = arguments$date,
         days = arguments$days,
         field = arguments$field,
-        overlap = arguments$overlap,
         nameStyle = "{value}_{table_name}_{window_name}"
       )
 
@@ -300,7 +321,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       cohortIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesCohort, fullNamesCohort, arguments$targetCohortTable
+      shortNamesCohort, fullNamesCohort, arguments$targetCohortTable,
+      names(cohortIntersect)[k], "summarised_cohort_intersect"
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -359,7 +381,8 @@ summariseCharacteristics <- function(cohort,
     # update dictionary
     addDic <- updateDic(
       conceptIntersect[[k]]$value, shortNamesWindow, fullNamesWindow,
-      shortNamesConcept, fullNamesConcept, NA_character_
+      shortNamesConcept, fullNamesConcept, NA_character_,
+      names(conceptIntersect)[k],"summarised_concept_intersect"
     )
     dic <- dic %>% dplyr::union_all(addDic)
 
@@ -373,10 +396,7 @@ summariseCharacteristics <- function(cohort,
         targetStartDate = arguments$targetStartDate,
         targetEndDate = arguments$targetEndDate,
         order = arguments$order,
-        flag = arguments$flag,
-        count = arguments$count,
-        date = arguments$date,
-        days = arguments$days,
+        value = arguments$value,
         nameStyle = "{value}_{concept_name}_{window_name}"
       )
 
@@ -438,7 +458,7 @@ summariseCharacteristics <- function(cohort,
       verbose = FALSE
     ) %>%
     addCdmName(cdm = cdm) %>%
-    dplyr::mutate(result_type = "summarised_characteristics")
+    dplyr::select(!"result_type")
 
   # rename variables
   results <- results %>%
@@ -456,6 +476,11 @@ summariseCharacteristics <- function(cohort,
         is.na(.data$new_variable_level),
         .data$variable_level,
         .data$new_variable_level
+      ),
+      "result_type" = dplyr::if_else(
+        is.na(.data$result_type),
+        "summarised_characteristics",
+        .data$result_type
       )
     ) %>%
     dplyr::select(-c(
@@ -466,41 +491,53 @@ summariseCharacteristics <- function(cohort,
       c("variable_name", "variable_level"),
       ~ stringr::str_to_sentence(gsub("_", " ", .x))
     )) %>%
-    dplyr::mutate(
-      "additional_name" = dplyr::case_when(
-        is.na(.data$table) & is.na(.data$window) ~ "overall",
-        !is.na(.data$table) & is.na(.data$window) ~ "table",
-        is.na(.data$table) & !is.na(.data$window) ~ "window",
-        !is.na(.data$table) & !is.na(.data$window) ~ "table and window"
-      ),
-      "additional_level" = dplyr::case_when(
-        is.na(.data$table) & is.na(.data$window) ~ "overall",
-        !is.na(.data$table) & is.na(.data$window) ~ .data$table,
-        is.na(.data$table) & !is.na(.data$window) ~ .data$window,
-        !is.na(.data$table) & !is.na(.data$window) ~ paste(
-          .data$table, "and", .data$window
-        )
-      )
-    ) |>
-    dplyr::select(-dplyr::any_of(c("table", "window"))) |>
-    dplyr::as_tibble()
-
-  # correct integers
-  integers <- results$estimate_value
-  integers[results$estimate_type == "date"] <- NA
-  integers <- as.numeric(integers)
-  results$estimate_type[
-    results$estimate_type == "numeric" & integers == floor(integers)
-  ] <- "integer"
-
-  results <- omopgenerics::newSummarisedResult(results)
+    visOmopResults::uniteAdditional(cols = c("table", "window", "value")) |>
+    dplyr::as_tibble() |>
+    omopgenerics::newSummarisedResult()
 
   cli::cli_alert_success("summariseCharacteristics finished!")
 
   return(results)
 }
 
+#' Summarise counts for each different cohort. You can add a list of
+#' stratifications.
+#'
+#' `r lifecycle::badge("deprecated")`
+#'
+#' @param cohort A cohort in the cdm.
+#' @param strata Stratification list.
+#'
+#' @return A summary of the number of individuals in each cohrot and strata.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' cdm <- mockPatientProfiles()
+#'
+#' cdm$cohort1 |>
+#'   addSex() |>
+#'   summariseCohortCounts(strata = "sex")
+#' }
+#'
+summariseCohortCounts <- function(cohort,
+                                  strata = list()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCohortCounts()",
+    with = "CohortCharacteristics::summariseCohortCounts()"
+  )
+  summariseCharacteristics(
+    cohort = cohort, strata = strata, demographics = FALSE, ageGroup = NULL,
+    tableIntersect = list(), cohortIntersect = list(),
+    conceptIntersect = list(), otherVariables = character()
+  )
+}
+
 #' Summarise concept intersect with a cohort_table
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param cohort A cohort in the cdm
 #' @param strata Stratification list
@@ -514,6 +551,11 @@ summariseCharacteristics <- function(cohort,
 summariseConceptIntersect <- function(cohort,
                                       conceptIntersect,
                                       strata = list()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseConceptIntersect()",
+    with = "CohortCharacteristics::summariseConceptIntersect()"
+  )
   if (length(conceptIntersect) == 0) {
     cli::cli_abort("Please provide at least one cocneptSet to insersect with.")
   }
@@ -587,7 +629,9 @@ updateDic <- function(value,
                       fullWindow,
                       shortCohort,
                       fullCohort,
-                      tableName) {
+                      tableName,
+                      nam,
+                      resultType) {
   expand.grid("value" = value, "short_window" = shortWindow) %>%
     dplyr::as_tibble() %>%
     dplyr::inner_join(
@@ -607,20 +651,18 @@ updateDic <- function(value,
       .data$value, "_", .data$short_cohort, "_", .data$short_window
     )) %>%
     dplyr::mutate(
-      "new_variable_name" = dplyr::if_else(
-        .data$value %in% c("flag", "count", "date", "days"),
-        .data$full_cohort,
-        .data$value
-      ),
+      "new_variable_name" = .env$nam,
       "new_variable_level" = dplyr::if_else(
         .data$value %in% c("flag", "count", "date", "days"),
-        .data$value,
+        .data$full_cohort,
         as.character(NA)
       ),
       "table" = .env$tableName,
-      "window" = correctWindowName(.data$full_window)
+      "window" = correctWindowName(.data$full_window),
+      "result_type" = resultType
     ) |>
     dplyr::select(
-      "short_name", "new_variable_name", "new_variable_level", "table", "window"
+      "short_name", "new_variable_name", "new_variable_level", "table",
+      "window", "value", "result_type"
     )
 }

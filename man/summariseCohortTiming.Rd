@@ -34,7 +34,7 @@ considered.}
 A summarised result.
 }
 \description{
-Summarise cohort timing
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{

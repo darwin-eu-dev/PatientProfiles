@@ -1,0 +1,169 @@
+---
+title: "Adding table intersections"
+output: 
+  html_document:
+    pandoc_args: [
+      "--number-offset=1,0"
+      ]
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{table-intersect}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(CDMConnector)
+if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
+if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
+if (!eunomia_is_available()) downloadEunomiaData()
+```
+
+So far we've seen that we can add variables indicating intersections based on cohorts or concept sets. One additional option we have is to simply add an intersection based on a table.
+
+Let's again create a cohort containing people with an ankle sprain.
+
+```{r, warning = FALSE, message = FALSE}
+library(CDMConnector)
+library(CodelistGenerator)
+library(PatientProfiles)
+library(dplyr)
+library(ggplot2)
+
+con <- DBI::dbConnect(duckdb::duckdb(),
+                       dbdir = CDMConnector::eunomia_dir())
+cdm <- CDMConnector::cdm_from_con(con,
+                                   cdm_schem = "main",
+                                   write_schema = "main")
+
+cdm <- generateConceptCohortSet(
+  cdm = cdm,
+  name = "ankle_sprain",
+  conceptSet = list("ankle_sprain" = 81151),
+  end = "event_end_date",
+  limit = "all",
+  overwrite = TRUE
+)
+
+cdm$ankle_sprain
+
+cdm$ankle_sprain %>%
+  addTableIntersectFlag(
+    tableName = "condition_occurrence",
+    window = c(-30, -1)
+  ) |> 
+  tally()
+```
+
+We can use table intersection functions to check whether someone had a record in the drug exposure table in the 30 days before their ankle sprain. If we set targetStartDate to "drug_exposure_start_date" and targetEndDate to "drug_exposure_end_date" we are checking whether an individual had an ongoing drug exposure record in the window.
+
+```{r}
+cdm$ankle_sprain |> 
+  addTableIntersectFlag(
+    tableName = "drug_exposure",
+    indexDate = "cohort_start_date", 
+    targetStartDate = "drug_exposure_start_date",
+    targetEndDate = "drug_exposure_end_date",
+    window = c(-30, -1)
+  ) |> 
+  glimpse()
+```
+
+Meanwhile if we set  we set targetStartDate to "drug_exposure_start_date" and targetEndDate to "drug_exposure_start_date" we will instead be checking whether they had a drug exposure record that started during the window.
+
+```{r}
+cdm$ankle_sprain |> 
+  addTableIntersectFlag(
+    tableName = "drug_exposure",
+    indexDate = "cohort_start_date",
+    window = c(-30, -1)
+  ) |> 
+  glimpse()
+```
+
+As before, instead of a flag, we could also add count, date, or days variables.
+```{r}
+cdm$ankle_sprain |> 
+  addTableIntersectCount(
+    tableName = "drug_exposure",
+    indexDate = "cohort_start_date", 
+    window = c(-180, -1)
+  ) |> 
+  glimpse()
+
+cdm$ankle_sprain |> 
+  addTableIntersectDate(
+    tableName = "drug_exposure",
+    indexDate = "cohort_start_date", 
+    order = "last",
+    window = c(-180, -1)
+  ) |> 
+  glimpse()
+
+
+cdm$ankle_sprain |> 
+  addTableIntersectDate(
+    tableName = "drug_exposure",
+    indexDate = "cohort_start_date", 
+    order = "last",
+    window = c(-180, -1)
+  ) |> 
+  glimpse()
+```
+
+In these examples we've been adding intersections using the entire drug exposure concept table. However, we could have subsetted it before adding our table intersection. For example, let's say we want to add a variable for acetaminophen use among our ankle sprain cohort. As we've seen before we could use a cohort or concept set for this, but now we have another option - subset the drug exposure table down to acetaminophen records and add a table intersection.
+
+```{r}
+acetaminophen_cs <- getDrugIngredientCodes(cdm = cdm, 
+                                  name = c("acetaminophen"))
+
+cdm$acetaminophen_records <- cdm$drug_exposure |> 
+  filter(drug_concept_id %in% !!acetaminophen_cs[[1]]) |> 
+  compute()
+
+cdm$ankle_sprain |> 
+  addTableIntersectFlag(
+    tableName = "acetaminophen_records",
+    indexDate = "cohort_start_date", 
+    targetStartDate = "drug_exposure_start_date",
+    targetEndDate = "drug_exposure_end_date",
+    window = c(-Inf, Inf)
+  ) |> 
+  glimpse()
+```
+
+Beyond this table intersection provides a means if implementing a wide range of custom analyses. One more example to show this is provided below, where we check whether individuals have a measurement or procedure record on the date of their ankle sprain.
+
+```{r}
+cdm$proc_or_meas <- union_all(cdm$procedure_occurrence |> 
+  select("person_id", 
+         "record_date" = "procedure_date"),
+cdm$measurement |> 
+  select("person_id", 
+         "record_date" = "measurement_date")) |> 
+  compute()
+
+cdm$ankle_sprain |> 
+  addTableIntersectFlag(
+    tableName = "proc_or_meas",
+    indexDate = "cohort_start_date", 
+    targetStartDate = "record_date",
+    targetEndDate = "record_date",
+    window = c(0, 0)
+  ) |> 
+  glimpse()
+
+```

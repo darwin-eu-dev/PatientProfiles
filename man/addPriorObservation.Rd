@@ -9,7 +9,8 @@ addPriorObservation(
   x,
   cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
-  priorObservationName = "prior_observation"
+  priorObservationName = "prior_observation",
+  priorObservationType = "days"
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ addPriorObservation(
 observation.}
 
 \item{priorObservationName}{name of the new column to be added.}
+
+\item{priorObservationType}{Whether to return a "date" or the number of
+"days".}
 }
 \value{
 cohort table with added column containing prior observation of the

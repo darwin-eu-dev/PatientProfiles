@@ -1,4 +1,22 @@
+# Copyright 2024 DARWIN EU (C)
+#
+# This file is part of PatientProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Summarise cohort timing
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param cohort  A cohort table in a cdm reference.
 #' @param cohortId  Vector of cohort definition ids to include, if NULL, all
@@ -30,7 +48,11 @@ summariseCohortTiming <- function(cohort,
                                              "median","q75",
                                              "max"),
                                   density = FALSE){
-
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseCohortTiming()",
+    with = "CohortCharacteristics::summariseCohortTiming()"
+  )
   # validate inputs
   assertClass(cohort, "cohort_table")
   checkmate::assertNumeric(cohortId, any.missing = FALSE, null.ok = TRUE)
@@ -41,7 +63,11 @@ summariseCohortTiming <- function(cohort,
 
   # add cohort names
   cdm <- omopgenerics::cdmReference(cohort)
-  name <- attr(cohort, "tbl_name") # change to omopgenerics::getTableName(cohort)  when og is released
+  name <- omopgenerics::tableName(cohort)
+
+  if (is.na(name)) {
+    cli::cli_abort("Please provide a permanent cohort table.")
+  }
 
   ids <- cdm[[name]] |>
     omopgenerics::settings() |>
@@ -73,17 +99,17 @@ summariseCohortTiming <- function(cohort,
   cohort_timings <- cdm[[name]] |>
     dplyr::rename("cohort_name_reference" = "cohort_name") |>
     dplyr::select(dplyr::all_of(c(strataCols, "cohort_name_reference",
-                                "cohort_start_date", "cohort_end_date",
-                                "subject_id"))) |>
+                                  "cohort_start_date", "cohort_end_date",
+                                  "subject_id"))) |>
     dplyr::inner_join(
       cdm[[name]] |>
         dplyr::rename_with(~ paste0(.x, "_comparator"),
                            .cols = c("cohort_definition_id", "cohort_start_date",
                                      "cohort_end_date", "cohort_name")) |>
         dplyr::select(dplyr::all_of(c(strataCols, "cohort_name_comparator",
-                                    "cohort_start_date_comparator", "cohort_end_date_comparator",
-                                    "subject_id"))),
-                      by = c("subject_id", unique(strataCols))) |>
+                                      "cohort_start_date_comparator", "cohort_end_date_comparator",
+                                      "subject_id"))),
+      by = c("subject_id", unique(strataCols))) |>
     dplyr::filter(.data$cohort_name_reference != .data$cohort_name_comparator) %>%
     dplyr::mutate(diff_days = !!CDMConnector::datediff("cohort_start_date",
                                                        "cohort_start_date_comparator",
@@ -108,7 +134,7 @@ summariseCohortTiming <- function(cohort,
       visOmopResults::uniteGroup(cols = c("cohort_name_reference", "cohort_name_comparator"))
     forDensity <- lapply(c(list(character(0)), strata), function(levels, data = forDensity) {
       data |> visOmopResults::uniteStrata(cols = levels)
-      }) |>
+    }) |>
       dplyr::bind_rows() |>
       dplyr::select(!dplyr::all_of(c(strataCols)))
 
@@ -138,6 +164,7 @@ summariseCohortTiming <- function(cohort,
         }
       }
     }
+
       timingsResult <- timingsResult |>
         dplyr::union_all(
           timingDensity |>
@@ -150,7 +177,6 @@ summariseCohortTiming <- function(cohort,
               package_version = as.character(utils::packageVersion("PatientProfiles")),
               group_name = "cohort_name_reference &&& cohort_name_comparator",
               variable_name = "density",
-              variable_level = NA_character_,
               estimate_type = "numeric",
               additional_name ="overall",
               additional_level = "overall"
@@ -193,11 +219,13 @@ getDensityData <- function(sLevel, data) {
   dStrata <- data$diff_days[data$strata_level == sLevel]
   d <- stats::density(dStrata)
   densityResult <- dplyr::tibble(
+    variable_level = as.character(1:length(d$x)),
     estimate_name = "x",
     estimate_value = as.character(d$x)
   ) |>
     dplyr::union_all(
       dplyr::tibble(
+        variable_level = as.character(1:length(d$x)),
         estimate_name = "y",
         estimate_value = as.character(d$y)
       )
