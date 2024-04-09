@@ -8,7 +8,7 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{a07_summariseLargeScaleCharacteristics}
+  %\VignetteIndexEntry{summariseLargeScaleCharacteristics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
