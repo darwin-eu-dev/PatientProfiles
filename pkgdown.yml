@@ -6,12 +6,8 @@ articles:
   concept-intersect: concept-intersect.html
   demographics: demographics.html
   summarise: summarise.html
-  summariseCharacteristics: summariseCharacteristics.html
-  summariseCohortOverlap: summariseCohortOverlap.html
-  summariseCohortTiming: summariseCohortTiming.html
-  summariseLargeScaleCharacteristics: summariseLargeScaleCharacteristics.html
   table-intersect: table-intersect.html
-last_built: 2024-04-09T17:22Z
+last_built: 2024-04-09T17:30Z
 urls:
   reference: https://darwin-eu-dev.github.io/PatientProfiles/reference
   article: https://darwin-eu-dev.github.io/PatientProfiles/articles
