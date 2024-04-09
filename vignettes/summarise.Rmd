@@ -26,6 +26,8 @@ In previous vignettes we have seen how to add patient level demographics (age, s
 
 Once we have added several columns to our table of interest we may want to summarise all this data into a `summarised_result` object using several different estimates.
 
+### Variables type
+
 We support different types of variables, variable type is assigned using `dplyr::type_sum`:
 
 - Date: `date` or `dttm`.
@@ -38,10 +40,245 @@ We support different types of variables, variable type is assigned using `dplyr:
 
 - Logical: `lgl`.
 
-Lets get started creating a our data that we are going to summarise:
+### Estimates names
+
+We can summarise this data using different estimates:
+
+```{r, echo = FALSE, eval = TRUE}
+PatientProfiles:::formats |> 
+  dplyr::rename(
+    "Estimate name" = "estimate_name", 
+    "Description" = "estimate_description", 
+    "Estimate type" = "estimate_type"
+  ) |>
+  dplyr::group_by(.data$variable_type) |> 
+  gt::gt() |>
+  gt::tab_style(
+    style = gt::cell_fill(color = "#e1e1e1"),
+    locations = gt::cells_row_groups()
+  ) |>
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold"), 
+      gt::cell_fill("#000"), 
+      gt::cell_text(color = "#fff")
+    ),
+    locations = gt::cells_column_labels()
+  ) |>
+  gt::tab_style(
+    style = gt::cell_text(font = "consolas"), 
+    locations = gt::cells_body(columns = "Estimate name")
+  )
+```
+
+## Summarise our first table
+
+Lets get started creating our data that we are going to summarise:
+
+```{r, echo = FALSE}
+folder <- tempdir()
+CDMConnector::downloadEunomiaData(overwrite = TRUE, pathToData = folder)
+Sys.setenv("EUNOMIA_DATA_FOLDER" = folder)
+```
 
 ```{r setup}
+library(duckdb)
+library(CDMConnector)
 library(PatientProfiles)
+library(dplyr)
+library(CodelistGenerator)
 
+cdm <- cdmFromCon(
+  con = dbConnect(duckdb(), eunomia_dir()), 
+  cdmSchema = "main", 
+  writeSchema = "main"
+)
+cdm <- generateConceptCohortSet(
+  cdm = cdm, 
+  conceptSet = list("sinusitis" = c(4294548, 4283893, 40481087, 257012)), 
+  limit = "first",
+  name = "my_cohort"
+)
+cdm <- generateConceptCohortSet(
+  cdm = cdm, 
+  conceptSet = getDrugIngredientCodes(cdm = cdm, name = c("morphine", "aspirin", "oxycodone")), 
+  name = "drugs"
+)
 
+x <- cdm$my_cohort |>
+  # add demographics variables
+  addDemographics() |>
+  # add number of counts per ingredient before and after index date
+  addCohortIntersectCount(
+    targetCohortTable = "drugs", 
+    window = list("prior" = c(-Inf, -1), "future" = c(1, Inf)), 
+    nameStyle = "{window_name}_{cohort_name}"
+  ) |>
+  # add a flag regarding if they had a prior occurrence of pharyngitis
+  addConceptIntersectFlag(
+    conceptSet = list(pharyngitis = 4112343),
+    window = c(-Inf, -1),
+    nameStyle = "pharyngitis_before"
+  ) |>
+  # date fo the first visit for that individual
+  addTableIntersectDate(
+    tableName = "visit_occurrence", 
+    window = c(-Inf, Inf), 
+    nameStyle = "first_visit"
+  ) |>
+  # time till the next visit after sinusitis
+  addTableIntersectDays(
+    tableName = "visit_occurrence", 
+    window = c(1, Inf), 
+    nameStyle = "days_to_next_visit"
+  )
+
+x |>
+  glimpse()
+```
+
+In this table (`x`) we have a cohort of first occurrences of synusitis, and then we added: demographics; the counts of 3 ingredients, any time prior and any time after the index date; a flag indicating if they had pharyngitis before; date of the first visit; and, finally, time to next visit.
+
+If we want to summarise the age statified by sex we could use tidyverse functions like:
+
+```{r}
+x |>
+  group_by(sex) |>
+  summarise(mean_age = mean(age), sd_age = sd(age))
+```
+
+This would give us a first insight of the differences of age. But the output is not going to be in an standardised format.
+
+In PatientProfiles we have built a function that:
+
+- Allow you to get the standardised output.
+
+- You have a wide range of estimates that you can get.
+
+- You don't have to worry which of the functions are supported in the database side (e.g. not all dbms support quantile function).
+
+For example we could get the same information like before using:
+
+```{r}
+x |>
+  summariseResult(
+    strata = "sex",
+    variables = "age", 
+    estimates = c("mean", "sd"),
+    counts = FALSE
+  ) |>
+  select(strata_name, strata_level, variable_name, estimate_value)
+```
+
+You can stratify the results also by "pharyngitis_before":
+```{r}
+x |>
+  summariseResult(
+    strata = list("sex", "pharyngitis_before"),
+    variables = "age", 
+    estimates = c("mean", "sd"),
+    counts = FALSE
+  ) |>
+  select(strata_name, strata_level, variable_name, estimate_value)
+```
+
+Note that the interaction term was not included, if we want to include it we have to specify it as follows:
+```{r}
+x |>
+  summariseResult(
+    strata = list("sex", "pharyngitis_before", c("sex", "pharyngitis_before")),
+    variables = "age", 
+    estimates = c("mean", "sd"),
+    counts = FALSE
+  ) |>
+  select(strata_name, strata_level, variable_name, estimate_value) |> 
+  print(n = Inf)
+```
+
+You can remove overall strata with the includeOverallStrata option:
+
+```{r}
+x |>
+  summariseResult(
+    includeOverallStrata = FALSE,
+    strata = list("sex", "pharyngitis_before"),
+    variables = "age", 
+    estimates = c("mean", "sd"),
+    counts = FALSE
+  ) |>
+  select(strata_name, strata_level, variable_name, estimate_value) |> 
+  print(n = Inf)
+```
+
+The results model has two levels of groupping (group and strata), you cna specify them independently:
+
+```{r}
+x |>
+  addCohortName() |>
+  summariseResult(
+    group = "cohort_name",
+    includeOverallGroup = FALSE,
+    strata = list("sex", "pharyngitis_before"),
+    includeOverallStrata = TRUE,
+    variables = "age", 
+    estimates = c("mean", "sd"),
+    counts = FALSE
+  ) |>
+  select(group_name, group_level, strata_name, strata_level, variable_name, estimate_value) |> 
+  print(n = Inf)
+```
+
+We can add or remove number subjects and records (if a person identifier is found) counts with the counts parameter:
+
+```{r}
+x |>
+  summariseResult(
+    variables = "age", 
+    estimates = c("mean", "sd"),
+    counts = TRUE
+  ) |>
+  select(strata_name, strata_level, variable_name, estimate_value) |> 
+  print(n = Inf)
+```
+
+If you want to specify different groups of estimates per different groups of variables you can use lists:
+
+```{r}
+x |>
+  summariseResult(
+    strata = "pharyngitis_before",
+    includeOverallStrata = FALSE,
+    variables = list(c("age", "prior_observation"), "sex"), 
+    estimates = list(c("mean", "sd"), c("count", "percentage")),
+    counts = FALSE
+  ) |>
+  select(strata_name, strata_level, variable_name, estimate_value) |> 
+  print(n = Inf)
+```
+
+An example of a complete analysis would be:
+
+```{r}
+drugs <- settings(cdm$drugs)$cohort_name
+x |>
+  addCohortName() |>
+  summariseResult(
+    group = "cohort_name",
+    includeOverallGroup = FALSE,
+    strata = list("pharyngitis_before"),
+    includeOverallStrata = TRUE,
+    variables = list(
+      c("age", "prior_observation", "future_observation", paste0("prior_", drugs), 
+        paste0("future_", drugs), "days_to_next_visit"),
+      c("sex", "pharyngitis_before"),
+      c("first_visit", "cohort_start_date", "cohort_end_date")
+    ), 
+    estimates = list(
+      c("median", "q25", "q75"),
+      c("count", "percentage"),
+      c("median", "q25", "q75", "min", "max")
+    ),
+    counts = TRUE
+  ) |>
+  select(group_name, group_level, strata_name, strata_level, variable_name, estimate_value)
 ```

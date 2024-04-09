@@ -12,14 +12,6 @@ articles:
   - table-intersect
   - summarise
 
-- title: CohortCharacteristics
-  navbar: CohortCharacteristics
-  contents:
-  - summariseCharacteristics
-  - summariseLargeScaleCharacteristics
-  - summariseCohortOverlap
-  - summariseCohortTiming
-
 reference:
 - subtitle: Add individual patient characteristics
   desc: Add patient characteristics to a table in the OMOP Common Data Model
