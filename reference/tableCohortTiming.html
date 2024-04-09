@@ -24,15 +24,18 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/a01_addingPatientDemographics.html">Adding patient demographics</a>
-    <a class="dropdown-item" href="../articles/a02_addingCohortIntersections.html">Adding cohort intersections</a>
-    <a class="dropdown-item" href="../articles/a03_addingConceptIntersections.html">Adding concept intersections</a>
-    <a class="dropdown-item" href="../articles/a04_addingTableIntersections.html">Adding table intersections</a>
-    <a class="dropdown-item" href="../articles/a05_summariseResult.html">Summarise result</a>
-    <a class="dropdown-item" href="../articles/a06_summarisePatientCharacteristics.html">Summarise patient characteristics</a>
-    <a class="dropdown-item" href="../articles/a07_summariseLargeScaleCharacteristics.html">Summarise large scale characteristics</a>
-    <a class="dropdown-item" href="../articles/a08_summariseCohortOverlap.html">Summarise cohort overlap</a>
-    <a class="dropdown-item" href="../articles/a09_summariseCohortTiming.html">Summarise cohort timing</a>
+    <h6 class="dropdown-header" data-toc-skip>PatientProfiles</h6>
+    <a class="dropdown-item" href="../articles/demographics.html">Adding patient demographics</a>
+    <a class="dropdown-item" href="../articles/cohort-intersect.html">Adding cohort intersections</a>
+    <a class="dropdown-item" href="../articles/concept-intersect.html">Adding concept intersections</a>
+    <a class="dropdown-item" href="../articles/table-intersect.html">Adding table intersections</a>
+    <a class="dropdown-item" href="../articles/summarise.html">Summarise result</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>CohortCharacteristics</h6>
+    <a class="dropdown-item" href="../articles/summariseCharacteristics.html">Summarise patient characteristics</a>
+    <a class="dropdown-item" href="../articles/summariseLargeScaleCharacteristics.html">Summarise large scale characteristics</a>
+    <a class="dropdown-item" href="../articles/summariseCohortOverlap.html">Summarise cohort overlap</a>
+    <a class="dropdown-item" href="../articles/summariseCohortTiming.html">Summarise cohort timing</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -137,8 +140,8 @@ their default values.</p></dd>
 <span class="r-in"><span><span class="va">timing</span> <span class="op">&lt;-</span> <span class="fu"><a href="summariseCohortTiming.html">summariseCohortTiming</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> diff_days: min, q25, median, q75, max</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-04-08 16:16:34.213509</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-04-08 16:16:34.273513</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-04-09 11:59:46.095987</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-04-09 11:59:46.148638</span>
 <span class="r-in"><span><span class="fu">tableCohortTiming</span><span class="op">(</span><span class="va">timing</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;div id="ffdccmiygy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;"&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;style&gt;#ffdccmiygy table {</span>

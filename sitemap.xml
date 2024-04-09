@@ -13,34 +13,34 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a01_addingPatientDemographics.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/cohort-intersect.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a02_addingCohortIntersections.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/concept-intersect.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a03_addingConceptIntersections.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a04_addingTableIntersections.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a05_summariseResult.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a06_summarisePatientCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a07_summariseLargeScaleCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a08_summariseCohortOverlap.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/a09_summariseCohortTiming.html</loc>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/demographics.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/summarise.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/summariseCharacteristics.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/summariseCohortOverlap.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/summariseCohortTiming.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/summariseLargeScaleCharacteristics.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/table-intersect.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/authors.html</loc>

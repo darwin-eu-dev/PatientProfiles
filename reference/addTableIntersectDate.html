@@ -24,15 +24,18 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/a01_addingPatientDemographics.html">Adding patient demographics</a>
-    <a class="dropdown-item" href="../articles/a02_addingCohortIntersections.html">Adding cohort intersections</a>
-    <a class="dropdown-item" href="../articles/a03_addingConceptIntersections.html">Adding concept intersections</a>
-    <a class="dropdown-item" href="../articles/a04_addingTableIntersections.html">Adding table intersections</a>
-    <a class="dropdown-item" href="../articles/a05_summariseResult.html">Summarise result</a>
-    <a class="dropdown-item" href="../articles/a06_summarisePatientCharacteristics.html">Summarise patient characteristics</a>
-    <a class="dropdown-item" href="../articles/a07_summariseLargeScaleCharacteristics.html">Summarise large scale characteristics</a>
-    <a class="dropdown-item" href="../articles/a08_summariseCohortOverlap.html">Summarise cohort overlap</a>
-    <a class="dropdown-item" href="../articles/a09_summariseCohortTiming.html">Summarise cohort timing</a>
+    <h6 class="dropdown-header" data-toc-skip>PatientProfiles</h6>
+    <a class="dropdown-item" href="../articles/demographics.html">Adding patient demographics</a>
+    <a class="dropdown-item" href="../articles/cohort-intersect.html">Adding cohort intersections</a>
+    <a class="dropdown-item" href="../articles/concept-intersect.html">Adding concept intersections</a>
+    <a class="dropdown-item" href="../articles/table-intersect.html">Adding table intersections</a>
+    <a class="dropdown-item" href="../articles/summarise.html">Summarise result</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>CohortCharacteristics</h6>
+    <a class="dropdown-item" href="../articles/summariseCharacteristics.html">Summarise patient characteristics</a>
+    <a class="dropdown-item" href="../articles/summariseLargeScaleCharacteristics.html">Summarise large scale characteristics</a>
+    <a class="dropdown-item" href="../articles/summariseCohortOverlap.html">Summarise cohort overlap</a>
+    <a class="dropdown-item" href="../articles/summariseCohortTiming.html">Summarise cohort timing</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -128,7 +131,7 @@ required parameters.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">addTableIntersectDate</span><span class="op">(</span>tableName <span class="op">=</span> <span class="st">"visit_occurrence"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_170_1712592884&gt; [2 x 5]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_170_1712663881&gt; [2 x 5]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v0.10.1 [unknown@Linux 6.5.0-1017-azure:R 4.3.3/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span>
