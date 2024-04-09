@@ -8,7 +8,7 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{a04_addingTableIntersections}
+  %\VignetteIndexEntry{table-intersect}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

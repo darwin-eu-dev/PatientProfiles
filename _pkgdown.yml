@@ -2,6 +2,24 @@ url: https://darwin-eu-dev.github.io/PatientProfiles/
 template:
   bootstrap: 5
 
+articles:
+- title: PatientProfiles
+  navbar: PatientProfiles
+  contents:
+  - demographics
+  - cohort-intersect
+  - concept-intersect
+  - table-intersect
+  - summarise
+
+- title: CohortCharacteristics
+  navbar: CohortCharacteristics
+  contents:
+  - summariseCharacteristics
+  - summariseLargeScaleCharacteristics
+  - summariseCohortOverlap
+  - summariseCohortTiming
+
 reference:
 - subtitle: Add individual patient characteristics
   desc: Add patient characteristics to a table in the OMOP Common Data Model

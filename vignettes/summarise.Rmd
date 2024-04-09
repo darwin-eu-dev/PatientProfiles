@@ -1,0 +1,47 @@
+---
+title: "Summarise result"
+output: 
+  html_document:
+    pandoc_args: [
+      "--number-offset=1,0"
+      ]
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{summarise}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+In previous vignettes we have seen how to add patient level demographics (age, sex, prior observation, ...) `r vignette("demographics", package = "PatientProfiles")` or intersections with cohorts `r vignette("cohort-intersect", package = "PatientProfiles")`, concepts and tables. 
+
+Once we have added several columns to our table of interest we may want to summarise all this data into a `summarised_result` object using several different estimates.
+
+We support different types of variables, variable type is assigned using `dplyr::type_sum`:
+
+- Date: `date` or `dttm`.
+
+- Numeric: `dbl` or `drtn`.
+
+- Integer: `int` or `int64`.
+
+- Categorical: `chr`, `fct` or `ord`.
+
+- Logical: `lgl`.
+
+Lets get started creating a our data that we are going to summarise:
+
+```{r setup}
+library(PatientProfiles)
+
+
+```

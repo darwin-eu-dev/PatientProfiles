@@ -8,7 +8,7 @@ output:
     number_sections: yes
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{a09_summariseCohortTiming}
+  %\VignetteIndexEntry{summariseCohortTiming}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
