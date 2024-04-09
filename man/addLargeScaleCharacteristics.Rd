@@ -40,8 +40,7 @@ The output of this function is the cohort with the new created
 columns.
 }
 \description{
-This function is used to add columns with the large scale characteristics of
-a cohort table.
+`r lifecycle::badge("experimental")`
 }
 \examples{
 \donttest{

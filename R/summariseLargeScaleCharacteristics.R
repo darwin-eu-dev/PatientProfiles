@@ -207,6 +207,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
 #' This function is used to add columns with the large scale characteristics of
 #' a cohort table.
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' @param cohort The cohort to characterise.
 #' @param window Temporal windows that we want to characterize.
 #' @param eventInWindow Tables to characterise the events in the window.
