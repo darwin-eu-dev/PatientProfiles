@@ -3,22 +3,12 @@ template:
   bootstrap: 5
 
 articles:
-- title: PatientProfiles
-  navbar: PatientProfiles
   contents:
   - demographics
   - cohort-intersect
   - concept-intersect
   - table-intersect
   - summarise
-
-- title: CohortCharacteristics
-  navbar: CohortCharacteristics
-  contents:
-  - summariseCharacteristics
-  - summariseLargeScaleCharacteristics
-  - summariseCohortOverlap
-  - summariseCohortTiming
 
 reference:
 - subtitle: Add individual patient characteristics
