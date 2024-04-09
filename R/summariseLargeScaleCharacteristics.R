@@ -1,6 +1,6 @@
-# Copyright 2022 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
-# This file is part of DrugUtilisation
+# This file is part of PatientProfiles
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
