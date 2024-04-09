@@ -9,7 +9,8 @@ addFutureObservation(
   x,
   cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
-  futureObservationName = "future_observation"
+  futureObservationName = "future_observation",
+  futureObservationType = "days"
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ addFutureObservation(
 observation.}
 
 \item{futureObservationName}{name of the new column to be added.}
+
+\item{futureObservationType}{Whether to return a "date" or the number of
+"days".}
 }
 \value{
 cohort table with added column containing future observation of the

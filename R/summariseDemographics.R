@@ -1,4 +1,4 @@
-# Copyright 2022 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
 # This file is part of PatientProfiles
 #
@@ -15,6 +15,8 @@
 # limitations under the License.
 
 #' Summarise demographics of individuals
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param cohort A cohort in the cdm.
 #' @param strata Stratification list.
@@ -40,11 +42,17 @@
 summariseDemographics <- function(cohort,
                                   strata = list(),
                                   ageGroup = NULL) {
-
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseDemographics()",
+    with = "CohortCharacteristics::summariseDemographics()"
+  )
   results <- PatientProfiles::summariseCharacteristics(
     cohort = cohort,
     strata = strata,
-    ageGroup = ageGroup,
-  )
+    demographics = TRUE,
+    ageGroup = ageGroup
+    ) |>
+    dplyr::filter(.data$result_type == "summarised_demographics")
   return(results)
 }

@@ -1,6 +1,6 @@
-# Copyright 2022 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
-# This file is part of DrugUtilisation
+# This file is part of PatientProfiles
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 #' This function is used to summarise the large scale characteristics of a
 #' cohort table
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param cohort The cohort to characterise.
 #' @param strata Stratification list.
@@ -72,8 +74,13 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                censorDate = NULL,
                                                includeSource = FALSE,
                                                minimumFrequency = 0.005,
-                                               excludedCodes = NULL,
+                                               excludedCodes = c(0),
                                                cdm = lifecycle::deprecated()) {
+  lifecycle::deprecate_soft(
+    when = "0.8.0",
+    what = "PatientProfiles::summariseLargeScaleCharacteristics()",
+    with = "CohortCharacteristics::summariseLargeScaleCharacteristics()"
+  )
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -103,7 +110,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
   names(window) <- gsub("_", " ", gsub("m", "-", getWindowNames(window)))
 
   # random tablePrefix
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   # initial table
   x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
@@ -174,13 +181,15 @@ summariseLargeScaleCharacteristics <- function(cohort,
       "estimate_name" = .data$estimate_type,
       "estimate_value" = .data$estimate,
       "estimate_type" = dplyr::if_else(
-        .data$estimate_type == "count", "numeric", "percentage"
+        .data$estimate_type == "count", "integer", "percentage"
       )
     ) |>
-    visOmopResults::uniteAdditional(
-      cols = c("table_name", "type", "analysis", "concept")
-    ) |>
+    dplyr::rename("concept_id" = "concept") |>
+    visOmopResults::uniteAdditional(cols = c("concept_id")) |>
+    dplyr::select(!c("estimate", "variable")) |>
+    appendSettings(colsSettings = c("table_name", "type", "analysis")) |>
     dplyr::select(dplyr::all_of(c(
+      "result_id",
       "cdm_name", "result_type", "package_name", "package_version",
       "group_name", "group_level", "strata_name", "strata_level",
       "variable_name", "variable_level", "estimate_name", "estimate_type",
@@ -197,6 +206,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
 
 #' This function is used to add columns with the large scale characteristics of
 #' a cohort table.
+#'
+#' `r lifecycle::badge("experimental")`
 #'
 #' @param cohort The cohort to characterise.
 #' @param window Temporal windows that we want to characterize.
@@ -238,6 +249,7 @@ addLargeScaleCharacteristics <- function(cohort,
   }
 
   cdm <- omopgenerics::cdmReference(cohort)
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   # initial checks
   checkX(cohort)
@@ -262,8 +274,10 @@ addLargeScaleCharacteristics <- function(cohort,
   dic <- dplyr::tibble(window_name = nams, window_nam = paste0("lsc_", winNams))
   names(window) <- nams
 
-  # random tablePrefix
-  tablePrefix <- c(sample(letters, 5, TRUE), "_") %>% paste0(collapse = "")
+  dicTblName <- omopgenerics::uniqueTableName(tablePrefix)
+  cdm <- omopgenerics::insertTable(
+    cdm = cdm, name = dicTblName, table = dic, overwrite = TRUE
+  )
 
   # initial table
   x <- getInitialTable(cohort, tablePrefix, indexDate, censorDate)
@@ -307,7 +321,7 @@ addLargeScaleCharacteristics <- function(cohort,
         dplyr::select(
           "subject_id", "cohort_start_date", "concept", "window_name"
         ) %>%
-        dplyr::inner_join(dic, by = "window_name", copy = TRUE) %>%
+        dplyr::inner_join(cdm[[dicTblName]], by = "window_name") %>%
         dplyr::mutate(
           value = 1,
           concept = as.character(as.integer(.data$concept)),
@@ -436,6 +450,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
       cdm = cdm, name = nm, table = dplyr::tibble("standard" = excludedCodes),
       overwrite = TRUE
     )
+    cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
     table <- table |>
       dplyr::anti_join(cdm[[nm]], by = "standard")
     if ("source" %in% colnames(table)) {
@@ -453,7 +468,6 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
       overwrite = TRUE
     )
 }
-
 summariseConcept <- function(cohort, tableWindow, strata, tablePrefix) {
   result <- NULL
   cohortNames <- omopgenerics::settings(cohort)$cohort_name
@@ -497,8 +511,7 @@ summariseStrataCounts <- function(tableWindowCohort, strata) {
           dplyr::group_by(dplyr::pick(c("concept", strata[[k]]))) %>%
           dplyr::summarise(count = as.numeric(dplyr::n()), .groups = "drop") %>%
           dplyr::collect() %>%
-          tidyr::unite(col = "strata_level", dplyr::all_of(strata[[k]]), sep = " and ") %>%
-          dplyr::mutate(strata_name = paste0(strata[[k]], collapse = " and "))
+          visOmopResults::uniteStrata(cols = strata[[k]])
       )
   }
   return(result)
@@ -553,15 +566,24 @@ addConceptName <- function(lsc, cdm) {
   concepts <- lsc %>%
     dplyr::select("concept", "analysis") %>%
     dplyr::distinct()
+
+  conceptsTblName <- omopgenerics::uniqueTableName(omopgenerics::tmpPrefix())
+  cdm <- omopgenerics::insertTable(cdm = cdm,
+                                   name = conceptsTblName,
+                                   table = concepts,
+                                   overwrite = TRUE )
+
   conceptNames <- cdm[["concept"]] %>%
     dplyr::select("concept" = "concept_id", "concept_name") %>%
     dplyr::inner_join(
-      concepts %>%
+      cdm[[conceptsTblName]] %>%
         dplyr::mutate(concept = as.numeric(.data$concept)),
-      by = "concept",
-      copy = TRUE
+      by = "concept"
     ) %>%
     dplyr::collect()
+
+  omopgenerics::dropTable(cdm = cdm, name = conceptsTblName)
+
   return(conceptNames)
 }
 getTableAnalysis <- function(table, type, analysis, tablePrefix) {
@@ -670,4 +692,47 @@ trimCounts <- function(lsc, tableWindow, minimumCount, tablePrefix, winName) {
       )
   }
   return(lsc)
+}
+appendSettings <- function(results, colsSettings) {
+  ids <- results |>
+    dplyr::select(dplyr::all_of(colsSettings)) |>
+    dplyr::distinct() |>
+    dplyr::mutate("result_id" = as.integer(dplyr::row_number()))
+  results <- results |>
+    dplyr::left_join(ids, by = colsSettings) |>
+    dplyr::select(!dplyr::all_of(colsSettings))
+  settingsIds <- ids |>
+    tidyr::pivot_longer(
+      cols = dplyr::all_of(colsSettings),
+      names_to = "estimate_name",
+      values_to = "estimate_value"
+    ) |>
+    dplyr::inner_join(
+      variableTypes(ids) |>
+        dplyr::select(
+          "estimate_name" = "variable_name", "estimate_type" = "variable_type"
+        ) |>
+        dplyr::mutate("estimate_type" = dplyr::if_else(
+          .data$estimate_type == "categorical", "character", .data$estimate_type
+        )),
+      by = "estimate_name"
+    ) |>
+    dplyr::mutate(
+      "variable_name" = "settings",
+      "variable_level" = NA_character_,
+      "group_name" = "overall",
+      "group_level" = "overall",
+      "strata_name" = "overall",
+      "strata_level" = "overall",
+      "additional_name" = "overall",
+      "additional_level" = "overall",
+      "package_name" = results$package_name[1],
+      "package_version" = results$package_version[1],
+      "result_type" = results$result_type[1],
+      "cdm_name" = results$cdm_name[1]
+    )
+  results <- settingsIds |>
+    dplyr::union_all(results) |>
+    dplyr::arrange(.data$result_id)
+  return(results)
 }

@@ -29,7 +29,7 @@ observation flag.}
 \item{name}{deprecated.}
 
 \item{nameStyle}{Name of the new columns to create, it must contain
-"{window_name}" if multiple windows are provided.}
+"window_name" if multiple windows are provided.}
 }
 \value{
 cohort table with the added binary column assessing inObservation.

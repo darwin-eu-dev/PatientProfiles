@@ -14,6 +14,7 @@ mockPatientProfiles(
   visit_occurrence = NULL,
   concept_ancestor = NULL,
   person = NULL,
+  death = NULL,
   cohort1 = NULL,
   cohort2 = NULL,
   drug_concept_id_size = 5,
@@ -60,6 +61,8 @@ mockPatientProfiles(
 \item{concept_ancestor}{the concept ancestor table.}
 
 \item{person}{default null user can define its own table.}
+
+\item{death}{default null user can define its own table}
 
 \item{cohort1}{cohort table for test to run in getindication.}
 

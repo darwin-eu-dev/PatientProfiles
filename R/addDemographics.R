@@ -1,4 +1,4 @@
-# Copyright 2023 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
 # This file is part of PatientProfiles
 #
@@ -40,10 +40,14 @@
 #' @param priorObservation TRUE or FALSE. If TRUE, days of between the start
 #' of the current observation period and the indexDate will be calculated.
 #' @param priorObservationName Prior observation variable name.
+#' @param priorObservationType Whether to return a "date" or the number of
+#' "days".
 #' @param futureObservation TRUE or FALSE. If TRUE, days between the
 #' indexDate and the end of the current observation period will be
 #' calculated.
 #' @param futureObservationName Future observation variable name.
+#' @param futureObservationType Whether to return a "date" or the number of
+#' "days".
 #'
 #' @param dateOfBirth TRUE or FALSE, if true the date of birth will be return.
 #'
@@ -77,8 +81,10 @@ addDemographics <- function(x,
                             missingSexValue = "None",
                             priorObservation = TRUE,
                             priorObservationName = "prior_observation",
+                            priorObservationType = "days",
                             futureObservation = TRUE,
                             futureObservationName = "future_observation",
+                            futureObservationType = "days",
                             dateOfBirth = FALSE,
                             dateOfBirthName = "date_of_birth") {
   ## change ageDefaultMonth, ageDefaultDay to integer
@@ -87,21 +93,19 @@ addDemographics <- function(x,
   }
   cdm <- omopgenerics::cdmReference(x)
 
-  if (typeof(ageDefaultMonth) == "character") {
-    ageDefaultMonth <- as.integer(ageDefaultMonth)
-  }
-
-  if (typeof(ageDefaultDay) == "character") {
-    ageDefaultDay <- as.integer(ageDefaultDay)
-  }
-
   ## check for standard types of user error
   personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
+  if (typeof(ageDefaultMonth) == "character") {
+    ageDefaultMonth <- as.integer(ageDefaultMonth)
+  }
+  if (typeof(ageDefaultDay) == "character") {
+    ageDefaultDay <- as.integer(ageDefaultDay)
+  }
   checkmate::assertIntegerish(
     ageDefaultMonth,
-    lower = 1, upper = 31, any.missing = FALSE, len = 1,
+    lower = 1, upper = 12, any.missing = FALSE, len = 1,
     null.ok = !age
   )
   checkmate::assertIntegerish(
@@ -122,6 +126,8 @@ addDemographics <- function(x,
   }
   checkmate::assertCharacter(missingAgeGroupValue, len = 1, any.missing = FALSE)
   checkmate::assertCharacter(missingSexValue, len = 1, any.missing = FALSE)
+  assertChoice(priorObservationType, c("date", "days"), length = 1)
+  assertChoice(futureObservationType, c("date", "days"), length = 1)
 
   # check variable names
   name <- character()
@@ -192,10 +198,10 @@ addDemographics <- function(x,
           ),
         by = personVariable
       ) %>%
-      dplyr::filter(.data$observation_period_start_date <=
-                      .data[[indexDate]] &
-                      .data$observation_period_end_date >=
-                      .data[[indexDate]])
+      dplyr::filter(
+        .data$observation_period_start_date <= .data[[indexDate]] &
+          .data$observation_period_end_date >= .data[[indexDate]]
+      )
   }
 
   # update dates
@@ -241,9 +247,7 @@ addDemographics <- function(x,
     addCols <- colnames(obsPeriodDetails)[
       which(!colnames(obsPeriodDetails) %in% c(personVariable, indexDate))]
 
-    if(any(addCols %in%
-           colnames(x))
-    ){
+    if (any(addCols %in% colnames(x))){
       checkNewName(name = addCols, x = x)
       x <- x %>%
         dplyr::select(!dplyr::any_of(addCols))
@@ -268,13 +272,31 @@ addDemographics <- function(x,
   }
 
   if (priorObservation == TRUE) {
-    pHQ <- priorObservationQuery(indexDate, name = priorObservationName)
+    if (priorObservationType == "days") {
+      pHQ <-  glue::glue(
+        'local(CDMConnector::datediff("observation_period_start_date","{indexDate}"))'
+      )
+    } else {
+      pHQ <- ".data$observation_period_start_date"
+    }
+    pHQ <- pHQ %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(glue::glue(priorObservationName))
   } else {
     pHQ <- NULL
   }
 
   if (futureObservation == TRUE) {
-    fOQ <- futureObservationQuery(indexDate, name = futureObservationName)
+    if (futureObservationType == "days") {
+      fOQ <-  glue::glue(
+        'local(CDMConnector::datediff("{indexDate}","observation_period_end_date"))'
+      )
+    } else {
+      fOQ <- ".data$observation_period_end_date"
+    }
+    fOQ <- fOQ |>
+      rlang::parse_exprs() %>%
+      rlang::set_names(futureObservationName)
   } else {
     fOQ <- NULL
   }
@@ -291,19 +313,9 @@ addDemographics <- function(x,
     dplyr::select(
       dplyr::all_of(startNames),
       dplyr::any_of(c(
-        ageName, sexName,
-        priorObservationName,
-        futureObservationName
+        ageName, sexName, priorObservationName, futureObservationName
       ))
     )
-
-  if (sex == TRUE) {
-    x <- x %>%
-      dplyr::mutate(!!sexName := dplyr::if_else(!is.na(.data[[sexName]]),
-                                                .data[[sexName]],
-                                                "None"
-      ))
-  }
 
   if (dateOfBirth == TRUE) {
     x <- x %>%
@@ -347,33 +359,7 @@ sexQuery <- function(name, missingValue) {
            rlang::set_names(glue::glue(name)))
 }
 
-priorObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("observation_period_start_date",
-                      "{indexDate}")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
-}
 
-futureObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("{indexDate}",
-                          "observation_period_end_date")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
-}
-
-futureObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("{indexDate}",
-                          "observation_period_end_date")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
-}
-
-futureObservationQuery <- function(indexDate, name) {
-  return(glue::glue('CDMConnector::datediff("{indexDate}",
-                          "observation_period_end_date")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
-}
 
 #' Compute the age of the individuals at a certain date
 #'
@@ -446,6 +432,8 @@ addAge <- function(x,
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
 #' @param futureObservationName name of the new column to be added.
+#' @param futureObservationType Whether to return a "date" or the number of
+#' "days".
 #'
 #' @return cohort table with added column containing future observation of the
 #' individuals.
@@ -462,7 +450,8 @@ addAge <- function(x,
 addFutureObservation <- function(x,
                                  cdm = lifecycle::deprecated(),
                                  indexDate = "cohort_start_date",
-                                 futureObservationName = "future_observation") {
+                                 futureObservationName = "future_observation",
+                                 futureObservationType = "days") {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "addFutureObservation(cdm)")
   }
@@ -479,6 +468,7 @@ addFutureObservation <- function(x,
       priorObservation = FALSE,
       futureObservation = TRUE,
       futureObservationName = futureObservationName,
+      futureObservationType = futureObservationType,
       ageName = NULL,
       sexName = NULL,
       priorObservationName = NULL
@@ -495,6 +485,8 @@ addFutureObservation <- function(x,
 #' @param indexDate Variable in x that contains the date to compute the prior
 #' observation.
 #' @param priorObservationName name of the new column to be added.
+#' @param priorObservationType Whether to return a "date" or the number of
+#' "days".
 #'
 #' @return cohort table with added column containing prior observation of the
 #' individuals.
@@ -511,7 +503,8 @@ addFutureObservation <- function(x,
 addPriorObservation <- function(x,
                                 cdm = lifecycle::deprecated(),
                                 indexDate = "cohort_start_date",
-                                priorObservationName = "prior_observation") {
+                                priorObservationName = "prior_observation",
+                                priorObservationType = "days") {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn("0.6.0", "addPriorObservation(cdm)")
   }
@@ -527,6 +520,7 @@ addPriorObservation <- function(x,
       sex = FALSE,
       priorObservation = TRUE,
       priorObservationName = priorObservationName,
+      priorObservationType = priorObservationType,
       futureObservation = FALSE,
       ageName = NULL,
       sexName = NULL,
@@ -545,7 +539,7 @@ addPriorObservation <- function(x,
 #' @param window window to consider events of.
 #' @param completeInterval If the individuals are in observation for the full window.
 #' @param nameStyle Name of the new columns to create, it must contain
-#' "{window_name}" if multiple windows are provided.
+#' "window_name" if multiple windows are provided.
 #' @param name deprecated.
 #'
 #' @return cohort table with the added binary column assessing inObservation.
@@ -598,9 +592,11 @@ addInObservation <- function(x,
       age = FALSE,
       sex = FALSE,
       priorObservation = TRUE,
-      futureObservation = TRUE
+      priorObservationName = "tmp_prior",
+      futureObservation = TRUE,
+      futureObservationName = "tmp_future"
     ) |>
-    dplyr::mutate("prior_observation" = - .data$prior_observation)
+    dplyr::mutate("tmp_prior" = - .data$tmp_prior)
 
   for (k in seq_along(window)) {
 
@@ -612,7 +608,7 @@ addInObservation <- function(x,
 
       x <- x %>%
         dplyr::mutate(!!nam := as.numeric(
-          dplyr::if_else(is.na(.data$prior_observation), 0, 1)
+          dplyr::if_else(is.na(.data$tmp_prior), 0, 1)
         ))
 
     } else {
@@ -626,9 +622,9 @@ addInObservation <- function(x,
         } else {
           x <- x %>%
             dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-              !is.na(.data$prior_observation) &
-                .data$prior_observation <= .env$lower &
-                .env$upper <= .data$future_observation,
+              !is.na(.data$tmp_prior) &
+                .data$tmp_prior <= .env$lower &
+                .env$upper <= .data$tmp_future,
               1,
               0
             )))
@@ -638,13 +634,13 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation), 1, 0
+                !is.na(.data$tmp_prior), 1, 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation) &
-                  .data$prior_observation <= .env$upper,
+                !is.na(.data$tmp_prior) &
+                  .data$tmp_prior <= .env$upper,
                 1,
                 0
               )))
@@ -653,17 +649,17 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation) &
-                  .env$lower <= .data$future_observation,
+                !is.na(.data$tmp_prior) &
+                  .env$lower <= .data$tmp_future,
                 1,
                 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$prior_observation) &
-                  .data$prior_observation <= .env$upper &
-                  .env$lower <= .data$future_observation,
+                !is.na(.data$tmp_prior) &
+                  .data$tmp_prior <= .env$upper &
+                  .env$lower <= .data$tmp_future,
                 1,
                 0
               )))
@@ -676,7 +672,7 @@ addInObservation <- function(x,
   }
 
   x <- x |>
-    dplyr::select(-"prior_observation", -"future_observation") |>
+    dplyr::select(-"tmp_prior", -"tmp_future") |>
     dplyr::compute()
 
   return(x)

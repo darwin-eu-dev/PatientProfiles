@@ -1,4 +1,4 @@
-# Copyright 2023 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
 # This file is part of PatientProfiles
 #
@@ -23,6 +23,7 @@
 #' @param condition_occurrence default null user can define its own table.
 #' @param visit_occurrence default null user can define its own visit_occurrence table.
 #' @param person default null user can define its own table.
+#' @param death default null user can define its own table
 #' @param drug_concept_id_size number of unique drug concept id.
 #' @param ingredient_concept_id_size number of unique drug ingredient concept id.
 #' @param drug_exposure_size number of unique drug exposure.
@@ -47,10 +48,8 @@
 #' @param min_days_to_visit_end the minimum number of days of the visit integer.
 #' @param max_days_to_condition_end the maximum number of days of the condition integer.
 #' @param max_days_to_visit_end the maximum number of days of the visit integer.
-
 #' @param concept_ancestor the concept ancestor table.
 #' @param ancestor_concept_id_size the size of concept ancestor table.
-
 #' @param cohort1 cohort table for test to run in getindication.
 #' @param cohort2 cohort table for test to run in getindication.
 #' @param ... user self defined tibble table to put in cdm, it can input as many as the user want.
@@ -76,6 +75,7 @@ mockPatientProfiles <- function(connectionDetails = list(
                                 visit_occurrence = NULL,
                                 concept_ancestor = NULL,
                                 person = NULL,
+                                death = NULL,
                                 cohort1 = NULL,
                                 cohort2 = NULL,
                                 drug_concept_id_size = 5,
@@ -515,6 +515,12 @@ mockPatientProfiles <- function(connectionDetails = list(
     )
   }
 
+  # death table
+  if (is.null(death)) {
+    death <- dplyr::tibble(person_id = c(1),
+                           death_date = as.Date("2020-04-01"))
+  }
+
   # cohort table 1
   if (is.null(cohort1)) {
     cohort1 <- dplyr::tibble(
@@ -548,7 +554,7 @@ mockPatientProfiles <- function(connectionDetails = list(
 
   tablesToInsert <- c(
     "drug_strength", "drug_exposure", "person", "observation_period",
-    "condition_occurrence", "visit_occurrence", "concept_ancestor"
+    "condition_occurrence", "visit_occurrence", "concept_ancestor", "death"
   )
 
   src <- CDMConnector::dbSource(

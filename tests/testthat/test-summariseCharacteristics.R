@@ -88,7 +88,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_name == "Covid") %>%
+      dplyr::filter(variable_level == "Covid") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -97,7 +97,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_name == "Headache") %>%
+      dplyr::filter(variable_level == "Headache") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -106,7 +106,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_name == "Acetaminophen") %>%
+      dplyr::filter(variable_level == "Acetaminophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -115,7 +115,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_name == "Ibuprophen") %>%
+      dplyr::filter(variable_level == "Ibuprophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -124,7 +124,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable_name == "Naloxone") %>%
+      dplyr::filter(variable_level == "Naloxone") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -133,7 +133,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_name == "Covid") %>%
+      dplyr::filter(variable_level == "Covid") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -142,7 +142,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_name == "Headache") %>%
+      dplyr::filter(variable_level == "Headache") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -151,7 +151,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_name == "Acetaminophen") %>%
+      dplyr::filter(variable_level == "Acetaminophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -160,7 +160,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_name == "Ibuprophen") %>%
+      dplyr::filter(variable_level == "Ibuprophen") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -169,7 +169,7 @@ test_that("test summariseCharacteristics", {
   expect_identical(
     result %>%
       dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable_name == "Naloxone") %>%
+      dplyr::filter(variable_level == "Naloxone") %>%
       dplyr::filter(estimate_name == "count") %>%
       dplyr::pull("estimate_value") %>%
       as.numeric(),
@@ -265,10 +265,12 @@ test_that("test summariseCharacteristics", {
     c("Cohort start date", "Cohort end date", "Age", "Sex", "Prior observation",
       "Future observation") %in% result$variable_name
   ))
-  expect_error(summariseCharacteristics(
-    cdm$dus_cohort,
-    demographics = FALSE
-  ))
+  expect_identical(
+    summariseCharacteristics(cdm$dus_cohort, demographics = FALSE) |>
+      dplyr::arrange(.data$group_level, .data$variable_name),
+    summariseCohortCounts(cdm$dus_cohort) |>
+      dplyr::arrange(.data$group_level, .data$variable_name)
+  )
 
 })
 
@@ -310,3 +312,4 @@ test_that("test empty cohort", {
       )))
   )
 })
+

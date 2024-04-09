@@ -18,9 +18,6 @@ jobs:
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
 
-    env:
-      GITHUB_PAT: ${{ secrets.GH_TOKEN }}
-
     steps:
       - uses: actions/checkout@v3
 
@@ -34,6 +31,11 @@ jobs:
         with:
           extra-packages: any::pkgdown, local::.
           needs: website
+
+      - name: Install old version dbplyr
+        run: |
+            install.packages("http://cran.r-project.org/src/contrib/Archive/dbplyr/dbplyr_2.4.0.tar.gz", repos=NULL, type="source")
+        shell: Rscript {0}
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)

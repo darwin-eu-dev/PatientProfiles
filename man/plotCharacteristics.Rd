@@ -2,19 +2,18 @@
 % Please edit documentation in R/plotCharacteristics.R
 \name{plotCharacteristics}
 \alias{plotCharacteristics}
-\title{plot characteristics}
+\title{Create a ggplot from the output of summariseCharacteristics.
+`r lifecycle::badge("deprecated")`}
 \usage{
 plotCharacteristics(
   data,
   xAxis = "variable_name",
   yAxis = "estimate_value",
   plotStyle = "barplot",
-  facetVars = NULL,
+  facetVarX = NULL,
+  facetVarY = NULL,
   colorVars = NULL,
-  facetOrder = NULL,
-  colorNames = NULL,
-  vertical_x = FALSE,
-  options = list()
+  vertical_x = FALSE
 )
 }
 \arguments{
@@ -26,39 +25,40 @@ plotCharacteristics(
 
 \item{plotStyle}{Now allows boxplot or barplot only.}
 
-\item{facetVars}{column in data to facet by.}
+\item{facetVarX}{column in data to facet by on horizontal axis}
+
+\item{facetVarY}{column in data to facet by on vertical axis}
 
 \item{colorVars}{column in data to color by.}
 
-\item{facetOrder}{order of facet, make sure multiple facets are separated by period and in the order provided in facetVars.}
-
-\item{colorNames}{A vector or pre-selected color.}
-
 \item{vertical_x}{whether to display x axis string vertically.}
-
-\item{options}{Other plot options in a list.}
 }
 \value{
 A ggplot.
 }
 \description{
-plot characteristics
+Create a ggplot from the output of summariseCharacteristics.
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{
 library(PatientProfiles)
+
 cdm <- mockPatientProfiles()
+
 results <- summariseCharacteristics(
- cohort = cdm$cohort1,
- ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
- tableIntersect = list(
- tableName = "visit_occurrence", value = "count", window = c(-365, -1)
-),
-cohortIntersect = list(
- targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
- )
+  cohort = cdm$cohort1,
+  ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+  tableIntersect = list(
+    tableName = "visit_occurrence", value = "count", window = c(-365, -1)
+  ),
+  cohortIntersect = list(
+    targetCohortTable = "cohort2", value = "flag", window = c(-365, -1)
+  )
 )
-graph <- plotCharacteristics(results)
+
+plotCharacteristics(results)
+
 CDMConnector::cdmDisconnect(cdm = cdm)
 }
 }

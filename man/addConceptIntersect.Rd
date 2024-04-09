@@ -11,13 +11,10 @@ addConceptIntersect(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = list(c(0, Inf)),
-  targetStartDate = "cohort_start_date",
-  targetEndDate = "cohort_end_date",
+  targetStartDate = "event_start_date",
+  targetEndDate = "event_end_date",
   order = "first",
-  flag = TRUE,
-  count = TRUE,
-  date = TRUE,
-  days = TRUE,
+  value = c("flag", "count", "date", "days"),
   nameStyle = "{value}_{concept_name}_{window_name}"
 )
 }
@@ -33,25 +30,13 @@ intersection.}
 
 \item{window}{window to consider events in.}
 
-\item{targetStartDate}{date of reference in cohort table, either for start
-(in overlap) or on its own (for incidence).}
+\item{targetStartDate}{Event start date to use for the intersection.}
 
-\item{targetEndDate}{date of reference in cohort table, either for end
-(overlap) or NULL (if incidence).}
+\item{targetEndDate}{Event end date to use for the intersection.}
 
-\item{order}{which record is considered in case of multiple records.}
+\item{order}{last or first date to use for date/days calculations.}
 
-\item{flag}{TRUE or FALSE. If TRUE, flag will calculated for this
-intersection.}
-
-\item{count}{TRUE or FALSE. If TRUE, the number of counts will be calculated
-for this intersection.}
-
-\item{date}{TRUE or FALSE. If TRUE, date will be calculated for this
-intersection.}
-
-\item{days}{TRUE or FALSE. If TRUE, time difference in days will be
-calculated for this intersection.}
+\item{value}{Choices between c("value", "flag", "days", "date").}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters.}

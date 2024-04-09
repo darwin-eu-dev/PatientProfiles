@@ -1,4 +1,4 @@
-# Copyright 2023 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
 # This file is part of PatientProfiles
 #
@@ -15,6 +15,7 @@
 # limitations under the License.
 
 #' It creates columns to indicate overlap information between two tables
+#'
 #' `r lifecycle::badge("deprecated")`
 #'
 #' @param x Table with individuals in the cdm.
@@ -92,6 +93,10 @@ addIntersect <- function(x,
   if (!is.list(window)) {
     window <- list(window)
   }
+
+  targetStartDate <- eval(targetStartDate)
+  targetEndDate <- eval(targetEndDate)
+
   cdm <- omopgenerics::cdmReference(x)
   # initial checks
   personVariable <- checkX(x)
@@ -204,14 +209,14 @@ addIntersect <- function(x,
       if (is.infinite(win[2])) {
         resultW <- result
       } else {
-        resultW <- result %>% dplyr::filter(.data$end <= !!win[2])
+        resultW <- result %>% dplyr::filter(.data$start <= !!win[2])
       }
     } else {
       if (is.infinite(win[2])) {
-        resultW <- result %>% dplyr::filter(.data$start >= !!win[1])
+        resultW <- result %>% dplyr::filter(.data$end >= !!win[1])
       } else {
         resultW <- result %>%
-          dplyr::filter(.data$start >= !!win[1] & .data$end <= !!win[2])
+          dplyr::filter(.data$end >= !!win[1] & .data$start <= !!win[2])
       }
     }
 
@@ -223,12 +228,17 @@ addIntersect <- function(x,
         overwrite = TRUE
       )
 
+    filterTblName <- omopgenerics::uniqueTableName(tablePrefix)
+    cdm <- omopgenerics::insertTable(
+      cdm = cdm, name = filterTblName, table = filterTbl, overwrite = TRUE
+    )
+
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
       resultCF <- resultW %>%
         dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id) %>%
         dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
-        dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
+        dplyr::left_join(cdm[[filterTblName]], by = "id") %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if ("flag" %in% value) {
@@ -306,14 +316,14 @@ addIntersect <- function(x,
             by = c(personVariable, "index_date", "id")
           )
       }
+
       resultDTO <- resultDTO %>%
-        dplyr::left_join(filterTbl, by = "id", copy = TRUE) %>%
+        dplyr::left_join(cdm[[filterTblName]], by = "id") %>%
         dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if (!("days" %in% value)) {
         resultDTO <- dplyr::select(resultDTO, -"days")
       }
-
       if (i == 1) {
         resultDateTimeOther <- resultDTO %>%
           dplyr::compute(

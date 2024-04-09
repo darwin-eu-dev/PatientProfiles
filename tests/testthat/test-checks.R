@@ -95,7 +95,7 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     "cohort_definition_id", "subject_id", "cohort_start_date",
     "cohort_end_date", "flag"
   ) == colnames(x)))
-  y <- addInObservation(cdm$cohort1, name = "flag_new")
+  y <- addInObservation(cdm$cohort1, nameStyle = "flag_new")
   expect_true(all(c(
     "cohort_definition_id", "subject_id", "cohort_start_date",
     "cohort_end_date", "flag", "flag_new"
@@ -131,7 +131,7 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   ) == colnames(x)))
   expect_true(x |> dplyr::pull("flag") |> unique() == 1)
   expect_true(x |> dplyr::pull("flag_1") |> unique() == 0)
-  y <- addInObservation(cdm$cohort1, name = "flag_new")
+  y <- addInObservation(cdm$cohort1, nameStyle = "flag_new")
   expect_true(all(c(
     "cohort_definition_id", "subject_id", "cohort_start_date",
     "cohort_end_date", "flag", "flag_1", "flag_new"
