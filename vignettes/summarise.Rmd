@@ -26,6 +26,8 @@ In previous vignettes we have seen how to add patient level demographics (age, s
 
 Once we have added several columns to our table of interest we may want to summarise all this data into a `summarised_result` object using several different estimates.
 
+### Variables type
+
 We support different types of variables, variable type is assigned using `dplyr::type_sum`:
 
 - Date: `date` or `dttm`.
@@ -38,10 +40,65 @@ We support different types of variables, variable type is assigned using `dplyr:
 
 - Logical: `lgl`.
 
-Lets get started creating a our data that we are going to summarise:
+### Estimates names
+
+We can summarise this data using different estimates:
+
+```{r, echo = FALSE, eval = TRUE}
+PatientProfiles:::formats |> 
+  dplyr::rename(
+    "Estimate name" = "estimate_name", 
+    "Description" = "estimate_description", 
+    "Estimate type" = "estimate_type"
+  ) |>
+  dplyr::group_by(.data$variable_type) |> 
+  gt::gt() |>
+  gt::tab_style(
+    style = gt::cell_fill(color = "#e1e1e1"),
+    locations = gt::cells_row_groups()
+  ) |>
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold"), 
+      gt::cell_fill("#000"), 
+      gt::cell_text(color = "#fff")
+    ),
+    locations = gt::cells_column_labels()
+  ) |>
+  gt::tab_style(
+    style = gt::cell_text(font = "consolas"), 
+    locations = gt::cells_body(columns = "Estimate name")
+  )
+```
+
+## Summarise our first table
+
+Lets get started creating our data that we are going to summarise:
 
 ```{r setup}
+library(duckdb)
+library(CDMConnector)
 library(PatientProfiles)
+library(dplyr)
+library(CodelistGenerator)
+
+cdm <- cdmFromCon(
+  con = dbConnect(duckdb(), eunomia_dir()), 
+  cdmSchema = "main", 
+  writeSchema = "main"
+)
+cdm <- generateConceptCohortSet(
+  cdm = cdm, 
+  conceptSet = list("sinusitis" = c(4294548, 4283893, 40481087, 257012)), 
+  name = "my_cohort"
+)
+cdm <- generateConceptCohortSet(
+  cdm = cdm, 
+  conceptSet = getDrugIngredientCodes(cdm = cdm), 
+  name = "drugs"
+)
+
+cdm$my_cohort |>
 
 
 ```
