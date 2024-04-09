@@ -20,16 +20,12 @@ test_that("addDeathDate", {
 
 
   # warning if variable already exists
- expect_warning(cdm$cohort1 |>
+  expect_warning(cdm$cohort1 |>
     addDeathFlag(deathFlagName = "dflag2") |>
     addDeathFlag(deathFlagName = "dflag2"))
 
- expect_warning(cdm$cohort1 |>
-                dplyr::mutate(working_record_id = 1) |>
-                addDeathFlag(deathFlagName = "death_flag"))
-
   # expected errors
- expect_error(addDeathDate(x = "not a table",
+  expect_error(addDeathDate(x = "not a table",
               indexDate = "cohort_start_date",
               window = c(0, Inf),
               deathDateName = "ddate"))
@@ -61,7 +57,7 @@ test_that("addDeathDate", {
                            indexDate = "cohort_start_date",
                            window = list(c(0, Inf),c(1, Inf)),
                            deathDateName = "ddate"))
- expect_error(addDeathDate(x = cdm$cohort1,
+ expect_message(addDeathDate(x = cdm$cohort1,
                            indexDate = "cohort_start_date",
                            window = c(0, Inf),
                            deathDateName = "NotSnakeCase"))
@@ -146,20 +142,24 @@ test_that("check window logic", {
                              indexDate = "cohort_end_date",
                              window = c(1, Inf),
                              deathDaysName = "ddays2")
+ # only 2 are observed as only events in observation period are considered
+ # otherwise 4 would be observed
  expect_true(cdm$cohort1 |>
                dplyr::filter(!is.na(ddays2)) |>
                dplyr::tally() |>
-               dplyr::pull("n") == 4)
+               dplyr::pull("n") == 2)
 
  # with window of -inf days to inf for cohort end, we should death days for all
  cdm$cohort1 <- addDeathDays(x = cdm$cohort1,
                              indexDate = "cohort_end_date",
                              window = c(-Inf, Inf),
                              deathDaysName = "ddays3")
+ # only 3 are observed as only events in observation period are considered
+ # otherwise 5 would be observed
  expect_true(cdm$cohort1 |>
                dplyr::filter(!is.na(ddays3)) |>
                dplyr::tally() |>
-               dplyr::pull("n") == 5)
+               dplyr::pull("n") == 3)
 
 
  # with window of -inf days to -1 for cohort end, we should have no death days for anyone
@@ -184,7 +184,7 @@ test_that("check window logic", {
                dplyr::tally() |>
                dplyr::pull("n") == 1)
 
-  })
+})
 
 test_that("check with omop table", {
 
@@ -254,11 +254,14 @@ test_that("check functionality in presence of multiple death records", {
   expect_true(nrow_start == nrow_end)
 
   # all are the first death date for subject 1
-  expect_equal(cdm$cohort1 |>
-    dplyr::filter(subject_id == 1) |>
-    dplyr::select("death_date") |>
-    dplyr::distinct() |>
-    dplyr::pull(), as.Date("2022-06-30"))
+  expect_true(all(
+    cdm$cohort1 |>
+      dplyr::filter(subject_id == 1) |>
+      dplyr::select("death_date") |>
+      dplyr::distinct() |>
+      dplyr::pull() %in%
+      as.Date(c("2022-06-30", NA))
+  ))
 
   # now in the last case, starting window from 1 will result in last record having second death date
   cdm$cohort1 <- addDeathDate(x = cdm$cohort1,

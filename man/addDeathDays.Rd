@@ -2,11 +2,13 @@
 % Please edit documentation in R/addDeath.R
 \name{addDeathDays}
 \alias{addDeathDays}
-\title{Add days to death for individuals}
+\title{Add days to death for individuals. Only death within the same observation
+period than `indeDate` will be observed.}
 \usage{
 addDeathDays(
   x,
   indexDate = "cohort_start_date",
+  censorDate = NULL,
   window = c(0, Inf),
   deathDaysName = "days_to_death"
 )
@@ -14,7 +16,9 @@ addDeathDays(
 \arguments{
 \item{x}{Table with individuals in the cdm.}
 
-\item{indexDate}{Variable in x that contains the date to compute the age.}
+\item{indexDate}{Variable in x that contains the window origin.}
+
+\item{censorDate}{Name of a column to stop followup.}
 
 \item{window}{window to consider events over.}
 
@@ -24,7 +28,8 @@ addDeathDays(
 table x with the added column with death information added.
 }
 \description{
-Add days to death for individuals
+Add days to death for individuals. Only death within the same observation
+period than `indeDate` will be observed.
 }
 \examples{
 \donttest{
