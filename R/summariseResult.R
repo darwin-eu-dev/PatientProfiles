@@ -364,7 +364,7 @@ summariseNumeric <- function(table, functions) {
         dplyr::summarise(
           dplyr::across(
             .cols = dplyr::all_of(varEst),
-            .fns = getFunctions(est),
+            .fns = !!getFunctions(est),
             .names = "estimate_{.col}"
           ),
           .groups = "drop"
@@ -394,7 +394,7 @@ summariseNumeric <- function(table, functions) {
         dplyr::summarise(
           dplyr::across(
             .cols = dplyr::all_of(vark),
-            .fns = getFunctions(estVar),
+            .fns = !!getFunctions(estVar),
             .names = "variable_{.fn}"
           ),
           .groups = "drop"
