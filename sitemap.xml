@@ -97,6 +97,15 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirth.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathDate.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathDays.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathFlag.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html</loc>
   </url>
   <url>

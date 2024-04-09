@@ -145,14 +145,14 @@ consider timing between an individual’s first record in each cohort.</p>
 <span><span class="co">#&gt; $ package_name     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "PatientProfiles", "PatientProfiles", "PatientProfile…</span></span>
 <span><span class="co">#&gt; $ package_version  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0.8.0", "0.8.0", "0.8.0", "0.8.0", "0.8.0", "0.8.0",…</span></span>
 <span><span class="co">#&gt; $ group_name       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "cohort_name_reference &amp;&amp;&amp; cohort_name_comparator", "…</span></span>
-<span><span class="co">#&gt; $ group_level      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "acetaminophen &amp;&amp;&amp; warfarin", "warfarin &amp;&amp;&amp; acetamino…</span></span>
+<span><span class="co">#&gt; $ group_level      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "warfarin &amp;&amp;&amp; acetaminophen", "acetaminophen &amp;&amp;&amp; warf…</span></span>
 <span><span class="co">#&gt; $ strata_name      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span>
 <span><span class="co">#&gt; $ strata_level     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span>
 <span><span class="co">#&gt; $ variable_name    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "number records", "number records", "number records",…</span></span>
 <span><span class="co">#&gt; $ variable_level   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span><span class="co">#&gt; $ estimate_name    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "count", "count", "count", "count", "count", "count",…</span></span>
 <span><span class="co">#&gt; $ estimate_type    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "integer", "integer", "integer", "integer", "integer"…</span></span>
-<span><span class="co">#&gt; $ estimate_value   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "136", "136", "6", "35", "35", "6", "136", "136", "6"…</span></span>
+<span><span class="co">#&gt; $ estimate_value   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "136", "136", "35", "35", "6", "6", "136", "136", "35…</span></span>
 <span><span class="co">#&gt; $ additional_name  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span>
 <span><span class="co">#&gt; $ additional_level <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span></code></pre></div>
 <p>As with cohort overlap, we have table and plotting functions to help
@@ -160,23 +160,23 @@ view our results.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tableCohortTiming.html">tableCohortTiming</a></span><span class="op">(</span><span class="va">meds_timing</span>, </span>
 <span>                  .options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>decimals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>numeric <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div id="dowryrmdsp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#dowryrmdsp table {
+<div id="ojsfacnarg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ojsfacnarg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#dowryrmdsp thead, #dowryrmdsp tbody, #dowryrmdsp tfoot, #dowryrmdsp tr, #dowryrmdsp td, #dowryrmdsp th {
+#ojsfacnarg thead, #ojsfacnarg tbody, #ojsfacnarg tfoot, #ojsfacnarg tr, #ojsfacnarg td, #ojsfacnarg th {
   border-style: none;
 }
 
-#dowryrmdsp p {
+#ojsfacnarg p {
   margin: 0;
   padding: 0;
 }
 
-#dowryrmdsp .gt_table {
+#ojsfacnarg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -202,12 +202,12 @@ view our results.</p>
   border-left-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_caption {
+#ojsfacnarg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#dowryrmdsp .gt_title {
+#ojsfacnarg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -219,7 +219,7 @@ view our results.</p>
   border-bottom-width: 0;
 }
 
-#dowryrmdsp .gt_subtitle {
+#ojsfacnarg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -231,7 +231,7 @@ view our results.</p>
   border-top-width: 0;
 }
 
-#dowryrmdsp .gt_heading {
+#ojsfacnarg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -243,13 +243,13 @@ view our results.</p>
   border-right-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_bottom_border {
+#ojsfacnarg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_col_headings {
+#ojsfacnarg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -264,7 +264,7 @@ view our results.</p>
   border-right-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_col_heading {
+#ojsfacnarg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -284,7 +284,7 @@ view our results.</p>
   overflow-x: hidden;
 }
 
-#dowryrmdsp .gt_column_spanner_outer {
+#ojsfacnarg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -296,15 +296,15 @@ view our results.</p>
   padding-right: 4px;
 }
 
-#dowryrmdsp .gt_column_spanner_outer:first-child {
+#ojsfacnarg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#dowryrmdsp .gt_column_spanner_outer:last-child {
+#ojsfacnarg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#dowryrmdsp .gt_column_spanner {
+#ojsfacnarg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -316,11 +316,11 @@ view our results.</p>
   width: 100%;
 }
 
-#dowryrmdsp .gt_spanner_row {
+#ojsfacnarg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#dowryrmdsp .gt_group_heading {
+#ojsfacnarg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -346,7 +346,7 @@ view our results.</p>
   text-align: left;
 }
 
-#dowryrmdsp .gt_empty_group_heading {
+#ojsfacnarg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -361,15 +361,15 @@ view our results.</p>
   vertical-align: middle;
 }
 
-#dowryrmdsp .gt_from_md > :first-child {
+#ojsfacnarg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#dowryrmdsp .gt_from_md > :last-child {
+#ojsfacnarg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#dowryrmdsp .gt_row {
+#ojsfacnarg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -388,7 +388,7 @@ view our results.</p>
   overflow-x: hidden;
 }
 
-#dowryrmdsp .gt_stub {
+#ojsfacnarg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -401,7 +401,7 @@ view our results.</p>
   padding-right: 5px;
 }
 
-#dowryrmdsp .gt_stub_row_group {
+#ojsfacnarg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -415,15 +415,15 @@ view our results.</p>
   vertical-align: top;
 }
 
-#dowryrmdsp .gt_row_group_first td {
+#ojsfacnarg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#dowryrmdsp .gt_row_group_first th {
+#ojsfacnarg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#dowryrmdsp .gt_summary_row {
+#ojsfacnarg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -433,16 +433,16 @@ view our results.</p>
   padding-right: 5px;
 }
 
-#dowryrmdsp .gt_first_summary_row {
+#ojsfacnarg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_first_summary_row.thick {
+#ojsfacnarg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#dowryrmdsp .gt_last_summary_row {
+#ojsfacnarg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -452,7 +452,7 @@ view our results.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_grand_summary_row {
+#ojsfacnarg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -462,7 +462,7 @@ view our results.</p>
   padding-right: 5px;
 }
 
-#dowryrmdsp .gt_first_grand_summary_row {
+#ojsfacnarg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -472,7 +472,7 @@ view our results.</p>
   border-top-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_last_grand_summary_row_top {
+#ojsfacnarg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -482,11 +482,11 @@ view our results.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_striped {
+#ojsfacnarg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#dowryrmdsp .gt_table_body {
+#ojsfacnarg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -495,7 +495,7 @@ view our results.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_footnotes {
+#ojsfacnarg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -509,7 +509,7 @@ view our results.</p>
   border-right-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_footnote {
+#ojsfacnarg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -518,7 +518,7 @@ view our results.</p>
   padding-right: 5px;
 }
 
-#dowryrmdsp .gt_sourcenotes {
+#ojsfacnarg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -532,7 +532,7 @@ view our results.</p>
   border-right-color: #D3D3D3;
 }
 
-#dowryrmdsp .gt_sourcenote {
+#ojsfacnarg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -540,63 +540,63 @@ view our results.</p>
   padding-right: 5px;
 }
 
-#dowryrmdsp .gt_left {
+#ojsfacnarg .gt_left {
   text-align: left;
 }
 
-#dowryrmdsp .gt_center {
+#ojsfacnarg .gt_center {
   text-align: center;
 }
 
-#dowryrmdsp .gt_right {
+#ojsfacnarg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#dowryrmdsp .gt_font_normal {
+#ojsfacnarg .gt_font_normal {
   font-weight: normal;
 }
 
-#dowryrmdsp .gt_font_bold {
+#ojsfacnarg .gt_font_bold {
   font-weight: bold;
 }
 
-#dowryrmdsp .gt_font_italic {
+#ojsfacnarg .gt_font_italic {
   font-style: italic;
 }
 
-#dowryrmdsp .gt_super {
+#ojsfacnarg .gt_super {
   font-size: 65%;
 }
 
-#dowryrmdsp .gt_footnote_marks {
+#ojsfacnarg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#dowryrmdsp .gt_asterisk {
+#ojsfacnarg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#dowryrmdsp .gt_indent_1 {
+#ojsfacnarg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#dowryrmdsp .gt_indent_2 {
+#ojsfacnarg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#dowryrmdsp .gt_indent_3 {
+#ojsfacnarg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#dowryrmdsp .gt_indent_4 {
+#ojsfacnarg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#dowryrmdsp .gt_indent_5 {
+#ojsfacnarg .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
