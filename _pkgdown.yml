@@ -29,6 +29,10 @@ reference:
   desc: Add a set of patient characteristics to a table in the OMOP Common Data Model
 - contents:
   - matches("addDemographics")
+- subtitle: Add death information
+  desc: Add patient death information to a table in the OMOP Common Data Model
+- contents:
+  - matches("addDeathDate|addDeathDays|addDeathFlag")
 - subtitle: Add a value from a cohort intersection
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
