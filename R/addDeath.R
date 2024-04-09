@@ -143,9 +143,11 @@ addDeath <- function(x,
     ) |>
     dplyr::left_join(
       cdm[["death"]] |>
-        dplyr::rename(!!personVariable := "person_id"),
+        dplyr::select(!!personVariable := "person_id",
+                      "death_date"),
       by = personVariable
     ) %>%
+    dplyr::distinct() |>
     dplyr::compute()
 
   # keep death records if within window

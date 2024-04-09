@@ -182,7 +182,7 @@ test_that("check window logic", {
  expect_true(cdm$cohort1 |>
                dplyr::filter(!is.na(ddays5)) |>
                dplyr::tally() |>
-               dplyr::pull("n") == 0)
+               dplyr::pull("n") == 1)
 
   })
 
