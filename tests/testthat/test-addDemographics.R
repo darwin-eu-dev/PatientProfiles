@@ -1,3 +1,20 @@
+test_that("check warning", {
+  cdm <- mockPatientProfiles()
+  expect_warning(
+    cdm$cohort1 |>
+      PatientProfiles::addDemographics(
+        cdm = cdm
+      )
+    )
+  expect_warning(
+    PatientProfiles::addDateOfBirth(
+      x = cdm$cohort1,
+      cdm = cdm
+    )
+  )
+  CDMConnector::cdmDisconnect(cdm = cdm)
+})
+
 test_that("addDemographics, input length, type", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 

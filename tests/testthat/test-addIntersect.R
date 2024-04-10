@@ -1,3 +1,10 @@
+test_that("warning test", {
+  cdm <- mockPatientProfiles()
+  expect_warning(cdm$cohort1 %>%
+                   addIntersect(tableName = "cohort2", value = "date"))
+  CDMConnector::cdmDisconnect(cdm = cdm)
+})
+
 test_that("working examples", {
   # functionality
   cohort1 <- dplyr::tibble(
