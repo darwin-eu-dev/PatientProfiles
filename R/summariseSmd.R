@@ -1,5 +1,21 @@
+# Copyright 2024 DARWIN EU (C)
+#
+# This file is part of PatientProfiles
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #' Summarise standardised mean difference
-#'
+# Create a ggplot from the output of summariseCharacteristics.
+#' `r lifecycle::badge("deprecated")`
 #' @param data  summarised characteristics data
 #' @param group  the column to use as group to compute SMD, now only supports
 #' two unique values in this column. Default as "group_level"
@@ -12,22 +28,18 @@
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
-#'
+#' library(dplyr)
 #' cdm <- mockPatientProfiles()
 #'
 #' result <- summariseCharacteristics(
-#'   cohort = cdm$cohort1,
-#'   tableIntersect = list(
-#'     tableName = "visit_occurrence", value = "count", window = c(-365, -1)
-#'   )
-#' ) %>% dplyr::bind_rows(summariseCharacteristics(
 #'   cohort = cdm$cohort2, tableIntersect = list(
 #'     tableName = "visit_occurrence", value = "count", window = c(-365, -1)
 #'   )
-#' ))
+#' )
 #' compute_smd(result, group = "group_level")
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
+#'
 compute_smd <- function(data,
                         group = "group_level",
                         variables = "variable_name",
@@ -214,10 +226,16 @@ bind_smd_results <- function(data, group, weight, variable, col = NA, val = NA) 
       tidyr::pivot_wider(names_from = group, values_from = estimate_value)
 
     # Compute SMD if both means and SDs are available
-    if (!is.na(means[[1]]) && !is.na(means[[2]]) && !is.na(sds[[1]]) && !is.na(sds[[2]])) {
+    group_names <- unique(data[[group]])
+
+    # Check if all expected columns are present and not NA
+    if (all(names(means) %in% group_names) && all(!is.na(means)) &&
+        all(names(sds) %in% group_names) && all(!is.na(sds)) &&
+        length(group_names) == 2) {
+      # Compute SMD
       smd <- (means[[1]] - means[[2]]) / sqrt((sds[[1]]^2 + sds[[2]]^2) / 2)
     } else {
-      smd <- NA
+      smd <- NA  # Not all necessary data available
     }
     # Store the results
     results <- dplyr::bind_rows(dplyr::tibble(

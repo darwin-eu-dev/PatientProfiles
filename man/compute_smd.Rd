@@ -2,7 +2,8 @@
 % Please edit documentation in R/summariseSmd.R
 \name{compute_smd}
 \alias{compute_smd}
-\title{Summarise standardised mean difference}
+\title{Summarise standardised mean difference
+`r lifecycle::badge("deprecated")`}
 \usage{
 compute_smd(
   data,
@@ -27,24 +28,21 @@ A tibble with SMD computed
 }
 \description{
 Summarise standardised mean difference
+`r lifecycle::badge("deprecated")`
 }
 \examples{
 \donttest{
 library(PatientProfiles)
-
+library(dplyr)
 cdm <- mockPatientProfiles()
 
 result <- summariseCharacteristics(
-  cohort = cdm$cohort1,
-  tableIntersect = list(
-    tableName = "visit_occurrence", value = "count", window = c(-365, -1)
-  )
-) \%>\% dplyr::bind_rows(summariseCharacteristics(
   cohort = cdm$cohort2, tableIntersect = list(
     tableName = "visit_occurrence", value = "count", window = c(-365, -1)
   )
-))
+)
 compute_smd(result, group = "group_level")
 CDMConnector::cdmDisconnect(cdm = cdm)
 }
+
 }
