@@ -5,6 +5,32 @@ test_that("warning test", {
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
 
+test_that("conceptIdColumn", {
+  expect_no_error(
+    standardConceptIdColumn("condition_occurrence")
+  )
+  expect_identical(
+    standardConceptIdColumn("condition_occurrence"),
+    "condition_concept_id"
+  )
+  expect_identical(
+    standardConceptIdColumn("drug_exposure"),
+    "drug_concept_id"
+  )
+
+  expect_no_error(
+    sourceConceptIdColumn("condition_occurrence")
+  )
+  expect_identical(
+    sourceConceptIdColumn("condition_occurrence"),
+    "condition_source_concept_id"
+  )
+  expect_identical(
+    sourceConceptIdColumn("drug_exposure"),
+    "drug_source_concept_id"
+  )
+})
+
 test_that("working examples", {
   # functionality
   cohort1 <- dplyr::tibble(
