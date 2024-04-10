@@ -18,6 +18,11 @@ test_that("conceptIdColumn", {
     "drug_concept_id"
   )
 
+  expect_identical(
+    standardConceptIdColumn("cohort_k"),
+    "cohort_definition_id"
+  )
+
   expect_no_error(
     sourceConceptIdColumn("condition_occurrence")
   )
@@ -28,6 +33,9 @@ test_that("conceptIdColumn", {
   expect_identical(
     sourceConceptIdColumn("drug_exposure"),
     "drug_source_concept_id"
+  )
+  expect_true(
+    is.na(sourceConceptIdColumn("cohort_k"))
   )
 })
 

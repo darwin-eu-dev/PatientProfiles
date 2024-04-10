@@ -122,3 +122,107 @@ test_that("attributes for cohort table", {
     c("cohort_set", "cohort_attrition") %in% names(attributes(cdm$test_table1))
   ))
 })
+
+test_that("possible input and input validation", {
+  skip_on_cran()
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles()
+  )
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_date_of_birth = as.Date("1999-01-01"),
+      earliest_date_of_birth = as.Date("1990-01-01")
+    )
+  )
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_date_of_birth = as.Date("1990-01-01"),
+      earliest_date_of_birth = as.Date("1999-01-01")
+    )
+  )
+
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_observation_start_date = as.Date("1999-01-01"),
+      earliest_observation_start_date = as.Date("1990-01-01")
+    )
+  )
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_observation_start_date = as.Date("1990-01-01"),
+      earliest_observation_start_date = as.Date("1999-01-01")
+    )
+  )
+
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_condition_start_date = as.Date("1999-01-01"),
+      earliest_condition_start_date = as.Date("1990-01-01")
+    )
+  )
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_condition_start_date = as.Date("1990-01-01"),
+      earliest_condition_start_date = as.Date("1999-01-01")
+    )
+  )
+
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_visit_start_date = as.Date("1999-01-01"),
+      earliest_visit_start_date = as.Date("1990-01-01")
+    )
+  )
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      latest_visit_start_date = as.Date("1990-01-01"),
+      earliest_visit_start_date = as.Date("1999-01-01")
+    )
+  )
+
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      max_drug_exposure_start_date = as.Date("1999-01-01"),
+      min_drug_exposure_start_date = as.Date("1990-01-01")
+    )
+  )
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      max_drug_exposure_start_date = as.Date("1990-01-01"),
+      min_drug_exposure_start_date = as.Date("1999-01-01")
+    )
+  )
+
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      max_days_to_condition_end = 420,
+      min_days_to_condition_end = 1
+    )
+  )
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      max_days_to_condition_end = 1,
+      min_days_to_condition_end = 420
+    )
+  )
+
+  expect_no_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      max_days_to_visit_end = 420,
+      min_days_to_visit_end = 1
+    )
+  )
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      max_days_to_visit_end = 1,
+      min_days_to_visit_end = 420
+    )
+  )
+
+  expect_error(
+    cdm <- PatientProfiles::mockPatientProfiles(
+      max_days_to_observation_end = 1,
+      min_days_to_observation_end = 420
+    )
+  )
+})
