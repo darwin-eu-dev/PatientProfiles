@@ -454,8 +454,7 @@ summariseCharacteristics <- function(cohort,
       group = list("cohort_name"),
       strata = strata,
       variables = variables,
-      estimates = functions[names(variables)],
-      verbose = FALSE
+      estimates = functions[names(variables)]
     ) %>%
     addCdmName(cdm = cdm) %>%
     dplyr::select(!"result_type")
