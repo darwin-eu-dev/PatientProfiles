@@ -1,3 +1,47 @@
+test_that("check warning", {
+  cdm <- mockPatientProfiles()
+  expect_warning(
+    cdm$cohort1 |>
+      PatientProfiles::addDemographics(
+        cdm = cdm
+      )
+    )
+  expect_warning(
+    PatientProfiles::addDateOfBirth(
+      x = cdm$cohort1,
+      cdm = cdm
+    )
+  )
+  CDMConnector::cdmDisconnect(cdm = cdm)
+})
+
+test_that("addInObservtaion, Inf windows, completeInterval T", {
+  cdm <- mockPatientProfiles()
+  expect_no_error(
+    cdm$cohort1 %>%
+      PatientProfiles::addInObservation(
+        window = c(0, Inf),
+        completeInterval = T
+      )
+  )
+
+  expect_no_error(
+    cdm$cohort1 %>%
+      PatientProfiles::addInObservation(
+        window = c(-Inf,0),
+        completeInterval = T
+      )
+  )
+
+  expect_warning(
+    PatientProfiles::addInObservation(
+      x = cdm$cohort1,
+      cdm = cdm
+    )
+  )
+  CDMConnector::cdmDisconnect(cdm = cdm)
+})
+
 test_that("addDemographics, input length, type", {
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
 

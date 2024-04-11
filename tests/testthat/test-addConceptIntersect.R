@@ -27,6 +27,9 @@ test_that("addConceptIntersect", {
       dplyr::pull("concept_id")
   )
 
+  expect_warning(cdm$my_cohort |>
+                   addConceptIntersect(conceptSet = codelist))
+
   expect_no_error(
     cdm$my_cohort |>
       addConceptIntersectCount(conceptSet = codelist)
@@ -87,6 +90,13 @@ test_that("addConceptIntersect", {
 
   expect_no_error(
     cdm$my_cohort |>
+      addConceptIntersectDays(
+        conceptSet = codelist, targetDate = "event_end_date"
+      )
+  )
+
+  expect_no_error(
+    cdm$my_cohort |>
       addConceptIntersectDate(
         conceptSet = codelist, targetDate = "event_end_date"
       )
@@ -106,4 +116,5 @@ test_that("addConceptIntersect", {
       )
   )
 
+  CDMConnector::cdmDisconnect(cdm = cdm)
 })

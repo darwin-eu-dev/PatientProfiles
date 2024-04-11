@@ -1,3 +1,58 @@
+test_that("warning test", {
+  cdm <- mockPatientProfiles()
+  expect_no_error(
+    cdm$cohort1 %>%
+      addCohortIntersectCount(targetCohortTable = "cohort2")
+  )
+
+  expect_warning(
+    addCohortIntersectCount(
+      x = cdm$cohort1,
+      cdm = cdm,
+      targetCohortTable = "cohort2"
+    )
+  )
+
+  expect_no_error(
+    cdm$cohort1 %>%
+      addCohortIntersectDays(targetCohortTable = "cohort2")
+  )
+
+  expect_warning(
+    addCohortIntersectDays(
+      x = cdm$cohort1,
+      cdm = cdm,
+      targetCohortTable = "cohort2"
+    )
+  )
+
+  expect_no_error(
+    cdm$cohort1 %>%
+      addCohortIntersectDate(targetCohortTable = "cohort2")
+  )
+
+  expect_warning(
+    addCohortIntersectDate(
+      x = cdm$cohort1,
+      cdm = cdm,
+      targetCohortTable = "cohort2"
+    )
+  )
+
+  expect_no_error(
+    cdm$cohort1 %>%
+      addCohortIntersectFlag(targetCohortTable = "cohort2")
+  )
+
+  expect_warning(
+    addCohortIntersectFlag(
+      x = cdm$cohort1,
+      cdm = cdm,
+      targetCohortTable = "cohort2"
+    )
+  )
+})
+
 test_that("output format - one outcome cohort", {
   # output format - one outcome cohort ----
   # additional column should be added
@@ -11,6 +66,7 @@ test_that("output format - one outcome cohort", {
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
+
   expect_true(ncol(cdm$cohort1a) == 5)
 
   cdm$cohort1b <- cdm$cohort1 %>%
