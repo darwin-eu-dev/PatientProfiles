@@ -20,11 +20,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-library(CDMConnector)
-if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
-if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
-if (!eunomia_is_available()) downloadEunomiaData()
 ```
 
 ## Introduction
@@ -36,6 +31,13 @@ It is important to note, and is explained more below, that results may differ wh
 ## Adding variables from concept sets
 
 For this vignette we'll use the Eunomia synthetic dataset. First lets create our cohort of interest, individuals with an ankle sprain.
+
+```{r, eval = TRUE, echo = FALSE}
+library(CDMConnector)
+if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
+if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
+if (!eunomia_is_available()) downloadEunomiaData()
+```
 
 ```{r}
 library(CDMConnector)

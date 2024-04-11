@@ -81,7 +81,7 @@ CDMConnector::downloadEunomiaData(overwrite = TRUE, pathToData = folder)
 Sys.setenv("EUNOMIA_DATA_FOLDER" = folder)
 ```
 
-```{r setup}
+```{r}
 library(duckdb)
 library(CDMConnector)
 library(PatientProfiles)
