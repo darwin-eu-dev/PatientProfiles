@@ -1,4 +1,5 @@
 test_that("check input length and type for each of the arguments", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(connectionDetails)
 
   expect_error(addFutureObservation("cdm$cohort1"))
@@ -9,6 +10,7 @@ test_that("check input length and type for each of the arguments", {
 })
 
 test_that("check condition_occurrence and cohort1 work", {
+  skip_on_cran()
   # mock data
   cdm <- mockPatientProfiles(connectionDetails)
   # check it works with cohort1 table in mockdb
@@ -20,6 +22,7 @@ test_that("check condition_occurrence and cohort1 work", {
 })
 
 test_that("check working example with cohort1", {
+  skip_on_cran()
   # create mock tables for testing
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c("1", "1", "1"),
@@ -89,6 +92,7 @@ test_that("check working example with cohort1", {
 })
 
 test_that("check working example with condition_occurrence", {
+  skip_on_cran()
   # create mock tables for testing
   condition_occurrence <- dplyr::tibble(
     condition_occurrence_id = c("1", "1", "1"),
@@ -161,6 +165,7 @@ test_that("check working example with condition_occurrence", {
 })
 
 test_that("different name", {
+  skip_on_cran()
   # create mock tables for testing
   condition_occurrence <- dplyr::tibble(
     condition_occurrence_id = c("1", "1", "1"),
@@ -237,6 +242,7 @@ test_that("different name", {
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
+  skip_on_cran()
   # futureHistory should be NA if index date is outside of an observation period
 
   person <- dplyr::tibble(
@@ -286,6 +292,7 @@ test_that("priorHistory and future_observation - outside of observation period",
 })
 
 test_that("multiple observation periods", {
+  skip_on_cran()
   # with multiple observation periods,
   # future history should relate to the current observation period
 

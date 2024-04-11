@@ -1,4 +1,5 @@
 test_that("addAttributes, functionality", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(connectionDetails)
 
   oldCohort <- cdm$cohort1

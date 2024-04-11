@@ -1,4 +1,5 @@
 test_that("addCategories, functionality", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
   agegroup <- cdm$cohort1 %>%
     addAge() %>%
@@ -30,6 +31,7 @@ test_that("addCategories, functionality", {
 })
 
 test_that("addCategories with infinity", {
+  skip_on_cran()
   table <- dplyr::tibble(
     subject_id = 1:6,
     prior_history = c(1, 8, Inf, -Inf, 20, NA),
