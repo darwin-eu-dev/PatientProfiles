@@ -30,7 +30,6 @@
 #' set of variables.
 #' @param functions deprecated.
 #' @param counts Whether to compute number of records and number of subjects.
-#' @param verbose Whether to print progress.
 #'
 #' @return A summarised_result object with the summarised data of interest.
 #'
@@ -57,8 +56,7 @@ summariseResult <- function(table,
                             variables = NULL,
                             functions = lifecycle::deprecated(),
                             estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
-                            counts = TRUE,
-                            verbose = TRUE) {
+                            counts = TRUE) {
   if (lifecycle::is_present(functions)) {
     lifecycle::deprecate_warn(
       when = "0.7.0",
@@ -128,22 +126,14 @@ summariseResult <- function(table,
     checkStrata(strata, table)
     functions <- checkVariablesFunctions(variables, estimates, table)
 
-    # if (nrow(functions) == 0) {
-    #   cli::cli_alert_warning(
-    #     "No estimate can be computed with the current arguments, check `availableEstimates()` for the estimates that this function supports"
-    #   )
-    #   #return(omopgenerics::emptySummarisedResult())
-    # } else
-    if (verbose) {
-      mes <- c("i" = "The following estimates will be computed:")
-      variables <- functions$variable_name |> unique()
-      for (vark in variables) {
-        mes <- c(mes, "*" = paste0(
-          vark, ": ", paste0(functions$estimate_name[functions$variable_name == vark], collapse = ", ")
-        ))
-      }
-      cli::cli_inform(message = mes)
+    mes <- c("i" = "The following estimates will be computed:")
+    variables <- functions$variable_name |> unique()
+    for (vark in variables) {
+      mes <- c(mes, "*" = paste0(
+        vark, ": ", paste0(functions$estimate_name[functions$variable_name == vark], collapse = ", ")
+      ))
     }
+    cli::cli_inform(message = mes)
 
     # only required variables
     colOrder <- colnames(table)
@@ -158,6 +148,10 @@ summariseResult <- function(table,
       dplyr::filter(grepl("q", .data$estimate_name)) %>%
       nrow() > 0
     if (collectFlag) {
+      cli::cli_inform(c(
+        "!" = "Table is collected to memory as not all requested estimates are
+        supported on the database side"
+      ))
       table <- table %>% dplyr::collect()
     }
 
@@ -176,15 +170,14 @@ summariseResult <- function(table,
     group <- correctStrata(group, includeOverallGroup)
     strata <- correctStrata(strata, includeOverallStrata)
 
-    if (verbose) {
-      cli::cli_alert("Start summary of data, at {Sys.time()}")
-      nt <- length(group) * length(strata)
-      k <- 0
-      cli::cli_progress_bar(
-        total = nt,
-        format = "{cli::pb_bar}{k}/{nt} group-strata combinations @ {Sys.time()}"
-      )
-    }
+    cli::cli_alert("Start summary of data, at {Sys.time()}")
+    nt <- length(group) * length(strata)
+    k <- 0
+    cli::cli_progress_bar(
+      total = nt,
+      format = "{cli::pb_bar}{k}/{nt} group-strata combinations @ {Sys.time()}"
+    )
+
     resultk <- 1
     result <- list()
     for (groupk in group) {
@@ -195,16 +188,12 @@ summariseResult <- function(table,
           # order variables
           orderVariables(colOrder, unique(unlist(estimates)))
         resultk <- resultk + 1
-        if (verbose) {
-          k <- k + 1
-          cli::cli_progress_update()
-        }
+        k <- k + 1
+        cli::cli_progress_update()
       }
     }
     result <- result |> dplyr::bind_rows()
-    if (verbose) {
-      cli::cli_inform(c("v" = "Summary finished, at {Sys.time()}"))
-    }
+    cli::cli_inform(c("v" = "Summary finished, at {Sys.time()}"))
   }
 
   # TO REMOVE
