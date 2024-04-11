@@ -14,8 +14,7 @@ summariseResult(
   variables = NULL,
   functions = lifecycle::deprecated(),
   estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
-  counts = TRUE,
-  verbose = TRUE
+  counts = TRUE
 )
 }
 \arguments{
@@ -40,8 +39,6 @@ set of estimate names.}
 set of variables.}
 
 \item{counts}{Whether to compute number of records and number of subjects.}
-
-\item{verbose}{Whether to print progress.}
 }
 \value{
 A summarised_result object with the summarised data of interest.

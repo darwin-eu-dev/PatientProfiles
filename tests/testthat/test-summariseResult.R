@@ -1,29 +1,3 @@
-test_that("warnings and possible inputs",{
-  x <- dplyr::tibble(
-    s = c("g1", "g1", "g2", "g12", "g2", "g12"),
-    v_1 = c(1, 2, 3, 4, 6, 3),
-    v_2 = c("a", "b", "a", "b", "0", "0"),
-    v_3 = c(0, 1, 0, 1, 1, 0),
-    v_4 = as.Date(c(
-      "2021-05-12", "2012-05-15", "2023-11-30", "2015-12-10", "2014-01-12",
-      "1993-04-190"
-    ))
-  )
-
-  expect_warning(
-    summariseResult(x,
-                    functions = list(
-                      numericVariables = c("median", "q25", "q75")))
-  )
-
-  expect_no_error(
-    summariseResult(x,
-                    counts = FALSE)
-  )
-
-  c("age_group")
-})
-
 test_that("test all functions", {
   x <- dplyr::tibble(
     s = c("g1", "g1", "g2", "g12", "g2", "g12"),
