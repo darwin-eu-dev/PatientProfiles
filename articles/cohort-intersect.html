@@ -29,7 +29,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
@@ -189,8 +189,8 @@ of the target cohort then used to check for an intersection.</p>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 2, 3, 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-06-01, 2020-01-02, 2020-01-01, 2020-01-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-08-01, 2020-02-02, 2020-03-01, 2020-04-01</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 1, 1</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0</span></span>
 <span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -208,9 +208,9 @@ of the target cohort then used to check for an intersection.</p>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 2, 3, 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-06-01, 2020-01-02, 2020-01-01, 2020-01-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-08-01, 2020-02-02, 2020-03-01, 2020-04-01</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2, 0, 1, 2</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0</span></span></code></pre>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1</span></span></code></pre>
 <p>Next we can add the date of the intersection and the days to the
 intersection. When identifying these variables we use only one date in
 our target table, which by default will be the cohort start date. In
@@ -531,7 +531,7 @@ different types of intersection values.</p>
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
     </footer>
