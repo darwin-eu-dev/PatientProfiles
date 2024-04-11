@@ -25,16 +25,18 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-library(CDMConnector)
-if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
-if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
-if (!eunomia_is_available()) downloadEunomiaData()
 ```
 
 So far we've seen that we can add variables indicating intersections based on cohorts or concept sets. One additional option we have is to simply add an intersection based on a table.
 
 Let's again create a cohort containing people with an ankle sprain.
+
+```{r, eval = TRUE, echo = FALSE}
+library(CDMConnector)
+if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
+if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
+if (!eunomia_is_available()) downloadEunomiaData()
+```
 
 ```{r, warning = FALSE, message = FALSE}
 library(CDMConnector)
