@@ -118,3 +118,111 @@ test_that("addConceptIntersect", {
 
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
+
+test_that("unsupported domain name", {
+  skip_on_cran()
+  cdm <- mockPatientProfiles()
+  concept <- dplyr::tibble(
+    concept_id = c(1125315),
+    domain_id = "random",
+    concept_class_id = NA_character_,
+    vocabulary_id = NA_character_,
+    concept_code = NA_character_,
+    valid_start_date = as.Date("1900-01-01"),
+    valid_end_date = as.Date("2099-01-01"),
+    invalid_reason = NA_character_
+  ) %>%
+    dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+
+  expect_no_warning(result <- cdm$cohort1 %>%
+    addConceptIntersectFlag(
+      conceptSet = list("random"=1125315)
+    ) %>%
+    dplyr::collect())
+
+  expect_true(
+    "random_0_to_inf" %in%
+      (result |>
+         colnames())
+  )
+
+  expect_warning(result <- cdm$cohort1 %>%
+                      addConceptIntersect(
+                        conceptSet = list("random"=1125315)
+                      ) %>%
+                      dplyr::collect())
+  CDMConnector::cdmDisconnect(cdm = cdm)
+})
+
+test_that("NA domain name", {
+  skip_on_cran()
+  cdm <- mockPatientProfiles()
+  concept <- dplyr::tibble(
+    concept_id = c(1125315),
+    domain_id = NA_character_,
+    concept_class_id = NA_character_,
+    vocabulary_id = NA_character_,
+    concept_code = NA_character_,
+    valid_start_date = as.Date("1900-01-01"),
+    valid_end_date = as.Date("2099-01-01"),
+    invalid_reason = NA_character_
+  ) %>%
+    dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+
+  expect_no_warning(result <- cdm$cohort1 %>%
+                      addConceptIntersectFlag(
+                        conceptSet = list("random2"=1125315)
+                      ) %>%
+                      dplyr::collect())
+
+  expect_true(
+    "random2_0_to_inf" %in%
+      (result |>
+         colnames())
+  )
+
+  expect_warning(result <- cdm$cohort1 %>%
+                   addConceptIntersect(
+                     conceptSet = list("random2"=1125315)
+                   ) %>%
+                   dplyr::collect())
+  CDMConnector::cdmDisconnect(cdm = cdm)
+})
+
+test_that("domain name not in cdm", {
+  skip_on_cran()
+  cdm <- mockPatientProfiles()
+  concept <- dplyr::tibble(
+    concept_id = c(1125315),
+    domain_id = "device",
+    concept_class_id = NA_character_,
+    vocabulary_id = NA_character_,
+    concept_code = NA_character_,
+    valid_start_date = as.Date("1900-01-01"),
+    valid_end_date = as.Date("2099-01-01"),
+    invalid_reason = NA_character_
+  ) %>%
+    dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+
+  expect_no_warning(result <- cdm$cohort1 %>%
+                      addConceptIntersectFlag(
+                        conceptSet = list("random3"=1125315)
+                      ) %>%
+                      dplyr::collect())
+
+  expect_true(
+    "random3_0_to_inf" %in%
+      (result |>
+         colnames())
+  )
+
+  expect_warning(result <- cdm$cohort1 %>%
+                   addConceptIntersect(
+                     conceptSet = list("random3"=1125315)
+                   ) %>%
+                   dplyr::collect())
+  CDMConnector::cdmDisconnect(cdm = cdm)
+})
