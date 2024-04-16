@@ -193,9 +193,6 @@ subsetTable <- function(x) {
       concept <- standardConceptIdColumn(tableName)
       start <- startDateColumn(tableName)
       end <- endDateColumn(tableName)
-      if (is.na(end)) {
-        end <- start
-      }
       res <- cdm[[tableName]] |>
         dplyr::select(
           "event_start_date" = .env$start, "event_end_date" = .env$end,

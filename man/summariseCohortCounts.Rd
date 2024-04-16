@@ -13,7 +13,7 @@ summariseCohortCounts(cohort, strata = list())
 \item{strata}{Stratification list.}
 }
 \value{
-A summary of the number of individuals in each cohrot and strata.
+A summary of the number of individuals in each cohort and strata.
 }
 \description{
 `r lifecycle::badge("deprecated")`
