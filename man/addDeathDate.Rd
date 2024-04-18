@@ -3,7 +3,7 @@
 \name{addDeathDate}
 \alias{addDeathDate}
 \title{Add date of death for individuals. Only death within the same observation
-period than `indeDate` will be observed.}
+period than `indexDate` will be observed.}
 \usage{
 addDeathDate(
   x,
@@ -29,7 +29,7 @@ table x with the added column with death information added.
 }
 \description{
 Add date of death for individuals. Only death within the same observation
-period than `indeDate` will be observed.
+period than `indexDate` will be observed.
 }
 \examples{
 \donttest{

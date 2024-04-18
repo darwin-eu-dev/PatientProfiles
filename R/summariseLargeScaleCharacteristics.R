@@ -414,7 +414,7 @@ getTable <- function(tab, x, includeSource, minWindow, maxWindow, tablePrefix, e
   toSelect <- c(
     "subject_id" = "person_id",
     "start_diff" = startDateColumn(tab),
-    "end_diff" = ifelse(is.na(endDateColumn(tab)), startDateColumn(tab), endDateColumn(tab)),
+    "end_diff" = endDateColumn(tab),
     "standard" = standardConceptIdColumn(tab),
     "source" = sourceConceptIdColumn(tab)
   )

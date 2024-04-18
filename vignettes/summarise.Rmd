@@ -137,9 +137,9 @@ x |>
   glimpse()
 ```
 
-In this table (`x`) we have a cohort of first occurrences of synusitis, and then we added: demographics; the counts of 3 ingredients, any time prior and any time after the index date; a flag indicating if they had pharyngitis before; date of the first visit; and, finally, time to next visit.
+In this table (`x`) we have a cohort of first occurrences of sinusitis, and then we added: demographics; the counts of 3 ingredients, any time prior and any time after the index date; a flag indicating if they had pharyngitis before; date of the first visit; and, finally, time to next visit.
 
-If we want to summarise the age statified by sex we could use tidyverse functions like:
+If we want to summarise the age stratified by sex we could use tidyverse functions like:
 
 ```{r}
 x |>
@@ -210,7 +210,7 @@ x |>
   print(n = Inf)
 ```
 
-The results model has two levels of groupping (group and strata), you cna specify them independently:
+The results model has two levels of grouping (group and strata), you can specify them independently:
 
 ```{r}
 x |>

@@ -30,6 +30,40 @@ test_that("addCategories, functionality", {
   ))
 })
 
+test_that("addCategory with both upper and lower infinite, age",{
+  skip_on_cran()
+  cdm <- PatientProfiles::mockPatientProfiles()
+  expect_no_error(
+    agegroup <- cdm$cohort1 %>%
+      addAge() %>%
+      addCategories(
+        variable = "age",
+        categories = list("age_group" = list(c(-Inf, Inf)))
+      ) %>%
+      dplyr::collect() |>
+      dplyr::arrange(subject_id, cohort_start_date)
+  )
+  expect_true(
+    all(agegroup %>%
+          dplyr::pull("age_group") == "any")
+  )
+
+  expect_no_error(
+    agegroup2 <- cdm$cohort1 %>%
+      addAge() %>%
+      addCategories(
+        variable = "age",
+        categories = list("age_group" = list(c(-Inf, 50), c(51, 120)))
+      ) %>%
+      dplyr::collect() |>
+      dplyr::arrange(subject_id, cohort_start_date)
+  )
+  expect_true(
+    "50 or below" %in% (
+      agegroup2 %>% dplyr::pull("age_group")
+    ))
+})
+
 test_that("addCategories with infinity", {
   skip_on_cran()
   table <- dplyr::tibble(

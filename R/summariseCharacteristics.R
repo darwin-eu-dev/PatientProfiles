@@ -507,7 +507,7 @@ summariseCharacteristics <- function(cohort,
 #' @param cohort A cohort in the cdm.
 #' @param strata Stratification list.
 #'
-#' @return A summary of the number of individuals in each cohrot and strata.
+#' @return A summary of the number of individuals in each cohort and strata.
 #'
 #' @export
 #'

@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #' Add date of death for individuals. Only death within the same observation
-#' period than `indeDate` will be observed.
+#' period than `indexDate` will be observed.
 #'
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the window origin.
@@ -50,7 +50,7 @@ addDeathDate <- function(x,
 }
 
 #' Add days to death for individuals. Only death within the same observation
-#' period than `indeDate` will be observed.
+#' period than `indexDate` will be observed.
 #'
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the window origin.
@@ -86,7 +86,7 @@ addDeathDays <- function(x,
 
 
 #' Add flag for death for individuals. Only death within the same observation
-#' period than `indeDate` will be observed.
+#' period than `indexDate` will be observed.
 #'
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the window origin.
