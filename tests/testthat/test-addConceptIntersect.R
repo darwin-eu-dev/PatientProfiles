@@ -47,29 +47,33 @@ test_that("addConceptIntersect", {
 
   expect_no_error(
     cdm$my_cohort |>
-      summariseCharacteristics(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "count", window = list(c(0, Inf), c(0, 90))
+      CohortCharacteristics::summariseCharacteristics(
+        conceptIntersectCount = list("my concets" = list(
+        conceptSet = codelist, window = list(c(0, Inf))
       )))
   )
 
   expect_no_error(
     cdm$my_cohort |>
-      summariseCharacteristics(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "flag", window = c(0, Inf)
+      CohortCharacteristics::summariseCharacteristics(
+        conceptIntersectFlag = list("my concets" = list(
+          conceptSet = codelist, window = list(c(0, Inf))
+        )))
+  )
+
+  expect_no_error(
+    cdm$my_cohort |>
+      CohortCharacteristics::summariseCharacteristics(
+        conceptIntersectDays = list("my concets" = list(
+        conceptSet = codelist, window = c(0, Inf)
       )))
   )
 
   expect_no_error(
     cdm$my_cohort |>
-      summariseConceptIntersect(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "days", window = c(0, Inf)
-      )))
-  )
-
-  expect_no_error(
-    cdm$my_cohort |>
-      summariseConceptIntersect(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "date", window = c(0, Inf)
+        CohortCharacteristics::summariseCharacteristics(
+        conceptIntersectDate = list("my concets" = list(
+        conceptSet = codelist, window = c(0, Inf)
       )))
   )
 
