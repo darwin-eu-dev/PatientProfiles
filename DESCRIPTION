@@ -74,3 +74,6 @@ Depends:
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 VignetteBuilder: knitr
+Remotes:
+    darwin-eu-dev/CDMConnector,
+    darwin-eu-dev/omopgenerics
