@@ -36,6 +36,16 @@ test_that("test all functions", {
     strata = list()
   ))
 
+  expect_no_error(
+   emptySR <- summariseResult(
+      x,
+      variables = list(),
+      estimates = list(),
+      counts = FALSE
+    )
+  )
+  expect_true(nrow(emptySR) == 0)
+
   cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),

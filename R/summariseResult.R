@@ -70,6 +70,10 @@ summariseResult <- function(table,
 
   # initial checks
   checkTable(table)
+  if (length(variables) == 0 & length(estimates) == 0 & counts == FALSE) {
+    cli::cli_inform("No analyses were selected.")
+    return(omopgenerics::emptySummarisedResult())
+  }
 
   if (is.null(variables)) {
     variables <- colnames(table)
@@ -205,13 +209,17 @@ summariseResult <- function(table,
     dplyr::mutate(
       "result_id" = as.integer(1),
       "cdm_name" = .env$cdm_name,
-      "result_type" = "summarise_table",
-      "package_name" = "PatientProfiles",
-      "package_version" = as.character(utils::packageVersion("PatientProfiles")),
       "additional_name" = "overall",
       "additional_level" = "overall"
     ) |>
-    omopgenerics::newSummarisedResult()
+    omopgenerics::newSummarisedResult(
+      settings = dplyr::tibble(
+        "result_id" = as.integer(1),
+        "result_type" = "summarise_table",
+        "package_name" = "PatientProfiles",
+        "package_version" = as.character(utils::packageVersion("PatientProfiles"))
+      )
+    )
 
   return(result)
 }
