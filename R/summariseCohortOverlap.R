@@ -198,8 +198,8 @@ summariseCohortOverlap <- function(cohort,
               dplyr::distinct(.data$strata_name, .data$strata_level)
           ) |>
           dplyr::cross_join(
-            tidyr::expand_grid(variable_name = "number_subjects",
-                               variable_level = c("reference", "comparator", "overlap"),
+            tidyr::expand_grid(variable_level = "number_subjects",
+                               variable_name = c("reference", "comparator", "overlap"),
                                estimate_name = c("count", "percentage"),
                                estimate_value = "0"
             ) |>
@@ -212,9 +212,6 @@ summariseCohortOverlap <- function(cohort,
     dplyr::mutate(
       result_id = as.integer(1),
       cdm_name = CDMConnector::cdmName(cdm),
-      result_type = "cohort_overlap",
-      package_name = "PatientProfiles",
-      package_version = as.character(utils::packageVersion("PatientProfiles")),
       additional_name ="overall",
       additional_level = "overall",
       variable_level = dplyr::if_else(
@@ -223,7 +220,14 @@ summariseCohortOverlap <- function(cohort,
       )
     ) |>
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns("summarised_result"))) |>
-    omopgenerics::newSummarisedResult()
+    omopgenerics::newSummarisedResult(
+      settings = dplyr::tibble(
+        result_id = as.integer(1),
+        result_type = "cohort_overlap",
+        package_name = "PatientProfiles",
+        package_version = as.character(utils::packageVersion("PatientProfiles"))
+      )
+    )
 
   return(overlap)
 }
@@ -237,8 +241,8 @@ getOverlapEstimates <- function(x) {
     ) |>
     tidyr::pivot_longer(cols = dplyr::starts_with("number"), names_to = "variable_name", values_to = "estimate_value") |>
     dplyr::mutate(
-      variable_level = gsub("number_subjects_", "", .data$variable_name),
-      variable_name = gsub("_overlap|_reference|_comparator", "", .data$variable_name),
+      variable_level = gsub("_overlap|_reference|_comparator", "", .data$variable_name),
+      variable_name = gsub("number_subjects_", "", .data$variable_name),
       estimate_name = "count",
       estimate_type = "integer",
       estimate_value = as.character(.data$estimate_value)
@@ -254,8 +258,8 @@ getOverlapEstimates <- function(x) {
         dplyr::select(!dplyr::all_of(c("total_subjects"))) |>
         tidyr::pivot_longer(cols = dplyr::starts_with("number"), names_to = "variable_name", values_to = "estimate_value") |>
         dplyr::mutate(
-          variable_level = gsub("number_subjects_", "", .data$variable_name),
-          variable_name = gsub("_overlap|_reference|_comparator", "", .data$variable_name),
+          variable_level = gsub("_overlap|_reference|_comparator", "", .data$variable_name),
+          variable_name = gsub("number_subjects_", "", .data$variable_name),
           estimate_name = "percentage",
           estimate_type = "percentage",
           estimate_value = as.character(.data$estimate_value)

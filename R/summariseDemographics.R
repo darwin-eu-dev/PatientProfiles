@@ -53,6 +53,6 @@ summariseDemographics <- function(cohort,
     demographics = TRUE,
     ageGroup = ageGroup
     ) |>
-    dplyr::filter(.data$result_type == "summarised_demographics")
+    visOmopResults::filterSettings(.data$result_type == "summarised_demographics")
   return(results)
 }

@@ -67,15 +67,13 @@ tableCharacteristics <- function(result,
                                  split = c("group", "strata"),
                                  groupColumn = NULL,
                                  minCellCount = 5,
-                                 excludeColumns = c("result_id", "result_type",
-                                                    "package_name", "package_version",
-                                                    "estimate_type", "additional_name",
-                                                    "additional_level"),
+                                 excludeColumns = c("result_id", "estimate_type",
+                                                    "additional_name", "additional_level"),
                                  .options = list()) {
 
   # check input
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type %in%
+    visOmopResults::filterSettings(.data$result_type %in%
                     c("summarised_characteristics", "summarised_demographics",
                       "summarised_cohort_intersect", "summarised_concept_intersect",
                       "summarised_table_intersect"))
@@ -184,13 +182,11 @@ tableCohortOverlap  <- function(result,
                                 split = c("group", "strata", "additional"),
                                 groupColumn = NULL,
                                 minCellCount = 5,
-                                excludeColumns = c("result_id", "result_type",
-                                                   "package_name", "package_version",
-                                                   "estimate_type"),
+                                excludeColumns = c("result_id", "estimate_type"),
                                 .options = list()) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type == "cohort_overlap")
+    visOmopResults::filterSettings(.data$result_type == "cohort_overlap")
   checkmate::assertList(.options)
 
   # default
@@ -337,13 +333,12 @@ tableCohortTiming <- function(result,
                               split = c("group", "strata", "additional"),
                               groupColumn = NULL,
                               minCellCount = 5,
-                              excludeColumns = c("result_id", "result_type",
-                                                 "package_name", "package_version",
-                                                 "estimate_type", "variable_level"),
+                              excludeColumns = c("result_id", "estimate_type",
+                                                 "variable_level"),
                               .options = list()) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type == "cohort_timing")
+    visOmopResults::filterSettings(.data$result_type == "cohort_timing")
   checkmate::assertList(.options)
 
   # defaults
@@ -462,15 +457,14 @@ tableTableIntersect <- function(result,
                                  split = c("group", "strata"),
                                  groupColumn = NULL,
                                  minCellCount = 5,
-                                 excludeColumns = c("result_id", "result_type",
-                                                    "package_name", "package_version",
-                                                    "estimate_type", "variable_level",
-                                                    "additional_name", "additional_level"),
+                                 excludeColumns = c("result_id", "estimate_type",
+                                                    "variable_level", "additional_name",
+                                                    "additional_level"),
                                  .options = list()) {
 
   # check input
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type %in%
+    visOmopResults::filterSettings(.data$result_type %in%
                     c("summarised_table_intersect"))
   checkmate::assertList(.options)
 
@@ -550,15 +544,13 @@ tableCohortIntersect <- function(result,
                                 split = c("group", "strata"),
                                 groupColumn = NULL,
                                 minCellCount = 5,
-                                excludeColumns = c("result_id", "result_type",
-                                                   "package_name", "package_version",
-                                                   "estimate_type", "additional_name",
-                                                   "additional_level"),
+                                excludeColumns = c("result_id", "estimate_type",
+                                                   "additional_name", "additional_level"),
                                 .options = list()) {
 
   # check input
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type %in%
+    visOmopResults::filterSettings(.data$result_type %in%
                     c("summarised_cohort_intersect"))
   checkmate::assertList(.options)
 
@@ -634,7 +626,7 @@ tableLargeScaleCharacteristics <- function(result,
   }
   assertChoice(header, choices = c("cdm name", "cohort name", "strata", "window name"))
   result <- result |>
-    dplyr::filter(.data$result_type == "summarised_large_scale_characteristics")
+    visOmopResults::filterSettings(.data$result_type == "summarised_large_scale_characteristics")
   if (nrow(result) == 0) {
     cli::cli_abort(
       "No summarised_large_scale_characteristics records where found in this result object"
@@ -790,15 +782,13 @@ tableDemographics <- function(result,
                                  split = c("group", "strata"),
                                  groupColumn = NULL,
                                  minCellCount = 5,
-                                 excludeColumns = c("result_id", "result_type",
-                                                    "package_name", "package_version",
-                                                    "estimate_type", "additional_name",
-                                                    "additional_level"),
+                                 excludeColumns = c("result_id", "estimate_type",
+                                                    "additional_name", "additional_level"),
                                  .options = list()) {
 
   # check input
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type %in%
+    visOmopResults::filterSettings(.data$result_type %in%
                     c("summarised_demographics"))
   checkmate::assertList(.options)
 
