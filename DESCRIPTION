@@ -51,8 +51,7 @@ Suggests:
     ggpubr,
     tictoc,
     withr,
-    scales,
-    CohortCharacteristics
+    scales
 Imports: 
     magrittr,
     CDMConnector (>= 1.3.1),
