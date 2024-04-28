@@ -194,8 +194,8 @@ summariseCohortTiming <- function(cohort,
     dplyr::bind_rows() |>
     omopgenerics::newSummarisedResult(settings = dplyr::tibble(
       "result_id" = rId,
-      "package_name" = "CohortCharacteristics",
-      "package_version" = as.character(utils::packageVersion("CohortCharacteristics")),
+      "package_name" = "PatientProfiles",
+      "package_version" = as.character(utils::packageVersion("PatientProfiles")),
       "result_type" = rT,
       "restrict_to_first_entry" = restrictToFirstEntry
     ))
