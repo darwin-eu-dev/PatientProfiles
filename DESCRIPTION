@@ -77,5 +77,4 @@ VignetteBuilder: knitr
 Remotes:
     darwin-eu/CDMConnector,
     darwin-eu-dev/omopgenerics,
-    darwin-eu-dev/CohortCharacteristics,
     darwin-eu/visOmopResults
