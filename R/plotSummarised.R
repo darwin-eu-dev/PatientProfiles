@@ -46,7 +46,7 @@ plotCohortOverlap <- function(result,
                               uniqueCombinations = TRUE) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type == "cohort_overlap")
+    visOmopResults::filterSettings(.data$result_type == "cohort_overlap")
   checkmate::assertCharacter(facetVarX, null.ok = TRUE)
   checkmate::assertCharacter(facetVarY, null.ok = TRUE)
   checkmate::assertCharacter(overlapLabel)
@@ -117,7 +117,7 @@ plotCohortTiming <- function(result,
                              uniqueCombinations = TRUE) {
   # initial checks
   result <- omopgenerics::newSummarisedResult(result) |>
-    dplyr::filter(.data$result_type == "cohort_timing")
+    visOmopResults::filterSettings(.data$result_type == "cohort_timing")
   checkmate::assertChoice(plotType, c("boxplot", "density"))
   checkmate::assertCharacter(facetVarX, null.ok = TRUE)
   checkmate::assertCharacter(facetVarY, null.ok = TRUE)
@@ -210,7 +210,7 @@ plotDemographics <- function(data,
                              vertical_x = FALSE) {
   # check input
   data <- omopgenerics::newSummarisedResult(data) |>
-    dplyr::filter(.data$result_type %in%
+    visOmopResults::filterSettings(.data$result_type %in%
       c("summarised_demographics"))
 
   if (plotStyle == "barplot") {
@@ -283,7 +283,7 @@ plotCohortIntersect <- function(data,
                                 vertical_x = TRUE) {
   # check input
   data <- omopgenerics::newSummarisedResult(data) |>
-    dplyr::filter(.data$result_type %in%
+    visOmopResults::filterSettings(.data$result_type %in%
       c("summarised_cohort_intersect"))
 
   gg <- PatientProfiles::plotCharacteristics(
@@ -324,7 +324,7 @@ plotTableIntersect <- function(data,
                                vertical_x = TRUE) {
   # check input
   data <- omopgenerics::newSummarisedResult(data) |>
-    dplyr::filter(.data$result_type %in%
+    visOmopResults::filterSettings(.data$result_type %in%
       c("summarised_table_intersect"))
 
   gg <- PatientProfiles::plotCharacteristics(

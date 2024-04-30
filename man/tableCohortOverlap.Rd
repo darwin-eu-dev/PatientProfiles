@@ -12,8 +12,7 @@ tableCohortOverlap(
   split = c("group", "strata", "additional"),
   groupColumn = NULL,
   minCellCount = 5,
-  excludeColumns = c("result_id", "result_type", "package_name", "package_version",
-    "estimate_type"),
+  excludeColumns = c("result_id", "estimate_type"),
   .options = list()
 )
 }

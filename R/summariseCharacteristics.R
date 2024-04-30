@@ -131,9 +131,6 @@ summariseCharacteristics <- function(cohort,
     result <- dplyr::tibble(
       "result_id" = as.integer(1),
       "cdm_name" = CDMConnector::cdmName(cdm),
-      "result_type" = "summarised_characteristics",
-      "package_name" = "PatientProfiles",
-      "package_version" = as.character(utils::packageVersion("PatientProfiles")),
       "group_name" = "overall",
       "group_level" = "overall",
       "strata_name" = "overall",
@@ -146,7 +143,14 @@ summariseCharacteristics <- function(cohort,
       "additional_name" = "overall",
       "additional_level" = "overall"
     ) |>
-      omopgenerics::newSummarisedResult()
+      omopgenerics::newSummarisedResult(
+        settings = dplyr::tibble(
+          "result_id" = 1L,
+          "result_type" = "summarised_characteristics",
+          "package_name" = "PatientProfiles",
+          "package_version" = as.character(utils::packageVersion("PatientProfiles"))
+        )
+      )
     return(result)
   }
 
@@ -456,7 +460,7 @@ summariseCharacteristics <- function(cohort,
       variables = variables,
       estimates = functions[names(variables)]
     ) %>%
-    addCdmName(cdm = cdm) %>%
+    visOmopResults::addSettings() |>
     dplyr::select(!"result_type")
 
   # rename variables
@@ -492,7 +496,21 @@ summariseCharacteristics <- function(cohort,
     )) %>%
     visOmopResults::uniteAdditional(cols = c("table", "window", "value")) |>
     dplyr::as_tibble() |>
-    omopgenerics::newSummarisedResult()
+    dplyr::group_by(.data$result_type, .data$package_name, .data$package_version) |>
+    dplyr::mutate("result_id" = dplyr::cur_group_id()) |>
+    dplyr::ungroup()
+
+  results <- results |>
+    dplyr::select(!c("result_type", "package_name", "package_version")) |>
+    omopgenerics::newSummarisedResult(
+      settings = dplyr::tibble(
+        results |>
+          dplyr::distinct(
+            .data$result_id, .data$result_type, .data$package_name,
+            .data$package_version
+          )
+      )
+    )
 
   cli::cli_alert_success("summariseCharacteristics finished!")
 
@@ -562,7 +580,8 @@ summariseConceptIntersect <- function(cohort,
     cohort = cohort, strata = strata, demographics = FALSE, ageGroup = NULL,
     tableIntersect = list(), cohortIntersect = list(),
     conceptIntersect = conceptIntersect, otherVariables = character()
-  )
+  ) |>
+    visOmopResults::filterSettings(.data$result_type == "summarised_concept_intersect")
 }
 
 correctWindowName <- function(windowName) {

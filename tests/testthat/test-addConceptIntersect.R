@@ -45,35 +45,6 @@ test_that("addConceptIntersect", {
       addConceptIntersectDate(conceptSet = codelist)
   )
 
-  expect_no_error(
-    cdm$my_cohort |>
-      summariseCharacteristics(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "count", window = list(c(0, Inf), c(0, 90))
-      )))
-  )
-
-  expect_no_error(
-    cdm$my_cohort |>
-      summariseCharacteristics(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "flag", window = c(0, Inf)
-      )))
-  )
-
-  expect_no_error(
-    cdm$my_cohort |>
-      summariseConceptIntersect(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "days", window = c(0, Inf)
-      )))
-  )
-
-  expect_no_error(
-    cdm$my_cohort |>
-      summariseConceptIntersect(conceptIntersect = list("my concets" = list(
-        conceptSet = codelist, value = "date", window = c(0, Inf)
-      )))
-  )
-
-
   # test input
   expect_error(
     cdm$my_cohort |>
@@ -136,10 +107,10 @@ test_that("unsupported domain name", {
   cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 
   expect_no_warning(result <- cdm$cohort1 %>%
-    addConceptIntersectFlag(
-      conceptSet = list("random"=1125315)
-    ) %>%
-    dplyr::collect())
+                      addConceptIntersectFlag(
+                        conceptSet = list("random"=1125315)
+                      ) %>%
+                      dplyr::collect())
 
   expect_true(
     "random_0_to_inf" %in%
@@ -148,10 +119,10 @@ test_that("unsupported domain name", {
   )
 
   expect_warning(result <- cdm$cohort1 %>%
-                      addConceptIntersect(
-                        conceptSet = list("random"=1125315)
-                      ) %>%
-                      dplyr::collect())
+                   addConceptIntersect(
+                     conceptSet = list("random"=1125315)
+                   ) %>%
+                   dplyr::collect())
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
 

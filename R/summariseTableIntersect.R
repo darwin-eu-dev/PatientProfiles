@@ -43,5 +43,5 @@ summariseTableIntersect <- function(cohort,
     conceptIntersect = list(),
     otherVariables = character()
   ) |>
-    dplyr::filter(.data$result_type == "summarised_demographics")
+    visOmopResults::filterSettings(.data$result_type == "summarised_demographics")
 }

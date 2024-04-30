@@ -48,3 +48,4 @@ emptyCohort <- dplyr::tibble(
   cohort_start_date = as.Date(character()),
   cohort_end_date = as.Date(character())
 )
+
