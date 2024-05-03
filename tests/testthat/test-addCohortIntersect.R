@@ -8,7 +8,6 @@ test_that("warning test", {
   expect_warning(
     addCohortIntersectCount(
       x = cdm$cohort1,
-      cdm = cdm,
       targetCohortTable = "cohort2"
     )
   )
@@ -21,7 +20,6 @@ test_that("warning test", {
   expect_warning(
     addCohortIntersectDays(
       x = cdm$cohort1,
-      cdm = cdm,
       targetCohortTable = "cohort2"
     )
   )
@@ -34,7 +32,6 @@ test_that("warning test", {
   expect_warning(
     addCohortIntersectDate(
       x = cdm$cohort1,
-      cdm = cdm,
       targetCohortTable = "cohort2"
     )
   )
@@ -47,7 +44,6 @@ test_that("warning test", {
   expect_warning(
     addCohortIntersectFlag(
       x = cdm$cohort1,
-      cdm = cdm,
       targetCohortTable = "cohort2"
     )
   )

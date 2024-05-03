@@ -6,7 +6,6 @@
 \usage{
 addAge(
   x,
-  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   ageName = "age",
   ageGroup = NULL,
@@ -19,8 +18,6 @@ addAge(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{A cdm_reference object.}
 
 \item{indexDate}{Variable in x that contains the date to compute the age.}
 

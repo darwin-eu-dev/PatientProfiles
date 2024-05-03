@@ -14,82 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Compute the intersect with a target cohort, you can compute the number of
-#' occurrences, a flag of presence, a certain date and/or the time difference
-#'
-#' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
-#' @param targetCohortTable name of the cohort that we want to check for overlap.
-#' @param targetCohortId vector of cohort definition ids to include.
-#' @param indexDate Variable in x that contains the date to compute the
-#' intersection.
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x.
-#' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence).
-#' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence).
-#' @param window window to consider events of.
-#' @param order which record is considered in case of multiple records.
-#' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
-#' intersection.
-#' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
-#' for this intersection.
-#' @param date TRUE or FALSE. If TRUE, date will be calculated for this
-#' intersection.
-#' @param days TRUE or FALSE. If TRUE, time difference in days will be
-#' calculated for this intersection.
-#' @param nameStyle naming of the added column or columns, should include
-#' required parameters.
-#'
-#' @return table with added columns with overlap information.
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' cdm <- mockPatientProfiles()
-#'
-#' cdm$cohort1 %>%
-#'   addCohortIntersect(
-#'     targetCohortTable = "cohort2"
-#'   )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
-#' }
-#'
-addCohortIntersect <- function(x,
-                               cdm = lifecycle::deprecated(),
-                               targetCohortTable,
-                               targetCohortId = NULL,
-                               indexDate = "cohort_start_date",
-                               censorDate = NULL,
-                               targetStartDate = "cohort_start_date",
-                               targetEndDate = "cohort_end_date",
-                               window = list(c(0, Inf)),
-                               order = "first",
-                               flag = TRUE,
-                               count = TRUE,
-                               date = TRUE,
-                               days = TRUE,
-                               nameStyle = "{value}_{cohort_name}_{window_name}") {
-  lifecycle::deprecate_warn(
-    when = "0.6.0",
-    what = "addCohortIntersect()",
-    details = c(
-      "please use the specific functions instead:",
-      "*" = "addCohortIntersectFlag()", "*" = "addCohortIntersectCount()",
-      "*" = "addCohortIntersectDate()", "*" = "addCohortIntersectDays()"
-    )
-  )
-  .addCohortIntersect(
-    x = x, targetCohortTable = targetCohortTable,
-    targetCohortId = targetCohortId, indexDate = indexDate,
-    censorDate = censorDate, targetStartDate = targetStartDate,
-    targetEndDate = targetEndDate, window = window, order = order, flag = flag,
-    count = count, date = date, days = days, nameStyle = nameStyle
-  )
-}
-
 .addCohortIntersect <- function(x,
                                 targetCohortTable,
                                 targetCohortId = NULL,
@@ -138,8 +62,6 @@ addCohortIntersect <- function(x,
 #' It creates columns to indicate the presence of cohorts
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param targetCohortTable name of the cohort that we want to check for overlap.
 #' @param targetCohortId vector of cohort definition ids to include.
 #' @param indexDate Variable in x that contains the date to compute the
@@ -169,7 +91,6 @@ addCohortIntersect <- function(x,
 #' }
 #'
 addCohortIntersectFlag <- function(x,
-                                   cdm = lifecycle::deprecated(),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -178,9 +99,6 @@ addCohortIntersectFlag <- function(x,
                                    targetEndDate = "cohort_end_date",
                                    window = list(c(0, Inf)),
                                    nameStyle = "{cohort_name}_{window_name}") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addCohortIntersectFlag(cdm)")
-  }
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
@@ -209,8 +127,6 @@ addCohortIntersectFlag <- function(x,
 #' cohort
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param targetCohortTable name of the cohort that we want to check for overlap.
 #' @param targetCohortId vector of cohort definition ids to include.
 #' @param indexDate Variable in x that contains the date to compute the
@@ -240,7 +156,6 @@ addCohortIntersectFlag <- function(x,
 #' }
 #'
 addCohortIntersectCount <- function(x,
-                                    cdm = lifecycle::deprecated(),
                                     targetCohortTable,
                                     targetCohortId = NULL,
                                     indexDate = "cohort_start_date",
@@ -249,9 +164,6 @@ addCohortIntersectCount <- function(x,
                                     targetEndDate = "cohort_end_date",
                                     window = list(c(0, Inf)),
                                     nameStyle = "{cohort_name}_{window_name}") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addCohortIntersectCount(cdm)")
-  }
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
@@ -280,8 +192,6 @@ addCohortIntersectCount <- function(x,
 #' and a target cohort
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param targetCohortTable Cohort table to.
 #' @param targetCohortId Cohort IDs of interest from the other cohort table. If
 #' NULL, all cohorts will be used with a days variable added for each
@@ -314,7 +224,6 @@ addCohortIntersectCount <- function(x,
 #' }
 #'
 addCohortIntersectDays <- function(x,
-                                   cdm = lifecycle::deprecated(),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -323,9 +232,6 @@ addCohortIntersectDays <- function(x,
                                    order = "first",
                                    window = c(0, Inf),
                                    nameStyle = "{cohort_name}_{window_name}") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addCohortIntersectDays(cdm)")
-  }
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
@@ -355,8 +261,6 @@ addCohortIntersectDays <- function(x,
 #' Date of cohorts that are present in a certain window
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param targetCohortTable Cohort table to.
 #' @param targetCohortId Cohort IDs of interest from the other cohort table. If
 #' NULL, all cohorts will be used with a time variable added for each
@@ -389,7 +293,6 @@ addCohortIntersectDays <- function(x,
 #' }
 #'
 addCohortIntersectDate <- function(x,
-                                   cdm = lifecycle::deprecated(),
                                    targetCohortTable,
                                    targetCohortId = NULL,
                                    indexDate = "cohort_start_date",
@@ -398,9 +301,6 @@ addCohortIntersectDate <- function(x,
                                    order = "first",
                                    window = c(0, Inf),
                                    nameStyle = "{cohort_name}_{window_name}") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addCohortIntersectDate(cdm)")
-  }
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)

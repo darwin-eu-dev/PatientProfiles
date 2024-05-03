@@ -7,7 +7,6 @@ certain date}
 \usage{
 addFutureObservation(
   x,
-  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   futureObservationName = "future_observation",
   futureObservationType = "days"
@@ -15,8 +14,6 @@ addFutureObservation(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{A cdm_reference object.}
 
 \item{indexDate}{Variable in x that contains the date to compute the future
 observation.}

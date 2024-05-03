@@ -17,8 +17,6 @@
 #' Compute demographic characteristics at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the
 #' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
@@ -66,7 +64,6 @@
 #' }
 #'
 addDemographics <- function(x,
-                            cdm = lifecycle::deprecated(),
                             indexDate = "cohort_start_date",
                             age = TRUE,
                             ageName = "age",
@@ -88,9 +85,7 @@ addDemographics <- function(x,
                             dateOfBirth = FALSE,
                             dateOfBirthName = "date_of_birth") {
   ## change ageDefaultMonth, ageDefaultDay to integer
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addDemographics(cdm)")
-  }
+
   cdm <- omopgenerics::cdmReference(x)
 
   ## check for standard types of user error
@@ -364,7 +359,6 @@ sexQuery <- function(name, missingValue) {
 #' Compute the age of the individuals at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the age.
 #' @param ageName Name of the new column that contains age.
 #' @param ageGroup List of age groups to be added.
@@ -390,7 +384,6 @@ sexQuery <- function(name, missingValue) {
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addAge <- function(x,
-                   cdm = lifecycle::deprecated(),
                    indexDate = "cohort_start_date",
                    ageName = "age",
                    ageGroup = NULL,
@@ -399,9 +392,6 @@ addAge <- function(x,
                    ageImposeMonth = FALSE,
                    ageImposeDay = FALSE,
                    missingAgeGroupValue = "None") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addAge(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -428,7 +418,6 @@ addAge <- function(x,
 #' certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
 #' @param futureObservationName name of the new column to be added.
@@ -448,13 +437,9 @@ addAge <- function(x,
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addFutureObservation <- function(x,
-                                 cdm = lifecycle::deprecated(),
                                  indexDate = "cohort_start_date",
                                  futureObservationName = "future_observation",
                                  futureObservationType = "days") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addFutureObservation(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -481,7 +466,6 @@ addFutureObservation <- function(x,
 #' at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the prior
 #' observation.
 #' @param priorObservationName name of the new column to be added.
@@ -501,13 +485,9 @@ addFutureObservation <- function(x,
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addPriorObservation <- function(x,
-                                cdm = lifecycle::deprecated(),
                                 indexDate = "cohort_start_date",
                                 priorObservationName = "prior_observation",
                                 priorObservationType = "days") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addPriorObservation(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -533,14 +513,12 @@ addPriorObservation <- function(x,
 #' Indicate if a certain record is within the observation period
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
 #' @param window window to consider events of.
 #' @param completeInterval If the individuals are in observation for the full window.
 #' @param nameStyle Name of the new columns to create, it must contain
 #' "window_name" if multiple windows are provided.
-#' @param name deprecated.
 #'
 #' @return cohort table with the added binary column assessing inObservation.
 #' @export
@@ -554,25 +532,10 @@ addPriorObservation <- function(x,
 #' }
 #'
 addInObservation <- function(x,
-                             cdm = lifecycle::deprecated(),
                              indexDate = "cohort_start_date",
                              window = c(0,0),
                              completeInterval = FALSE,
-                             name = lifecycle::deprecated(),
                              nameStyle = "in_observation") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "inObservation(cdm)")
-  }
-  if (lifecycle::is_present(name)) {
-    lifecycle::deprecate_warn(
-      when = "0.7.0", what = "addInObservation(name)",
-      with = "addInObservation(nameStyle)"
-    )
-    if (missing(nameStyle)) {
-      nameStyle <- name
-    }
-  }
-
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -681,7 +644,6 @@ addInObservation <- function(x,
 #' Compute the sex of the individuals
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param sexName name of the new column to be added.
 #' @param missingSexValue Value to include if missing sex.
 #'
@@ -697,12 +659,8 @@ addInObservation <- function(x,
 #' }
 #'
 addSex <- function(x,
-                   cdm = lifecycle::deprecated(),
                    sexName = "sex",
                    missingSexValue = "None") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addSex(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = NULL,

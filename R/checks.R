@@ -709,35 +709,6 @@ correctStrata <- function(strata, overall) {
   return(strata)
 }
 
-#' Assert whether a nameStyle contains the needed information.
-#'
-#' @param nameStyle nameStyle object to check.
-#' @param values Parameters options that must be contained.
-#' @param call An environment for cli functions.
-#'
-#' @return An error if nameStyle is not properly formatted.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' assertNameStyle("my_name", values = list(
-#'   "variable1" = 1, "variable2" = c("a", "b", "c")
-#' ))
-#'
-#' assertNameStyle("my_name_{variable2}", values = list(
-#'   "variable1" = 1, "variable2" = c("a", "b", "c")
-#' ))
-#'
-#' assertNameStyle("my_name_{variable2}", values = list(
-#'   "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
-#' ))
-#'
-#' assertNameStyle("my_name_{variable1}_{variable2}", values = list(
-#'   "variable1" = c(1, 2), "variable2" = c("a", "b", "c")
-#' ))
-#' }
-#'
 assertNameStyle <- function(nameStyle,
                             values = list(),
                             call = parent.frame()) {

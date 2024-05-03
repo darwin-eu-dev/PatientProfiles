@@ -6,7 +6,6 @@
 \usage{
 addCohortIntersectFlag(
   x,
-  cdm = lifecycle::deprecated(),
   targetCohortTable,
   targetCohortId = NULL,
   indexDate = "cohort_start_date",
@@ -19,9 +18,6 @@ addCohortIntersectFlag(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
 
 \item{targetCohortTable}{name of the cohort that we want to check for overlap.}
 

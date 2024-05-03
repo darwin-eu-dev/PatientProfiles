@@ -1,7 +1,7 @@
 Package: PatientProfiles
 Type: Package
 Title: Identify Characteristics of Patients in the OMOP Common Data Model
-Version: 0.8.0
+Version: 1.0.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
@@ -62,7 +62,7 @@ Imports:
     rlang,
     cli,
     stringr,
-    omopgenerics (>= 0.1.2),
+    omopgenerics (>= 0.2.0),
     visOmopResults (>= 0.2.0),
     lifecycle,
     purrr

@@ -27,9 +27,6 @@ test_that("addConceptIntersect", {
       dplyr::pull("concept_id")
   )
 
-  expect_warning(cdm$my_cohort |>
-                   addConceptIntersect(conceptSet = codelist))
-
   expect_no_error(
     cdm$my_cohort |>
       addConceptIntersectCount(conceptSet = codelist)
@@ -118,11 +115,6 @@ test_that("unsupported domain name", {
          colnames())
   )
 
-  expect_warning(result <- cdm$cohort1 %>%
-                   addConceptIntersect(
-                     conceptSet = list("random"=1125315)
-                   ) %>%
-                   dplyr::collect())
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
 
@@ -153,12 +145,6 @@ test_that("NA domain name", {
       (result |>
          colnames())
   )
-
-  expect_warning(result <- cdm$cohort1 %>%
-                   addConceptIntersect(
-                     conceptSet = list("random2"=1125315)
-                   ) %>%
-                   dplyr::collect())
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
 
@@ -190,10 +176,5 @@ test_that("domain name not in cdm", {
          colnames())
   )
 
-  expect_warning(result <- cdm$cohort1 %>%
-                   addConceptIntersect(
-                     conceptSet = list("random3"=1125315)
-                   ) %>%
-                   dplyr::collect())
   CDMConnector::cdmDisconnect(cdm = cdm)
 })

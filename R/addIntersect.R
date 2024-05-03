@@ -41,7 +41,7 @@
 #'
 #' @return table with added columns with overlap information.
 #'
-#' @export
+#' @noRd
 #'
 #' @examples
 #' \donttest{
@@ -67,7 +67,6 @@ addIntersect <- function(x,
                          targetEndDate = endDateColumn(tableName),
                          order = "first",
                          nameStyle = "{value}_{id_name}_{window_name}") {
-  lifecycle::deprecate_warn("0.7.0", "addIntersect()")
   .addIntersect(
     x = x, tableName = tableName, value = value,
     filterVariable = filterVariable, filterId = filterId, idName = idName,
@@ -78,18 +77,18 @@ addIntersect <- function(x,
 }
 
 .addIntersect <- function(x,
-                         tableName,
-                         value,
-                         filterVariable = NULL,
-                         filterId = NULL,
-                         idName = NULL,
-                         window = list(c(0, Inf)),
-                         indexDate = "cohort_start_date",
-                         censorDate = NULL,
-                         targetStartDate = startDateColumn(tableName),
-                         targetEndDate = endDateColumn(tableName),
-                         order = "first",
-                         nameStyle = "{value}_{id_name}_{window_name}") {
+                          tableName,
+                          value,
+                          filterVariable = NULL,
+                          filterId = NULL,
+                          idName = NULL,
+                          window = list(c(0, Inf)),
+                          indexDate = "cohort_start_date",
+                          censorDate = NULL,
+                          targetStartDate = startDateColumn(tableName),
+                          targetEndDate = endDateColumn(tableName),
+                          order = "first",
+                          nameStyle = "{value}_{id_name}_{window_name}") {
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -181,7 +180,7 @@ addIntersect <- function(x,
         "censor_time" = !!CDMConnector::datediff("index_date", "censor_time"),
         "end_obs" = dplyr::if_else(
           .data$censor_time < .data$end_obs, .data$censor_time, .data$end_obs
-      )) |>
+        )) |>
       dplyr::select(-"censor_time")
   }
   result <- result |>
@@ -356,8 +355,8 @@ addIntersect <- function(x,
         names_glue = nameStyle,
         values_fill = 0
       ) %>%
-    dplyr::rename(!!indexDate := "index_date") %>%
-    dplyr::rename_all(tolower)
+      dplyr::rename(!!indexDate := "index_date") %>%
+      dplyr::rename_all(tolower)
 
     newColCountFlag <- colnames(resultCountFlagPivot)
     newColCountFlag <- newColCountFlag[newColCountFlag %in% newCols$colnam]

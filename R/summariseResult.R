@@ -28,7 +28,6 @@
 #' set of estimate names.
 #' @param estimates Estimates to obtain, it can be a list to point to different
 #' set of variables.
-#' @param functions deprecated.
 #' @param counts Whether to compute number of records and number of subjects.
 #'
 #' @return A summarised_result object with the summarised data of interest.
@@ -54,20 +53,8 @@ summariseResult <- function(table,
                             strata = list(),
                             includeOverallStrata = TRUE,
                             variables = NULL,
-                            functions = lifecycle::deprecated(),
                             estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
                             counts = TRUE) {
-  if (lifecycle::is_present(functions)) {
-    lifecycle::deprecate_warn(
-      when = "0.7.0",
-      what = "summariseResult(functions)",
-      with = "summariseResult(estimates)"
-    )
-    if (missing(estimates)) {
-      estimates <- functions
-    }
-  }
-
   # initial checks
   checkTable(table)
   if (length(variables) == 0 & length(estimates) == 0 & counts == FALSE) {

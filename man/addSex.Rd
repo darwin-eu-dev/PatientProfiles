@@ -4,17 +4,10 @@
 \alias{addSex}
 \title{Compute the sex of the individuals}
 \usage{
-addSex(
-  x,
-  cdm = lifecycle::deprecated(),
-  sexName = "sex",
-  missingSexValue = "None"
-)
+addSex(x, sexName = "sex", missingSexValue = "None")
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{A cdm_reference object.}
 
 \item{sexName}{name of the new column to be added.}
 

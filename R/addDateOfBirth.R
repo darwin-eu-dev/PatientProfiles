@@ -17,7 +17,6 @@
 #' Add a column with the individual birth date
 #'
 #' @param x Table in the cdm that contains 'person_id' or 'subject_id'.
-#' @param cdm A cdm_reference object.
 #' @param name Name of the column to be added with the date of birth.
 #' @param missingDay Day of the individuals with no or imposed day of birth.
 #' @param missingMonth Month of the individuals with no or imposed month of
@@ -39,19 +38,11 @@
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 addDateOfBirth <- function(x,
-                           cdm = lifecycle::deprecated(),
                            name = "date_of_birth",
                            missingDay = 1,
                            missingMonth = 1,
                            imposeDay = FALSE,
                            imposeMonth = FALSE) {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addDateOfBirth(cdm)")
-  }
-  # initial checks
-  # checkInputs(
-  #   x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
-  # )
   cdm <- omopgenerics::cdmReference(x)
 
   personVariable <- checkX(x)

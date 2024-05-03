@@ -7,7 +7,6 @@ and a target cohort}
 \usage{
 addCohortIntersectDays(
   x,
-  cdm = lifecycle::deprecated(),
   targetCohortTable,
   targetCohortId = NULL,
   indexDate = "cohort_start_date",
@@ -20,9 +19,6 @@ addCohortIntersectDays(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
 
 \item{targetCohortTable}{Cohort table to.}
 

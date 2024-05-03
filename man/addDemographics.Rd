@@ -6,7 +6,6 @@
 \usage{
 addDemographics(
   x,
-  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   age = TRUE,
   ageName = "age",
@@ -31,9 +30,6 @@ addDemographics(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 demographics characteristics.}
