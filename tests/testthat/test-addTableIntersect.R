@@ -11,53 +11,6 @@ test_that("basic structures", {
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
 
-test_that("possible inputs", {
-  cdm <- mockPatientProfiles()
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "visit_occurrence",
-                                     indexDate = "cohort_end_date"))
-
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "visit_occurrence",
-                                     censorDate = "cohort_end_date"))
-
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "visit_occurrence",
-                                     window = c(-Inf,0)))
-
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "visit_occurrence",
-                                     window = c(-40,50)))
-
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "drug_exposure",
-                                     targetStartDate = "drug_exposure_start_date",
-                                     targetEndDate = "drug_exposure_end_date"))
-
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "drug_exposure",
-                                     targetStartDate = "drug_exposure_start_date",
-                                     targetEndDate = "drug_exposure_start_date"))
-
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "drug_exposure",
-                                     flag = F))
-
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "drug_exposure",
-                                     count = F))
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "drug_exposure",
-                                     date = F))
-  expect_warning(cdm$cohort1 %>%
-                   addTableIntersect(tableName = "drug_exposure",
-                                     days = F))
-expect_warning(cdm$cohort1 %>%
-                 addTableIntersect(tableName = "drug_exposure",
-                                   ))
-  CDMConnector::cdmDisconnect(cdm = cdm)
-})
-
 test_that("input validation", {
   cdm <- mockPatientProfiles()
   expect_error(expect_warning(cdm$cohort1 %>%

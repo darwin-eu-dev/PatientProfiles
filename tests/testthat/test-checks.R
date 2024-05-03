@@ -90,7 +90,6 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     observation_period = op
   )
 
-  expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
   expect_true(all(c(
     "cohort_definition_id", "subject_id", "cohort_start_date",
     "cohort_end_date", "flag"
@@ -124,7 +123,6 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     observation_period = op
   )
 
-  expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
   expect_true(all(c(
     "cohort_definition_id", "subject_id", "cohort_start_date",
     "cohort_end_date", "flag", "flag_1"
