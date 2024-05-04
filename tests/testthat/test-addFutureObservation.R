@@ -56,13 +56,13 @@ test_that("check working example with cohort1", {
   )
 
   cdm <- mockPatientProfiles(
-      con = connection(),
-      writeSchema = writeSchema(),
-      seed = 1,
-      cohort1 = cohort1,
-      observation_period = obs1,
-      cohort2 = cohort1
-    )
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 1,
+    cohort1 = cohort1,
+    observation_period = obs1,
+    cohort2 = cohort1
+  )
 
   result <- cdm$cohort1 %>%
     addFutureObservation() %>%
@@ -130,12 +130,12 @@ test_that("check working example with condition_occurrence", {
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
-      seed = 1,
-      condition_occurrence = condition_occurrence,
-      observation_period = obs1,
-      cohort1 = emptyCohort,
+    seed = 1,
+    condition_occurrence = condition_occurrence,
+    observation_period = obs1,
+    cohort1 = emptyCohort,
     cohort2 = emptyCohort
-    )
+  )
 
   result <- cdm$condition_occurrence %>%
     addFutureObservation(
@@ -204,12 +204,12 @@ test_that("different name", {
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
-      seed = 1,
-      condition_occurrence = condition_occurrence,
-      observation_period = obs1,
-      cohort1 = emptyCohort,
-      cohort2 = emptyCohort
-    )
+    seed = 1,
+    condition_occurrence = condition_occurrence,
+    observation_period = obs1,
+    cohort1 = emptyCohort,
+    cohort2 = emptyCohort
+  )
 
   cdm$condition_occurrence <-
     cdm$condition_occurrence %>%
@@ -239,7 +239,6 @@ test_that("different name", {
 
   expect_equal(x$future_observation, x$diff)
   expect_equal(x$col, x$obs_end)
-
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {

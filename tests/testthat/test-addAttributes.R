@@ -14,7 +14,7 @@ test_that("attributes and classes are kept", {
         x <- x[x != "GeneratedCohortSet"]
         y <- y[y != "GeneratedCohortSet"]
       }
-      expect_true(identical(x ,y))
+      expect_true(identical(x, y))
     }
   }
 
@@ -32,7 +32,7 @@ test_that("attributes and classes are kept", {
         x <- x[x != "GeneratedCohortSet"]
         y <- y[y != "GeneratedCohortSet"]
       }
-      expect_true(identical(x ,y))
+      expect_true(identical(x, y))
     }
   }
 })

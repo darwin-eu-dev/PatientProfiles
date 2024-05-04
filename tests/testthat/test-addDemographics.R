@@ -11,7 +11,7 @@ test_that("addInObservtaion, Inf windows, completeInterval T", {
   expect_no_error(
     cdm$cohort1 %>%
       PatientProfiles::addInObservation(
-        window = c(-Inf,0),
+        window = c(-Inf, 0),
         completeInterval = T
       )
   )
@@ -896,12 +896,12 @@ test_that("age variable names", {
 
 test_that("expected errors", {
   # check input length and type for each of the arguments
-  cdm <-mockPatientProfiles(
-      con = connection(),
-      writeSchema = writeSchema(),
-      seed = 1,
-      numberIndividuals = 5
-    )
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 1,
+    numberIndividuals = 5
+  )
 
   expect_error(addAge("cdm$cohort1"))
   expect_warning(addAge(cdm$cohort1, "cdm"))
@@ -1320,7 +1320,7 @@ test_that("overwriting obs period variables", {
     PatientProfiles::addDateOfBirth()
   expect_warning(cdm$cohort1 <- cdm$cohort1 %>%
     PatientProfiles::addDemographics())
-  expect_true("date_of_birth" %in%   colnames(cdm$cohort1))
+  expect_true("date_of_birth" %in% colnames(cdm$cohort1))
 
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   cdm$cohort1 <- cdm$cohort1 %>%
@@ -1328,30 +1328,28 @@ test_that("overwriting obs period variables", {
   expect_warning(cdm$cohort1 %>%
     PatientProfiles::addPriorObservation())
   expect_warning(cdm$cohort1 %>%
-                   PatientProfiles::addFutureObservation())
-  expect_warning(cdm$cohort1 %>%
-                   PatientProfiles::addInObservation())
-
-  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
-  cdm$cohort1 <- cdm$cohort1 %>%
-    dplyr::mutate(observation_period_start_date = "a",
-                  observation_period_end_date = "b")
-  expect_warning(cdm$cohort1 %>%
-                   PatientProfiles::addPriorObservation())
-  expect_warning(cdm$cohort1 %>%
-                   PatientProfiles::addFutureObservation())
+    PatientProfiles::addFutureObservation())
   expect_warning(cdm$cohort1 %>%
     PatientProfiles::addInObservation())
 
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+  cdm$cohort1 <- cdm$cohort1 %>%
+    dplyr::mutate(
+      observation_period_start_date = "a",
+      observation_period_end_date = "b"
+    )
+  expect_warning(cdm$cohort1 %>%
+    PatientProfiles::addPriorObservation())
+  expect_warning(cdm$cohort1 %>%
+    PatientProfiles::addFutureObservation())
+  expect_warning(cdm$cohort1 %>%
+    PatientProfiles::addInObservation())
 })
 
 test_that("addDemographics, date of birth option", {
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T) |> dplyr::select("date_of_birth"))
-  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T,dateOfBirthName = "abc") |> dplyr::select("abc"))
+  expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T, dateOfBirthName = "abc") |> dplyr::select("abc"))
   expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = F))
-
-
-
 })

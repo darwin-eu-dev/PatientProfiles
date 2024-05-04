@@ -147,7 +147,6 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
       if (any(ageGroup[[k]] |> unlist() |> unique() < 0)) {
         cli::cli_abort("ageGroup can't contain negative values")
       }
-
     }
     if (is.null(names(ageGroup))) {
       names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
@@ -193,8 +192,12 @@ checkWindow <- function(window) {
   }
 
   names(window) <- getWindowNames(window)
-  lower <- lapply(window, function(x) {x[1]}) %>% unlist()
-  upper <- lapply(window, function(x) {x[2]}) %>% unlist()
+  lower <- lapply(window, function(x) {
+    x[1]
+  }) %>% unlist()
+  upper <- lapply(window, function(x) {
+    x[2]
+  }) %>% unlist()
 
   if (any(lower > upper)) {
     cli::cli_abort("First element in window must be smaller or equal to the second one")
@@ -417,8 +420,10 @@ checkStrata <- function(list, table, type = "strata") {
       cli::cli_abort(errorMessage)
     }
     if (!all(unlist(list) %in% colnames(table))) {
-      notPresent <- list |> unlist() |> unique()
-      notPresent <- notPresent[! notPresent %in% colnames(table)]
+      notPresent <- list |>
+        unlist() |>
+        unique()
+      notPresent <- notPresent[!notPresent %in% colnames(table)]
       cli::cli_abort(paste0(
         errorMessage,
         ". The following columns were not found in the data: ",
@@ -453,7 +458,7 @@ checkVariablesFunctions <- function(variables, estimates, table) {
     ))
   }
 
-  functions <- lapply(seq_along(variables), function(k){
+  functions <- lapply(seq_along(variables), function(k) {
     tidyr::expand_grid(
       variable_name = variables[[k]],
       estimate_name = estimates[[k]]
@@ -684,14 +689,15 @@ assertClass <- function(x,
   errorMessage <- paste0(
     paste0(substitute(x), collapse = ""), " must have class: ",
     paste0(class, collapse = ", "), "; but has class: ",
-    paste0(base::class(x), collapse = ", ") ,"."
+    paste0(base::class(x), collapse = ", "), "."
   )
   if (is.null(x)) {
     if (null) {
       return(invisible(x))
     } else {
       cli::cli_abort(
-        "{paste0(substitute(x), collapse = '')} can not be NULL.", call = call
+        "{paste0(substitute(x), collapse = '')} can not be NULL.",
+        call = call
       )
     }
   }
@@ -703,7 +709,7 @@ assertClass <- function(x,
 
 correctStrata <- function(strata, overall) {
   if (length(strata) == 0 | overall) {
-    strata = c(list(character()), strata)
+    strata <- c(list(character()), strata)
   }
   strata <- unique(strata)
   return(strata)
@@ -1078,14 +1084,15 @@ assertClass <- function(x,
   errorMessage <- paste0(
     paste0(substitute(x), collapse = ""), " must have class: ",
     paste0(class, collapse = ", "), "; but has class: ",
-    paste0(base::class(x), collapse = ", ") ,"."
+    paste0(base::class(x), collapse = ", "), "."
   )
   if (is.null(x)) {
     if (null) {
       return(invisible(x))
     } else {
       cli::cli_abort(
-        "{paste0(substitute(x), collapse = '')} can not be NULL.", call = call
+        "{paste0(substitute(x), collapse = '')} can not be NULL.",
+        call = call
       )
     }
   }

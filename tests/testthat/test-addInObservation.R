@@ -49,7 +49,6 @@ test_that("addInObservation, parameters", {
 })
 
 test_that("addInObservation, window", {
-
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_true(all(
@@ -65,5 +64,4 @@ test_that("addInObservation, window", {
   expect_true(all(
     cdm$cohort1 |> addInObservation(window = c(-5055, 30042), completeInterval = F) |> dplyr::pull(in_observation) == c(1, 1)
   ))
-
 })

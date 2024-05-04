@@ -132,13 +132,13 @@ addDeath <- function(x,
   # input validation
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = "death")
-  if(!indexDate %in% colnames(x)){
+  if (!indexDate %in% colnames(x)) {
     cli::cli_abort("{indexDate} variable not found in table")
   }
   if (!is.list(window)) {
     window <- list(window)
   }
-  if(length(window) != 1){
+  if (length(window) != 1) {
     cli::cli_abort("Only one time window can be provided")
   }
   checkWindow(window)

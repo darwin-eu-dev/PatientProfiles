@@ -35,7 +35,7 @@
   checkmate::assertLogical(count, any.missing = FALSE, len = 1)
   checkmate::assertLogical(date, any.missing = FALSE, len = 1)
   checkmate::assertLogical(days, any.missing = FALSE, len = 1)
-  checkmate::assertTRUE(flag | count | date | days | length(field)>0)
+  checkmate::assertTRUE(flag | count | date | days | length(field) > 0)
   value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
   value <- c(value, field)
 
@@ -330,11 +330,11 @@ addTableIntersectDays <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addTableIntersectField(
-#'    tableName = "visit_occurrence",
-#'    field = "visit_concept_id",
-#'    order = "last",
-#'    window = c(-Inf, -1)
-#' )
+#'     tableName = "visit_occurrence",
+#'     field = "visit_concept_id",
+#'     order = "last",
+#'     window = c(-Inf, -1)
+#'   )
 #' mockDisconnect(cdm = cdm)
 #' }
 #'

@@ -75,8 +75,8 @@ summariseResult <- function(table,
 
   # create the summary for overall
   if (table %>%
-      dplyr::count() %>%
-      dplyr::pull() == 0) {
+    dplyr::count() %>%
+    dplyr::pull() == 0) {
     if (counts) {
       result <- dplyr::tibble(
         "group_name" = "overall", "group_level" = "overall",
@@ -425,7 +425,9 @@ summariseBinary <- function(table, functions) {
       .data$variable_type != "categorical" &
         .data$estimate_name %in% c("count", "percentage")
     )
-  binNum <- binFuns |> dplyr::pull("variable_name") |> unique()
+  binNum <- binFuns |>
+    dplyr::pull("variable_name") |>
+    unique()
   if (length(binNum) > 0) {
     num <- table |>
       dplyr::summarise(dplyr::across(
@@ -486,7 +488,7 @@ summariseBinary <- function(table, functions) {
           by = c("strata_id", "variable_name")
         ) |>
         dplyr::mutate(
-          "estimate_value" = 100*.data$numerator/.data$denominator,
+          "estimate_value" = 100 * .data$numerator / .data$denominator,
           "estimate_name" = "percentage",
           "estimate_type" = "percentage"
         ) |>
@@ -511,7 +513,7 @@ summariseCategories <- function(table, functions) {
     dplyr::filter(.data$variable_type == "categorical")
   result <- list()
   catVars <- unique(catFuns$variable_name)
-  if(length(catVars) > 0) {
+  if (length(catVars) > 0) {
     den <- table |>
       dplyr::tally(name = "denominator") |>
       dplyr::collect() |>
@@ -548,7 +550,6 @@ summariseCategories <- function(table, functions) {
           "estimate_type", "estimate_value"
         ) |>
         dplyr::filter(.data$estimate_name %in% .env$est)
-
     }
   }
   return(dplyr::bind_rows(result))
@@ -582,7 +583,7 @@ summariseMissings <- function(table, functions) {
         names_to = "variable_name",
         values_to = "count_missing"
       ) |>
-      dplyr::mutate("percentage_missing" = 100*.data$count_missing/.data$den) |>
+      dplyr::mutate("percentage_missing" = 100 * .data$count_missing / .data$den) |>
       dplyr::select(-"den") |>
       tidyr::pivot_longer(
         cols = c("count_missing", "percentage_missing"),

@@ -427,14 +427,16 @@ test_that("working examples with extra column", {
     dplyr::compute()
 
   result2 <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", value = "measurment_result",
+    .addIntersect(
+      tableName = "cohort2", value = "measurment_result",
       nameStyle = "{value}_{window_name}"
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result3 <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", value = c("flag", "measurment_result"),
+    .addIntersect(
+      tableName = "cohort2", value = c("flag", "measurment_result"),
       nameStyle = "{value}_{window_name}",
       window = list(c(-400, -200))
     ) %>%
@@ -1291,7 +1293,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
       targetCohortId = c(1, 2, 3),
       window = list(c(0, Inf), c(-30, -1))
     ) %>%
-      dplyr::collect() |>
+    dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date))
 
   result <- cdm$cohort1 %>%
@@ -1327,12 +1329,11 @@ test_that("non snake columns not repeated in output", {
 })
 
 test_that("no NA when overwrite column", {
-
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
     numberIndividuals = 1000
-    )
+  )
 
   # Presence in characteristis 'cohort 1' in 180 days before cohort start
   cdm$cohort1 <- cdm$cohort1 %>%
@@ -1374,7 +1375,4 @@ test_that("no NA when overwrite column", {
   )
 
   expect_true(!any(is.na(cdm$cohort1 %>% dplyr::pull("cohort_1"))))
-
 })
-
-

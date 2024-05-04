@@ -206,7 +206,6 @@ test_that("different name", {
 
   expect_equal(x$prior_observation, -x$diff)
   expect_equal(x$col, x$obs_start)
-
 })
 
 test_that("multiple observation periods", {

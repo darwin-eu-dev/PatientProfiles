@@ -10,16 +10,14 @@ if (!on_cran()) {
   CDMConnector::downloadEunomiaData(overwrite = TRUE)
 }
 writeSchema <- function(dbToTest = Sys.getenv("DB_TO_TEST", "duckdb")) {
-  switch(
-    dbToTest,
+  switch(dbToTest,
     "duckdb" = c(schema = "main", prefix = "test_"),
     "sql server" = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA"),
     "redshift" = Sys.getenv("CDM5_REDSHIFT_SCRATCH_SCHEMA")
   )
 }
 connection <- function(dbToTest = Sys.getenv("DB_TO_TEST", "duckdb")) {
-  switch(
-    dbToTest,
+  switch(dbToTest,
     "duckdb" = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
     "sql server" = DBI::dbConnect(
       odbc::odbc(),
@@ -32,7 +30,8 @@ connection <- function(dbToTest = Sys.getenv("DB_TO_TEST", "duckdb")) {
       Port     = 1433
     ),
     "redshift" = DBI::dbConnect(
-      RPostgres::Redshift(), dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
+      RPostgres::Redshift(),
+      dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
       port = Sys.getenv("CDM5_REDSHIFT_PORT"),
       host = Sys.getenv("CDM5_REDSHIFT_HOST"),
       user = Sys.getenv("CDM5_REDSHIFT_USER"),
@@ -46,4 +45,3 @@ emptyCohort <- dplyr::tibble(
   cohort_start_date = as.Date(character()),
   cohort_end_date = as.Date(character())
 )
-

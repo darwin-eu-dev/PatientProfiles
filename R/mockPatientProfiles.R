@@ -134,7 +134,7 @@ mockPatientProfiles <- function(con = NULL,
           by = "person_id"
         )
     }
-    tables[["observation_period"]]  <- tables[["observation_period"]] |>
+    tables[["observation_period"]] <- tables[["observation_period"]] |>
       dplyr::mutate(
         "observation_period_start_date" = dplyr::if_else(
           is.na(.data$observation_period_start_date),
@@ -166,11 +166,11 @@ mockPatientProfiles <- function(con = NULL,
 
   # create drug_exposure
   if (!"drug_exposure" %in% names(tables)) {
-    nr <- sample.int(n*2, 1)
+    nr <- sample.int(n * 2, 1)
     tables[["drug_exposure"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, TRUE)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id")|>
+      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("drug_exposure_start_date", "drug_exposure_end_date")) |>
       dplyr::mutate(
         "drug_exposure_id" = seq_len(nr),
@@ -181,11 +181,11 @@ mockPatientProfiles <- function(con = NULL,
 
   # create condition_occurrence
   if (!"condition_occurrence" %in% names(tables)) {
-    nr <- sample.int(n*2, 1)
+    nr <- sample.int(n * 2, 1)
     tables[["condition_occurrence"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, TRUE)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id")|>
+      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("condition_start_date", "condition_end_date")) |>
       dplyr::mutate(
         "condition_occurrence_id" = seq_len(nr),
@@ -196,11 +196,11 @@ mockPatientProfiles <- function(con = NULL,
 
   # create death
   if (!"death" %in% names(tables)) {
-    nr <- sample.int(n*0.2, 1)
+    nr <- sample.int(n * 0.2, 1)
     tables[["death"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, FALSE)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id")|>
+      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("death_date"))
   }
 
@@ -209,7 +209,7 @@ mockPatientProfiles <- function(con = NULL,
     tables[["cohort1"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id")|>
+      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
       dplyr::rename("subject_id" = "person_id")
@@ -220,7 +220,7 @@ mockPatientProfiles <- function(con = NULL,
     tables[["cohort2"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id")|>
+      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
       dplyr::rename("subject_id" = "person_id")

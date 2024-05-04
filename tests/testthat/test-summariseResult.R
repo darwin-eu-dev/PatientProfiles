@@ -37,7 +37,7 @@ test_that("test all functions", {
   ))
 
   expect_no_error(
-   emptySR <- summariseResult(
+    emptySR <- summariseResult(
       x,
       variables = list(),
       estimates = list(),
@@ -318,20 +318,21 @@ test_that("test empty cohort", {
 })
 
 test_that("test summary table naming", {
-
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   dat <-
-    cdm$cohort1 %>% addDemographics() %>%
-    dplyr::mutate(age_age = age,
-                  age_age_age = age,
-                 age_age_age_age = age) %>%
+    cdm$cohort1 %>%
+    addDemographics() %>%
+    dplyr::mutate(
+      age_age = age,
+      age_age_age = age,
+      age_age_age_age = age
+    ) %>%
     summariseResult()
 
   expect_true(all(
     c("age_age", "age", "age_age_age", "age_age_age_age") %in% dat$variable_name
   ))
-
 })
 
 test_that("misisng counts", {
@@ -358,7 +359,8 @@ test_that("misisng counts", {
   )
   expect_no_error(
     result <- summariseResult(
-      cohort, strata = list("sex"), variables = variables,
+      cohort,
+      strata = list("sex"), variables = variables,
       estimates = functions
     )
   )
@@ -367,8 +369,8 @@ test_that("misisng counts", {
     "overall", "age", 2, 50,
     "overall", "number_visits", 1, 25,
     "overall", "prior_history", 0, 0,
-    "Male", "age", 1, 100/3,
-    "Male", "number_visits", 1, 100/3,
+    "Male", "age", 1, 100 / 3,
+    "Male", "number_visits", 1, 100 / 3,
     "Male", "prior_history", 0, 0,
     "Female", "age", 1, 100,
     "Female", "number_visits", 0, 0,

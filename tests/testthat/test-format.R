@@ -16,10 +16,12 @@ test_that("test variableTypes", {
     x2 = as.Date(c("2021-01-05", "2025-04-19", "2000-12-12")),
     x3 = c("Jan", "Feb", "May"),
     x4 = factor(x3, levels = x3, ordered = T),
-    x5 = c(strptime('16/Oct/2005:07:51:00',format='%d/%b/%Y:%H:%M:%S'),
-           strptime('16/Oct/2005:07:51:01',format='%d/%b/%Y:%H:%M:%S'),
-           strptime('16/Oct/2005:07:51:02',format='%d/%b/%Y:%H:%M:%S')),
-    x6 = structure(c(0,0,0), class = "integer64"),
+    x5 = c(
+      strptime("16/Oct/2005:07:51:00", format = "%d/%b/%Y:%H:%M:%S"),
+      strptime("16/Oct/2005:07:51:01", format = "%d/%b/%Y:%H:%M:%S"),
+      strptime("16/Oct/2005:07:51:02", format = "%d/%b/%Y:%H:%M:%S")
+    ),
+    x6 = structure(c(0, 0, 0), class = "integer64"),
     x7 = as.difftime(c(223, 35, 3), units = "secs")
   )
   y$x3 <- as.factor(y$x3)
@@ -87,14 +89,14 @@ test_that("test functions", {
   ))
 })
 
-test_that("test available functions",{
+test_that("test available functions", {
   expect_warning(
     num_test <- availableFunctions("numeric")
   )
   expect_true(all(
     c("sd", "median", "mean") %in% (
       num_test %>% dplyr::pull("format_key")
-      )
+    )
   ))
 })
 
@@ -108,7 +110,7 @@ test_that("binaryVariable test", {
   )
 
   expect_false(
-    binaryVariable(c(0,1,2,3))
+    binaryVariable(c(0, 1, 2, 3))
   )
 
 
@@ -122,7 +124,7 @@ test_that("binaryVariable test", {
     binaryVariable(c(1, 0, NA))
   )
   expect_false(
-    binaryVariable(c(1,0,"A"))
+    binaryVariable(c(1, 0, "A"))
   )
 })
 
@@ -136,11 +138,13 @@ test_that("getFunction tests", {
     y <- x %>%
       dplyr::summarise(
         dplyr::across(
-          .fns = !!getFunctions(c("min",
-                                  "max",
-                                  "sum",
-                                  "mean",
-                                  "median"))
+          .fns = !!getFunctions(c(
+            "min",
+            "max",
+            "sum",
+            "mean",
+            "median"
+          ))
         ),
         .groups = "drop"
       )
@@ -178,27 +182,25 @@ test_that("getFunction tests; quantiles q01- q09", {
   )
 
   est <- c()
-  for (i in (1:9)){
+  for (i in (1:9)) {
     est <- c(est, paste0("q0", i))
   }
 
-   expect_warning( y <- x %>%
-      dplyr::summarise(
-        dplyr::across(
-          .fns = !!getFunctions(est)
-        ),
-        .groups = "drop"
-      )
-   )
+  expect_warning(y <- x %>%
+    dplyr::summarise(
+      dplyr::across(
+        .fns = !!getFunctions(est)
+      ),
+      .groups = "drop"
+    ))
 
-for (i in (1:(length(est)-1))){
-  expect_true(
-    (y %>%
-      dplyr::pull(paste0("cov_", est[[i]]))) <=
-      (y %>%  dplyr::pull(paste0("cov_", est[[i+1]])))
-  )
-}
-
+  for (i in (1:(length(est) - 1))) {
+    expect_true(
+      (y %>%
+        dplyr::pull(paste0("cov_", est[[i]]))) <=
+        (y %>% dplyr::pull(paste0("cov_", est[[i + 1]])))
+    )
+  }
 })
 
 test_that("getFunction tests; quantiles q10- q49", {
@@ -207,37 +209,7 @@ test_that("getFunction tests; quantiles q10- q49", {
   )
 
   est <- c()
-  for (i in (10:49)){
-    est <- c(est, paste0("q", i))
-  }
-
-  expect_warning(
-  y <- x %>%
-    dplyr::summarise(
-      dplyr::across(
-        .fns = !!getFunctions(est)
-      ),
-      .groups = "drop"
-    )
-  )
-
-  for (i in (1:(length(est)-1))){
-    expect_true(
-      (y %>%
-         dplyr::pull(paste0("cov_", est[[i]]))) <=
-        (y %>%  dplyr::pull(paste0("cov_", est[[i+1]])))
-    )
-  }
-
-})
-
-test_that("getFunction tests; quantiles q51 - q99", {
-  x <- dplyr::tibble(
-    cov = c(1:100)
-  )
-
-  est <- c()
-  for (i in (51:99)){
+  for (i in (10:49)) {
     est <- c(est, paste0("q", i))
   }
 
@@ -251,12 +223,40 @@ test_that("getFunction tests; quantiles q51 - q99", {
       )
   )
 
-  for (i in (1:(length(est)-1))){
+  for (i in (1:(length(est) - 1))) {
     expect_true(
       (y %>%
-         dplyr::pull(paste0("cov_", est[[i]]))) <=
-        (y %>%  dplyr::pull(paste0("cov_", est[[i+1]])))
+        dplyr::pull(paste0("cov_", est[[i]]))) <=
+        (y %>% dplyr::pull(paste0("cov_", est[[i + 1]])))
     )
   }
+})
 
+test_that("getFunction tests; quantiles q51 - q99", {
+  x <- dplyr::tibble(
+    cov = c(1:100)
+  )
+
+  est <- c()
+  for (i in (51:99)) {
+    est <- c(est, paste0("q", i))
+  }
+
+  expect_warning(
+    y <- x %>%
+      dplyr::summarise(
+        dplyr::across(
+          .fns = !!getFunctions(est)
+        ),
+        .groups = "drop"
+      )
+  )
+
+  for (i in (1:(length(est) - 1))) {
+    expect_true(
+      (y %>%
+        dplyr::pull(paste0("cov_", est[[i]]))) <=
+        (y %>% dplyr::pull(paste0("cov_", est[[i + 1]])))
+    )
+  }
 })

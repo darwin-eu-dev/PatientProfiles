@@ -104,15 +104,15 @@ test_that("unsupported domain name", {
   cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 
   expect_no_warning(result <- cdm$cohort1 %>%
-                      addConceptIntersectFlag(
-                        conceptSet = list("random"=1125315)
-                      ) %>%
-                      dplyr::collect())
+    addConceptIntersectFlag(
+      conceptSet = list("random" = 1125315)
+    ) %>%
+    dplyr::collect())
 
   expect_true(
     "random_0_to_inf" %in%
       (result |>
-         colnames())
+        colnames())
   )
 
   mockDisconnect(cdm = cdm)
@@ -135,15 +135,15 @@ test_that("NA domain name", {
   cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 
   expect_no_warning(result <- cdm$cohort1 %>%
-                      addConceptIntersectFlag(
-                        conceptSet = list("random2"=1125315)
-                      ) %>%
-                      dplyr::collect())
+    addConceptIntersectFlag(
+      conceptSet = list("random2" = 1125315)
+    ) %>%
+    dplyr::collect())
 
   expect_true(
     "random2_0_to_inf" %in%
       (result |>
-         colnames())
+        colnames())
   )
   mockDisconnect(cdm = cdm)
 })
@@ -165,15 +165,15 @@ test_that("domain name not in cdm", {
   cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 
   expect_no_warning(result <- cdm$cohort1 %>%
-                      addConceptIntersectFlag(
-                        conceptSet = list("random3"=1125315)
-                      ) %>%
-                      dplyr::collect())
+    addConceptIntersectFlag(
+      conceptSet = list("random3" = 1125315)
+    ) %>%
+    dplyr::collect())
 
   expect_true(
     "random3_0_to_inf" %in%
       (result |>
-         colnames())
+        colnames())
   )
 
   mockDisconnect(cdm = cdm)

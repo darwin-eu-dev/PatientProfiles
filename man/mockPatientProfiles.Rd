@@ -24,7 +24,7 @@ reference.}
 \item{...}{User self defined tables to put in cdm, it can input as many
 as the user want.}
 
-\item{seed}{}
+\item{seed}{A number to set the seed. If NULL seed is not used.}
 }
 \value{
 A mock cdm_reference object created following user's specifications.

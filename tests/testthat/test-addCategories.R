@@ -31,11 +31,10 @@ test_that("addCategories, functionality", {
 
   expect_true(all(agegroupOverlap %>%
     dplyr::pull(age_group) ==
-    c("0 to 55", "0 to 55", "50 to 120", "0 to 55 and 50 to 120")
-  ))
+    c("0 to 55", "0 to 55", "50 to 120", "0 to 55 and 50 to 120")))
 })
 
-test_that("addCategory with both upper and lower infinite, age",{
+test_that("addCategory with both upper and lower infinite, age", {
   skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_no_error(
@@ -50,7 +49,7 @@ test_that("addCategory with both upper and lower infinite, age",{
   )
   expect_true(
     all(agegroup %>%
-          dplyr::pull("age_group") == "any")
+      dplyr::pull("age_group") == "any")
   )
 
   expect_no_error(
@@ -66,7 +65,8 @@ test_that("addCategory with both upper and lower infinite, age",{
   expect_true(
     "50 or below" %in% (
       agegroup2 %>% dplyr::pull("age_group")
-    ))
+    )
+  )
 })
 
 test_that("addCategories with infinity", {

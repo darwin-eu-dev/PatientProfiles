@@ -164,8 +164,8 @@ addDemographics <- function(x,
   startTibble <- x
   startNames <- colnames(x)
 
-  if(dateOfBirth){
-    startNames <- c(startNames,"date_of_birth")
+  if (dateOfBirth) {
+    startNames <- c(startNames, "date_of_birth")
   }
 
   personDetails <- cdm[["person"]] %>%
@@ -214,13 +214,13 @@ addDemographics <- function(x,
 
   # join if not the person table
   if (any(!c("person_id", "gender_concept_id") %in% colnames(x))) {
-
     addCols <- colnames(personDetails)[
-      which(colnames(personDetails) != personVariable)]
+      which(colnames(personDetails) != personVariable)
+    ]
 
-    if(any(addCols %in%
-           colnames(x))
-    ){
+    if (any(addCols %in%
+      colnames(x))
+    ) {
       checkNewName(name = addCols, x = x)
       x <- x %>%
         dplyr::select(!dplyr::any_of(addCols))
@@ -238,11 +238,11 @@ addDemographics <- function(x,
   }
 
   if (priorObservation == TRUE || futureObservation == TRUE) {
-
     addCols <- colnames(obsPeriodDetails)[
-      which(!colnames(obsPeriodDetails) %in% c(personVariable, indexDate))]
+      which(!colnames(obsPeriodDetails) %in% c(personVariable, indexDate))
+    ]
 
-    if (any(addCols %in% colnames(x))){
+    if (any(addCols %in% colnames(x))) {
       checkNewName(name = addCols, x = x)
       x <- x %>%
         dplyr::select(!dplyr::any_of(addCols))
@@ -250,7 +250,7 @@ addDemographics <- function(x,
 
     x <- x %>%
       dplyr::left_join(obsPeriodDetails,
-                       by = c(personVariable, indexDate)
+        by = c(personVariable, indexDate)
       )
   }
 
@@ -268,7 +268,7 @@ addDemographics <- function(x,
 
   if (priorObservation == TRUE) {
     if (priorObservationType == "days") {
-      pHQ <-  glue::glue(
+      pHQ <- glue::glue(
         'local(CDMConnector::datediff("observation_period_start_date","{indexDate}"))'
       )
     } else {
@@ -283,7 +283,7 @@ addDemographics <- function(x,
 
   if (futureObservation == TRUE) {
     if (futureObservationType == "days") {
-      fOQ <-  glue::glue(
+      fOQ <- glue::glue(
         'local(CDMConnector::datediff("{indexDate}","observation_period_end_date"))'
       )
     } else {
@@ -341,8 +341,8 @@ ageQuery <- function(indexDate, name) {
       interval = "year"
     )
   ))') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
+    rlang::parse_exprs() %>%
+    rlang::set_names(glue::glue(name)))
 }
 
 sexQuery <- function(name, missingValue) {
@@ -350,8 +350,8 @@ sexQuery <- function(name, missingValue) {
       .data$gender_concept_id == 8507 ~ "Male",
       .data$gender_concept_id == 8532 ~ "Female",
       TRUE ~ "{missingValue}")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
+    rlang::parse_exprs() %>%
+    rlang::set_names(glue::glue(name)))
 }
 
 
@@ -533,7 +533,7 @@ addPriorObservation <- function(x,
 #'
 addInObservation <- function(x,
                              indexDate = "cohort_start_date",
-                             window = c(0,0),
+                             window = c(0, 0),
                              completeInterval = FALSE,
                              nameStyle = "in_observation") {
   if (!is.list(window)) {
@@ -559,28 +559,24 @@ addInObservation <- function(x,
       futureObservation = TRUE,
       futureObservationName = "tmp_future"
     ) |>
-    dplyr::mutate("tmp_prior" = - .data$tmp_prior)
+    dplyr::mutate("tmp_prior" = -.data$tmp_prior)
 
   for (k in seq_along(window)) {
-
     win <- window[[k]]
     window_name <- names(window)[k]
     nam <- glue::glue(nameStyle) |> as.character()
 
-    if(all(win == c(0,0))) {
-
+    if (all(win == c(0, 0))) {
       x <- x %>%
         dplyr::mutate(!!nam := as.numeric(
           dplyr::if_else(is.na(.data$tmp_prior), 0, 1)
         ))
-
     } else {
-
       lower <- win[1]
       upper <- win[2]
 
-      if(completeInterval == TRUE){
-        if (is.infinite(lower) |is.infinite(upper)) {
+      if (completeInterval == TRUE) {
+        if (is.infinite(lower) | is.infinite(upper)) {
           x <- x %>% dplyr::mutate(!!nam := 0)
         } else {
           x <- x %>%
@@ -629,9 +625,7 @@ addInObservation <- function(x,
           }
         }
       }
-
     }
-
   }
 
   x <- x |>

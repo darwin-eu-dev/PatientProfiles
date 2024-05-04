@@ -823,7 +823,6 @@ test_that("censorDate functionality", {
       unlist(use.names = F),
     c(0, 0, NA, NA)
   )))
-
 })
 
 test_that("casing of empty dates", {
@@ -844,7 +843,7 @@ test_that("cohortIntersect after observation", {
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   windows <- list(
-    c(-Inf, Inf), c(0,0), c(0, Inf), c(5000, 31000), c(31000, Inf),
+    c(-Inf, Inf), c(0, 0), c(0, Inf), c(5000, 31000), c(31000, Inf),
     c(31000, 45000), c(-Inf, -5000), c(-Inf, -6000), c(-8000, -6000)
   )
 
@@ -890,7 +889,6 @@ test_that("cohortIntersect after observation", {
       }
     }
   }
-
 })
 
 test_that("issue 612", {
@@ -914,7 +912,6 @@ test_that("issue 612", {
     day_of_birth = 1,
     race_concept_id = NA_character_,
     ethnicity_concept_id = NA_character_
-
   )
   observation_period <- dplyr::tibble(
     observation_period_id = 1:4,

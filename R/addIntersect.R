@@ -173,14 +173,15 @@ addIntersect <- function(x,
       indexDate = "index_date", age = FALSE, sex = FALSE,
       priorObservationName = "start_obs", futureObservationName = "end_obs"
     ) %>%
-    dplyr::mutate("start_obs" = - .data$start_obs)
+    dplyr::mutate("start_obs" = -.data$start_obs)
   if (!is.null(censorDate)) {
     result <- result %>%
       dplyr::mutate(
         "censor_time" = !!CDMConnector::datediff("index_date", "censor_time"),
         "end_obs" = dplyr::if_else(
           .data$censor_time < .data$end_obs, .data$censor_time, .data$end_obs
-        )) |>
+        )
+      ) |>
       dplyr::select(-"censor_time")
   }
   result <- result |>
@@ -348,7 +349,7 @@ addIntersect <- function(x,
         dplyr::any_of(c("count", "flag")),
         names_to = "value",
         values_to = "values"
-      )  %>%
+      ) %>%
       tidyr::pivot_wider(
         names_from = c("value", "id_name", "window_name"),
         values_from = "values",
@@ -399,7 +400,8 @@ addIntersect <- function(x,
 
       x <- x %>%
         dplyr::left_join(
-          resultDateTimeOtherX, by = c(personVariable, indexDate)
+          resultDateTimeOtherX,
+          by = c(personVariable, indexDate)
         )
     }
 
@@ -409,7 +411,6 @@ addIntersect <- function(x,
         temporary = FALSE,
         overwrite = TRUE
       )
-
   }
 
   # missing columns
@@ -418,8 +419,7 @@ addIntersect <- function(x,
 
   for (val in as.character(unique(newCols$value))) {
     cols <- newCols$colnam[newCols$value == val]
-    valk <- switch(
-      val,
+    valk <- switch(val,
       flag = 0,
       count = 0,
       days = as.numeric(NA),

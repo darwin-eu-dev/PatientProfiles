@@ -59,8 +59,7 @@ variableTypes <- function(table) {
 
 #' @noRd
 assertClassification <- function(x) {
-  switch (
-    x,
+  switch(x,
     "chr" = "categorical",
     "fct" = "categorical",
     "ord" = "categorical",
@@ -131,7 +130,7 @@ availableFunctions <- function(variableType = NULL) {
 #'
 #' @export
 #'
-availableEstimates <- function(variableType = NULL, fullQuantiles = FALSE){
+availableEstimates <- function(variableType = NULL, fullQuantiles = FALSE) {
   opts <- unique(formats$variable_type)
   if (is.null(variableType)) {
     variableType <- opts
@@ -509,6 +508,3 @@ getFunctions <- function(f) {
   )
   return(estimatesFunc[f])
 }
-
-
-

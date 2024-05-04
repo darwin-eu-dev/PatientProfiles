@@ -31,7 +31,9 @@ test_that("test user define table", {
     writeSchema = writeSchema(),
     test_table1 = test_table1
   )
-  x <- cdm1$test_table1 %>% dplyr::collect() |> dplyr::as_tibble()
+  x <- cdm1$test_table1 %>%
+    dplyr::collect() |>
+    dplyr::as_tibble()
   attr(x, "cohort_set") <- NULL
   attr(x, "cohort_attrition") <- NULL
   expect_true(all.equal(x, test_table1))
@@ -42,11 +44,15 @@ test_that("test user define table", {
     test_table1 = test_table1,
     test_table2 = test_table2
   )
-  x <- cdm2$test_table1 %>% dplyr::collect() |> dplyr::as_tibble()
+  x <- cdm2$test_table1 %>%
+    dplyr::collect() |>
+    dplyr::as_tibble()
   attr(x, "cohort_set") <- NULL
   attr(x, "cohort_attrition") <- NULL
   expect_true(all.equal(x, test_table1))
-  x <- cdm2$test_table2 %>% dplyr::collect() |> dplyr::as_tibble()
+  x <- cdm2$test_table2 %>%
+    dplyr::collect() |>
+    dplyr::as_tibble()
   attr(x, "cohort_set") <- NULL
   attr(x, "cohort_attrition") <- NULL
   expect_true(all.equal(x, test_table2))
