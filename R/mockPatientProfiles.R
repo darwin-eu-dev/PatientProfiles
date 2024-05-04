@@ -48,7 +48,7 @@ mockPatientProfiles <- function(con = NULL,
     checkInstalled("duckdb")
     con <- duckdb::dbConnect(duckdb::duckdb(), ":memory:")
   }
-  if (!inherits(x, "DBIConnection")) {
+  if (!inherits(con, "DBIConnection")) {
     cli::cli_abort(c("!" = "`con` must be a DBI connection"))
   }
   if (is.null(writeSchema) & class(con) == "duckdb_connection") {

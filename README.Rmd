@@ -31,8 +31,7 @@ PatientProfiles contains functions for adding characteristics to OMOP CDM tables
 You can install the latest version of PatientProfiles like so:
 
 ```{r, eval=FALSE}
-install.packages("remotes")
-remotes::install_github("darwin-eu-dev/PatientProfiles")
+install.packages("PatientProfiles")
 ```
 
 ## Example usage
@@ -226,6 +225,7 @@ cdm$cohort1 %>%
   glimpse()
 ```
 
+
 #### Combine multiple cohort intersects
 If we want to combine multiple cohort intersects we can concatenate the operations using the `pipe` operator:
 
@@ -254,6 +254,7 @@ cdm$cohort1 %>%
 ```
 
 A more efficient implementation for getting multiple types of intersection results is provided by `addCohortIntersectTime`
+
 ```{r, echo = FALSE}
 cdm <- mockPatientProfiles()
 ```
@@ -274,4 +275,8 @@ cdm$cohort1 <- cdm$cohort1 %>%
 
 cdm$cohort1 %>%
   glimpse()
+```
+
+```{r}
+mockDisconnect(cdm)
 ```
