@@ -1,13 +1,11 @@
 test_that("basic structures", {
   cdm <- mockPatientProfiles()
-  expect_warning(cdm$ati_visit <- cdm$cohort1 %>%
-                  addTableIntersect(tableName = "visit_occurrence")) #deprecation warning
-
-  expect_true(all(c("visit_occurrence_flag_0_to_inf",
-                "visit_occurrence_count_0_to_inf",
-                "visit_occurrence_date_0_to_inf",
-                "visit_occurrence_days_0_to_inf") %in%
-                colnames(cdm$ati_visit)))
+  cdm$ati_visit <- cdm$cohort1 |>
+    .addTableIntersect(tableName = "visit_occurrence")
+  expect_true(all(c(
+    "visit_occurrence_flag_0_to_inf", "visit_occurrence_count_0_to_inf",
+    "visit_occurrence_date_0_to_inf", "visit_occurrence_days_0_to_inf"
+  ) %in% colnames(cdm$ati_visit)))
   CDMConnector::cdmDisconnect(cdm = cdm)
 })
 

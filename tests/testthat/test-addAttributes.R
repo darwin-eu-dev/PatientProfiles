@@ -1,10 +1,9 @@
-test_that("addAttributes, functionality", {
+test_that("attributes and classes are kept", {
   skip_on_cran()
   cdm <- mockPatientProfiles(connectionDetails)
 
   oldCohort <- cdm$cohort1
-  newCohort <- cdm$cohort1 %>%
-    addDemographics()
+  newCohort <- cdm$cohort1 %>% addDemographics()
 
   expect_true(length(attributes(newCohort)) == length(attributes(oldCohort)))
   for (i in names(attributes(newCohort))) {
@@ -20,10 +19,9 @@ test_that("addAttributes, functionality", {
   }
 
   oldCohort <- cdm$cohort1
-  expect_warning(
-    newCohort <- cdm$cohort1 %>%
-      addCohortIntersectFlag(targetCohortTable = "cohort2")
-  )
+  newCohort <- cdm$cohort1 %>%
+    addCohortIntersectFlag(targetCohortTable = "cohort2") |>
+    addTableIntersectCount(tableName = "condition_occurrence")
 
   expect_true(length(attributes(newCohort)) == length(attributes(oldCohort)))
   for (i in names(attributes(newCohort))) {

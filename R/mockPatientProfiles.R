@@ -17,93 +17,39 @@
 #' It creates a mock database for testing PatientProfiles package
 #'
 #' @param connectionDetails Connection an details to create the cdm mock object.
-#' @param drug_exposure default null user can define its own table.
-#' @param drug_strength default null user can define its own table.
-#' @param observation_period default null user can define its own table.
-#' @param condition_occurrence default null user can define its own table.
-#' @param visit_occurrence default null user can define its own visit_occurrence table.
-#' @param person default null user can define its own table.
-#' @param death default null user can define its own table
-#' @param drug_concept_id_size number of unique drug concept id.
-#' @param ingredient_concept_id_size number of unique drug ingredient concept id.
-#' @param drug_exposure_size number of unique drug exposure.
-#' @param patient_size number of unique patient.
-#' @param min_drug_exposure_start_date user define minimum drug exposure start date.
-#' @param max_drug_exposure_start_date user define maximum drug exposure start date.
-#' @param seed seed.
-#' @param condition_concept_id_size number of unique row in the condition concept table.
-#' @param visit_concept_id_size number of unique visit concept id.
-#' @param visit_occurrence_id_size number of unique visit occurrence id.
-#' @param earliest_date_of_birth the earliest date of birth of patient in person table format "dd-mm-yyyy".
-#' @param latest_date_of_birth the latest date of birth for patient in person table format "dd-mm-yyyy".
-#' @param earliest_observation_start_date the earliest observation start date for patient format "dd-mm-yyyy".
-#' @param latest_observation_start_date the latest observation start date for patient format "dd-mm-yyyy".
-#' @param min_days_to_observation_end the minimum number of days of the observational integer.
-#' @param max_days_to_observation_end the maximum number of days of the observation period integer.
-#' @param earliest_condition_start_date the earliest condition start date for patient format "dd-mm-yyyy".
-#' @param earliest_visit_start_date the earliest visit start date for patient format "dd-mm-yyyy".
-#' @param latest_condition_start_date the latest condition start date for patient format "dd-mm-yyyy".
-#' @param latest_visit_start_date the latest visit start date for patient format "dd-mm-yyyy".
-#' @param min_days_to_condition_end the minimum number of days of the condition integer.
-#' @param min_days_to_visit_end the minimum number of days of the visit integer.
-#' @param max_days_to_condition_end the maximum number of days of the condition integer.
-#' @param max_days_to_visit_end the maximum number of days of the visit integer.
-#' @param concept_ancestor the concept ancestor table.
-#' @param ancestor_concept_id_size the size of concept ancestor table.
-#' @param cohort1 cohort table for test to run in getindication.
-#' @param cohort2 cohort table for test to run in getindication.
-#' @param ... user self defined tibble table to put in cdm, it can input as many as the user want.
-#' @return cdm of the mock database following user's specifications.
+#' @param numberIndividuals Number of individuals to create in the cdm
+#' reference.
+#' @param ... User self defined tables to put in cdm, it can input as many
+#' as the user want.
+#'
+#' @return A mock cdm_reference object created following user's specifications.
+#'
 #' @export
 #'
 #' @examples
 #' \donttest{
 #' library(PatientProfiles)
+#' library(CDMConnector)
+#'
 #' cdm <- mockPatientProfiles()
+#'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-mockPatientProfiles <- function(connectionDetails = list(
-                                  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-                                  write_schema = "main",
-                                  mock_prefix = NULL
-                                ),
-                                drug_exposure = NULL,
-                                drug_strength = NULL,
-                                observation_period = NULL,
-                                condition_occurrence = NULL,
-                                visit_occurrence = NULL,
-                                concept_ancestor = NULL,
-                                person = NULL,
-                                death = NULL,
-                                cohort1 = NULL,
-                                cohort2 = NULL,
-                                drug_concept_id_size = 5,
-                                ancestor_concept_id_size = 5,
-                                condition_concept_id_size = 5,
-                                visit_concept_id_size = 5,
-                                visit_occurrence_id_size = 5,
-                                ingredient_concept_id_size = 1,
-                                drug_exposure_size = 10,
-                                patient_size = 1,
-                                min_drug_exposure_start_date = "2000-01-01",
-                                max_drug_exposure_start_date = "2020-01-01",
-                                earliest_date_of_birth = NULL,
-                                latest_date_of_birth = NULL,
-                                earliest_observation_start_date = NULL,
-                                latest_observation_start_date = NULL,
-                                min_days_to_observation_end = NULL,
-                                max_days_to_observation_end = NULL,
-                                earliest_condition_start_date = NULL,
-                                latest_condition_start_date = NULL,
-                                min_days_to_condition_end = NULL,
-                                max_days_to_condition_end = NULL,
-                                earliest_visit_start_date = NULL,
-                                latest_visit_start_date = NULL,
-                                min_days_to_visit_end = NULL,
-                                max_days_to_visit_end = NULL,
-                                seed = 1,
-                                ...) {
+mockPatientProfiles <- function(con = NULL,
+                                writeSchema = NULL,
+                                numberIndividuals = 10,
+                                ...,
+                                seed = 1) {
+  if (is.null(con)) {
+    checkInstalled("duckdb")
+    con <- duckdb::dbConnect(duckdb::duckdb(), ":memory:")
+
+  }
+  if (!is.null(con) && !inherits(x, "DBIConnection")) {
+    cli::cli_abort(c("!" = "`con` must be a DBI connection"))
+  }
+
   # Put ... into a list
   listTables <- list(...)
 
@@ -628,3 +574,14 @@ addCohortCountAttr <- function(cohort) {
 
   return(cohort)
 }
+
+checkInstalled <- function(name, call = parent.frame()) {
+  pkgs <- .packages(all.available = TRUE)
+  notInstalled <- name[!name %in% pkgs]
+  if (length(notInstalled) > 0) {
+    cli::cli_abort("{.pkg {notInstalled}} {?is/are} not installed.")
+  }
+  return(invisible(NULL))
+}
+
+#' Function to dissconnect from the mock

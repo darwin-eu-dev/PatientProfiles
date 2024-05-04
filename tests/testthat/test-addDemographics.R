@@ -543,7 +543,7 @@ test_that("age at cohort end, no missing, check age computation", {
   # dob 2000-01-01, target date 2001-01-02  --> age 1
   expect_warning(
     result <- addAge(
-      x = cdm[["cohort1"]], cdm = cdm,
+      x = cdm[["cohort1"]],
       ageImposeMonth = FALSE,
       ageImposeDay = FALSE
     ) %>%
@@ -658,21 +658,22 @@ test_that("multiple cohortIds, check age at cohort end", {
     cohort2 = cohort1, observation_period = observation_period
   )
 
-  result <- addAge(
-    x = cdm[["cohort1"]],
-    indexDate = "cohort_end_date"
-  ) %>%
+  result <- cdm[["cohort1"]] |>
+    addAge(indexDate = "cohort_end_date") |>
     dplyr::collect()
 
 
   expect_true(all(c("1", "2", "3") %in% result$subject_id))
   expect_true(all(c(15, 13, NA) %in% result$age))
 
-  resultB <- addDemographics(
-    x = cdm$cohort1, indexDate = "cohort_end_date",
-    sex = FALSE,
-    priorObservation = FALSE, futureObservation = FALSE,
-  ) %>% dplyr::collect()
+  resultB <- cdm$cohort1 |>
+    addDemographics(
+      indexDate = "cohort_end_date",
+      sex = FALSE,
+      priorObservation = FALSE,
+      futureObservation = FALSE,
+    ) %>%
+    dplyr::collect()
 
   expect_equal(result, resultB)
 })
@@ -1276,7 +1277,6 @@ test_that("overwriting obs period variables", {
     PatientProfiles::addInObservation())
 
 })
-
 
 test_that("addDemographics, date of birth option", {
   cdm <- mockPatientProfiles()
