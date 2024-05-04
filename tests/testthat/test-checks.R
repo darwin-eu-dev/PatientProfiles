@@ -30,7 +30,10 @@ test_that("test checkCategory with length 1 ", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    person = person,
     observation_period = op
   )
 
@@ -86,7 +89,10 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    person = person,
     observation_period = op
   )
 
@@ -119,7 +125,10 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     flag_1 = c(0, 0)
   )
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    person = person,
     observation_period = op
   )
 
@@ -141,7 +150,12 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
 })
 
 test_that(" test checkWindow in addIntersect", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 2
+  )
 
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
@@ -239,8 +253,12 @@ test_that("checkNameStyle", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
-    observation_period = op, cohort2 = cohort2
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    person = person,
+    observation_period = op,
+    cohort2 = cohort2
   )
 
   expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% .addIntersect(

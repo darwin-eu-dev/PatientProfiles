@@ -601,7 +601,12 @@ test_that("working examples calculating as incidence target cohort", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2
+  )
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -685,7 +690,13 @@ test_that("working examples with more than one window", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -771,10 +782,13 @@ test_that("working examples with tables, not cohorts", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails = connectionDetails,
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
     cohort1 = cohort1,
     condition_occurrence = conditionOccurrence,
-    drug_exposure = drugExposure, patient_size = 2
+    drug_exposure = drugExposure,
+    numberIndividuals = 2
   )
 
   compareNA <- function(v1, v2) {
@@ -902,7 +916,13 @@ test_that("check input length and type for each of the arguments", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   expect_error(.addIntersect("cdm$cohort1"))
 
@@ -924,7 +944,7 @@ test_that("check input length and type for each of the arguments", {
 })
 
 test_that("test checkWindow function", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_error(cdm$cohort1 %>%
     .addIntersect(
@@ -991,7 +1011,13 @@ test_that("test if column exist, overwrite", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   expect_message(
     result <- cdm$cohort1 %>%
@@ -1080,7 +1106,13 @@ test_that("overlapTable is empty, check return columns", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
 
   result <- cdm$cohort1 %>%
@@ -1160,7 +1192,13 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 3)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 3
+  )
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))
@@ -1279,7 +1317,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 })
 
 test_that("non snake columns not repeated in output", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   attr(cdm$cohort1, "cohort_set") <- attr(cdm$cohort1, "cohort_set") %>% dplyr::mutate(cohort_name = toupper(cohort_name))
   cdm$cohort2 <- cdm$cohort2 %>%
     addCohortIntersectFlag(targetCohortTable = "cohort1")
@@ -1291,9 +1329,9 @@ test_that("non snake columns not repeated in output", {
 test_that("no NA when overwrite column", {
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails,
-    patient_size = 1000,
-    drug_exposure_size = 1000
+    con = connection(),
+    writeSchema = writeSchema(),
+    numberIndividuals = 1000
     )
 
   # Presence in characteristis 'cohort 1' in 180 days before cohort start

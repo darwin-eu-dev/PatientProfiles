@@ -21,10 +21,7 @@ library(PatientProfiles)
 library(duckdb)
 library(dplyr)
 
-cdm <- mockPatientProfiles(
-  patient_size = 10000,
-  drug_exposure_size = 10000
-)
+cdm <- mockPatientProfiles(numberIndividuals = 10000)
 
 cdm$person %>% 
   dplyr::glimpse()

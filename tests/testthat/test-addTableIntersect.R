@@ -1,5 +1,5 @@
 test_that("basic structures", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   cdm$ati_visit <- cdm$cohort1 |>
     .addTableIntersect(tableName = "visit_occurrence")
   expect_true(all(c(
@@ -10,7 +10,7 @@ test_that("basic structures", {
 })
 
 test_that("input validation", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_error(expect_warning(cdm$cohort1 %>%
                                 addTableIntersect(tableName = "visit_occurrence",
                                                   indexDate = "index_date")))
@@ -112,7 +112,12 @@ test_that("addTableIntersectCount example", {
       class = c("A","B","B","A","A","A","B")
     )
 
-    cdm <- mockPatientProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
+    cdm <- mockPatientProfiles(
+      con = connection(),
+      writeSchema = writeSchema(),
+      cohort1=cohort1,
+      drug_exposure = drug_exposure
+    )
     de_count <- cdm$cohort1 |>
                      PatientProfiles::addTableIntersectCount(tableName = "drug_exposure",
                                               window = list(c(-50, 50))) %>%
@@ -191,7 +196,12 @@ test_that("addTableIntersectFlag example", {
     class = c("A","B","B","A","A","A","B")
   )
 
-  cdm <- mockPatientProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1=cohort1,
+    drug_exposure = drug_exposure
+  )
   de_flag <- cdm$cohort1 |>
     PatientProfiles::addTableIntersectFlag(tableName = "drug_exposure",
                                             window = list(c(-50, 50),
@@ -282,7 +292,12 @@ test_that("addTableIntersectDate example", {
     class = c("A","B","B","A","A","A","B")
   )
 
-  cdm <- mockPatientProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1=cohort1,
+    drug_exposure = drug_exposure
+  )
   de_date <- cdm$cohort1 |>
     PatientProfiles::addTableIntersectDate(tableName = "drug_exposure",
                                            window = list(c(-Inf, 0))) %>%
@@ -395,7 +410,12 @@ test_that("addTableIntersectDays example", {
     class = c("A","B","B","A","A","A","B")
   )
 
-  cdm <- mockPatientProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1=cohort1,
+    drug_exposure = drug_exposure
+  )
   de_days <- cdm$cohort1 |>
     PatientProfiles::addTableIntersectDays(tableName = "drug_exposure",
                                            window = list(c(-Inf, 0))) %>%
@@ -507,7 +527,13 @@ test_that("addTableIntersectFields example", {
     class = c("A","B","B","A","A","A","B")
   )
 
-  cdm <- mockPatientProfiles(cohort1=cohort1, drug_exposure = drug_exposure)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1=cohort1,
+    drug_exposure = drug_exposure
+  )
+
   de_field <- cdm$cohort1 |>
     PatientProfiles::addTableIntersectField(tableName = "drug_exposure",
                                            window = list(c(-Inf, 0)),

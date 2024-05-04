@@ -1,6 +1,6 @@
 test_that("check input length and type for each of the arguments", {
   skip_on_cran()
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_error(addPriorObservation("cdm$cohort1"))
 
@@ -12,7 +12,7 @@ test_that("check input length and type for each of the arguments", {
 test_that("check condition_occurrence and cohort1 work", {
   skip_on_cran()
   # mock data
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   # check it works with cohort1 table in mockdb
   expect_true(typeof(cdm$cohort1 %>% addPriorObservation() %>% dplyr::collect()) == "list")
   expect_true("prior_observation" %in% colnames(cdm$cohort1 %>% addPriorObservation()))
@@ -56,10 +56,13 @@ test_that("check working example with cohort1", {
   )
 
   cdm <-
-    mockPatientProfiles(connectionDetails,
+    mockPatientProfiles(
+      con = connection(),
+      writeSchema = writeSchema(),
       seed = 1,
       cohort1 = cohort1,
-      observation_period = obs1, cohort2 = cohort1
+      observation_period = obs1,
+      cohort2 = cohort1
     )
 
   result <- cdm$cohort1 %>%
@@ -108,10 +111,14 @@ test_that("check working example with condition_occurrence", {
   )
 
   cdm <-
-    mockPatientProfiles(connectionDetails,
+    mockPatientProfiles(
+      con = connection(),
+      writeSchema = writeSchema(),
       seed = 1,
       condition_occurrence = condition_occurrence,
-      observation_period = obs1, cohort1 = emptyCohort, cohort2 = emptyCohort
+      observation_period = obs1,
+      cohort1 = emptyCohort,
+      cohort2 = emptyCohort
     )
 
   result <-
@@ -161,10 +168,14 @@ test_that("different name", {
   )
 
   cdm <-
-    mockPatientProfiles(connectionDetails,
+    mockPatientProfiles(
+      con = connection(),
+      writeSchema = writeSchema(),
       seed = 1,
       condition_occurrence = conditionOccurrence,
-      observation_period = obs1, cohort1 = emptyCohort, cohort2 = emptyCohort
+      observation_period = obs1,
+      cohort1 = emptyCohort,
+      cohort2 = emptyCohort
     )
 
   cdm$condition_occurrence <-
@@ -234,10 +245,13 @@ test_that("multiple observation periods", {
     cohort_end_date = as.Date(c("2013-02-01"))
   )
 
-  cdm <- mockPatientProfiles(connectionDetails,
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
     person = person,
     observation_period = observation_period,
-    cohort1 = cohort1, cohort2 = emptyCohort
+    cohort1 = cohort1,
+    cohort2 = emptyCohort
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%

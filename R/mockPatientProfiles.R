@@ -16,11 +16,14 @@
 
 #' It creates a mock database for testing PatientProfiles package
 #'
-#' @param connectionDetails Connection an details to create the cdm mock object.
+#' @param con A DBI connection to create the cdm mock object.
+#' @param writeSchema Name of an schema on the same connection with writing
+#' permisions.
 #' @param numberIndividuals Number of individuals to create in the cdm
 #' reference.
 #' @param ... User self defined tables to put in cdm, it can input as many
 #' as the user want.
+#' @param seed A number to set the seed. If NULL seed is not used.
 #'
 #' @return A mock cdm_reference object created following user's specifications.
 #'
@@ -57,6 +60,7 @@ mockPatientProfiles <- function(con = NULL,
 
   # Put ... into a list
   tables <- list(...)
+  assertList(tables, named = TRUE, class = "data.frame")
 
   # get persons
   persons <- numeric()

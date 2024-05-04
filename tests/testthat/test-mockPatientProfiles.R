@@ -26,13 +26,22 @@ test_that("test user define table", {
     )
   )
 
-  cdm1 <- mockPatientProfiles(connectionDetails, test_table1 = test_table1)
+  cdm1 <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    test_table1 = test_table1
+  )
   x <- cdm1$test_table1 %>% dplyr::collect() |> dplyr::as_tibble()
   attr(x, "cohort_set") <- NULL
   attr(x, "cohort_attrition") <- NULL
   expect_true(all.equal(x, test_table1))
 
-  cdm2 <- mockPatientProfiles(connectionDetails, test_table1 = test_table1, test_table2 = test_table2)
+  cdm2 <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    test_table1 = test_table1,
+    test_table2 = test_table2
+  )
   x <- cdm2$test_table1 %>% dplyr::collect() |> dplyr::as_tibble()
   attr(x, "cohort_set") <- NULL
   attr(x, "cohort_attrition") <- NULL
@@ -45,7 +54,7 @@ test_that("test user define table", {
 
 test_that("check working example with defaults", {
   skip_on_cran()
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 10)
   expect_true(nrow(cdm$person %>% dplyr::collect()) == 1)
@@ -53,7 +62,11 @@ test_that("check working example with defaults", {
 
 test_that("check dug exposure and patient table size", {
   skip_on_cran()
-  cdm <- mockPatientProfiles(connectionDetails, drug_exposure_size = 200, patient_size = 200)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    numberIndividuals = 200
+  )
 
   expect_true(nrow(cdm$drug_exposure %>% dplyr::collect()) == 200)
   expect_true(nrow(cdm$person %>% dplyr::collect()) == 200)
@@ -61,7 +74,9 @@ test_that("check dug exposure and patient table size", {
 
 test_that("add cdm with person, cohort1 and observation_period", {
   skip_on_cran()
-  expect_no_error(cdm <- mockPatientProfiles(connectionDetails,
+  expect_no_error(cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4),
       gender_concept_id = c(8507, 8532, 8532, 8507),
@@ -108,7 +123,9 @@ test_that("attributes for cohort table", {
 
   test_table1 <- addCohortCountAttr(test_table1)
 
-  cdm <- mockPatientProfiles(connectionDetails, test_table1 = test_table1)
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(), test_table1 = test_table1
+  )
 
   expect_true(all(
     c("cohort_set", "cohort_attrition") %in% names(attributes(cdm$cohort1))

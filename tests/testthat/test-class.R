@@ -17,7 +17,8 @@ test_that("test class consistency across cohort operations", {
                                                                        as.Date("2102-04-02")),
                                        period_type_concept_id = c(0, 0))
   cdm <- mockPatientProfiles(
-    connectionDetails,
+    con = connection(),
+    writeSchema = writeSchema(),
     dus_cohort = dus_cohort,
     observation_period = observation_period
   )

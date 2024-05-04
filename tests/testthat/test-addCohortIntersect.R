@@ -841,7 +841,7 @@ test_that("casing of empty dates", {
 })
 
 test_that("cohortIntersect after observation", {
-  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   windows <- list(
     c(-Inf, Inf), c(0,0), c(0, Inf), c(5000, 31000), c(31000, Inf),

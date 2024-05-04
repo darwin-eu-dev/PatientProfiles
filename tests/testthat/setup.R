@@ -21,7 +21,6 @@ connection <- function(dbToTest = Sys.getenv("DB_TO_TEST", "duckdb")) {
   switch(
     dbToTest,
     "duckdb" = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-
     "sql server" = DBI::dbConnect(
       odbc::odbc(),
       Driver   = "ODBC Driver 18 for SQL Server",

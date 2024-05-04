@@ -72,7 +72,9 @@ test_that("test all functions", {
 })
 
 test_that("groups and strata", {
-  cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 1000
+  )
 
   result <- cdm$condition_occurrence %>%
     addDemographics(
@@ -149,7 +151,9 @@ test_that("groups and strata", {
 })
 
 test_that("table in db or local", {
-  cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 1000
+  )
 
   # in db
   expect_no_error(cdm$condition_occurrence %>%
@@ -172,7 +176,9 @@ test_that("table in db or local", {
 })
 
 test_that("with and with overall groups and strata", {
-  cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 1000
+  )
 
   test_data <- cdm$condition_occurrence %>%
     addDemographics(
@@ -271,7 +277,7 @@ test_that("obscure", {
 })
 
 test_that("test empty cohort", {
-  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_no_error(
     cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 0) %>%
@@ -313,7 +319,7 @@ test_that("test empty cohort", {
 
 test_that("test summary table naming", {
 
-  cdm <- mockPatientProfiles(connectionDetails = connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   dat <-
     cdm$cohort1 %>% addDemographics() %>%
@@ -337,9 +343,9 @@ test_that("misisng counts", {
     prior_history = c(365, 25, 14, 48),
     number_visits = c(NA, 1, 0, 0)
   )
-  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
-  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
-  cohort <- dplyr::tbl(connectionDetails$con, name)
+  name <- CDMConnector::inSchema(writeSchema(), "test_table")
+  DBI::dbWriteTable(connection(), name = name, value = cohort)
+  cohort <- dplyr::tbl(connection(), name)
   variables <- list(
     numeric = c(
       "age", "number_visits", "prior_history"
@@ -396,7 +402,7 @@ test_that("misisng counts", {
       is.na() %>%
       all()
   )
-  DBI::dbRemoveTable(connectionDetails$con, name = name)
+  DBI::dbRemoveTable(connection(), name = name)
 })
 
 test_that("data is ordered", {
@@ -408,9 +414,9 @@ test_that("data is ordered", {
     prior_history = c(365, 25, 14, 48),
     number_visits = c(5, 1, 0, 0)
   )
-  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
-  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
-  testTable <- dplyr::tbl(connectionDetails$con, name)
+  name <- CDMConnector::inSchema(writeSchema(), "test_table")
+  DBI::dbWriteTable(connection(), name = name, value = cohort)
+  cohort <- dplyr::tbl(connection(), name)
   variables <- list(
     numeric = c("age", "number_visits", "prior_history"),
     categorical = c("sex")
@@ -438,7 +444,7 @@ test_that("data is ordered", {
   order <- unique(result$variable_level[result$variable_name == "sex"])
   order <- order[!is.na(order)]
   expect_identical(order, c("Female", "Male"))
-  DBI::dbRemoveTable(connectionDetails$con, name = name)
+  DBI::dbRemoveTable(connection(), name = name)
 
   cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
@@ -448,9 +454,9 @@ test_that("data is ordered", {
     prior_history = c(365, 25, 14, 48),
     number_visits = c(5, 1, 0, 0)
   )
-  name <- CDMConnector::inSchema(connectionDetails$write_schema, "test_table")
-  DBI::dbWriteTable(connectionDetails$con, name = name, value = cohort)
-  testTable <- dplyr::tbl(connectionDetails$con, name)
+  name <- CDMConnector::inSchema(writeSchema(), "test_table")
+  DBI::dbWriteTable(connection(), name = name, value = cohort)
+  cohort <- dplyr::tbl(connection(), name)
   variables <- list(
     numeric = c("age", "number_visits", "prior_history"),
     categorical = c("sex")
@@ -478,5 +484,5 @@ test_that("data is ordered", {
   order <- unique(result$variable_level[result$variable_name == "sex"])
   order <- order[!is.na(order)]
   expect_identical(order, c("Male", "xFemale"))
-  DBI::dbRemoveTable(connectionDetails$con, name = name)
+  DBI::dbRemoveTable(connection(), name = name)
 })

@@ -896,8 +896,7 @@ test_that("age variable names", {
 
 test_that("expected errors", {
   # check input length and type for each of the arguments
-  cdm <-
-    mockPatientProfiles(
+  cdm <-mockPatientProfiles(
       con = connection(),
       writeSchema = writeSchema(),
       seed = 1,
@@ -1323,7 +1322,7 @@ test_that("overwriting obs period variables", {
     PatientProfiles::addDemographics())
   expect_true("date_of_birth" %in%   colnames(cdm$cohort1))
 
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   cdm$cohort1 <- cdm$cohort1 %>%
     dplyr::mutate(observation_period_start_date = "a")
   expect_warning(cdm$cohort1 %>%
@@ -1333,7 +1332,7 @@ test_that("overwriting obs period variables", {
   expect_warning(cdm$cohort1 %>%
                    PatientProfiles::addInObservation())
 
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   cdm$cohort1 <- cdm$cohort1 %>%
     dplyr::mutate(observation_period_start_date = "a",
                   observation_period_end_date = "b")

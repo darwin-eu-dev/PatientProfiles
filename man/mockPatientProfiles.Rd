@@ -13,13 +13,18 @@ mockPatientProfiles(
 )
 }
 \arguments{
+\item{con}{A DBI connection to create the cdm mock object.}
+
+\item{writeSchema}{Name of an schema on the same connection with writing
+permisions.}
+
 \item{numberIndividuals}{Number of individuals to create in the cdm
 reference.}
 
 \item{...}{User self defined tables to put in cdm, it can input as many
 as the user want.}
 
-\item{connectionDetails}{Connection an details to create the cdm mock object.}
+\item{seed}{}
 }
 \value{
 A mock cdm_reference object created following user's specifications.
