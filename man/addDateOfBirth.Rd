@@ -40,6 +40,6 @@ library(PatientProfiles)
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addDateOfBirth()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 }

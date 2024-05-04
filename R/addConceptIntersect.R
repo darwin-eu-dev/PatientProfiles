@@ -185,7 +185,7 @@ subsetTable <- function(x) {
 #'   conceptSet = list("acetaminophen"=1125315)
 #'   ) %>%
 #'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  mockDisconnect(cdm = cdm)
 #'  }
 #'
 addConceptIntersectFlag <- function(x,
@@ -250,7 +250,7 @@ addConceptIntersectFlag <- function(x,
 #'   conceptSet = list("acetaminophen"=1125315)
 #'   ) %>%
 #'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  mockDisconnect(cdm = cdm)
 #'  }
 #'
 addConceptIntersectCount <- function(x,
@@ -315,7 +315,7 @@ addConceptIntersectCount <- function(x,
 #'   conceptSet = list("acetaminophen"=1125315)
 #'   ) %>%
 #'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  mockDisconnect(cdm = cdm)
 #'  }
 #'
 addConceptIntersectDate <- function(x,
@@ -380,7 +380,7 @@ addConceptIntersectDate <- function(x,
 #'   conceptSet = list("acetaminophen"=1125315)
 #'   ) %>%
 #'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
+#'  mockDisconnect(cdm = cdm)
 #'  }
 #'
 addConceptIntersectDays <- function(x,

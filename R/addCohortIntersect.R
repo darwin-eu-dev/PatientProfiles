@@ -87,7 +87,7 @@
 #'   addCohortIntersectFlag(
 #'     targetCohortTable = "cohort2"
 #'   )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectFlag <- function(x,
@@ -152,7 +152,7 @@ addCohortIntersectFlag <- function(x,
 #'   addCohortIntersectCount(
 #'     targetCohortTable = "cohort2"
 #'   )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectCount <- function(x,
@@ -220,7 +220,7 @@ addCohortIntersectCount <- function(x,
 #'   addCohortIntersectDays(
 #'     targetCohortTable = "cohort2"
 #'   )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectDays <- function(x,
@@ -289,7 +289,7 @@ addCohortIntersectDays <- function(x,
 #'   addCohortIntersectDate(
 #'     targetCohortTable = "cohort2"
 #'   )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addCohortIntersectDate <- function(x,

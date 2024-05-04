@@ -85,7 +85,13 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   result <- cdm$cohort1 %>%
     .addIntersect(tableName = "cohort2", value = "date", nameStyle = "xx")
@@ -281,7 +287,13 @@ test_that("working examples with cohort_end_date", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   result <- cdm$cohort1 %>%
     .addIntersect(
@@ -345,7 +357,13 @@ test_that("working examples with extra column", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   cdm$cohort2 <- cdm$cohort2 %>%
     dbplyr::window_order(
@@ -392,7 +410,13 @@ test_that("working examples with extra column", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   cdm$cohort2 <- cdm$cohort2 %>%
     dbplyr::window_order(
@@ -475,7 +499,13 @@ test_that("working examples with multiple cohort Ids", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails, cohort1 = cohort1, cohort2 = cohort2, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
+    numberIndividuals = 2
+  )
 
   compareNA <- function(v1, v2) {
     same <- (v1 == v2) | (is.na(v1) & is.na(v2))

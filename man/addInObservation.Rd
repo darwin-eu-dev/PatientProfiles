@@ -36,7 +36,7 @@ Indicate if a certain record is within the observation period
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addInObservation()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

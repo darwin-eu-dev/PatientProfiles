@@ -94,7 +94,7 @@ library(PatientProfiles)
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addDemographics()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

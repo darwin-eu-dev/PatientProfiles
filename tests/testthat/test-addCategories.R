@@ -1,6 +1,11 @@
 test_that("addCategories, functionality", {
   skip_on_cran()
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
   agegroup <- cdm$cohort1 %>%
     addAge() %>%
     addCategories(
@@ -32,7 +37,7 @@ test_that("addCategories, functionality", {
 
 test_that("addCategory with both upper and lower infinite, age",{
   skip_on_cran()
-  cdm <- PatientProfiles::mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_no_error(
     agegroup <- cdm$cohort1 %>%
       addAge() %>%
@@ -73,7 +78,12 @@ test_that("addCategories with infinity", {
       "2020-01-01", NA, "2020-12-21", "2020-08-01", "2025-01-01", "2020-01-18"
     ))
   )
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
   cdm <- CDMConnector::insertTable(cdm = cdm, name = "table", table = table)
   table <- cdm$table %>%
     addCategories(

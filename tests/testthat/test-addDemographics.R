@@ -1,5 +1,5 @@
 test_that("addInObservtaion, Inf windows, completeInterval T", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_no_error(
     cdm$cohort1 %>%
       PatientProfiles::addInObservation(
@@ -16,11 +16,16 @@ test_that("addInObservtaion, Inf windows, completeInterval T", {
       )
   )
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addDemographics, input length, type", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
 
   expect_error(addDemographics(2))
   expect_error(addDemographics(cdm$cohort1, indexDate = "condition_start_date"))
@@ -30,7 +35,12 @@ test_that("addDemographics, input length, type", {
 })
 
 test_that("addDemographics, cohort and condition_occurrence", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
 
   oldcohort <- cdm$cohort1
   cdm$cohort1 <- cdm$cohort1 %>% addDemographics(ageImposeMonth = TRUE, ageImposeDay = TRUE)
@@ -114,7 +124,12 @@ test_that("addDemographics, cohort and condition_occurrence", {
 })
 
 test_that("addDemographics, parameters", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
   cdm$cohort1 <- cdm$cohort1 %>%
     addDemographics(
       indexDate = "cohort_end_date",
@@ -159,7 +174,12 @@ test_that("addDemographics, parameters", {
 })
 
 test_that("partial demographics - cohorts", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
 
   # only age
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -262,7 +282,12 @@ test_that("partial demographics - cohorts", {
 })
 
 test_that("partial demographics - omop tables", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
 
   # only age
   cdm$condition_occurrence1a <- cdm$condition_occurrence %>%
@@ -330,7 +355,8 @@ test_that("priorObservation and future_observation - outside of observation peri
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails,
+    con = connection(),
+    writeSchema = writeSchema(),
     condition_occurrence = condition_occurrence
   )
 
@@ -384,7 +410,8 @@ test_that("priorObservation - multiple observation periods", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails,
+    con = connection(),
+    writeSchema = writeSchema(),
     person = person,
     observation_period = observation_period,
     cohort1 = cohort1,
@@ -428,8 +455,11 @@ test_that("check that no extra rows are added", {
     period_type_concept_id = 0
   )
   cdm <- mockPatientProfiles(
-    connectionDetails,
-    cohort1 = cohort1, observation_period = observation_period, cohort2 = cohort1
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    observation_period = observation_period,
+    cohort2 = cohort1
   )
   # using temp
   cdm$cohort1_new <- cdm$cohort1 %>%
@@ -536,7 +566,12 @@ test_that("age at cohort end, no missing, check age computation", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails, person = person, cohort1 = cohort1, observation_period = observation_period, cohort2 = cohort1
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = person,
+    cohort1 = cohort1,
+    observation_period = observation_period,
+    cohort2 = cohort1
   )
 
   # check if exact age is computed, ie, dob 2000-01-01, target date 2000-12-01  --> age 0
@@ -601,8 +636,12 @@ test_that("age at cohort entry, missing year/month/day of birth", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
-    cohort2 = cohort1, observation_period = observation_period
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = person,
+    cohort1 = cohort1,
+    cohort2 = cohort1,
+    observation_period = observation_period
   )
 
   result <- addAge(
@@ -654,8 +693,12 @@ test_that("multiple cohortIds, check age at cohort end", {
     ethnicity_concept_id = 0
   )
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
-    cohort2 = cohort1, observation_period = observation_period
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = person,
+    cohort1 = cohort1,
+    cohort2 = cohort1,
+    observation_period = observation_period
   )
 
   result <- cdm[["cohort1"]] |>
@@ -708,8 +751,12 @@ test_that("age group checks", {
     ethnicity_concept_id = 0
   )
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
-    cohort2 = cohort1, observation_period = observation_period
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = person,
+    cohort1 = cohort1,
+    cohort2 = cohort1,
+    observation_period = observation_period
   )
 
   x <- cdm$cohort1 %>%
@@ -795,8 +842,12 @@ test_that("age group checks", {
     ethnicity_concept_id = 0
   )
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
-    cohort2 = cohort1, observation_period = observation_period
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = person,
+    cohort1 = cohort1,
+    cohort2 = cohort1,
+    observation_period = observation_period
   )
   result1 <- cdm$cohort1 %>%
     addAge() %>%
@@ -827,7 +878,7 @@ test_that("age group checks", {
 })
 
 test_that("age variable names", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   result <- addAge(
     x = cdm[["cohort1"]],
@@ -847,9 +898,10 @@ test_that("expected errors", {
   # check input length and type for each of the arguments
   cdm <-
     mockPatientProfiles(
-      connectionDetails,
+      con = connection(),
+      writeSchema = writeSchema(),
       seed = 1,
-      patient_size = 5
+      numberIndividuals = 5
     )
 
   expect_error(addAge("cdm$cohort1"))
@@ -872,7 +924,7 @@ test_that("expected errors", {
     ageImposeDay = "TRUE"
   ))
 
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_error(result <- addAge())
   expect_error(result <- addAge(
@@ -927,8 +979,12 @@ test_that("expected errors", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, person = person, cohort1 = cohort1,
-    cohort2 = cohort1, observation_period = observation_period
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = person,
+    cohort1 = cohort1,
+    cohort2 = cohort1,
+    observation_period = observation_period
   )
 
   cdm$cohort1 <- cdm$cohort1 %>% addAge()
@@ -956,7 +1012,12 @@ test_that("expected errors", {
 })
 
 test_that("addCategories input", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 1, patient_size = 5)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 1,
+    numberIndividuals = 5
+  )
 
   # overwrite when categories named same as variable, throw warning
   expect_error(
@@ -1092,7 +1153,10 @@ test_that("test if column exist, overwrite", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, cohort2 = cohort2,
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort2,
     observation_period = observation_period
   )
 
@@ -1167,8 +1231,12 @@ test_that("date of birth", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, cohort2 = cohort1,
-    observation_period = observation_period, person = person
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    cohort2 = cohort1,
+    observation_period = observation_period,
+    person = person
   )
 
   personDOB <- cdm$person %>%
@@ -1222,7 +1290,7 @@ test_that("date of birth", {
 })
 
 test_that("missing levels", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   result <- cdm[["cohort1"]] %>%
     addDemographics(
@@ -1247,7 +1315,7 @@ test_that("missing levels", {
 })
 
 test_that("overwriting obs period variables", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   cdm$cohort1 <- cdm$cohort1 %>%
     PatientProfiles::addDateOfBirth()
@@ -1279,7 +1347,7 @@ test_that("overwriting obs period variables", {
 })
 
 test_that("addDemographics, date of birth option", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T) |> dplyr::select("date_of_birth"))
   expect_no_error(cdm$cohort1 |> addDemographics(dateOfBirth = T,dateOfBirthName = "abc") |> dplyr::select("abc"))

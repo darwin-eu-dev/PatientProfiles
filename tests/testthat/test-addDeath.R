@@ -1,5 +1,10 @@
 test_that("addDeathDate", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
   cdm$cohort1 <- addDeathDate(x = cdm$cohort1,
                               indexDate = "cohort_start_date",
                               window = c(0, Inf),
@@ -72,7 +77,12 @@ test_that("addDeathDate", {
 
 test_that("check alternative index date", {
 
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
 
   # test simple working example
   deathTable <- cdm$cohort1 |>
@@ -123,8 +133,12 @@ test_that("check window logic", {
     death_date = as.Date("2022-06-30")
   )
   cdm <- mockPatientProfiles(
-    connectionDetails,
-    cohort1 = cohort1, observation_period = observation_period, cohort2 = cohort1, death = deathTable
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    observation_period = observation_period,
+    cohort2 = cohort1,
+    death = deathTable
   )
 
   # with window of zero days around cohort end, we should only have death days for last cohort entry
@@ -188,7 +202,12 @@ test_that("check window logic", {
 
 test_that("check with omop table", {
 
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
 
   cdm$condition_occurrence <- addDeathDate(x = cdm$condition_occurrence,
                               indexDate = "condition_start_date",
@@ -235,8 +254,11 @@ test_that("check functionality in presence of multiple death records", {
     period_type_concept_id = 0
   )
   cdm <- mockPatientProfiles(
-    connectionDetails,
-    cohort1 = cohort1, observation_period = observation_period, cohort2 = cohort1
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    observation_period = observation_period,
+    cohort2 = cohort1
   )
   deathTable <- dplyr::tibble(
     person_id = c(1,1,2),

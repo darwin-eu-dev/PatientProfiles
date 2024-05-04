@@ -54,7 +54,7 @@ x <- cdm$cohort1 \%>\%
   addDemographics() \%>\%
   collect()
 result <- summariseResult(x)
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

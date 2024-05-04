@@ -31,7 +31,7 @@
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDeathDate()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addDeathDate <- function(x,
@@ -66,7 +66,7 @@ addDeathDate <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDeathDays()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addDeathDays <- function(x,
@@ -102,7 +102,7 @@ addDeathDays <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDeathFlag()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addDeathFlag <- function(x,

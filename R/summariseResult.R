@@ -44,7 +44,7 @@
 #'   addDemographics() %>%
 #'   collect()
 #' result <- summariseResult(x)
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 summariseResult <- function(table,

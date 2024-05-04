@@ -1,6 +1,6 @@
 test_that("attributes and classes are kept", {
   skip_on_cran()
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   oldCohort <- cdm$cohort1
   newCohort <- cdm$cohort1 %>% addDemographics()

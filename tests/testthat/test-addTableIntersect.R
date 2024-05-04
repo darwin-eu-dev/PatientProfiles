@@ -6,7 +6,7 @@ test_that("basic structures", {
     "visit_occurrence_flag_0_to_inf", "visit_occurrence_count_0_to_inf",
     "visit_occurrence_date_0_to_inf", "visit_occurrence_days_0_to_inf"
   ) %in% colnames(cdm$ati_visit)))
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("input validation", {
@@ -62,7 +62,7 @@ test_that("input validation", {
   expect_error(expect_warning(cdm$cohort1 %>%
                                 addTableIntersect(tableName = "visit_occurrence",
                                                   nameStyle = "table_name_value_window_name")))
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addTableIntersectCount example", {
@@ -141,7 +141,7 @@ test_that("addTableIntersectCount example", {
                        as.numeric(),
                      0)
 
-    CDMConnector::cdmDisconnect(cdm = cdm)
+    mockDisconnect(cdm = cdm)
 })
 
 test_that("addTableIntersectFlag example", {
@@ -232,7 +232,7 @@ test_that("addTableIntersectFlag example", {
                      dplyr::pull("drug_exposure_minf_to_0") %>%
                      as.numeric())==1))
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addTableIntersectDate example", {
@@ -345,7 +345,7 @@ test_that("addTableIntersectDate example", {
                      as.Date(),
                    as.Date("2023-02-16"))
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addTableIntersectDays example", {
@@ -457,7 +457,7 @@ test_that("addTableIntersectDays example", {
                      as.numeric(),
                    as.numeric(as.Date("2023-02-16") - as.Date("2020-01-01")))
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addTableIntersectFields example", {
@@ -534,5 +534,5 @@ test_that("addTableIntersectFields example", {
                     dplyr::pull("drug_exposure_drug_concept_id_minf_to_0") |>
                      as.integer()) %in% c(1,2,3)))
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })

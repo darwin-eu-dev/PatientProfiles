@@ -64,7 +64,7 @@ result <- cdm$cohort1 \%>\%
   conceptSet = list("acetaminophen"=1125315)
   ) \%>\%
  dplyr::collect()
- CDMConnector::cdmDisconnect(cdm = cdm)
+ mockDisconnect(cdm = cdm)
  }
 
 }

@@ -60,7 +60,7 @@
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDemographics()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addDemographics <- function(x,
@@ -381,7 +381,7 @@ sexQuery <- function(name, missingValue) {
 #'
 #' cdm$cohort1 |>
 #'   addAge()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addAge <- function(x,
                    indexDate = "cohort_start_date",
@@ -434,7 +434,7 @@ addAge <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addFutureObservation()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addFutureObservation <- function(x,
                                  indexDate = "cohort_start_date",
@@ -482,7 +482,7 @@ addFutureObservation <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addPriorObservation()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addPriorObservation <- function(x,
                                 indexDate = "cohort_start_date",
@@ -528,7 +528,7 @@ addPriorObservation <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addInObservation()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addInObservation <- function(x,
@@ -655,7 +655,7 @@ addInObservation <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addSex()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addSex <- function(x,

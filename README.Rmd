@@ -64,7 +64,7 @@ cdm <- cdm_from_con(
 To see how you would create a reference to your database please consult the CDMConnector package [documentation](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html). For this example though we'll work with simulated data, and we'll generate an example cdm reference like so:
 
 ```{r}
-cdm <- mockPatientProfiles(patient_size = 1000, drug_exposure_size = 1000)
+cdm <- mockPatientProfiles(numberIndividuals = 1000)
 ```
 
 ### Adding individuals´ characteristics

@@ -84,12 +84,12 @@ test_that("addConceptIntersect", {
       )
   )
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("unsupported domain name", {
   skip_on_cran()
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   concept <- dplyr::tibble(
     concept_id = c(1125315),
     domain_id = "random",
@@ -115,12 +115,12 @@ test_that("unsupported domain name", {
          colnames())
   )
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("NA domain name", {
   skip_on_cran()
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   concept <- dplyr::tibble(
     concept_id = c(1125315),
     domain_id = NA_character_,
@@ -145,12 +145,12 @@ test_that("NA domain name", {
       (result |>
          colnames())
   )
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("domain name not in cdm", {
   skip_on_cran()
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   concept <- dplyr::tibble(
     concept_id = c(1125315),
     domain_id = "device",
@@ -176,5 +176,5 @@ test_that("domain name not in cdm", {
          colnames())
   )
 
-  CDMConnector::cdmDisconnect(cdm = cdm)
+  mockDisconnect(cdm = cdm)
 })

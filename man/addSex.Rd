@@ -24,7 +24,7 @@ Compute the sex of the individuals
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addSex()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

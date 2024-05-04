@@ -35,7 +35,7 @@
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDateOfBirth()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addDateOfBirth <- function(x,
                            name = "date_of_birth",

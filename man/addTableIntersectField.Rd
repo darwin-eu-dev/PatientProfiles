@@ -63,7 +63,7 @@ cdm$cohort1 \%>\%
    order = "last",
    window = c(-Inf, -1)
 )
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

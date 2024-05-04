@@ -51,6 +51,6 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 |>
   addAge()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 }

@@ -57,7 +57,7 @@ cdm$cohort1 \%>\%
   addCohortIntersectDate(
     targetCohortTable = "cohort2"
   )
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

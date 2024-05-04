@@ -51,7 +51,7 @@
 #' result <- cdm$cohort1 %>%
 #'   addIntersect(tableName = "cohort2", value = "date") %>%
 #'   dplyr::collect()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addIntersect <- function(x,

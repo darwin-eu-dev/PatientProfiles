@@ -1,5 +1,5 @@
 test_that("warning test", {
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_no_error(
     cdm$cohort1 %>%
       addCohortIntersectCount(targetCohortTable = "cohort2")
@@ -54,7 +54,9 @@ test_that("output format - one outcome cohort", {
   # additional column should be added
   # with the name as specified
 
-  cdm <- mockPatientProfiles(connectionDetails, patient_size = 3)
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 3
+  )
 
   cdm$cohort1a <- cdm$cohort1 %>%
     addCohortIntersectDays(
@@ -149,10 +151,11 @@ test_that("first vs last event - cohort table", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails,
+    con = connection(),
+    writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
-    patient_size = 2
+    numberIndividuals = 2
   )
 
   # first
@@ -269,10 +272,11 @@ test_that("multiple cohort entries per person", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails,
+    con = connection(),
+    writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
-    patient_size = 2
+    numberIndividuals = 2
   )
 
   # 100 days from index
@@ -333,7 +337,9 @@ test_that("output names", {
   # additional column should be added
   # with the name as specified
 
-  cdm <- mockPatientProfiles(connectionDetails, patient_size = 3)
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 3
+  )
 
   # default naming
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -408,7 +414,7 @@ test_that("output names", {
 })
 
 test_that("expected errors ", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   # missing outcome table
   expect_error(cdm$cohort1 %>%
@@ -501,10 +507,12 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails,
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
-    patient_size = 2
+    numberIndividuals = 2
   )
 
   result0 <- cdm$cohort1 %>%
@@ -607,10 +615,11 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails,
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
-    patient_size = 2
+    numberIndividuals = 2
   )
 
   result0 <- cdm$cohort1 %>%
@@ -694,10 +703,11 @@ test_that("working examples", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails,
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
-    patient_size = 2
+    numberIndividuals = 2
   )
 
   expect_warning(
@@ -775,10 +785,11 @@ test_that("censorDate functionality", {
     ),
   )
 
-  cdm <- mockPatientProfiles(connectionDetails,
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
-    patient_size = 5
+    numberIndividuals = 5
   )
 
   compareNA <- function(v1, v2) {
@@ -816,7 +827,9 @@ test_that("censorDate functionality", {
 })
 
 test_that("casing of empty dates", {
-  cdm <- mockPatientProfiles(connectionDetails, patient_size = 3)
+  cdm <- mockPatientProfiles(
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 3
+  )
   cdm$cohort1 <- cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 1)
   expect_false(
     cdm$cohort2 %>%
@@ -910,8 +923,12 @@ test_that("issue 612", {
     observation_period_end_date = as.Date("2020-12-31"),
     period_type_concept_id = 32880
   )
-  cdm <- PatientProfiles::mockPatientProfiles(
-    observation_period = observation_period, person = person, cohort1 = cohort
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    observation_period = observation_period,
+    person = person,
+    cohort1 = cohort
   )
 
   x <- cdm$cohort1 |>
@@ -929,5 +946,5 @@ test_that("issue 612", {
   expect_true(all(x$cohort_2 == c(0, 0, 0, 1, 1, 1, 0, 1)))
   expect_true(all(x$cohort_3 == c(1, 0, 0, 1, 0, 0, 1, 1)))
 
-  CDMConnector::cdmDisconnect(cdm)
+  mockDisconnect(cdm)
 })

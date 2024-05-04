@@ -84,7 +84,7 @@
 #'
 #' cdm$cohort1 %>%
 #'   addTableIntersectFlag(tableName = "visit_occurrence")
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectFlag <- function(x,
@@ -144,7 +144,7 @@ addTableIntersectFlag <- function(x,
 #' cdm$cohort1 %>%
 #'   addTableIntersectCount(tableName = "visit_occurrence")
 #'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectCount <- function(x,
@@ -205,7 +205,7 @@ addTableIntersectCount <- function(x,
 #' cdm$cohort1 %>%
 #'   addTableIntersectDate(tableName = "visit_occurrence")
 #'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectDate <- function(x,
@@ -266,7 +266,7 @@ addTableIntersectDate <- function(x,
 #' cdm$cohort1 %>%
 #'   addTableIntersectDays(tableName = "visit_occurrence")
 #'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectDays <- function(x,
@@ -335,7 +335,7 @@ addTableIntersectDays <- function(x,
 #'    order = "last",
 #'    window = c(-Inf, -1)
 #' )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectField <- function(x,

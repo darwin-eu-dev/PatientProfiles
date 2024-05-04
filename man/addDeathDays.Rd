@@ -36,7 +36,7 @@ period than `indexDate` will be observed.
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addDeathDays()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

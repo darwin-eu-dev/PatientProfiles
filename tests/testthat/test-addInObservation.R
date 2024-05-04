@@ -1,5 +1,5 @@
 test_that("addInObservation, input length and type", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_error(addInObservation(2))
   expect_warning(addInObservation(cdm$cohort2, "cdm"))
   expect_error(addInObservation(cdm$concept_ancestor))
@@ -11,7 +11,7 @@ test_that("addInObservation, input length and type", {
 })
 
 test_that("addInObservation, cohort and condition_occurrence", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   result1 <- addInObservation(cdm$cohort1)
   expect_true("in_observation" %in% colnames(result1))
@@ -39,7 +39,7 @@ test_that("addInObservation, cohort and condition_occurrence", {
 })
 
 test_that("addInObservation, parameters", {
-  cdm <- mockPatientProfiles(connectionDetails)
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   result1 <- addInObservation(cdm$condition_occurrence, indexDate = "condition_end_date", nameStyle = "observ")
   expect_true("observ" %in% colnames(result1))
@@ -50,7 +50,7 @@ test_that("addInObservation, parameters", {
 
 test_that("addInObservation, window", {
 
-  cdm <- mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_true(all(
     cdm$cohort1 |> addInObservation(window = c(-5055, 5046), completeInterval = T) |> dplyr::pull(in_observation) == c(0, 1)
