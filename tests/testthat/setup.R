@@ -39,9 +39,3 @@ connection <- function(dbToTest = Sys.getenv("DB_TO_TEST", "duckdb")) {
     )
   )
 }
-emptyCohort <- dplyr::tibble(
-  cohort_definition_id = numeric(),
-  subject_id = numeric(),
-  cohort_start_date = as.Date(character()),
-  cohort_end_date = as.Date(character())
-)

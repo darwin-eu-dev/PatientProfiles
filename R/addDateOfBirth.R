@@ -43,65 +43,74 @@ addDateOfBirth <- function(x,
                            missingMonth = 1,
                            imposeDay = FALSE,
                            imposeMonth = FALSE) {
+  joinPersonTable(
+    x = x, name = name, missingDay = missingDay, missingMonth = missingMonth,
+    imposeDay = imposeDay, imposeMonth = imposeMonth, genderConceptId = NULL
+  )
+}
+
+joinPersonTable <- function(x,
+                            name,
+                            missingDay,
+                            missingMonth,
+                            imposeDay,
+                            imposeMonth,
+                            genderConceptId) {
   cdm <- omopgenerics::cdmReference(x)
 
   personVariable <- checkX(x)
 
-  cdm$person <- cdm$person %>%
-    dplyr::filter(!is.na(.data$year_of_birth))
-
-  # First add to person table
-  if (imposeDay | !"day_of_birth" %in% colnames(person)) {
+  if (!is.null(name)) {
     person <- cdm$person %>%
-      dplyr::mutate("day_of_birth" = .env$missingDay)
-  } else {
-    person <- cdm$person %>%
-      dplyr::mutate("day_of_birth" = dplyr::if_else(
-        is.na(.data$day_of_birth), .env$missingDay, .data$day_of_birth
-      ))
-  }
-  # impose month
-  if (imposeMonth | !"month_of_birth" %in% colnames(person)) {
-    person <- person %>%
-      dplyr::mutate("month_of_birth" = .env$missingMonth)
-  } else {
-    person <- person %>%
-      dplyr::mutate("month_of_birth" = dplyr::if_else(
-        is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth
-      ))
-  }
-  person <- person %>%
-    dplyr::mutate(
-      year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
-      month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
-      day_of_birth1 = as.character(as.integer(.data$day_of_birth))
-    ) %>%
-    dplyr::mutate(!!name := as.Date(paste0(
-      .data$year_of_birth1, "-", .data$month_of_birth1, "-",
-      .data$day_of_birth1
-    ))) %>%
-    dplyr::select(!c("year_of_birth1", "month_of_birth1", "day_of_birth1"))
+      dplyr::filter(!is.na(.data$year_of_birth))
 
+    # First add to person table
+    if (imposeDay | !"day_of_birth" %in% colnames(person)) {
+      person <- person %>%
+        dplyr::mutate("day_of_birth" = .env$missingDay)
+    } else {
+      person <- person %>%
+        dplyr::mutate("day_of_birth" = dplyr::if_else(
+          is.na(.data$day_of_birth), .env$missingDay, .data$day_of_birth
+        ))
+    }
+    # impose month
+    if (imposeMonth | !"month_of_birth" %in% colnames(person)) {
+      person <- person %>%
+        dplyr::mutate("month_of_birth" = .env$missingMonth)
+    } else {
+      person <- person %>%
+        dplyr::mutate("month_of_birth" = dplyr::if_else(
+          is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth
+        ))
+    }
 
-  # Add to other table (if not person)
-  if (isPersonTable(x)) {
-    return(person)
-  } else {
-    x <- x %>%
-      dplyr::left_join(
-        person %>%
-          dplyr::rename(!!personVariable := "person_id") %>%
-          dplyr::select(dplyr::all_of(c(personVariable, .env$name))),
-        by = personVariable
+    person <- person %>%
+      dplyr::mutate(
+        year_of_birth1 = as.character(as.integer(.data$year_of_birth)),
+        month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
+        day_of_birth1 = as.character(as.integer(.data$day_of_birth))
+      ) %>%
+      dplyr::mutate(!!name := as.Date(paste0(
+        .data$year_of_birth1, "-", .data$month_of_birth1, "-",
+        .data$day_of_birth1
+      )))
+  }
+
+  if (!is.null(genderConceptId)) {
+    person <- person |>
+      dplyr::select(
+        !!personVariable := "person_id",
+        dplyr::all_of(name),
+        !!genderConceptId := "gender_concept_id"
       )
-    return(x)
+  } else {
+    person <- person |>
+      dplyr::select(!!personVariable := "person_id", dplyr::all_of(name))
   }
-}
 
-isPersonTable <- function(x) {
-  return(all(colnames(x) %in%
-    c(
-      "person_id", "gender_concept_id",
-      "year_of_birth", "month_of_birth", "day_of_birth"
-    )))
+  x <- x |>
+    dplyr::left_join(person, by = personVariable)
+
+  return(x)
 }
