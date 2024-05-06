@@ -161,12 +161,15 @@ addDemographics <- function(x,
   }
 
   ids <- uniqueColumnName(
-    c(colnames(cdm$person), colnames(cdm$observation_period), colnames(x)), 4
+    c(colnames(cdm$person), colnames(cdm$observation_period), colnames(x)), 5
   )
   idBirth <- ids[1]
   idGender <- ids[2]
   idStart <- ids[3]
   idEnd <- ids[4]
+  if (age == FALSE & !is.null(ageGroup)) {
+    ageName <- ids[5]
+  }
 
   if (priorObservation == TRUE || futureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
@@ -201,26 +204,26 @@ addDemographics <- function(x,
       nm1 <- idBirth
     }
     if (sex) {
-      nm2 <- NULL
-    } else {
       nm2 <- idGender
+    } else {
+      nm2 <- NULL
     }
     x <- x %>%
       joinPersonTable(
         name = nm1,
-        missingDay = missingDay,
-        missingMonth = missingMonth,
-        imposeDay = imposeDay,
-        imposeMonth = imposeMonth,
+        missingDay = ageDefaultDay,
+        missingMonth = ageDefaultMonth,
+        imposeDay = ageImposeDay,
+        imposeMonth = ageImposeMonth,
         genderConceptId = nm2
       )
   }
 
-  if (age == TRUE) {
+  if (age == TRUE | !is.null(ageGroup)) {
     aQ <- glue::glue(
-      'floor(dbplyr::sql(CDMConnector::datediff(
+      'as.integer(floor(dbplyr::sql(CDMConnector::datediff(
     start = "{idBirth}", end = "{indexDate}", interval = "year"
-    )))'
+    ))))'
     ) %>%
       rlang::parse_exprs() %>%
       rlang::set_names(glue::glue(ageName))
@@ -232,7 +235,7 @@ addDemographics <- function(x,
     sQ <- glue::glue(
       'dplyr::case_when(.data${idGender} == 8507 ~ "Male",
     .data${idGender} == 8532 ~ "Female",
-      TRUE ~ "{missingValue}")'
+      TRUE ~ "{missingSexValue}")'
     ) %>%
       rlang::parse_exprs() %>%
       rlang::set_names(glue::glue(sexName))
@@ -243,7 +246,7 @@ addDemographics <- function(x,
   if (priorObservation == TRUE) {
     if (priorObservationType == "days") {
       pHQ <- glue::glue(
-        'local(CDMConnector::datediff("{idStart}","{indexDate}"))'
+        'as.integer(local(CDMConnector::datediff("{idStart}","{indexDate}")))'
       )
     } else {
       pHQ <- ".data${idStart}"
@@ -258,7 +261,7 @@ addDemographics <- function(x,
   if (futureObservation == TRUE) {
     if (futureObservationType == "days") {
       fOQ <- glue::glue(
-        'local(CDMConnector::datediff("{indexDate}","{idEnd}"))'
+        'as.integer(local(CDMConnector::datediff("{indexDate}","{idEnd}")))'
       )
     } else {
       fOQ <- ".data${idEnd}"
@@ -271,24 +274,20 @@ addDemographics <- function(x,
   }
 
   x <- x %>%
-    dplyr::mutate(
-      !!!aQ,
-      !!!sQ,
-      !!!pHQ,
-      !!!fOQ
-    )
-
-  x <- x |>
-    dplyr::select(!dplyr::any_of(ids)) |>
+    dplyr::mutate(!!!aQ, !!!sQ, !!!pHQ, !!!fOQ) |>
+    dplyr::select(!dplyr::any_of(ids[1:4])) |>
     dplyr::compute()
 
   if (!is.null(ageGroup)) {
-    x <- addCategories(
-      x = x,
-      variable = ageName,
-      categories = ageGroup,
-      missingCategoryValue = missingAgeGroupValue
-    )
+    x <- x |>
+      addCategories(
+        variable = ageName,
+        categories = ageGroup,
+        missingCategoryValue = missingAgeGroupValue
+      )
+    if (age == FALSE) {
+      x <- x |> dplyr::select(-dplyr::all_of(ageName))
+    }
   }
 
   return(x)
