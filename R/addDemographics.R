@@ -170,13 +170,8 @@ addDemographics <- function(x,
 
   personDetails <- cdm[["person"]] %>%
     dplyr::select(
-      "person_id",
-      "gender_concept_id",
-      "year_of_birth",
-      "month_of_birth",
-      "day_of_birth"
-    ) %>%
-    dplyr::rename(!!personVariable := "person_id")
+      !!personVariable := "person_id", "gender_concept_id", "year_of_birth"
+    )
 
   if (priorObservation == TRUE || futureObservation == TRUE) {
     # most recent observation period (in case there are multiple)

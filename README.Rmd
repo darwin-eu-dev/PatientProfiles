@@ -253,30 +253,6 @@ cdm$cohort1 %>%
   glimpse()
 ```
 
-A more efficient implementation for getting multiple types of intersection results is provided by `addCohortIntersectTime`
-
-```{r, echo = FALSE}
-cdm <- mockPatientProfiles()
-```
-```{r}
-cdm$cohort1 %>%
-  glimpse()
-
-cdm$cohort1 <- cdm$cohort1 %>%
-  addCohortIntersect(
-    targetCohortTable = "cohort2",
-    targetCohortId = 1,
-    count = TRUE,
-    flag = TRUE,
-    days = TRUE,
-    date = TRUE,
-    window = list("any_time" = c(-Inf, Inf))
-  )
-
-cdm$cohort1 %>%
-  glimpse()
-```
-
 ```{r}
 mockDisconnect(cdm)
 ```

@@ -712,7 +712,7 @@ test_that("working examples", {
 
   expect_warning(
     result1 <- cdm$cohort1 %>%
-      addCohortIntersect(targetCohortTable = "cohort2") %>%
+      .addCohortIntersect(targetCohortTable = "cohort2") %>%
       dplyr::collect() %>%
       dplyr::arrange(subject_id, cohort_start_date)
   )
@@ -738,55 +738,30 @@ test_that("censorDate functionality", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 2, 3, 4, 5),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-03-01",
-        "2021-01-15",
-        "2022-01-20",
-        "2020-01-06",
-        "2020-07-01"
-      )
-    )
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-03-01", "2021-01-15", "2022-01-20", "2020-01-06", "2020-07-01"
+    ))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
     subject_id = c(1, 1, 2, 3, 4, 5, 5),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
-    con = connection(), writeSchema = writeSchema(),
+    con = connection(),
+    writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
     numberIndividuals = 5
