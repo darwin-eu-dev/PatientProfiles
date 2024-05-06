@@ -51,22 +51,22 @@ addDateOfBirth <- function(x,
     dplyr::filter(!is.na(.data$year_of_birth))
 
   # First add to person table
-  if (imposeDay) {
+  if (imposeDay | !"day_of_birth" %in% colnames(person)) {
     person <- cdm$person %>%
-      dplyr::mutate(day_of_birth = missingDay)
+      dplyr::mutate("day_of_birth" = .env$missingDay)
   } else {
     person <- cdm$person %>%
-      dplyr::mutate(day_of_birth = dplyr::if_else(
+      dplyr::mutate("day_of_birth" = dplyr::if_else(
         is.na(.data$day_of_birth), .env$missingDay, .data$day_of_birth
       ))
   }
   # impose month
-  if (imposeMonth) {
+  if (imposeMonth | !"month_of_birth" %in% colnames(person)) {
     person <- person %>%
-      dplyr::mutate(month_of_birth = missingMonth)
+      dplyr::mutate("month_of_birth" = .env$missingMonth)
   } else {
     person <- person %>%
-      dplyr::mutate(month_of_birth = dplyr::if_else(
+      dplyr::mutate("month_of_birth" = dplyr::if_else(
         is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth
       ))
   }
