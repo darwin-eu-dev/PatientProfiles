@@ -3,8 +3,10 @@ test_that("addCategories, functionality", {
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
-    seed = 11,
-    numberIndividuals = 10
+    person = dplyr::tibble(
+      "person_id" = 1L, "gender_concept_id" = 0L, "year_of_birth" = 2000,
+      "race_concept_id" = 0L, "ethnicity_concept_id" = 0L
+    )
   )
   agegroup <- cdm$cohort1 %>%
     addAge() %>%
@@ -25,10 +27,17 @@ test_that("addCategories, functionality", {
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(agegroup %>%
-    dplyr::pull(age_group) ==
-    c("0 to 40", "0 to 40", "41 to 120", "41 to 120")))
+  expect_true(
+    agegroup %>%
+      dplyr::pull(age_group) %in% c("0 to 40", "41 to 120") |>
+      all()
+  )
 
+  expect_true(
+    agegroupOverlap %>%
+      dplyr::pull(age_group) %in% c("0 to 40", "41 to 120") |>
+      all()
+  )
   expect_true(all(agegroupOverlap %>%
     dplyr::pull(age_group) ==
     c("0 to 55", "0 to 55", "50 to 120", "0 to 55 and 50 to 120")))

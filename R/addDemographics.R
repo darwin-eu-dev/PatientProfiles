@@ -233,8 +233,8 @@ addDemographics <- function(x,
 
   if (sex == TRUE) {
     sQ <- glue::glue(
-      'dplyr::case_when(.data${idGender} == 8507 ~ "Male",
-    .data${idGender} == 8532 ~ "Female",
+      'dplyr::case_when(.data[["{idGender}"]] == 8507 ~ "Male",
+    .data[["{idGender}"]] == 8532 ~ "Female",
       TRUE ~ "{missingSexValue}")'
     ) %>%
       rlang::parse_exprs() %>%
@@ -249,7 +249,7 @@ addDemographics <- function(x,
         'as.integer(local(CDMConnector::datediff("{idStart}","{indexDate}")))'
       )
     } else {
-      pHQ <- ".data${idStart}"
+      pHQ <- glue::glue('.data[["{idStart}"]]')
     }
     pHQ <- pHQ %>%
       rlang::parse_exprs() %>%
@@ -264,7 +264,7 @@ addDemographics <- function(x,
         'as.integer(local(CDMConnector::datediff("{indexDate}","{idEnd}")))'
       )
     } else {
-      fOQ <- ".data${idEnd}"
+      fOQ <- glue::glue('.data[["{idEnd}"]]')
     }
     fOQ <- fOQ |>
       rlang::parse_exprs() %>%

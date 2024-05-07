@@ -63,25 +63,32 @@ mockPatientProfiles <- function(con = NULL,
   assertList(tables, named = TRUE, class = "data.frame")
 
   # get persons
-  persons <- numeric()
-  for (k in seq_along(tables)) {
-    x <- tables[[k]]
-    if ("person_id" %in% colnames(x)) {
-      persons <- c(persons, x[["person_id"]])
-    } else if ("subject_id" %in% colnames(x)) {
-      persons <- c(persons, x[["subject_id"]])
+  if (length(tables) == 0) {
+    persons <- seq_len(numberIndividuals)
+  } else {
+    persons <- numeric()
+    for (k in seq_along(tables)) {
+      x <- tables[[k]]
+      if ("person_id" %in% colnames(x)) {
+        persons <- c(persons, x[["person_id"]])
+      } else if ("subject_id" %in% colnames(x)) {
+        persons <- c(persons, x[["subject_id"]])
+      }
     }
-  }
-  persons <- unique(persons)
-  if (length(persons) < numberIndividuals) {
-    if (length(persons) > 0) {
-      n <- numberIndividuals - length(persons)
-      persons <- c(persons, max(persons) + seq_len(n))
-    } else {
-      persons <- seq_len(numberIndividuals)
-    }
+    persons <- unique(persons)
   }
   n <- length(persons)
+
+  # create person table
+  if (!"person" %in% names(tables)) {
+    tables[["person"]] <- dplyr::tibble(
+      "person_id" = persons,
+      "gender_concept_id" = sample(c(8532, 8507), n, TRUE),
+      "year_of_birth" = 1900L + sample.int(120, n, TRUE),
+      "race_concept_id" = 0L,
+      "ethnicity_concept_id" = 0L
+    )
+  }
 
   # get dates
   dates <- dplyr::tibble("person_id" = integer(), "date" = as.Date(character()))
@@ -99,17 +106,6 @@ mockPatientProfiles <- function(con = NULL,
           ))
       }
     }
-  }
-
-  # create person table
-  if (!"person" %in% names(tables)) {
-    tables[["person"]] <- dplyr::tibble(
-      "person_id" = persons,
-      "gender_concept_id" = sample(c(8532, 8507), n, TRUE),
-      "year_of_birth" = 1900L + sample.int(120, n, TRUE),
-      "race_concept_id" = 0L,
-      "ethnicity_concept_id" = 0L
-    )
   }
 
   # create observation_period
@@ -140,7 +136,7 @@ mockPatientProfiles <- function(con = NULL,
           is.na(.data$observation_period_start_date),
           as.Date(
             x = paste0(
-              1900 + sample.int(120, n, TRUE), "-", sample(1:12, n, TRUE), "-",
+              .data$year_of_birth + sample.int(120, n, TRUE), "-", sample(1:12, n, TRUE), "-",
               sample(1:28, n, TRUE)
             ),
             format = "%Y-%m-%d"
@@ -164,13 +160,33 @@ mockPatientProfiles <- function(con = NULL,
       dplyr::select(-"year_of_birth")
   }
 
+  # correct person
+  tables[["person"]] <- tables[["person"]] |>
+    dplyr::left_join(
+      tables[["observation_period"]] |>
+        dplyr::group_by(.data$person_id) |>
+        dplyr::summarise(
+          "start_year" = min(.data$observation_period_start_date) |>
+            format("%Y") |>
+            as.integer(),
+          .groups = "drop"
+        ),
+      by = "person_id"
+    ) |>
+    dplyr::mutate("year_of_birth" = dplyr::if_else(
+      .data$year_of_birth < .data$start_year,
+      .data$year_of_birth,
+      .data$start_year
+    )) |>
+    dplyr::select(-"start_year")
+
   # create drug_exposure
   if (!"drug_exposure" %in% names(tables)) {
     nr <- sample.int(n * 2, 1)
     tables[["drug_exposure"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, TRUE)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("drug_exposure_start_date", "drug_exposure_end_date")) |>
       dplyr::mutate(
         "drug_exposure_id" = seq_len(nr),
@@ -185,7 +201,7 @@ mockPatientProfiles <- function(con = NULL,
     tables[["condition_occurrence"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, TRUE)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("condition_start_date", "condition_end_date")) |>
       dplyr::mutate(
         "condition_occurrence_id" = seq_len(nr),
@@ -196,11 +212,16 @@ mockPatientProfiles <- function(con = NULL,
 
   # create death
   if (!"death" %in% names(tables)) {
-    nr <- sample.int(n * 0.2, 1)
+    nn <- round(n * 0.2)
+    if (nn > 0) {
+      nr <- sample.int(nn, 1)
+    } else {
+      nr <- 0
+    }
     tables[["death"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, FALSE)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("death_date"))
   }
 
@@ -209,7 +230,7 @@ mockPatientProfiles <- function(con = NULL,
     tables[["cohort1"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
       dplyr::rename("subject_id" = "person_id")
@@ -220,7 +241,7 @@ mockPatientProfiles <- function(con = NULL,
     tables[["cohort2"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id)
     ) |>
-      dplyr::left_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
       dplyr::rename("subject_id" = "person_id")
@@ -260,6 +281,13 @@ checkInstalled <- function(name, call = parent.frame()) {
   return(invisible(NULL))
 }
 addDate <- function(x, cols) {
+  if (nrow(x) == 0) {
+    x <- x |> dplyr::select("person_id")
+    for (col in cols) {
+      x <- x |> dplyr::mutate(!!col := as.Date(character()))
+    }
+    return(x)
+  }
   x <- x |>
     dplyr::select(
       "person_id",
@@ -270,11 +298,11 @@ addDate <- function(x, cols) {
   for (col in cols) {
     x <- x |>
       dplyr::mutate(
-        "diff" = as.integer(
-          .data$observation_period_end_date -
-            .data$observation_period_start_date
-        ),
-        "days" = sample.int(.data$diff + 1, 1) - 1,
+        "diff" = as.integer(difftime(
+          .data$observation_period_end_date,
+          .data$observation_period_start_date
+         )),
+        "days" = sample.int(.data$diff + 1, 1) - 1 ,
         !!col := .data$observation_period_start_date + .data$days,
         "observation_period_start_date" = .data[[col]]
       )
