@@ -4,15 +4,21 @@ test_that("addCategories, functionality", {
     con = connection(),
     writeSchema = writeSchema(),
     person = dplyr::tibble(
-      "person_id" = 1L, "gender_concept_id" = 0L, "year_of_birth" = 2000,
+      "person_id" = 1:3, "gender_concept_id" = 0L, "year_of_birth" = 2000L,
       "race_concept_id" = 0L, "ethnicity_concept_id" = 0L
+    ),
+    cohort1 = dplyr::tibble(
+      "cohort_definition_id" = 1L,
+      "subject_id" = c(1L, 2L, 3L),
+      "cohort_start_date" = as.Date(c("2045-01-01", "2052-01-01", "2060-01-01")),
+      "cohort_end_date" = as.Date(c("2045-01-01", "2052-01-01", "2060-01-01"))
     )
   )
   agegroup <- cdm$cohort1 %>%
     addAge() %>%
     addCategories(
       variable = "age",
-      categories = list("age_group" = list(c(0, 40), c(41, 120)))
+      categories = list("age_group" = list(c(0, 49), c(50, 120)))
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
@@ -27,20 +33,17 @@ test_that("addCategories, functionality", {
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(
+  expect_true(all(
     agegroup %>%
-      dplyr::pull(age_group) %in% c("0 to 40", "41 to 120") |>
-      all()
-  )
+      dplyr::pull(age_group) == c("0 to 49", "50 to 120", "50 to 120")
+  ))
 
-  expect_true(
+  expect_true(all(
     agegroupOverlap %>%
-      dplyr::pull(age_group) %in% c("0 to 40", "41 to 120") |>
-      all()
-  )
-  expect_true(all(agegroupOverlap %>%
-    dplyr::pull(age_group) ==
-    c("0 to 55", "0 to 55", "50 to 120", "0 to 55 and 50 to 120")))
+      dplyr::pull(age_group) == c("0 to 55", "0 to 55 and 50 to 120", "50 to 120")
+  ))
+
+  mockDisconnect(cdm)
 })
 
 test_that("addCategory with both upper and lower infinite, age", {
@@ -76,6 +79,8 @@ test_that("addCategory with both upper and lower infinite, age", {
       agegroup2 %>% dplyr::pull("age_group")
     )
   )
+
+  mockDisconnect(cdm)
 })
 
 test_that("addCategories with infinity", {
@@ -124,5 +129,5 @@ test_that("addCategories with infinity", {
     "2019-01-01 to 2019-01-01", "2023-01-01 to 2023-01-01",
     "2019-01-01 to 2019-01-01"
   )))
-  CDMConnector::dropTable(cdm = cdm, name = "table")
+  mockDisconnect(cdm)
 })

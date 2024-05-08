@@ -60,8 +60,10 @@ joinPersonTable <- function(x,
 
   personVariable <- checkX(x)
 
+  person <- cdm$person
+
   if (!is.null(name)) {
-    person <- cdm$person %>%
+    person <- person %>%
       dplyr::filter(!is.na(.data$year_of_birth))
 
     # First add to person table

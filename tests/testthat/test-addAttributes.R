@@ -35,4 +35,6 @@ test_that("attributes and classes are kept", {
       expect_true(identical(x, y))
     }
   }
+
+  mockDisconnect(cdm)
 })

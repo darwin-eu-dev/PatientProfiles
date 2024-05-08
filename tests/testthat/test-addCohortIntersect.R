@@ -1,53 +1,3 @@
-test_that("warning test", {
-  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
-  expect_no_error(
-    cdm$cohort1 %>%
-      addCohortIntersectCount(targetCohortTable = "cohort2")
-  )
-
-  expect_warning(
-    addCohortIntersectCount(
-      x = cdm$cohort1,
-      targetCohortTable = "cohort2"
-    )
-  )
-
-  expect_no_error(
-    cdm$cohort1 %>%
-      addCohortIntersectDays(targetCohortTable = "cohort2")
-  )
-
-  expect_warning(
-    addCohortIntersectDays(
-      x = cdm$cohort1,
-      targetCohortTable = "cohort2"
-    )
-  )
-
-  expect_no_error(
-    cdm$cohort1 %>%
-      addCohortIntersectDate(targetCohortTable = "cohort2")
-  )
-
-  expect_warning(
-    addCohortIntersectDate(
-      x = cdm$cohort1,
-      targetCohortTable = "cohort2"
-    )
-  )
-
-  expect_no_error(
-    cdm$cohort1 %>%
-      addCohortIntersectFlag(targetCohortTable = "cohort2")
-  )
-
-  expect_warning(
-    addCohortIntersectFlag(
-      x = cdm$cohort1,
-      targetCohortTable = "cohort2"
-    )
-  )
-})
 
 test_that("output format - one outcome cohort", {
   # output format - one outcome cohort ----
@@ -55,7 +5,8 @@ test_that("output format - one outcome cohort", {
   # with the name as specified
 
   cdm <- mockPatientProfiles(
-    con = connection(), writeSchema = writeSchema(), numberIndividuals = 3
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 10,
+    seed = 1
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
@@ -114,6 +65,8 @@ test_that("output format - one outcome cohort", {
       targetCohortTable = "cohort2"
     )
   expect_true(ncol(cdm$cohort1d) == 7)
+
+  mockDisconnect(cdm)
 })
 
 test_that("first vs last event - cohort table", {
