@@ -75,30 +75,20 @@ test_that("first vs last event - cohort table", {
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
-    subject_id = c("1", "2"),
-    cohort_start_date = c(
-      as.Date("2010-03-01"),
-      as.Date("2011-02-01")
-    ),
-    cohort_end_date = c(
-      as.Date("2015-01-01"),
-      as.Date("2013-01-01")
-    )
+    subject_id = c(1L, 2L),
+    cohort_start_date = c(as.Date("2010-03-01"), as.Date("2011-02-01")),
+    cohort_end_date = c(as.Date("2015-01-01"), as.Date("2013-01-01"))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = 1,
-    subject_id = c("1", "1", "1", "2"),
+    subject_id = c(1L, 1L, 1L, 2L),
     cohort_start_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-15"),
-      as.Date("2010-03-25"),
+      as.Date("2010-03-03"), as.Date("2010-03-15"), as.Date("2010-03-25"),
       as.Date("2013-01-03")
     ),
     cohort_end_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-15"),
-      as.Date("2010-03-25"),
+      as.Date("2010-03-03"), as.Date("2010-03-15"), as.Date("2010-03-25"),
       as.Date("2013-01-03")
     )
   )
@@ -186,6 +176,8 @@ test_that("first vs last event - cohort table", {
   expect_true(cdm$cohort1d %>%
     dplyr::filter(subject_id == 2) %>%
     dplyr::pull(5) == as.Date("2013-01-03"))
+
+  mockDisconnect(cdm)
 })
 
 test_that("multiple cohort entries per person", {
@@ -194,32 +186,24 @@ test_that("multiple cohort entries per person", {
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
-    subject_id = c("1", "1", "2"),
+    subject_id = c(1L, 1L, 2L),
     cohort_start_date = c(
-      as.Date("2010-03-01"),
-      as.Date("2012-03-01"),
-      as.Date("2011-02-01")
+      as.Date("2010-03-01"), as.Date("2012-03-01"), as.Date("2011-02-01")
     ),
     cohort_end_date = c(
-      as.Date("2012-01-01"),
-      as.Date("2016-03-01"),
-      as.Date("2013-01-01")
+      as.Date("2012-01-01"), as.Date("2016-03-01"), as.Date("2013-01-01")
     )
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = 1,
-    subject_id = c("1", "1", "1", "2"),
+    subject_id = c(1L, 1L, 1L, 2L),
     cohort_start_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-15"),
-      as.Date("2012-03-25"),
+      as.Date("2010-03-03"), as.Date("2010-03-15"), as.Date("2012-03-25"),
       as.Date("2013-01-03")
     ),
     cohort_end_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-15"),
-      as.Date("2012-03-25"),
+      as.Date("2010-03-03"), as.Date("2010-03-15"), as.Date("2012-03-25"),
       as.Date("2013-01-03")
     )
   )
@@ -284,6 +268,8 @@ test_that("multiple cohort entries per person", {
     cdm$cohort1 %>% dplyr::tally() %>% dplyr::pull("n"),
     cdm$cohort1b %>% dplyr::tally() %>% dplyr::pull("n")
   )
+
+  mockDisconnect(cdm)
 })
 
 test_that("output names", {
@@ -291,7 +277,8 @@ test_that("output names", {
   # with the name as specified
 
   cdm <- mockPatientProfiles(
-    con = connection(), writeSchema = writeSchema(), numberIndividuals = 3
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 10,
+    seed = 1
   )
 
   # default naming
@@ -302,12 +289,10 @@ test_that("output names", {
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(all(c(
-    "cohort_1_10_to_50",
-    "cohort_2_10_to_50",
-    "cohort_3_10_to_50"
-  ) %in%
-    colnames(cdm$cohort1a)))
+  expect_true(all(
+    c("cohort_1_10_to_50", "cohort_2_10_to_50", "cohort_3_10_to_50") %in%
+      colnames(cdm$cohort1a)
+  ))
 
   cdm$cohort1b <- cdm$cohort1 %>%
     addCohortIntersectDate(
@@ -316,12 +301,10 @@ test_that("output names", {
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     ) # id_name won't be clear to the user
-  expect_true(all(c(
-    "cohort_1_10_to_50",
-    "cohort_2_10_to_50",
-    "cohort_3_10_to_50"
-  ) %in%
-    colnames(cdm$cohort1b)))
+  expect_true(all(
+    c("cohort_1_10_to_50", "cohort_2_10_to_50", "cohort_3_10_to_50") %in%
+      colnames(cdm$cohort1b)
+  ))
 
   # new names
   cdm$cohort1c <- cdm$cohort1 %>%
@@ -332,12 +315,10 @@ test_that("output names", {
       targetCohortTable = "cohort2",
       nameStyle = "study_{cohort_name}"
     )
-  expect_true(all(c(
-    "study_cohort_1",
-    "study_cohort_2",
-    "study_cohort_3"
-  ) %in%
-    colnames(cdm$cohort1c)))
+  expect_true(all(
+    c("study_cohort_1", "study_cohort_2", "study_cohort_3") %in%
+      colnames(cdm$cohort1c)
+  ))
 
   # new names
   cdm$cohort1d <- cdm$cohort1 %>%
@@ -348,12 +329,10 @@ test_that("output names", {
       targetCohortTable = "cohort2",
       nameStyle = "study_{cohort_name}"
     )
-  expect_true(all(c(
-    "study_cohort_1",
-    "study_cohort_2",
-    "study_cohort_3"
-  ) %in%
-    colnames(cdm$cohort1c)))
+  expect_true(all(
+    c("study_cohort_1", "study_cohort_2", "study_cohort_3") %in%
+      colnames(cdm$cohort1c)
+  ))
 
   # bad naming
   expect_error(cdm$cohort1 %>%
@@ -364,6 +343,8 @@ test_that("output names", {
       targetCohortTable = "cohort2",
       nameStyle = "study"
     ))
+
+  mockDisconnect(cdm)
 })
 
 test_that("expected errors ", {
@@ -406,6 +387,8 @@ test_that("expected errors ", {
       targetCohortTable = "cohort2",
       censorDate = "subject_id"
     ))
+
+  mockDisconnect(cdm)
 })
 
 test_that("working examples", {
@@ -514,6 +497,8 @@ test_that("working examples", {
 
   expect_true(all(result2$covid_minf_to_0 == c(0, 0, 0, 0, 1)))
   expect_true(all(result2$tb_minf_to_0 == c(0, 0, 0, 0, 1)))
+
+  mockDisconnect(cdm)
 })
 
 test_that("working examples", {
@@ -602,6 +587,8 @@ test_that("working examples", {
     dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result1$cohort_2_0_to_inf == c(1, 1, 1, 1, 0)))
+
+  mockDisconnect(cdm)
 })
 
 test_that("working examples", {
@@ -609,72 +596,57 @@ test_that("working examples", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    )
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    ))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
-    con = connection(), writeSchema = writeSchema(),
+    con = connection(),
+    writeSchema = writeSchema(),
     cohort1 = cohort1,
     cohort2 = cohort2,
     numberIndividuals = 2
   )
 
-  expect_warning(
-    result1 <- cdm$cohort1 %>%
-      .addCohortIntersect(targetCohortTable = "cohort2") %>%
-      dplyr::collect() %>%
-      dplyr::arrange(subject_id, cohort_start_date)
-  )
+  result1 <- cdm$cohort1 %>%
+    .addCohortIntersect(targetCohortTable = "cohort2") %>%
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
   result2 <- cdm$cohort1 %>%
-    addCohortIntersectCount(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
-    addCohortIntersectFlag(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
-    addCohortIntersectDate(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
-    addCohortIntersectDays(targetCohortTable = "cohort2", nameStyle = "{value}_{cohort_name}_{window_name}") %>%
+    addCohortIntersectCount(
+      targetCohortTable = "cohort2",
+      nameStyle = "{value}_{cohort_name}_{window_name}"
+    ) %>%
+    addCohortIntersectFlag(
+      targetCohortTable = "cohort2",
+      nameStyle = "{value}_{cohort_name}_{window_name}"
+    ) %>%
+    addCohortIntersectDate(
+      targetCohortTable = "cohort2",
+      nameStyle = "{value}_{cohort_name}_{window_name}"
+    ) %>%
+    addCohortIntersectDays(
+      targetCohortTable = "cohort2",
+      nameStyle = "{value}_{cohort_name}_{window_name}"
+    ) %>%
     dplyr::collect() %>%
     dplyr::arrange(subject_id, cohort_start_date)
 
@@ -685,6 +657,8 @@ test_that("working examples", {
     y <- y[!is.na(y)]
     expect_true(all(x == y))
   }
+
+  mockDisconnect(cdm)
 })
 
 test_that("censorDate functionality", {
@@ -726,36 +700,44 @@ test_that("censorDate functionality", {
     return(same)
   }
 
-  expect_warning(
-    result1 <- cdm$cohort1 %>%
-      addCohortIntersect(targetCohortTable = "cohort2") %>%
-      dplyr::collect() %>%
-      dplyr::arrange(subject_id, cohort_start_date)
-  )
+  result1 <- cdm$cohort1 %>%
+    .addCohortIntersect(targetCohortTable = "cohort2") %>%
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_warning(
-    result2 <- cdm$cohort1 %>%
-      addCohortIntersect(targetCohortTable = "cohort2", censorDate = "cohort_end_date") %>%
-      dplyr::collect() %>%
-      dplyr::arrange(subject_id, cohort_start_date)
-  )
+  result2 <- cdm$cohort1 %>%
+    .addCohortIntersect(
+      targetCohortTable = "cohort2",
+      censorDate = "cohort_end_date"
+    ) %>%
+    dplyr::collect() %>%
+    dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(result1 %>% dplyr::filter(subject_id != 4) %>% dplyr::arrange("cohort_start_date") %>% dplyr::select(order(colnames(result1))) ==
+  expect_identical(
+    result1 %>%
+      dplyr::filter(subject_id != 4) %>%
+      dplyr::arrange("cohort_start_date") %>%
+      dplyr::select(order(colnames(result1))),
     result2 %>%
       dplyr::filter(subject_id != 4) %>%
       dplyr::arrange("cohort_start_date") %>%
-      dplyr::select(order(colnames(result2)))))
+      dplyr::select(order(colnames(result2)))
+  )
+
   expect_true(all(compareNA(
     result2 %>% dplyr::filter(subject_id == 4) %>%
       dplyr::select(dplyr::ends_with("inf")) %>% dplyr::arrange("subject_id") %>%
       unlist(use.names = F),
     c(0, 0, NA, NA)
   )))
+
+  mockDisconnect(cdm)
 })
 
 test_that("casing of empty dates", {
   cdm <- mockPatientProfiles(
-    con = connection(), writeSchema = writeSchema(), numberIndividuals = 3
+    con = connection(), writeSchema = writeSchema(), numberIndividuals = 3,
+    seed = 1
   )
   cdm$cohort1 <- cdm$cohort1 %>% dplyr::filter(cohort_definition_id == 1)
   expect_false(
@@ -765,10 +747,43 @@ test_that("casing of empty dates", {
       dplyr::pull("cohort_2_0_to_inf") %>%
       is.numeric()
   )
+
+  mockDisconnect(cdm)
 })
 
 test_that("cohortIntersect after observation", {
-  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = dplyr::tibble(
+      cohort_definition_id = 1L,
+      subject_id = 1L,
+      cohort_start_date = as.Date(c("2020-01-01", "2020-06-01")),
+      cohort_end_date = as.Date(c("2020-04-01", "2020-08-01"))
+    ),
+    cohort2 = dplyr::tibble(
+      cohort_definition_id = c(1L, 2L, 1L),
+      subject_id = 1L,
+      cohort_start_date = as.Date(c("2019-12-30", "2020-05-25", "2020-05-25")),
+      cohort_end_date = as.Date(c("2019-12-30", "2020-05-25", "2020-05-25"))
+    ),
+    person = dplyr::tibble(
+      person_id = 1L,
+      gender_concept_id = 8532L,
+      year_of_birth = 1992L,
+      month_of_birth = 12L,
+      day_of_birth = 30L,
+      race_concept_id = 0L,
+      ethnicity_concept_id = 0L
+    ),
+    observation_period = dplyr::tibble(
+      observation_period_id = 1L,
+      person_id = 1L,
+      observation_period_start_date = as.Date("2006-03-11"),
+      observation_period_end_date = as.Date("2102-04-02"),
+      period_type_concept_id = 0L
+    )
+  )
 
   windows <- list(
     c(-Inf, Inf), c(0, 0), c(0, Inf), c(5000, 31000), c(31000, Inf),
@@ -817,6 +832,8 @@ test_that("cohortIntersect after observation", {
       }
     }
   }
+
+  mockDisconnect(cdm)
 })
 
 test_that("issue 612", {
