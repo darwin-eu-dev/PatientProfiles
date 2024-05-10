@@ -85,4 +85,6 @@ test_that("test class consistency across cohort operations", {
   expect_identical(class(result_with_sequence), baseline_class,
     info = "Testing sequence with addSex, addAge, and addCategories"
   )
+
+  mockDisconnect(cdm = cdm)
 })

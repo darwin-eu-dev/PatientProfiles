@@ -7,6 +7,8 @@ test_that("check input length and type for each of the arguments", {
   expect_warning(addFutureObservation(cdm$cohort1, "cdm"))
 
   expect_error(addFutureObservation(cdm$cohort1, indexDate = "end_date"))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check condition_occurrence and cohort1 work", {
@@ -19,6 +21,8 @@ test_that("check condition_occurrence and cohort1 work", {
   # check it works with condition_occurrence table in mockdb
   expect_true(typeof(cdm$condition_occurrence %>% addFutureObservation(indexDate = "condition_start_date") %>% dplyr::collect()) == "list")
   expect_true("future_observation" %in% colnames(cdm$condition_occurrence %>% addFutureObservation(indexDate = "condition_start_date")))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check working example with cohort1", {
@@ -89,6 +93,8 @@ test_that("check working example with cohort1", {
           ))
         )
     )))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check working example with condition_occurrence", {
@@ -163,6 +169,8 @@ test_that("check working example with condition_occurrence", {
           )
       )
   ))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("different name", {
@@ -239,6 +247,8 @@ test_that("different name", {
 
   expect_equal(x$future_observation, x$diff)
   expect_equal(x$col, x$obs_end)
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("priorHistory and future_observation - outside of observation period", {
@@ -290,6 +300,8 @@ test_that("priorHistory and future_observation - outside of observation period",
     addFutureObservation(indexDate = "condition_start_date")
   # both should be NA
   expect_true(all(is.na(cdm$cohort1a %>% dplyr::pull(future_observation))))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("multiple observation periods", {
@@ -360,4 +372,6 @@ test_that("multiple observation periods", {
       as.Date("2013-02-01"),
       units = "days"
     ))))
+
+  mockDisconnect(cdm = cdm)
 })

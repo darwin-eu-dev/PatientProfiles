@@ -96,6 +96,8 @@ test_that("addDeathDate", {
   expect_error(addDeathDate(x = cdm$cohort1))
   expect_error(addDeathDays(x = cdm$cohort1))
   expect_error(addDeathFlag(x = cdm$cohort1))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check alternative index date", {
@@ -138,6 +140,8 @@ test_that("check alternative index date", {
     dplyr::collect() |>
     dplyr::filter(!is.na(ddays))
   expect_true(all(local_df$ddays == 0))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check window logic", {
@@ -168,12 +172,12 @@ test_that("check window logic", {
   )
 
   # with window of zero days around cohort end, we should only have death days for last cohort entry
-  cdm$cohort1 <- addDeathDays(
-    x = cdm$cohort1,
-    indexDate = "cohort_end_date",
-    window = c(0, 0),
-    deathDaysName = "ddays"
-  )
+  cdm$cohort1 <- cdm$cohort1 |>
+    addDeathDays(
+      indexDate = "cohort_end_date",
+      window = c(0, 0),
+      deathDaysName = "ddays"
+    )
   expect_true(cdm$cohort1 |>
     dplyr::filter(!is.na(ddays) & ddays == 0) |>
     dplyr::tally() |>
@@ -233,6 +237,8 @@ test_that("check window logic", {
     dplyr::filter(!is.na(ddays5)) |>
     dplyr::tally() |>
     dplyr::pull("n") == 1)
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check with omop table", {
@@ -273,6 +279,8 @@ test_that("check with omop table", {
     window = c(0, Inf),
     deathDateName = "ddate"
   ))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check functionality in presence of multiple death records", {
@@ -351,4 +359,6 @@ test_that("check functionality in presence of multiple death records", {
     dplyr::select("death_date_2") |>
     dplyr::distinct() |>
     dplyr::pull()), 2)
+
+  mockDisconnect(cdm = cdm)
 })

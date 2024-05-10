@@ -186,10 +186,18 @@ mockPatientProfiles <- function(con = NULL,
     tables[["drug_exposure"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, TRUE)
     ) |>
-      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::mutate("id" = dplyr::row_number()) |>
+      dplyr::inner_join(
+        tables[["observation_period"]],
+        by = "person_id",
+        relationship = "many-to-many"
+      ) |>
+      dplyr::group_by(.data$id) |>
+      dplyr::slice_sample(n = 1) |>
+      dplyr::ungroup() |>
       addDate(c("drug_exposure_start_date", "drug_exposure_end_date")) |>
       dplyr::mutate(
-        "drug_exposure_id" = seq_len(nr),
+        "drug_exposure_id" = dplyr::row_number(),
         "drug_concept_id" = sample.int(10, nr, T),
         "drug_type_concept_id" = 0L
       )
@@ -201,7 +209,15 @@ mockPatientProfiles <- function(con = NULL,
     tables[["condition_occurrence"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, TRUE)
     ) |>
-      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::mutate("id" = dplyr::row_number()) |>
+      dplyr::inner_join(
+        tables[["observation_period"]],
+        by = "person_id",
+        relationship = "many-to-many"
+      ) |>
+      dplyr::group_by(.data$id) |>
+      dplyr::slice_sample(n = 1) |>
+      dplyr::ungroup() |>
       addDate(c("condition_start_date", "condition_end_date")) |>
       dplyr::mutate(
         "condition_occurrence_id" = seq_len(nr),
@@ -221,7 +237,14 @@ mockPatientProfiles <- function(con = NULL,
     tables[["death"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id, size = nr, FALSE)
     ) |>
-      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::inner_join(
+        tables[["observation_period"]] |>
+          dplyr::filter(
+            .data$observation_period_end_date ==
+              max(.data$observation_period_end_date)
+          ),
+        by = "person_id"
+      ) |>
       addDate(c("death_date"))
   }
 
@@ -230,7 +253,15 @@ mockPatientProfiles <- function(con = NULL,
     tables[["cohort1"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id)
     ) |>
-      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::mutate("id" = dplyr::row_number()) |>
+      dplyr::inner_join(
+        tables[["observation_period"]],
+        by = "person_id",
+        relationship = "many-to-many"
+      ) |>
+      dplyr::group_by(.data$id) |>
+      dplyr::slice_sample(n = 1) |>
+      dplyr::ungroup() |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
       dplyr::rename("subject_id" = "person_id")
@@ -241,7 +272,15 @@ mockPatientProfiles <- function(con = NULL,
     tables[["cohort2"]] <- dplyr::tibble(
       "person_id" = sample(tables$person$person_id)
     ) |>
-      dplyr::inner_join(tables[["observation_period"]], by = "person_id") |>
+      dplyr::mutate("id" = dplyr::row_number()) |>
+      dplyr::inner_join(
+        tables[["observation_period"]],
+        by = "person_id",
+        relationship = "many-to-many"
+      ) |>
+      dplyr::group_by(.data$id) |>
+      dplyr::slice_sample(n = 1) |>
+      dplyr::ungroup() |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
       dplyr::rename("subject_id" = "person_id")

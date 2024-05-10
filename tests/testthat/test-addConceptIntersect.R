@@ -1,7 +1,13 @@
 test_that("addConceptIntersect", {
   skip_on_cran()
   con <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomia_dir())
-  cdm <- CDMConnector::cdmFromCon(con = con, cdmSchema = "main", writeSchema = "main")
+  cdm <- CDMConnector::cdmFromCon(
+    con = con, cdmSchema = "main", writeSchema = "main"
+  )
+  cdm <- CDMConnector::copyCdmTo(
+    con = connection(), cdm = cdm, schema = writeSchema()
+  )
+  DBI::dbDisconnect(conn = con)
 
   # create a cohort
   cdm <- CDMConnector::generateConceptCohortSet(

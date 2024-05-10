@@ -147,7 +147,7 @@ test_that("groups and strata", {
       "None &&& Male"
     )))
 
-  CDMConnector::cdm_disconnect(cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("table in db or local", {
@@ -172,7 +172,7 @@ test_that("table in db or local", {
     dplyr::collect() %>%
     summariseResult(strata = list("sex")))
 
-  CDMConnector::cdm_disconnect(cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("with and with overall groups and strata", {
@@ -217,7 +217,7 @@ test_that("with and with overall groups and strata", {
     dplyr::pull("group_name") %in%
     c("overall")))
 
-  CDMConnector::cdm_disconnect(cdm)
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("obscure", {
@@ -315,6 +315,8 @@ test_that("test empty cohort", {
         includeOverallStrata = FALSE
       )
   )
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test summary table naming", {
@@ -333,6 +335,8 @@ test_that("test summary table naming", {
   expect_true(all(
     c("age_age", "age", "age_age_age", "age_age_age_age") %in% dat$variable_name
   ))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("misisng counts", {

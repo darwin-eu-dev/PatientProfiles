@@ -43,8 +43,14 @@ test_that("addDemographics, cohort and condition_occurrence", {
   )
 
   oldcohort <- cdm$cohort1
-  cdm$cohort1 <- cdm$cohort1 %>% addDemographics(ageImposeMonth = TRUE, ageImposeDay = TRUE)
-  cdm$condition_occurrence <- cdm$condition_occurrence %>% addDemographics(indexDate = "condition_start_date", ageImposeMonth = TRUE, ageImposeDay = TRUE)
+  cdm$cohort1 <- cdm$cohort1 %>%
+    addDemographics(ageImposeMonth = TRUE, ageImposeDay = TRUE)
+  cdm$condition_occurrence <- cdm$condition_occurrence %>%
+    addDemographics(
+      indexDate = "condition_start_date",
+      ageImposeMonth = TRUE,
+      ageImposeDay = TRUE
+    )
 
   expect_true(length(attributes(cdm$cohort1)) == length(attributes(oldcohort)))
   for (i in names(attributes(cdm$cohort1))) {
@@ -62,73 +68,46 @@ test_that("addDemographics, cohort and condition_occurrence", {
   expect_true(all(c("age", "sex", "prior_observation") %in% colnames(cdm$cohort1)))
   s <- cdm$cohort1 %>%
     dplyr::filter(
-      .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")
+      .data$subject_id == 6 & .data$cohort_start_date == as.Date("2073-01-03")
     ) %>%
     dplyr::collect()
-  expect_true(s$age == 22)
+  expect_true(s$age == 79L)
   expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 4636)
-  s <- cdm$cohort1 %>%
-    dplyr::filter(
-      .data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")
-    ) %>%
-    dplyr::collect()
-  expect_true(s$age == 22)
-  expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 4788)
-  s <- cdm$cohort1 %>%
-    dplyr::filter(.data$subject_id == 2) %>%
-    dplyr::collect()
-  expect_true(s$age == 94)
-  expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 5224)
-  s <- cdm$cohort1 %>%
-    dplyr::filter(.data$subject_id == 3) %>%
-    dplyr::collect()
-  expect_true(s$age == 52)
-  expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 3912)
+  expect_true(s$prior_observation == 28857L)
 
-  expect_true(all(c("age", "sex", "prior_observation") %in% colnames(cdm$condition_occurrence)))
-  expectedAge <- c(20, 86, 45, 39, 32, 50, 90, 85, 57, 39)
-  expectedSex <- c(
-    "Female", "Female", "Female", "Male", "Female", "Male", "Male", "Male",
-    "Female", "Male"
+  expect_true(all(
+    c("age", "sex", "prior_observation") %in% colnames(cdm$condition_occurrence)
+  ))
+  x <- cdm$condition_occurrence |>
+    dplyr::collect() |>
+    dplyr::arrange(.data$person_id, .data$condition_start_date)
+  expect_identical(
+    x$age,
+    as.integer(c(
+      65, 114, 19, 109, 19, 31, 55, 106, 54, 58, 2, 53, 101, 10, 69, 84
+    ))
   )
-  expectedpriorObservation <- c(
-    3938, 2321, 1418, 4979, 4275, 253, 4283, NA, 4733, 2378
+  expect_identical(
+    x$sex,
+    c("Male", "Male", "Female", "Female", "Female", "Female", "Female",
+      "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male")
   )
-  for (k in 1:length(expectedAge)) {
-    expect_true(
-      cdm$condition_occurrence %>%
-        dplyr::filter(.data$person_id == k) %>%
-        dplyr::pull("age") == expectedAge[k]
-    )
-    expect_true(
-      cdm$condition_occurrence %>%
-        dplyr::filter(.data$person_id == k) %>%
-        dplyr::pull("sex") == expectedSex[k]
-    )
-    expect_true(
-      if (!is.na(expectedpriorObservation[k])) {
-        cdm$condition_occurrence %>%
-          dplyr::filter(.data$person_id == k) %>%
-          dplyr::pull("prior_observation") == expectedpriorObservation[k]
-      } else {
-        is.na(cdm$condition_occurrence %>%
-          dplyr::filter(.data$person_id == k) %>%
-          dplyr::pull("prior_observation"))
-      }
-    )
-  }
+  expect_identical(
+    x$prior_observation,
+    as.integer(c(
+      23818, 41917, 7236, 40009, 7168, 11616, 20311, 38951, 19822, 21484, 784,
+      19480, 37156, 3921, 25377, 30726
+    ))
+  )
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addDemographics, parameters", {
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
-    seed = 11,
-    numberIndividuals = 10
+    person =
   )
   cdm$cohort1 <- cdm$cohort1 %>%
     addDemographics(

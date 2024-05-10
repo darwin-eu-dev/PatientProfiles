@@ -6,6 +6,7 @@ test_that("addSex, check imput length and type", {
   expect_error(addSex(cdm$cohort1, name = 2))
   expect_error(addSex(cdm$cohort1, name = c("name1", "name2")))
   expect_error(addSex(cdm))
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addSex, works in both cohort and condition tables", {
@@ -16,6 +17,7 @@ test_that("addSex, works in both cohort and condition tables", {
   expect_true(all(cdm$cohort1 %>% dplyr::pull("sex") == c("Female", "Female")))
   expect_true("sex" %in% colnames(cdm$condition_occurrence))
   expect_true(all(cdm$condition_occurrence %>% dplyr::pull("sex") == c("Female")))
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addSex, desired result for all parameters", {
@@ -27,10 +29,12 @@ test_that("addSex, desired result for all parameters", {
   expect_true("gender" %in% colnames(cdm$condition_occurrence))
   expect_false("sex" %in% colnames(cdm$condition_occurrence))
   expect_true(all(cdm$condition_occurrence %>% dplyr::pull("gender") == c("Female")))
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("different names", {
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   cdm$cohort2 <- cdm$cohort2 %>% addSex(sexName = "gender")
   expect_true("gender" %in% colnames(cdm$cohort2))
+  mockDisconnect(cdm = cdm)
 })

@@ -36,5 +36,5 @@ test_that("attributes and classes are kept", {
     }
   }
 
-  mockDisconnect(cdm)
+  mockDisconnect(cdm = cdm)
 })

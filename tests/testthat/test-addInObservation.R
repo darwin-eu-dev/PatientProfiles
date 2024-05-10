@@ -8,6 +8,8 @@ test_that("addInObservation, input length and type", {
   expect_error(addInObservation(cdm$cohort1, indexDate = c("cohort", "cohort_end")))
   expect_error(addInObservation(cdm$cohort2, nameStyle = 3))
   expect_error(addInObservation(cdm$cohort2, nameStyle = c("name1", "name2")))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addInObservation, cohort and condition_occurrence", {
@@ -36,6 +38,8 @@ test_that("addInObservation, cohort and condition_occurrence", {
   result4 <- addInObservation(cdm$condition_occurrence, indexDate = "condition_start_date")
   expect_true("in_observation" %in% colnames(result4))
   expect_true(all(result4 %>% dplyr::collect() |> dplyr::arrange(condition_occurrence_id, condition_start_date) %>% dplyr::select(in_observation) %>% dplyr::pull() == 1))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addInObservation, parameters", {
@@ -46,6 +50,8 @@ test_that("addInObservation, parameters", {
   expect_false("in_observation" %in% colnames(result1))
 
   expect_true(all(result1 %>% dplyr::collect() |> dplyr::arrange(condition_occurrence_id, condition_start_date) %>% dplyr::select(observ) %>% dplyr::pull() == 1))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("addInObservation, window", {
@@ -64,4 +70,6 @@ test_that("addInObservation, window", {
   expect_true(all(
     cdm$cohort1 |> addInObservation(window = c(-5055, 30042), completeInterval = F) |> dplyr::pull(in_observation) == c(1, 1)
   ))
+
+  mockDisconnect(cdm = cdm)
 })

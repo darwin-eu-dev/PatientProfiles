@@ -31,6 +31,8 @@ test_that("conceptIdColumn", {
   expect_true(
     is.na(sourceConceptIdColumn("cohort_k"))
   )
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples", {
@@ -233,6 +235,8 @@ test_that("working examples", {
       "2020-01-29"
     )
   )))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples with cohort_end_date", {
@@ -303,6 +307,8 @@ test_that("working examples with cohort_end_date", {
     dplyr::arrange(subject_id, cohort_start_date)
 
   expect_true(all(result$date_all_0_to_inf == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples with extra column", {
@@ -447,6 +453,8 @@ test_that("working examples with extra column", {
   expect_true(all(is.na(result1$measurment_result_covid_0_to_inf)))
   expect_true(all(result2$measurment_result_0_to_inf == c("1", "1", 3, 5, 7)))
   expect_true(all(is.na(result3$measurment_result_m400_to_m200)))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples with multiple cohort Ids", {
@@ -569,6 +577,8 @@ test_that("working examples with multiple cohort Ids", {
   expect_true(all(result2$count_id3_0_to_inf == c(1, 1, 1, 2, 1)))
   expect_true(all(result2$days_id3_0_to_inf == c(46, 32, 27, 23, 43)))
   expect_true(all(result2$flag_id3_0_to_inf == c(1, 1, 1, 1, 1)))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples calculating as incidence target cohort", {
@@ -638,6 +648,8 @@ test_that("working examples calculating as incidence target cohort", {
 
   expect_true(all(result$test_all_minf_to_inf == as.Date("2020-01-01")))
   expect_true(("date_all_minf_to_inf" %in% colnames(result1)))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples with more than one window", {
@@ -719,6 +731,8 @@ test_that("working examples with more than one window", {
 
   expect_true(all(result$date_all_0_to_inf == result1$date_all_0_to_inf))
   expect_true(all(compareNA(result$date_all_minf_to_0, result1$date_all_minf_to_0)))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples with tables, not cohorts", {
@@ -865,6 +879,8 @@ test_that("working examples with tables, not cohorts", {
     dplyr::arrange(person_id, condition_start_date)
   # test output all zero column when no result found
   expect_true(all(is.na(result4$days_id2_0_to_inf)))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("check input length and type for each of the arguments", {
@@ -943,6 +959,8 @@ test_that("check input length and type for each of the arguments", {
   expect_error(.addIntersect(cdm$cohort1, tableName = "cohort2", value = "flag", targetEndDate = NA))
 
   expect_error(.addIntersect(cdm$cohort1, tableName = "cohort2", value = "flag", nameStyle = "test_{nowindow}_{cohortName}"))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test checkWindow function", {
@@ -1054,6 +1072,8 @@ test_that("test if column exist, overwrite", {
     cohort1 %>%
       dplyr::arrange(cohort_start_date, subject_id) %>%
       dplyr::select(date_all_0_to_30), na.rm = TRUE))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("overlapTable is empty, check return columns", {
@@ -1138,6 +1158,8 @@ test_that("overlapTable is empty, check return columns", {
   expect_true(all(is.na(result$days_id2_0_to_inf)))
 
   expect_true(all(is.na(result$date_id2_0_to_inf)))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("overlap is empty or not, multiple ids, check return columns", {
@@ -1316,6 +1338,8 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 
   expect_true(all(is.na(result$cohort_1_m30_to_m1)))
   expect_true(all(is.na(result$cohort_1_0_to_inf)))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("non snake columns not repeated in output", {
@@ -1375,4 +1399,6 @@ test_that("no NA when overwrite column", {
   )
 
   expect_true(!any(is.na(cdm$cohort1 %>% dplyr::pull("cohort_1"))))
+
+  mockDisconnect(cdm = cdm)
 })

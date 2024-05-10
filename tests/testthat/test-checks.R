@@ -51,6 +51,8 @@ test_that("test checkCategory with length 1 ", {
 
   expect_error(cdm$cohort1 %>% addAge(indexDate = "cohort_start_date") %>%
     addCategories("age", categories))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that(" test checkNewName renames duplicate column names in addInObservation  ", {
@@ -163,6 +165,8 @@ test_that(" test checkWindow in addIntersect", {
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(30, -365)), value = "date"))
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test checkSnakeCase", {
