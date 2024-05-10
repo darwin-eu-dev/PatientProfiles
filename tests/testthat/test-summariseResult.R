@@ -416,7 +416,7 @@ test_that("data is ordered", {
     categorical = c("sex")
   )
   functions <- list(
-    numeric = c("median", "q25", "q75"),
+    numeric = c("median", "q25", "q75", "sum"),
     categorical = c("count", "percentage", "median")
   )
   expect_no_error(
@@ -465,6 +465,9 @@ test_that("data is ordered", {
       estimates = functions
     )
   )
+
+  expect_true("sum" %in% result$estimate_name)
+
   # check first overall, second sex
   order <- unique(result$strata_level)
   expect_identical(order, c("overall", "Male", "xFemale"))

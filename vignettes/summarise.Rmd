@@ -45,7 +45,7 @@ We support different types of variables, variable type is assigned using `dplyr:
 We can summarise this data using different estimates:
 
 ```{r, echo = FALSE, eval = TRUE}
-PatientProfiles:::formats |> 
+formats |> 
   dplyr::rename(
     "Estimate name" = "estimate_name", 
     "Description" = "estimate_description", 
