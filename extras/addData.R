@@ -8,8 +8,8 @@ formats <- read_csv(here("extras", "formats.csv"), col_types = "c")
 
 variables <- list(
   "date" = c("mean", "sd", "median", "qXX", "min", "max", "count_missing", "percentage_missing"),
-  "numeric" = c("mean", "sd", "median", "qXX", "min", "max", "count_missing", "percentage_missing", "count", "percentage"),
-  "integer" = c("mean", "sd", "median", "qXX", "min", "max", "count_missing", "percentage_missing", "count", "percentage"),
+  "numeric" = c("sum", "mean", "sd", "median", "qXX", "min", "max", "count_missing", "percentage_missing", "count", "percentage"),
+  "integer" = c("sum", "mean", "sd", "median", "qXX", "min", "max", "count_missing", "percentage_missing", "count", "percentage"),
   "categorical" = c("count", "percentage"),
   "logical" = c("count", "percentage")
 )
