@@ -425,6 +425,9 @@ test_that("data is ordered", {
       estimates = functions
     )
   )
+
+  expect_true("sum" %in% result$estimate_name)
+
   # check first overall, second sex
   order <- unique(result$strata_level)
   expect_identical(order, c("overall", "Female", "Male"))
@@ -465,8 +468,6 @@ test_that("data is ordered", {
       estimates = functions
     )
   )
-
-  expect_true("sum" %in% result$estimate_name)
 
   # check first overall, second sex
   order <- unique(result$strata_level)
