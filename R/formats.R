@@ -74,42 +74,6 @@ assertClassification <- function(x) {
   )
 }
 
-#' Show the available functions for the 4 classifications of data that are
-#' supported (numeric, date, binary and categorical)
-#'
-#' @param variableType A choice between: "numeric", "date", "binary"
-#' or "categorical".
-#'
-#' @return A tibble with the available functions for a certain variable
-#' classification (or all if NULL).
-#'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#'
-#' availableFunctions()
-#' availableFunctions("numeric")
-#' availableFunctions("integer")
-#' availableFunctions("date")
-#' availableFunctions("categorical")
-#' availableFunctions("logical")
-#' }
-#'
-#' @export
-#'
-availableFunctions <- function(variableType = NULL) {
-  lifecycle::deprecate_warn("0.7.0", what = "availableFunctions()", with = "availableEstimates()")
-  if (is.null(variableType)) {
-    return(formatsOld)
-  } else {
-    checkVariableType(variableType)
-    x <- formatsOld %>%
-      dplyr::filter(.data$variable_type == .env$variableType) %>%
-      dplyr::select(-"variable_type")
-    return(x)
-  }
-}
-
 #' Show the available estimates that can be used for the different variable_type
 #' supported.
 #'

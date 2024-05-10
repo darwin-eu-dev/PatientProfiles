@@ -64,7 +64,6 @@ Imports:
     stringr,
     omopgenerics (>= 0.2.0),
     visOmopResults (>= 0.2.0),
-    lifecycle,
     purrr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 BugReports: https://github.com/darwin-eu-dev/PatientProfiles/issues

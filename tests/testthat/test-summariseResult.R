@@ -349,8 +349,9 @@ test_that("misisng counts", {
     number_visits = c(NA, 1, 0, 0)
   )
   name <- CDMConnector::inSchema(writeSchema(), "test_table")
-  DBI::dbWriteTable(connection(), name = name, value = cohort)
-  cohort <- dplyr::tbl(connection(), name)
+  con <- connection()
+  DBI::dbWriteTable(con, name = name, value = cohort)
+  cohort <- dplyr::tbl(con, name)
   variables <- list(
     numeric = c(
       "age", "number_visits", "prior_history"
@@ -408,7 +409,8 @@ test_that("misisng counts", {
       is.na() %>%
       all()
   )
-  DBI::dbRemoveTable(connection(), name = name)
+  DBI::dbRemoveTable(con, name = name)
+  DBI::dbDisconnect(conn = con, shutdown = TRUE)
 })
 
 test_that("data is ordered", {
@@ -421,8 +423,9 @@ test_that("data is ordered", {
     number_visits = c(5, 1, 0, 0)
   )
   name <- CDMConnector::inSchema(writeSchema(), "test_table")
-  DBI::dbWriteTable(connection(), name = name, value = cohort)
-  cohort <- dplyr::tbl(connection(), name)
+  con <- connection()
+  DBI::dbWriteTable(con, name = name, value = cohort)
+  cohort <- dplyr::tbl(con, name)
   variables <- list(
     numeric = c("age", "number_visits", "prior_history"),
     categorical = c("sex")
@@ -450,7 +453,7 @@ test_that("data is ordered", {
   order <- unique(result$variable_level[result$variable_name == "sex"])
   order <- order[!is.na(order)]
   expect_identical(order, c("Female", "Male"))
-  DBI::dbRemoveTable(connection(), name = name)
+  DBI::dbRemoveTable(con, name = name)
 
   cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
@@ -461,8 +464,8 @@ test_that("data is ordered", {
     number_visits = c(5, 1, 0, 0)
   )
   name <- CDMConnector::inSchema(writeSchema(), "test_table")
-  DBI::dbWriteTable(connection(), name = name, value = cohort)
-  cohort <- dplyr::tbl(connection(), name)
+  DBI::dbWriteTable(con, name = name, value = cohort)
+  cohort <- dplyr::tbl(con, name)
   variables <- list(
     numeric = c("age", "number_visits", "prior_history"),
     categorical = c("sex")
@@ -490,5 +493,7 @@ test_that("data is ordered", {
   order <- unique(result$variable_level[result$variable_name == "sex"])
   order <- order[!is.na(order)]
   expect_identical(order, c("Male", "xFemale"))
-  DBI::dbRemoveTable(connection(), name = name)
+  DBI::dbRemoveTable(con, name = name)
+
+  DBI::dbDisconnect(conn = con, shutdown = TRUE)
 })

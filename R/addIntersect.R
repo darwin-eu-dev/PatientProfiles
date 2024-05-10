@@ -16,8 +16,6 @@
 
 #' It creates columns to indicate overlap information between two tables
 #'
-#' `r lifecycle::badge("deprecated")`
-#'
 #' @param x Table with individuals in the cdm.
 #' @param tableName name of the cohort that we want to check for overlap.
 #' @param filterVariable the variable that we are going to use to filter (e.g.
