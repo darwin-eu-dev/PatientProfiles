@@ -48,7 +48,7 @@ reference:
 - subtitle: Create a mock database with OMOP CDM format data
   desc: Function that allow the user to create new OMOP CDM mock data
 - contents:
-  - matches("mock")"
+  - contains("mock")
 - subtitle: Other functions
   desc: Helper functions
 - contents:

@@ -58,7 +58,6 @@ Imports:
     dplyr,
     tidyr,
     checkmate,
-    lubridate,
     rlang,
     cli,
     stringr,
