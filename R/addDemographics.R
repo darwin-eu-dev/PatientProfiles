@@ -89,17 +89,16 @@ addDemographics <- function(x,
   ## check for standard types of user error
   personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
-  checkmate::assertLogical(age, any.missing = FALSE, len = 1)
+  assertLogical(age, length = 1)
   if (typeof(ageMissingMonth) == "character") {
     ageMissingMonth <- as.integer(ageMissingMonth)
   }
   if (typeof(ageMissingDay) == "character") {
     ageMissingDay <- as.integer(ageMissingDay)
   }
-  checkmate::assertIntegerish(
-    ageMissingMonth,
-    lower = 1, upper = 12, any.missing = FALSE, len = 1,
-    null.ok = !age
+  assertNumeric(
+    ageMissingMonth, integerish = TRUE, min = 1, max = 12, length = 1,
+    null = !age
   )
   checkmate::assertIntegerish(
     ageMissingDay,

@@ -56,7 +56,7 @@ addCohortIntersectFlag <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
-  checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
+  assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
@@ -121,7 +121,7 @@ addCohortIntersectCount <- function(x,
                                     nameStyle = "{cohort_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
-  checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
+  assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
@@ -189,7 +189,7 @@ addCohortIntersectDays <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
-  checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
+  assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
@@ -258,7 +258,7 @@ addCohortIntersectDate <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}") {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
-  checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
+  assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 

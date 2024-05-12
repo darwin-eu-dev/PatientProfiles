@@ -98,7 +98,7 @@ test_that("addCategories with infinity", {
     seed = 11,
     numberIndividuals = 10
   )
-  cdm <- CDMConnector::insertTable(cdm = cdm, name = "table", table = table)
+  cdm <- omopgenerics::insertTable(cdm = cdm, name = "table", table = table)
   table <- cdm$table %>%
     addCategories(
       variable = "prior_history", categories = list(

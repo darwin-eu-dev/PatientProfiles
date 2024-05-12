@@ -48,14 +48,18 @@ addCategories <- function(x,
                           categories,
                           missingCategoryValue = "None",
                           overlap = FALSE) {
-  checkmate::assertClass(x, "cdm_table")
-  checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)
-  checkmate::assertTRUE(variable %in% colnames(x))
-  checkmate::assertNumeric(dplyr::pull(utils::head(x, 1), variable))
-  checkmate::assertList(
-    categories,
-    types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
-  )
+  assertClass(x, "cdm_table")
+  assertCharacter(variable, length = 1)
+  if (!variable %in% colnames(x)) {
+    cli::cli_abort("{variable} is not a column of x")
+  }
+  var <- dplyr::pull(utils::head(x, 1), variable)
+  if (!inherits(var, "numeric") &
+      !inherits(var, "integer") &
+      !inherits(var, "Date")) {
+    cli::cli_abort("{variable} must be a numeric or date variable")
+  }
+  assertList(categories, class = "list")
   assertCharacter(missingCategoryValue, length = 1, na = TRUE)
 
   if (length(unique(names(categories))) < length((names(categories)))) {

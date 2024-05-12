@@ -57,10 +57,7 @@ checkCdm <- function(cdm, tables = NULL) {
 
 #' @noRd
 checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
-  checkmate::assertCharacter(
-    indexDate,
-    any.missing = FALSE, len = 1, null.ok = nullOk
-  )
+  assertCharacter(indexDate, length = 1, null = nullOk)
   if (!is.null(indexDate) && !(indexDate %in% colnames(x))) {
     cli::cli_abort(glue::glue("{name} ({indexDate}) should be a column in x"))
   }
@@ -69,11 +66,7 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 
 #' @noRd
 checkCategory <- function(category, overlap = FALSE, type = "numeric") {
-  checkmate::assertList(
-    category,
-    types = type, any.missing = FALSE, unique = TRUE,
-    min.len = 1
-  )
+  assertList(category, class = type)
 
   if (is.null(names(category))) {
     names(category) <- rep("", length(category))
@@ -137,7 +130,7 @@ checkCategory <- function(category, overlap = FALSE, type = "numeric") {
 
 #' @noRd
 checkAgeGroup <- function(ageGroup, overlap = FALSE) {
-  checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
+  assertList(ageGroup, null = TRUE)
   if (!is.null(ageGroup)) {
     if (is.numeric(ageGroup[[1]])) {
       ageGroup <- list("age_group" = ageGroup)
@@ -395,6 +388,11 @@ checkStrata <- function(list, table, type = "strata") {
       ))
     }
   }
+  if (!is.null(names(list))) {
+    cli::cli_inform(c("!" = "names of {type} will be ignored"))
+  }
+  names(list) <- NULL
+  return(list)
 }
 
 #' @noRd
