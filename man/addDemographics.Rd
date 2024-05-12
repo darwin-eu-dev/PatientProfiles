@@ -9,8 +9,8 @@ addDemographics(
   indexDate = "cohort_start_date",
   age = TRUE,
   ageName = "age",
-  ageDefaultMonth = 1,
-  ageDefaultDay = 1,
+  ageMissingMonth = 1,
+  ageMissingDay = 1,
   ageImposeMonth = FALSE,
   ageImposeDay = FALSE,
   ageGroup = NULL,
@@ -39,10 +39,10 @@ indexDate.}
 
 \item{ageName}{Age variable name.}
 
-\item{ageDefaultMonth}{Month of the year assigned to individuals with missing
+\item{ageMissingMonth}{Month of the year assigned to individuals with missing
 month of birth.}
 
-\item{ageDefaultDay}{day of the month assigned to individuals
+\item{ageMissingDay}{day of the month assigned to individuals
 with missing day of birth.}
 
 \item{ageImposeMonth}{TRUE or FALSE. Whether the month of the date of birth

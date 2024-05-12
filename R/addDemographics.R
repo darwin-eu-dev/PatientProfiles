@@ -21,10 +21,10 @@
 #' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
 #' indexDate.
-#' @param ageDefaultMonth Month of the year assigned to individuals with missing
+#' @param ageMissingMonth Month of the year assigned to individuals with missing
 #' month of birth.
 #' @param ageName Age variable name.
-#' @param ageDefaultDay day of the month assigned to individuals
+#' @param ageMissingDay day of the month assigned to individuals
 #' with missing day of birth.
 #' @param ageImposeMonth TRUE or FALSE. Whether the month of the date of birth
 #' will be considered as missing for all the individuals.
@@ -65,8 +65,8 @@ addDemographics <- function(x,
                             indexDate = "cohort_start_date",
                             age = TRUE,
                             ageName = "age",
-                            ageDefaultMonth = 1,
-                            ageDefaultDay = 1,
+                            ageMissingMonth = 1,
+                            ageMissingDay = 1,
                             ageImposeMonth = FALSE,
                             ageImposeDay = FALSE,
                             ageGroup = NULL,
@@ -82,7 +82,7 @@ addDemographics <- function(x,
                             futureObservationType = "days",
                             dateOfBirth = FALSE,
                             dateOfBirthName = "date_of_birth") {
-  ## change ageDefaultMonth, ageDefaultDay to integer
+  ## change ageMissingMonth, ageMissingDay to integer
 
   cdm <- omopgenerics::cdmReference(x)
 
@@ -90,19 +90,19 @@ addDemographics <- function(x,
   personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
   checkmate::assertLogical(age, any.missing = FALSE, len = 1)
-  if (typeof(ageDefaultMonth) == "character") {
-    ageDefaultMonth <- as.integer(ageDefaultMonth)
+  if (typeof(ageMissingMonth) == "character") {
+    ageMissingMonth <- as.integer(ageMissingMonth)
   }
-  if (typeof(ageDefaultDay) == "character") {
-    ageDefaultDay <- as.integer(ageDefaultDay)
+  if (typeof(ageMissingDay) == "character") {
+    ageMissingDay <- as.integer(ageMissingDay)
   }
   checkmate::assertIntegerish(
-    ageDefaultMonth,
+    ageMissingMonth,
     lower = 1, upper = 12, any.missing = FALSE, len = 1,
     null.ok = !age
   )
   checkmate::assertIntegerish(
-    ageDefaultDay,
+    ageMissingDay,
     lower = 1, upper = 31, any.missing = FALSE, len = 1,
     null.ok = !age
   )
@@ -209,8 +209,8 @@ addDemographics <- function(x,
     x <- x %>%
       joinPersonTable(
         name = nm1,
-        missingDay = ageDefaultDay,
-        missingMonth = ageDefaultMonth,
+        missingDay = ageMissingDay,
+        missingMonth = ageMissingMonth,
         imposeDay = ageImposeDay,
         imposeMonth = ageImposeMonth,
         genderConceptId = nm2
@@ -316,9 +316,9 @@ uniqueColumnName <- function(cols = character(), n = 1, nletters = 2) {
 #' @param indexDate Variable in x that contains the date to compute the age.
 #' @param ageName Name of the new column that contains age.
 #' @param ageGroup List of age groups to be added.
-#' @param ageDefaultMonth Month of the year assigned to individuals with missing
+#' @param ageMissingMonth Month of the year assigned to individuals with missing
 #' month of birth. By default: 1.
-#' @param ageDefaultDay day of the month assigned to individuals with missing
+#' @param ageMissingDay day of the month assigned to individuals with missing
 #' day of birth. By default: 1.
 #' @param ageImposeMonth Whether the month of the date of birth will be
 #' considered as missing for all the individuals.
@@ -341,8 +341,8 @@ addAge <- function(x,
                    indexDate = "cohort_start_date",
                    ageName = "age",
                    ageGroup = NULL,
-                   ageDefaultMonth = 1,
-                   ageDefaultDay = 1,
+                   ageMissingMonth = 1,
+                   ageMissingDay = 1,
                    ageImposeMonth = FALSE,
                    ageImposeDay = FALSE,
                    missingAgeGroupValue = "None") {
@@ -352,8 +352,8 @@ addAge <- function(x,
       age = TRUE,
       ageName = ageName,
       ageGroup = ageGroup,
-      ageDefaultDay = ageDefaultDay,
-      ageDefaultMonth = ageDefaultMonth,
+      ageMissingDay = ageMissingDay,
+      ageMissingMonth = ageMissingMonth,
       ageImposeDay = ageImposeDay,
       ageImposeMonth = ageImposeMonth,
       missingAgeGroupValue = missingAgeGroupValue,
@@ -399,8 +399,8 @@ addFutureObservation <- function(x,
       indexDate = indexDate,
       age = FALSE,
       ageGroup = NULL,
-      ageDefaultDay = NULL,
-      ageDefaultMonth = NULL,
+      ageMissingDay = NULL,
+      ageMissingMonth = NULL,
       ageImposeDay = FALSE,
       ageImposeMonth = FALSE,
       sex = FALSE,
@@ -447,8 +447,8 @@ addPriorObservation <- function(x,
       indexDate = indexDate,
       age = FALSE,
       ageGroup = NULL,
-      ageDefaultDay = NULL,
-      ageDefaultMonth = NULL,
+      ageMissingDay = NULL,
+      ageMissingMonth = NULL,
       ageImposeDay = FALSE,
       ageImposeMonth = FALSE,
       sex = FALSE,
@@ -627,8 +627,8 @@ addSex <- function(x,
       indexDate = NULL,
       age = FALSE,
       ageGroup = NULL,
-      ageDefaultDay = NULL,
-      ageDefaultMonth = NULL,
+      ageMissingDay = NULL,
+      ageMissingMonth = NULL,
       ageImposeDay = FALSE,
       ageImposeMonth = FALSE,
       sex = TRUE,

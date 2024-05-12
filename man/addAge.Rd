@@ -9,8 +9,8 @@ addAge(
   indexDate = "cohort_start_date",
   ageName = "age",
   ageGroup = NULL,
-  ageDefaultMonth = 1,
-  ageDefaultDay = 1,
+  ageMissingMonth = 1,
+  ageMissingDay = 1,
   ageImposeMonth = FALSE,
   ageImposeDay = FALSE,
   missingAgeGroupValue = "None"
@@ -25,10 +25,10 @@ addAge(
 
 \item{ageGroup}{List of age groups to be added.}
 
-\item{ageDefaultMonth}{Month of the year assigned to individuals with missing
+\item{ageMissingMonth}{Month of the year assigned to individuals with missing
 month of birth. By default: 1.}
 
-\item{ageDefaultDay}{day of the month assigned to individuals with missing
+\item{ageMissingDay}{day of the month assigned to individuals with missing
 day of birth. By default: 1.}
 
 \item{ageImposeMonth}{Whether the month of the date of birth will be

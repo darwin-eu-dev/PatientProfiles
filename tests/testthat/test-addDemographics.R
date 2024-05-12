@@ -621,7 +621,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 
   result <- addAge(
     x = cdm$cohort1, ageImposeMonth = FALSE, ageImposeDay = FALSE,
-    ageDefaultMonth = 4, ageDefaultDay = 4
+    ageMissingMonth = 4, ageMissingDay = 4
   ) %>% dplyr::collect()
 
   expect_true(all(c(colnames(cohort1), "age") %in% colnames(result)))
@@ -630,7 +630,7 @@ test_that("age at cohort entry, missing year/month/day of birth", {
 
   resultB <- addDemographics(
     x = cdm$cohort1, ageImposeMonth = FALSE, ageImposeDay = FALSE,
-    ageDefaultMonth = 4, ageDefaultDay = 4,
+    ageMissingMonth = 4, ageMissingDay = 4,
     sex = FALSE,
     priorObservation = FALSE, futureObservation = FALSE,
   ) %>% dplyr::collect()
@@ -870,11 +870,11 @@ test_that("expected errors", {
   expect_error(addAge(cdm$cohort1, indexDate = "subject_id"))
   expect_error(expect_error(addAge(cdm$cohort1,
     indexDate = "cohort_start_date",
-    ageDefaultMonth = "1"
+    ageMissingMonth = "1"
   )))
   expect_error(expect_error(addAge(cdm$cohort1,
     indexDate = "cohort_start_date",
-    ageDefaultDay = "1"
+    ageMissingDay = "1"
   )))
   expect_error(addAge(cdm$cohort1,
     indexDate = "cohort_start_date",
@@ -902,11 +902,11 @@ test_that("expected errors", {
   ))
   expect_error(result <- addAge(
     x = cdm[["cohort1"]],
-    ageDefaultMonth = 1.1
+    ageMissingMonth = 1.1
   ))
   expect_error(result <- addAge(
     x = cdm[["cohort1"]],
-    ageDefaultDay = 1.1
+    ageMissingDay = 1.1
   ))
 
 
