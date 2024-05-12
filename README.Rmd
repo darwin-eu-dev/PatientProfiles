@@ -33,6 +33,12 @@ You can install the latest version of PatientProfiles like so:
 install.packages("PatientProfiles")
 ```
 
+## Citation
+
+```{r}
+citation("PatientProfiles")
+```
+
 ## Example usage
 ### Create a reference to data in the OMOP CDM format 
 The PatientProfiles package is designed to work with data in the OMOP CDM format, so our first step is to create a reference to the data using the CDMConnector package. 
