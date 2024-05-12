@@ -37,10 +37,6 @@ reference:
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a standard omop table.
 - contents:
   - matches("addTableIntersectFlag|addTableIntersectCount|addTableIntersectDays|addTableIntersectDate|addTableIntersectField")
-- subtitle: Add multiple columns from large scale characteristics
-  desc: Add multiple variables indicating the intersection between concepts in tables in the OMOP Common Data Model.
-- contents:
-  - '`addLargeScaleCharacteristics`'
 - subtitle: Summarise patient characteristics
   desc: Function that allow the user to summarise patient characteristics (characteristics must be added priot the use of the function)
 - contents:
