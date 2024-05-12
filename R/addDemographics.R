@@ -117,8 +117,8 @@ addDemographics <- function(x,
   if (!(age | sex | priorObservation | futureObservation | dateOfBirth)) {
     cli::cli_abort("age, sex, priorObservation, futureObservation and dateOfBirth can not be FALSE")
   }
-  checkmate::assertCharacter(missingAgeGroupValue, len = 1, any.missing = FALSE)
-  checkmate::assertCharacter(missingSexValue, len = 1, any.missing = FALSE)
+  assertCharacter(missingAgeGroupValue, length = 1, na = TRUE)
+  assertCharacter(missingSexValue, length = 1, na = TRUE)
   assertChoice(priorObservationType, c("date", "days"), length = 1)
   assertChoice(futureObservationType, c("date", "days"), length = 1)
 
@@ -230,13 +230,23 @@ addDemographics <- function(x,
   }
 
   if (sex == TRUE) {
-    sQ <- glue::glue(
-      'dplyr::case_when(.data[["{idGender}"]] == 8507 ~ "Male",
+    if (is.na(missingSexValue)) {
+      sQ <- glue::glue(
+        'dplyr::case_when(.data[["{idGender}"]] == 8507 ~ "Male",
+    .data[["{idGender}"]] == 8532 ~ "Female",
+      TRUE ~ NA_character_)'
+      ) %>%
+        rlang::parse_exprs() %>%
+        rlang::set_names(glue::glue(sexName))
+    } else {
+      sQ <- glue::glue(
+        'dplyr::case_when(.data[["{idGender}"]] == 8507 ~ "Male",
     .data[["{idGender}"]] == 8532 ~ "Female",
       TRUE ~ "{missingSexValue}")'
-    ) %>%
-      rlang::parse_exprs() %>%
-      rlang::set_names(glue::glue(sexName))
+      ) %>%
+        rlang::parse_exprs() %>%
+        rlang::set_names(glue::glue(sexName))
+    }
   } else {
     sQ <- NULL
   }

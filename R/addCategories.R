@@ -56,6 +56,7 @@ addCategories <- function(x,
     categories,
     types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
   )
+  assertCharacter(missingCategoryValue, length = 1, na = TRUE)
 
   if (length(unique(names(categories))) < length((names(categories)))) {
     cli::cli_abort(
@@ -146,11 +147,17 @@ addCategories <- function(x,
         }
         sqlCategories <- gsub("#ELSE#", newSql, sqlCategories)
       }
-      sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
-        is.null(missingCategoryValue), NA, missingCategoryValue
-      ), "\""), sqlCategories) %>%
-        rlang::parse_exprs() %>%
-        rlang::set_names(glue::glue(name))
+      if (is.na(missingCategoryValue)) {
+        sqlCategories <- gsub("#ELSE#", "NA_character_", sqlCategories) %>%
+          rlang::parse_exprs() %>%
+          rlang::set_names(glue::glue(name))
+      } else {
+        sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
+          is.null(missingCategoryValue), NA, missingCategoryValue
+        ), "\""), sqlCategories) %>%
+          rlang::parse_exprs() %>%
+          rlang::set_names(glue::glue(name))
+      }
       x <- x %>%
         dplyr::mutate(!!!sqlCategories)
     } else {

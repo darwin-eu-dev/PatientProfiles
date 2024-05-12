@@ -1285,4 +1285,15 @@ test_that("addDemographics, date of birth option", {
   expect_false("date_of_birth" %in% colnames(x))
   expect_no_error(x <- cdm$cohort1 |> addDemographics(dateOfBirth = F))
   expect_false("date_of_birth" %in% colnames(x))
+  mockDisconnect(cdm = cdm)
+})
+
+test_that("allow NA as age_group", {
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+  expect_no_error(
+    cdm$cohort1 <- cdm$cohort1 |>
+      addAge(ageGroup = list(c(0,0)), missingAgeGroupValue = NA_character_)
+  )
+  expect_true(all(is.na(cdm$cohort1 |> dplyr::pull("age_group"))))
+  mockDisconnect(cdm = cdm)
 })

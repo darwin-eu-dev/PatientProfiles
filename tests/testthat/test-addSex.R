@@ -58,3 +58,24 @@ test_that("addSex, desired result for all parameters", {
   ))
   mockDisconnect(cdm = cdm)
 })
+
+test_that("allow NA in missing sex", {
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = dplyr::tibble(
+      person_id = 1:5,
+      gender_concept_id = c(8507, NA, 8507, 8507, 8507),
+      year_of_birth = 2000,
+      race_concept_id = 0,
+      ethnicity_concept_id = 0
+    )
+  )
+  expect_no_error(
+    x <- cdm$cohort1 |> addSex(missingSexValue = NA_character_)
+  )
+  expect_true(is.na(
+    x |> dplyr::filter(.data$subject_id == 2) |> dplyr::pull("sex")
+  ))
+  mockDisconnect(cdm = cdm)
+})
