@@ -1,7 +1,10 @@
 test_that("basic structures", {
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   cdm$ati_visit <- cdm$cohort1 |>
-    .addTableIntersect(tableName = "visit_occurrence")
+    addTableIntersectCount(tableName = "visit_occurrence") |>
+    addTableIntersectFlag(tableName = "visit_occurrence") |>
+    addTableIntersectDate(tableName = "visit_occurrence") |>
+    addTableIntersectDays(tableName = "visit_occurrence")
   expect_true(all(c(
     "visit_occurrence_flag_0_to_inf", "visit_occurrence_count_0_to_inf",
     "visit_occurrence_date_0_to_inf", "visit_occurrence_days_0_to_inf"

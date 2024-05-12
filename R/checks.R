@@ -268,37 +268,6 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
 }
 
 #' @noRd
-checkNameStyle <- function(nameStyle, filterTbl, windowTbl, value) {
-  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
-  filterChange <- !is.null(filterTbl) && nrow(filterTbl) > 1
-  windowChange <- !is.null(windowTbl) && nrow(windowTbl) > 1
-  valueChange <- length(value) > 1
-  changed <- c(
-    c("{id_name}")[filterChange],
-    c("{window_name}")[windowChange],
-    c("{value}")[valueChange]
-  )
-  containWindow <- grepl("\\{window_name\\}", nameStyle)
-  containFilter <- grepl("\\{id_name\\}", nameStyle)
-  containValue <- grepl("\\{value\\}", nameStyle)
-  contained <- c(
-    c("{id_name}")[containFilter],
-    c("{window_name}")[containWindow],
-    c("{value}")[containValue]
-  )
-  if (!all(changed %in% contained)) {
-    variablesNotContained <- changed[!(changed %in% contained)]
-    variablesNotContained <- gsub("[{}]", "", variablesNotContained)
-    variablesNotContained <- gsub("id_name", "cohort_name", variablesNotContained)
-    cli::cli_abort(paste0(
-      "Variables: ",
-      paste0(variablesNotContained, collapse = ", "),
-      " have multiple possibilities and should be cotained in nameStyle"
-    ))
-  }
-}
-
-#' @noRd
 checkValue <- function(value, x, name) {
   checkmate::assertCharacter(value, any.missing = FALSE, min.len = 1)
   checkmate::assertTRUE(
@@ -388,11 +357,6 @@ checkSnakeCase <- function(name, verbose = TRUE) {
     cli::cli_alert("special symbols in names have been changed to '_'")
   }
   invisible(name)
-}
-
-#' @noRd
-checkVariableType <- function(variableType) {
-  assertChoice(x = variableType, choices = formats$variable_type |> unique())
 }
 
 #' @noRd
@@ -575,31 +539,6 @@ assertInputIntersect <- function(inputList,
   })
   return(inputList)
 }
-editNamesIntersect <- function(inputList) {
-  if (length(inputList) > 0) {
-    nms <- names(inputList)
-    if (is.null(nms)) {
-      nms <- rep("", length(nms))
-    }
-    for (k in seq_along(nms)) {
-      if (nms[k] == "") {
-        nams <- names(inputList[[k]])
-        if ("tableName" %in% nams) {
-          tblName <- inputList[[k]]$tableName
-        } else if ("conceptSet" %in% nams) {
-          tblName <- "Concepts"
-        } else {
-          tblName <- inputList[[k]]$targetCohortTable
-        }
-        value <- inputList[[k]]$value |> paste0(collapse = "+")
-        winName <- getWindowNames(inputList[[k]]$window) |> paste0(collapse = "+")
-        nms[k] <- paste(tblName, value, winName)
-      }
-    }
-    names(inputList) <- nms
-  }
-  return(inputList)
-}
 getArguments <- function(fun) {
   arguments <- formals(fun)
   compulsory <- character()
@@ -612,34 +551,6 @@ getArguments <- function(fun) {
   compulsory <- compulsory[compulsory != "x"]
   all <- names(arguments)
   return(list(all = all, compulsory = compulsory))
-}
-
-#' @noRd
-checkCohortIntersect <- function(cohortIntersect, cdm) {
-  checkmate::assertList(cohortIntersect)
-  arguments <- getArguments(.addCohortIntersect)
-  cohortIntersect <- assertInputIntersect(
-    inputList = cohortIntersect,
-    possibleArguments = c(arguments$all, "value"),
-    compulsoryArguments = arguments$compulsory,
-    nameFunction = "cohortIntersect"
-  )
-  cohortIntersect <- editNamesIntersect(cohortIntersect)
-  return(cohortIntersect)
-}
-
-#' @noRd
-checkConceptIntersect <- function(conceptIntersect, cdm) {
-  checkmate::assertList(conceptIntersect)
-  arguments <- getArguments(.addConceptIntersect)
-  conceptIntersect <- assertInputIntersect(
-    inputList = conceptIntersect,
-    possibleArguments = c(arguments$all, "value"),
-    compulsoryArguments = arguments$compulsory,
-    nameFunction = "conceptIntersect"
-  )
-  conceptIntersect <- editNamesIntersect(conceptIntersect)
-  return(conceptIntersect)
 }
 
 #' @noRd

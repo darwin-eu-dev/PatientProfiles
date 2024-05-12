@@ -164,37 +164,15 @@ test_that("checkNameStyle", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
     subject_id = c(1, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    )
+    cohort_start_date = as.Date(c("2020-01-01", "2020-01-15")),
+    cohort_end_date = cohort_start_date
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1),
     subject_id = c(1, 1, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26"
-      )
-    ),
+    cohort_start_date = as.Date(c("2020-01-15", "2020-01-25", "2020-01-26")),
+    cohort_end_date = cohort_start_date,
   )
 
   person <- dplyr::tibble(

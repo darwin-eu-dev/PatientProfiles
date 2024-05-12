@@ -14,51 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.addCohortIntersect <- function(x,
-                                targetCohortTable,
-                                targetCohortId = NULL,
-                                indexDate = "cohort_start_date",
-                                censorDate = NULL,
-                                targetStartDate = "cohort_start_date",
-                                targetEndDate = "cohort_end_date",
-                                window = list(c(0, Inf)),
-                                order = "first",
-                                flag = TRUE,
-                                count = TRUE,
-                                date = TRUE,
-                                days = TRUE,
-                                nameStyle = "{value}_{cohort_name}_{window_name}") {
-  cdm <- omopgenerics::cdmReference(x)
-  checkCdm(cdm, tables = targetCohortTable)
-  checkmate::assertNumeric(targetCohortId, any.missing = FALSE, null.ok = TRUE)
-  parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
-  nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
-  checkmate::assertLogical(flag, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(count, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(date, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(days, any.missing = FALSE, len = 1)
-  checkmate::assertTRUE(flag | count | date | days)
-  value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
-
-  x <- x %>%
-    .addIntersect(
-      tableName = targetCohortTable,
-      filterVariable = parameters$filter_variable,
-      filterId = parameters$filter_id,
-      idName = parameters$id_name,
-      value = value,
-      indexDate = indexDate,
-      targetStartDate = targetStartDate,
-      targetEndDate = targetEndDate,
-      window = window,
-      order = order,
-      nameStyle = nameStyle,
-      censorDate = censorDate
-    )
-
-  return(x)
-}
-
 #' It creates columns to indicate the presence of cohorts
 #'
 #' @param x Table with individuals in the cdm.

@@ -14,66 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It creates columns to indicate overlap information between two tables
-#'
-#' @param x Table with individuals in the cdm.
-#' @param tableName name of the cohort that we want to check for overlap.
-#' @param filterVariable the variable that we are going to use to filter (e.g.
-#' cohort_definition_id).
-#' @param filterId the value of filterVariable that we are interested in, it can
-#' be a vector.
-#' @param idName the name of each filterId, must have same length than
-#' filterId.
-#' @param value value of interest to add: it can be count, flag, date or time.
-#' @param window window to consider events of.
-#' @param indexDate Variable in x that contains the date to compute the
-#' intersection.
-#' @param censorDate whether to censor overlap events at a date column of x.
-#' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence).
-#' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence).
-#' @param order last or first date to use for date/time calculations.
-#' @param nameStyle naming of the added column or columns, should include
-#' required parameters.
-#'
-#' @return table with added columns with overlap information.
-#'
-#' @noRd
-#'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#'
-#' cdm <- mockPatientProfiles()
-#' result <- cdm$cohort1 %>%
-#'   addIntersect(tableName = "cohort2", value = "date") %>%
-#'   dplyr::collect()
-#' mockDisconnect(cdm = cdm)
-#' }
-#'
-addIntersect <- function(x,
-                         tableName,
-                         value,
-                         filterVariable = NULL,
-                         filterId = NULL,
-                         idName = NULL,
-                         window = list(c(0, Inf)),
-                         indexDate = "cohort_start_date",
-                         censorDate = NULL,
-                         targetStartDate = startDateColumn(tableName),
-                         targetEndDate = endDateColumn(tableName),
-                         order = "first",
-                         nameStyle = "{value}_{id_name}_{window_name}") {
-  .addIntersect(
-    x = x, tableName = tableName, value = value,
-    filterVariable = filterVariable, filterId = filterId, idName = idName,
-    window = window, indexDate = indexDate, censorDate = censorDate,
-    targetStartDate = targetStartDate, targetEndDate = targetEndDate,
-    order = order, nameStyle = nameStyle
-  )
-}
-
 .addIntersect <- function(x,
                           tableName,
                           value,

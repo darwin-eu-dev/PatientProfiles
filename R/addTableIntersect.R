@@ -14,51 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.addTableIntersect <- function(x,
-                               tableName,
-                               indexDate = "cohort_start_date",
-                               censorDate = NULL,
-                               window = list(c(0, Inf)),
-                               order = "first",
-                               targetStartDate = startDateColumn(tableName),
-                               targetEndDate = endDateColumn(tableName),
-                               flag = TRUE,
-                               count = TRUE,
-                               date = TRUE,
-                               days = TRUE,
-                               field = character(),
-                               nameStyle = "{table_name}_{value}_{window_name}") {
-  cdm <- omopgenerics::cdmReference(x)
-  checkCdm(cdm, tables = tableName)
-  nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
-  checkmate::assertLogical(flag, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(count, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(date, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(days, any.missing = FALSE, len = 1)
-  checkmate::assertTRUE(flag | count | date | days | length(field) > 0)
-  value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
-  value <- c(value, field)
-
-
-  x <- x %>%
-    .addIntersect(
-      tableName = tableName,
-      filterVariable = NULL,
-      filterId = NULL,
-      idName = NULL,
-      value = value,
-      indexDate = indexDate,
-      targetStartDate = targetStartDate,
-      targetEndDate = targetEndDate,
-      window = window,
-      order = order,
-      nameStyle = nameStyle,
-      censorDate = censorDate
-    )
-
-  return(x)
-}
-
 #' Compute a flag intersect with an omop table.
 #'
 #' @param x Table with individuals in the cdm.
