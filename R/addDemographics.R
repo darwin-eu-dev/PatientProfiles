@@ -46,9 +46,7 @@
 #' @param futureObservationName Future observation variable name.
 #' @param futureObservationType Whether to return a "date" or the number of
 #' "days".
-#'
 #' @param dateOfBirth TRUE or FALSE, if true the date of birth will be return.
-#'
 #' @param dateOfBirthName dateOfBirth column name.
 #'
 #' @return cohort table with the added demographic information columns.
@@ -273,8 +271,16 @@ addDemographics <- function(x,
     fOQ <- NULL
   }
 
+  if (dateOfBirth) {
+    dobQ <- glue::glue('.data[["{idBirth}"]]') |>
+      rlang::parse_exprs() |>
+      rlang::set_names(dateOfBirthName)
+  } else {
+    dobQ <- NULL
+  }
+
   x <- x %>%
-    dplyr::mutate(!!!aQ, !!!sQ, !!!pHQ, !!!fOQ) |>
+    dplyr::mutate(!!!aQ, !!!sQ, !!!pHQ, !!!fOQ, !!!dobQ) |>
     dplyr::select(!dplyr::any_of(ids[1:4])) |>
     dplyr::compute()
 
@@ -293,9 +299,12 @@ addDemographics <- function(x,
   return(x)
 }
 
-uniqueColumnName <- function(cols = character(), n = 1) {
-  tidyr::expand_grid(x1 = letters, x2 = letters) |>
-    dplyr::mutate("id" = paste0("id_", .data$x1, .data$x2)) |>
+uniqueColumnName <- function(cols = character(), n = 1, nletters = 2) {
+  x <- rep(list(letters), nletters) |>
+    rlang::set_names(paste0("id_", seq_len(nletters)))
+  tidyr::expand_grid(!!!x) |>
+    tidyr::unite(col = "id", dplyr::starts_with("id_"), sep = "") |>
+    dplyr::mutate("id" = paste0("id_", .data$id)) |>
     dplyr::filter(!.data$id %in% .env$cols) |>
     dplyr::sample_n(size = .env$n) |>
     dplyr::pull("id")
@@ -493,6 +502,19 @@ addInObservation <- function(x,
   checkWindow(window)
   names(window) <- getWindowNames(window)
   assertNameStyle(nameStyle = nameStyle, values = list("window_name" = window))
+  overwriteCols <- glue::glue(nameStyle, window_name = names(window))
+  overwriteCols <- overwriteCols[overwriteCols %in% colnames(x)]
+  if (length(overwriteCols) > 0) {
+    cli::cli_warn(c("!" = "{overwriteCols} column{?s} will be overwritten"))
+    x <- x |>
+      dplyr::select(!dplyr::all_of(overwriteCols))
+  }
+
+  ids <- uniqueColumnName(
+    c(colnames(cdm$person), colnames(cdm$observation_period), colnames(x)), 2, 3
+  )
+  idPrior <- ids[1]
+  idFuture <- ids[2]
 
   x <- x %>%
     addDemographics(
@@ -500,11 +522,11 @@ addInObservation <- function(x,
       age = FALSE,
       sex = FALSE,
       priorObservation = TRUE,
-      priorObservationName = "tmp_prior",
+      priorObservationName = idPrior,
       futureObservation = TRUE,
-      futureObservationName = "tmp_future"
+      futureObservationName = idFuture
     ) |>
-    dplyr::mutate("tmp_prior" = -.data$tmp_prior)
+    dplyr::mutate(!!idPrior := -.data[[idPrior]])
 
   for (k in seq_along(window)) {
     win <- window[[k]]
@@ -514,7 +536,7 @@ addInObservation <- function(x,
     if (all(win == c(0, 0))) {
       x <- x %>%
         dplyr::mutate(!!nam := as.numeric(
-          dplyr::if_else(is.na(.data$tmp_prior), 0, 1)
+          dplyr::if_else(is.na(.data[[idPrior]]), 0, 1)
         ))
     } else {
       lower <- win[1]
@@ -526,9 +548,9 @@ addInObservation <- function(x,
         } else {
           x <- x %>%
             dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-              !is.na(.data$tmp_prior) &
-                .data$tmp_prior <= .env$lower &
-                .env$upper <= .data$tmp_future,
+              !is.na(.data[[idPrior]]) &
+                .data[[idPrior]] <= .env$lower &
+                .env$upper <= .data[[idFuture]],
               1,
               0
             )))
@@ -538,13 +560,13 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior), 1, 0
+                !is.na(.data[[idPrior]]), 1, 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior) &
-                  .data$tmp_prior <= .env$upper,
+                !is.na(.data[[idPrior]]) &
+                  .data[[idPrior]] <= .env$upper,
                 1,
                 0
               )))
@@ -553,17 +575,17 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior) &
-                  .env$lower <= .data$tmp_future,
+                !is.na(.data[[idPrior]]) &
+                  .env$lower <= .data[[idFuture]],
                 1,
                 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior) &
-                  .data$tmp_prior <= .env$upper &
-                  .env$lower <= .data$tmp_future,
+                !is.na(.data[[idPrior]]) &
+                  .data[[idPrior]] <= .env$upper &
+                  .env$lower <= .data[[idFuture]],
                 1,
                 0
               )))
@@ -574,7 +596,7 @@ addInObservation <- function(x,
   }
 
   x <- x |>
-    dplyr::select(-"tmp_prior", -"tmp_future") |>
+    dplyr::select(!dplyr::all_of(ids)) |>
     dplyr::compute()
 
   return(x)

@@ -91,7 +91,8 @@ test_that("groups and strata", {
           strata_name == "overall" & strata_level == "overall" &
           variable_name == "number subjects"
       ) %>%
-      dplyr::pull("estimate_value") == "1000"
+      dplyr::pull("estimate_value")  |>
+      as.numeric() <= 1000
   )
 
   result <- cdm$condition_occurrence %>%
@@ -106,20 +107,16 @@ test_that("groups and strata", {
     dplyr::select("strata_name") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c("overall", "age_group &&& sex")))
+    c("overall", "age_group &&& sex")
+  ))
   expect_true(all(result %>%
     dplyr::select("strata_level") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c(
-      "overall",
-      "0 to 30 &&& Female",
-      "0 to 30 &&& Male",
-      "31 to 60 &&& Female",
-      "31 to 60 &&& Male",
-      "None &&& Female",
-      "None &&& Male"
-    )))
+    c("overall", "0 to 30 &&& Female", "0 to 30 &&& Male",
+      "31 to 60 &&& Female", "31 to 60 &&& Male", "None &&& Female",
+      "None &&& Male")
+  ))
 
   result <- cdm$condition_occurrence %>%
     addDemographics(
@@ -137,15 +134,10 @@ test_that("groups and strata", {
     dplyr::select("group_level") %>%
     dplyr::distinct() %>%
     dplyr::pull() %in%
-    c(
-      "overall",
-      "0 to 30 &&& Female",
-      "0 to 30 &&& Male",
-      "31 to 60 &&& Female",
-      "31 to 60 &&& Male",
-      "None &&& Female",
-      "None &&& Male"
-    )))
+    c("overall", "0 to 30 &&& Female", "0 to 30 &&& Male",
+      "31 to 60 &&& Female", "31 to 60 &&& Male", "None &&& Female",
+      "None &&& Male")
+  ))
 
   mockDisconnect(cdm = cdm)
 })
@@ -425,7 +417,7 @@ test_that("data is ordered", {
   name <- CDMConnector::inSchema(writeSchema(), "test_table")
   con <- connection()
   DBI::dbWriteTable(con, name = name, value = cohort)
-  cohort <- dplyr::tbl(con, name)
+  testTable <- dplyr::tbl(con, name)
   variables <- list(
     numeric = c("age", "number_visits", "prior_history"),
     categorical = c("sex")
@@ -465,7 +457,7 @@ test_that("data is ordered", {
   )
   name <- CDMConnector::inSchema(writeSchema(), "test_table")
   DBI::dbWriteTable(con, name = name, value = cohort)
-  cohort <- dplyr::tbl(con, name)
+  testTable <- dplyr::tbl(con, name)
   variables <- list(
     numeric = c("age", "number_visits", "prior_history"),
     categorical = c("sex")

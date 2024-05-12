@@ -4,8 +4,6 @@ test_that("check input length and type for each of the arguments", {
 
   expect_error(addFutureObservation("cdm$cohort1"))
 
-  expect_warning(addFutureObservation(cdm$cohort1, "cdm"))
-
   expect_error(addFutureObservation(cdm$cohort1, indexDate = "end_date"))
 
   mockDisconnect(cdm = cdm)
@@ -29,34 +27,22 @@ test_that("check working example with cohort1", {
   skip_on_cran()
   # create mock tables for testing
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c("1", "1", "1"),
-    subject_id = c("1", "2", "3"),
-    cohort_start_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-01"),
-      as.Date("2010-02-01")
-    ),
-    cohort_end_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-01"),
-      as.Date("2010-02-01")
-    )
+    cohort_definition_id = 1L,
+    subject_id = c(1, 2, 3),
+    cohort_start_date = as.Date(c("2010-03-03", "2010-03-01", "2010-02-01")),
+    cohort_end_date = cohort_start_date
   )
 
   obs1 <- dplyr::tibble(
-    observation_period_id = c("1", "2", "3"),
-    person_id = c("1", "2", "3"),
-    observation_period_start_date = c(
-      as.Date("2010-02-03"),
-      as.Date("2010-02-01"),
-      as.Date("2010-01-01")
-    ),
-    observation_period_end_date = c(
-      as.Date("2014-01-01"),
-      as.Date("2012-01-01"),
-      as.Date("2012-01-01")
-    ),
-    period_type_concept_id = 0
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(c(
+      "2010-02-03", "2010-02-01", "2010-01-01"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2014-01-01", "2012-01-01", "2012-01-01"
+    )),
+    period_type_concept_id = 0L
   )
 
   cdm <- mockPatientProfiles(
@@ -101,36 +87,24 @@ test_that("check working example with condition_occurrence", {
   skip_on_cran()
   # create mock tables for testing
   condition_occurrence <- dplyr::tibble(
-    condition_occurrence_id = c("1", "1", "1"),
-    person_id = c("1", "2", "3"),
-    condition_concept_id = 0,
-    condition_type_concept_id = 0,
-    condition_start_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-01"),
-      as.Date("2010-02-01")
-    ),
-    condition_end_date = c(
-      as.Date("2015-01-01"),
-      as.Date("2013-01-01"),
-      as.Date("2013-01-01")
-    )
+    condition_occurrence_id = 1L,
+    person_id = 1:3,
+    condition_concept_id = 0L,
+    condition_type_concept_id = 0L,
+    condition_start_date = as.Date(c("2010-03-03", "2010-03-01", "2010-02-01")),
+    condition_end_date = as.Date(c("2015-01-01", "2013-01-01", "2013-01-01"))
   )
 
   obs1 <- dplyr::tibble(
-    observation_period_id = c("1", "2", "3"),
-    person_id = c("1", "2", "3"),
-    observation_period_start_date = c(
-      as.Date("2010-02-03"),
-      as.Date("2010-02-01"),
-      as.Date("2010-01-01")
-    ),
-    observation_period_end_date = c(
-      as.Date("2014-01-01"),
-      as.Date("2012-01-01"),
-      as.Date("2012-01-01")
-    ),
-    period_type_concept_id = 0
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date(c(
+      "2010-02-03", "2010-02-01", "2010-01-01"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2014-01-01", "2012-01-01", "2012-01-01"
+    )),
+    period_type_concept_id = 0L
   )
 
   cdm <- mockPatientProfiles(
@@ -138,15 +112,11 @@ test_that("check working example with condition_occurrence", {
     writeSchema = writeSchema(),
     seed = 1,
     condition_occurrence = condition_occurrence,
-    observation_period = obs1,
-    cohort1 = emptyCohort,
-    cohort2 = emptyCohort
+    observation_period = obs1
   )
 
   result <- cdm$condition_occurrence %>%
-    addFutureObservation(
-      indexDate = "condition_start_date"
-    ) %>%
+    addFutureObservation(indexDate = "condition_start_date") %>%
     dplyr::collect()
 
   expect_true(all(
@@ -177,36 +147,24 @@ test_that("different name", {
   skip_on_cran()
   # create mock tables for testing
   condition_occurrence <- dplyr::tibble(
-    condition_occurrence_id = c("1", "1", "1"),
-    person_id = c("1", "2", "3"),
-    condition_start_date = c(
-      as.Date("2010-03-03"),
-      as.Date("2010-03-01"),
-      as.Date("2010-02-01")
-    ),
-    condition_end_date = c(
-      as.Date("2015-01-01"),
-      as.Date("2013-01-01"),
-      as.Date("2013-01-01")
-    ),
-    condition_concept_id = 0,
-    condition_type_concept_id = 0
+    condition_occurrence_id = 1L,
+    person_id = 1:3,
+    condition_start_date = as.Date(c("2010-03-03", "2010-03-01", "2010-02-01")),
+    condition_end_date = as.Date(c("2015-01-01", "2013-01-01", "2013-01-01")),
+    condition_concept_id = 0L,
+    condition_type_concept_id = 0L
   )
 
   obs1 <- dplyr::tibble(
-    observation_period_id = c("1", "2", "3"),
-    person_id = c("1", "2", "3"),
-    observation_period_start_date = c(
-      as.Date("2010-02-03"),
-      as.Date("2010-02-01"),
-      as.Date("2010-01-01")
-    ),
-    observation_period_end_date = c(
-      as.Date("2014-01-01"),
-      as.Date("2012-01-01"),
-      as.Date("2012-01-01")
-    ),
-    period_type_concept_id = 0
+    observation_period_id = 1:3,
+    person_id = 1:3,
+    observation_period_start_date = as.Date(c(
+      "2010-02-03", "2010-02-01", "2010-01-01"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2014-01-01", "2012-01-01", "2012-01-01"
+    )),
+    period_type_concept_id = 0L
   )
 
   cdm <- mockPatientProfiles(
@@ -214,16 +172,12 @@ test_that("different name", {
     writeSchema = writeSchema(),
     seed = 1,
     condition_occurrence = condition_occurrence,
-    observation_period = obs1,
-    cohort1 = emptyCohort,
-    cohort2 = emptyCohort
+    observation_period = obs1
   )
 
-  cdm$condition_occurrence <-
-    cdm$condition_occurrence %>%
+  cdm$condition_occurrence <- cdm$condition_occurrence %>%
     addFutureObservation(
-      indexDate = "condition_start_date",
-      futureObservationName = "fh"
+      indexDate = "condition_start_date", futureObservationName = "fh"
     )
   expect_true("fh" %in% colnames(cdm$condition_occurrence))
 
@@ -254,36 +208,29 @@ test_that("different name", {
 test_that("priorHistory and future_observation - outside of observation period", {
   skip_on_cran()
   # futureHistory should be NA if index date is outside of an observation period
-
   person <- dplyr::tibble(
-    person_id = c(1, 2),
-    gender_concept_id = 1,
-    year_of_birth = 1980,
-    month_of_birth = 01,
-    day_of_birth = 01,
-    race_concept_id = 0,
-    ethnicity_concept_id = 0
+    person_id = 1:2,
+    gender_concept_id = 1L,
+    year_of_birth = 1980L,
+    month_of_birth = 1L,
+    day_of_birth = 1L,
+    race_concept_id = 0L,
+    ethnicity_concept_id = 0L
   )
   observation_period <- dplyr::tibble(
-    observation_period_id = c(1, 2),
-    person_id = c(1, 2),
-    observation_period_start_date = c(
-      as.Date("2000-01-01"),
-      as.Date("2014-01-01")
-    ),
-    observation_period_end_date = c(
-      as.Date("2001-01-01"),
-      as.Date("2015-01-01")
-    ),
-    period_type_concept_id = 0
+    observation_period_id = 1:2,
+    person_id = 1:2,
+    observation_period_start_date = as.Date(c("2000-01-01", "2014-01-01")),
+    observation_period_end_date = as.Date(c("2001-01-01", "2015-01-01")),
+    period_type_concept_id = 0L
   )
   co <- dplyr::tibble(
     condition_occurrence_id = 1:2,
-    person_id = c(1, 2),
+    person_id = 1:2,
     condition_start_date = as.Date(c("2012-02-01")),
     condition_end_date = as.Date(c("2013-02-01")),
-    condition_concept_id = 0,
-    condition_type_concept_id = 0
+    condition_concept_id = 0L,
+    condition_type_concept_id = 0L
   )
 
   cdm <- mockPatientProfiles(
@@ -291,9 +238,7 @@ test_that("priorHistory and future_observation - outside of observation period",
     writeSchema = writeSchema(),
     person = person,
     observation_period = observation_period,
-    condition_occurrence = co,
-    cohort1 = emptyCohort,
-    cohort2 = emptyCohort
+    condition_occurrence = co
   )
 
   cdm$cohort1a <- cdm$condition_occurrence %>%
@@ -310,28 +255,24 @@ test_that("multiple observation periods", {
   # future history should relate to the current observation period
 
   person <- dplyr::tibble(
-    person_id = c(1, 2),
-    gender_concept_id = 1,
+    person_id = 1:2,
+    gender_concept_id = 1L,
     year_of_birth = 1980,
-    month_of_birth = 01,
-    day_of_birth = 01,
-    race_concept_id = 0,
+    month_of_birth = 1L,
+    day_of_birth = 1L,
+    race_concept_id = 0L,
     ethnicity_concept_id = 0
   )
   observation_period <- dplyr::tibble(
-    observation_period_id = c(1, 2, 3),
+    observation_period_id = 1:3,
     person_id = c(1, 1, 2),
-    observation_period_start_date = c(
-      as.Date("2000-01-01"),
-      as.Date("2010-01-01"),
-      as.Date("2010-01-01")
-    ),
-    observation_period_end_date = c(
-      as.Date("2005-01-01"),
-      as.Date("2015-01-01"),
-      as.Date("2015-01-01")
-    ),
-    period_type_concept_id = 0
+    observation_period_start_date = as.Date(c(
+      "2000-01-01", "2010-01-01", "2010-01-01"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2005-01-01", "2015-01-01", "2015-01-01"
+    )),
+    period_type_concept_id = 0L
   )
   cohort1 <- dplyr::tibble(
     cohort_definition_id = 1,
@@ -345,14 +286,11 @@ test_that("multiple observation periods", {
     writeSchema = writeSchema(),
     person = person,
     observation_period = observation_period,
-    cohort1 = cohort1,
-    cohort2 = emptyCohort
+    cohort1 = cohort1
   )
 
   cdm$cohort1a <- cdm$cohort1 %>%
-    addFutureObservation(
-      indexDate = "cohort_start_date"
-    )
+    addFutureObservation(indexDate = "cohort_start_date")
 
   expect_true(nrow(cdm$cohort1a %>% dplyr::collect()) == 2)
   expect_true(all(cdm$cohort1a %>% dplyr::pull(future_observation) ==

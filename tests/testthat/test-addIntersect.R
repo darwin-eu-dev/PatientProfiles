@@ -31,8 +31,6 @@ test_that("conceptIdColumn", {
   expect_true(
     is.na(sourceConceptIdColumn("cohort_k"))
   )
-
-  mockDisconnect(cdm = cdm)
 })
 
 test_that("working examples", {
@@ -40,51 +38,25 @@ test_that("working examples", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    )
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    ))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
@@ -152,15 +124,9 @@ test_that("working examples", {
     expect_true(all(result2[[col]][!is.na(result2[[col]])] == result6[[col]][!is.na(result6[[col]])]))
   }
 
-  expect_true(all(result2$date_all_0_to_inf == as.Date(
-    c(
-      "2020-02-16",
-      "2020-02-16",
-      "2020-02-16",
-      "2020-03-15",
-      "2020-03-15"
-    )
-  )))
+  expect_true(all(result2$date_all_0_to_inf == as.Date(c(
+    "2020-02-16", "2020-02-16", "2020-02-16", "2020-03-15", "2020-03-15"
+  ))))
   expect_true(all(result2$days_all_0_to_inf == c(46, 32, 27, 74, 43)))
   expect_true(all(result2$count_all_0_to_inf == c(4, 4, 3, 3, 1)))
   expect_true(all(result2$flag_all_0_to_inf == c(1, 1, 1, 1, 1)))
@@ -194,31 +160,53 @@ test_that("working examples", {
   expect_true(all(result3$flag_all_minf_to_0 == c(0, 1, 1, 0, 1)))
 
   result4 <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "date") %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "days") %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "count") %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "flag") %>%
+    .addIntersect(
+      tableName = "cohort2", window = list(c(-30, 30)), value = "date"
+    ) %>%
+    .addIntersect(
+      tableName = "cohort2", window = list(c(-30, 30)), value = "days"
+    ) %>%
+    .addIntersect(
+      tableName = "cohort2", window = list(c(-30, 30)), value = "count"
+    ) %>%
+    .addIntersect(
+      tableName = "cohort2", window = list(c(-30, 30)), value = "flag"
+    ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(result4$date_all_m30_to_30 == as.Date(
-    c(
-      "2020-01-15",
-      "2020-01-15",
-      "2020-01-15",
-      "2020-01-24",
-      "2020-01-24"
-    )
-  )))
+  expect_true(all(result4$date_all_m30_to_30 == as.Date(c(
+    "2020-01-15", "2020-01-15", "2020-01-15", "2020-01-24", "2020-01-24"
+  ))))
   expect_true(all(result4$days_all_m30_to_30 == c(14, 0, -5, 23, -8)))
   expect_true(all(result4$count_all_m30_to_30 == c(3, 3, 4, 2, 2)))
   expect_true(all(result4$flag_all_m30_to_30 == c(1, 1, 1, 1, 1)))
 
   result5 <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "date", order = "last") %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "days", order = "last") %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "count", order = "last") %>%
-    .addIntersect(tableName = "cohort2", window = list(c(-30, 30)), value = "flag", order = "last") %>%
+    .addIntersect(
+      tableName = "cohort2",
+      window = list(c(-30, 30)),
+      value = "date",
+      order = "last"
+    ) %>%
+    .addIntersect(
+      tableName = "cohort2",
+      window = list(c(-30, 30)),
+      value = "days",
+      order = "last"
+    ) %>%
+    .addIntersect(
+      tableName = "cohort2",
+      window = list(c(-30, 30)),
+      value = "count",
+      order = "last"
+    ) %>%
+    .addIntersect(
+      tableName = "cohort2",
+      window = list(c(-30, 30)),
+      value = "flag",
+      order = "last"
+    ) %>%
     dplyr::arrange(subject_id, cohort_start_date) %>%
     dplyr::collect()
 
@@ -226,15 +214,9 @@ test_that("working examples", {
   expect_true(all(result5$count_all_m30_to_30 == c(3, 3, 4, 2, 2)))
   expect_true(all(result5$flag_all_m30_to_30 == c(1, 1, 1, 1, 1)))
   expect_true(all(result5$days_all_m30_to_30 == c(25, 11, 27, 28, -3)))
-  expect_true(all(result5$date_all_m30_to_30 == as.Date(
-    c(
-      "2020-01-26",
-      "2020-01-26",
-      "2020-02-16",
-      "2020-01-29",
-      "2020-01-29"
-    )
-  )))
+  expect_true(all(result5$date_all_m30_to_30 == as.Date(c(
+    "2020-01-26", "2020-01-26", "2020-02-16", "2020-01-29", "2020-01-29"
+  ))))
 
   mockDisconnect(cdm = cdm)
 })
@@ -244,51 +226,25 @@ test_that("working examples with cohort_end_date", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    )
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    ))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
@@ -306,7 +262,11 @@ test_that("working examples with cohort_end_date", {
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(result$date_all_0_to_inf == as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"))))
+  expect_true(all(
+    result$date_all_0_to_inf == as.Date(c(
+      "2020-01-15", "2020-01-15", "2020-01-25", "2020-01-24", "2020-03-15"
+    ))
+  ))
 
   mockDisconnect(cdm = cdm)
 })
@@ -316,51 +276,25 @@ test_that("working examples with extra column", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-14",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    )
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-14", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    ))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
@@ -380,40 +314,40 @@ test_that("working examples with extra column", {
     dplyr::compute()
 
   result <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", value = c("flag", "measurment_result"), filterVariable = "cohort_definition_id", filterId = 1, idName = "covid", window = list(c(0, Inf))) %>%
+    .addIntersect(
+      tableName = "cohort2",
+      value = c("flag", "measurment_result"),
+      filterVariable = "cohort_definition_id",
+      filterId = 1,
+      idName = "covid",
+      window = list(c(0, Inf))
+    ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result1 <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", value = "measurment_result", filterVariable = "cohort_definition_id", filterId = 2, idName = "covid", window = list(c(0, Inf))) %>%
+    .addIntersect(
+      tableName = "cohort2",
+      value = "measurment_result",
+      filterVariable = "cohort_definition_id",
+      filterId = 2,
+      idName = "covid",
+      window = list(c(0, Inf))
+    ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-16",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-16",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-16", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-16", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
@@ -462,51 +396,25 @@ test_that("working examples with multiple cohort Ids", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    )
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    ))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
@@ -531,7 +439,9 @@ test_that("working examples with multiple cohort Ids", {
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(compareNA(result$date_id1_0_to_inf, as.Date(c("2020-01-15", "2020-01-15", "2020-01-25", NA, NA)))))
+  expect_true(all(compareNA(result$date_id1_0_to_inf, as.Date(c(
+    "2020-01-15", "2020-01-15", "2020-01-25", NA, NA
+  )))))
 
   result1 <- cdm$cohort1 %>%
     .addIntersect(
@@ -568,7 +478,10 @@ test_that("working examples with multiple cohort Ids", {
     dplyr::arrange(subject_id, cohort_start_date)
 
   for (col in colnames(result2)) {
-    expect_true(all(result2[[col]][!is.na(result2[[col]])] == result3[[col]][!is.na(result3[[col]])]))
+    expect_true(all(
+      result2[[col]][!is.na(result2[[col]])] ==
+        result3[[col]][!is.na(result3[[col]])]
+    ))
   }
 
   expect_true(all(result2$count_id1_0_to_inf == c(2, 2, 1, 0, 0)))
@@ -586,31 +499,15 @@ test_that("working examples calculating as incidence target cohort", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1),
     subject_id = c(1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2021-01-01"
-      )
-    )
+    cohort_start_date = as.Date("2020-01-15"),
+    cohort_end_date = as.Date("2021-01-01")
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1),
     subject_id = c(1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-02-15"
-      )
-    ),
+    cohort_start_date = as.Date("2020-01-01"),
+    cohort_end_date = as.Date("2020-02-15")
   )
 
   cdm <- mockPatientProfiles(
@@ -657,51 +554,25 @@ test_that("working examples with more than one window", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    )
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    ))
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    ))
   )
 
   cdm <- mockPatientProfiles(
@@ -720,17 +591,27 @@ test_that("working examples with more than one window", {
 
   result <- cdm$cohort1 %>%
     .addIntersect(tableName = "cohort2", value = "date") %>%
-    .addIntersect(tableName = "cohort2", value = "date", window = list(c(-Inf, 0))) %>%
+    .addIntersect(
+      tableName = "cohort2", value = "date", window = list(c(-Inf, 0))
+    ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   result1 <- cdm$cohort1 %>%
-    .addIntersect(tableName = "cohort2", value = "date", window = list(c(0, Inf), c(-Inf, 0))) %>%
+    .addIntersect(
+      tableName = "cohort2",
+      value = "date",
+      window = list(c(0, Inf), c(-Inf, 0))
+    ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(result$date_all_0_to_inf == result1$date_all_0_to_inf))
-  expect_true(all(compareNA(result$date_all_minf_to_0, result1$date_all_minf_to_0)))
+  expect_true(all(
+    result$date_all_0_to_inf == result1$date_all_0_to_inf
+  ))
+  expect_true(all(compareNA(
+    result$date_all_minf_to_0, result1$date_all_minf_to_0
+  )))
 
   mockDisconnect(cdm = cdm)
 })
@@ -980,24 +861,10 @@ test_that("test if column exist, overwrite", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15",
-        "2020-01-20",
-        "2020-01-01",
-        "2020-02-01"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
+    )),
+    cohort_end_date = cohort_start_date,
     flag_all_0_to_30 = c(2, 2, 2, 2, 2),
     count_all_0_to_30 = c(1, 1, 1, 1, 1),
     days_all_0_to_30 = c(1, 1, 1, 1, 1),
@@ -1007,28 +874,11 @@ test_that("test if column exist, overwrite", {
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26",
-        "2020-01-29",
-        "2020-03-15",
-        "2020-01-24",
-        "2020-02-16"
-      )
-    ),
+    cohort_start_date = as.Date(c(
+      "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
+      "2020-01-24", "2020-02-16"
+    )),
+    cohort_end_date = cohort_start_date,
   )
 
   cdm <- mockPatientProfiles(

@@ -98,7 +98,7 @@ mockPatientProfiles <- function(con = NULL,
     id <- c("person_id", "subject_id")
     id <- id[id %in% cols]
     if (length(id) == 1) {
-      colDates <- cols[grepl("date", cols)]
+      colDates <- cols[grepl("_date", cols)]
       for (i in seq_along(colDates)) {
         dates <- dates |>
           dplyr::union_all(dplyr::tibble(
@@ -174,7 +174,7 @@ mockPatientProfiles <- function(con = NULL,
       by = "person_id"
     ) |>
     dplyr::mutate("year_of_birth" = dplyr::if_else(
-      .data$year_of_birth < .data$start_year,
+      .data$year_of_birth <= .data$start_year,
       .data$year_of_birth,
       .data$start_year
     )) |>
@@ -246,6 +246,23 @@ mockPatientProfiles <- function(con = NULL,
         by = "person_id"
       ) |>
       addDate(c("death_date"))
+  }
+
+  if (!"visit_occurrence" %in% names(tables)) {
+    tables$visit_occurrence <- tables$condition_occurrence |>
+      dplyr::select("person_id", "visit_start_date" = "condition_start_date") |>
+      dplyr::union_all(
+        tables$drug_exposure |>
+          dplyr::select(
+            "person_id", "visit_start_date" = "drug_exposure_start_date"
+          )
+      ) |>
+      dplyr::mutate(
+        "visit_occurrence_id" = dplyr::row_number(),
+        "visit_concept_id" = 0L,
+        "visit_end_date" = .data$visit_start_date,
+        "visit_type_concept_id" = 0L
+      )
   }
 
   # create cohort1

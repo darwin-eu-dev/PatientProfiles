@@ -79,7 +79,6 @@ test_that("test variableTypes", {
 })
 
 test_that("test functions", {
-  expect_warning(availableFunctions())
   expect_true("tbl" %in% class(availableEstimates("numeric")))
   expect_true("tbl" %in% class(availableEstimates("date")))
   expect_true("tbl" %in% class(availableEstimates("categorical")))
@@ -90,12 +89,10 @@ test_that("test functions", {
 })
 
 test_that("test available functions", {
-  expect_warning(
-    num_test <- availableFunctions("numeric")
-  )
+  num_test <- availableEstimates("numeric")
   expect_true(all(
     c("sd", "median", "mean") %in% (
-      num_test %>% dplyr::pull("format_key")
+      num_test %>% dplyr::pull("estimate_name")
     )
   ))
 })
