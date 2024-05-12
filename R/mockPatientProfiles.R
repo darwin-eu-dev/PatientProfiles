@@ -45,7 +45,7 @@ mockPatientProfiles <- function(con = NULL,
                                 ...,
                                 seed = NULL) {
   if (is.null(con)) {
-    checkInstalled("duckdb")
+    rlang::check_installed("duckdb")
     con <- duckdb::dbConnect(duckdb::duckdb(), ":memory:")
   }
   if (!inherits(con, "DBIConnection")) {
@@ -328,14 +328,6 @@ mockPatientProfiles <- function(con = NULL,
   return(cdm)
 }
 
-checkInstalled <- function(name, call = parent.frame()) {
-  pkgs <- .packages(all.available = TRUE)
-  notInstalled <- name[!name %in% pkgs]
-  if (length(notInstalled) > 0) {
-    cli::cli_abort("{.pkg {notInstalled}} {?is/are} not installed.")
-  }
-  return(invisible(NULL))
-}
 addDate <- function(x, cols) {
   if (nrow(x) == 0) {
     x <- x |> dplyr::select("person_id")

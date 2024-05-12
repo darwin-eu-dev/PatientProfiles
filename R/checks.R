@@ -471,89 +471,6 @@ checkVariablesFunctions <- function(variables, estimates, table) {
 }
 
 #' @noRd
-checkSuppressCellCount <- function(suppressCellCount) {
-  checkmate::assertIntegerish(
-    suppressCellCount,
-    lower = 0, len = 1, any.missing = F
-  )
-}
-
-#' @noRd
-checkBigMark <- function(bigMark) {
-  checkmate::checkCharacter(bigMark, min.chars = 0, len = 1, any.missing = F)
-}
-
-#' @noRd
-checkDecimalMark <- function(decimalMark) {
-  checkmate::checkCharacter(decimalMark, min.chars = 1, len = 1, any.missing = F)
-}
-
-#' @noRd
-checkSignificantDecimals <- function(significantDecimals) {
-  checkmate::assertIntegerish(
-    significantDecimals,
-    lower = 0, len = 1, any.missing = F
-  )
-}
-
-assertInputIntersect <- function(inputList,
-                                 possibleArguments,
-                                 compulsoryArguments,
-                                 nameFunction,
-                                 cdm = NULL) {
-  if (length(inputList) > 0) {
-    if (!is.list(inputList[[1]])) {
-      inputList <- list(inputList)
-    }
-  }
-  lapply(inputList, function(x) {
-    if (!is.list(x) | length(names(x)) != length(x)) {
-      cli::cli_abort(
-        "inputs of {nameFunction} must be a named list, see examples."
-      )
-    }
-    allArgs <- names(x)
-    notValidArgs <- allArgs[!allArgs %in% possibleArguments]
-    if (length(notValidArgs) > 0) {
-      cli::cli_alert_danger(
-        "Not valid args for {nameFunction}: {paste0(notValidArgs, collapse = ', ')}."
-      )
-    }
-    notPresent <- compulsoryArguments[!compulsoryArguments %in% names(x)]
-    if (length(notPresent) > 0) {
-      cli::cli_abort(
-        "Required arguments not provided for {nameFunction}: {paste0(notPresent, collapse = ', ')}"
-      )
-    }
-    if (!is.null(cdm)) {
-      values <- c("count", "flag", "date", "days", colnames(cdm[[x$tableName]]))
-    } else {
-      values <- c("count", "flag", "date", "days")
-    }
-    val <- x$value[!x$value %in% values]
-    if (length(val) > 0) {
-      cli::cli_abort(
-        "Wrong value for {nameFunction}: {paste0(val, collapse = ', ')}. Possible values: {paste0(values, collapse = ', ')}"
-      )
-    }
-  })
-  return(inputList)
-}
-getArguments <- function(fun) {
-  arguments <- formals(fun)
-  compulsory <- character()
-  for (k in seq_along(arguments)) {
-    x <- arguments[[k]]
-    if (missing(x)) {
-      compulsory <- c(compulsory, names(arguments)[k])
-    }
-  }
-  compulsory <- compulsory[compulsory != "x"]
-  all <- names(arguments)
-  return(list(all = all, compulsory = compulsory))
-}
-
-#' @noRd
 checkCensorDate <- function(x, censorDate) {
   check <- x %>%
     dplyr::select(dplyr::all_of(censorDate)) %>%
@@ -563,18 +480,6 @@ checkCensorDate <- function(x, censorDate) {
   if (!check) {
     cli::cli_abort("{censorDate} is not a date variable")
   }
-}
-
-#' @noRd
-checkOtherVariables <- function(otherVariables, cohort, call = rlang::env_parent()) {
-  errorMessage <- "otherVariables must point to columns in cohort."
-  if (!is.character(otherVariables)) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  if (!all(otherVariables %in% colnames(cohort))) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(otherVariables)
 }
 
 assertClass <- function(x,
