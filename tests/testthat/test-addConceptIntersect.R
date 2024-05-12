@@ -7,7 +7,7 @@ test_that("addConceptIntersect", {
   cdm <- CDMConnector::copyCdmTo(
     con = connection(), cdm = cdm, schema = writeSchema()
   )
-  DBI::dbDisconnect(conn = con)
+  DBI::dbDisconnect(conn = con, shutdown = TRUE)
 
   # create a cohort
   cdm <- CDMConnector::generateConceptCohortSet(

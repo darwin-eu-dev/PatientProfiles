@@ -51,7 +51,7 @@ mockPatientProfiles <- function(con = NULL,
   if (!inherits(con, "DBIConnection")) {
     cli::cli_abort(c("!" = "`con` must be a DBI connection"))
   }
-  if (is.null(writeSchema) & class(con) == "duckdb_connection") {
+  if (is.null(writeSchema) & inherits(con, "duckdb_connection")) {
     writeSchema <- "main"
   }
   if (!is.null(seed)) {

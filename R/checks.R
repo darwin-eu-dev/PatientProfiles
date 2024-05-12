@@ -532,21 +532,6 @@ checkSignificantDecimals <- function(significantDecimals) {
   )
 }
 
-#' @noRd
-checkTableIntersect <- function(tableIntersect, cdm) {
-  checkmate::assertList(tableIntersect)
-  arguments <- getArguments(addTableIntersect)
-  tableIntersect <- assertInputIntersect(
-    inputList = tableIntersect,
-    possibleArguments = c(arguments$all, "value"),
-    compulsoryArguments = arguments$compulsory,
-    nameFunction = "tableIntersect",
-    cdm = cdm
-  )
-  tableIntersect <- editNamesIntersect(tableIntersect)
-  return(tableIntersect)
-}
-
 assertInputIntersect <- function(inputList,
                                  possibleArguments,
                                  compulsoryArguments,

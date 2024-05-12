@@ -6,8 +6,7 @@ status](https://www.r-pkg.org/badges/version/PatientProfiles)](https://CRAN.R-pr
 [![codecov.io](https://codecov.io/github/darwin-eu-dev/PatientProfiles/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu-dev/PatientProfiles?branch=main)
 [![R-CMD-check](https://github.com/darwin-eu-dev/PatientProfiles/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu-dev/PatientProfiles/actions)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-<!-- [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) -->
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![metacran
 downloads](https://cranlogs.r-pkg.org/badges/PatientProfiles)](https://cran.r-project.org/package=PatientProfiles)
 [![metacran
@@ -90,11 +89,11 @@ cdm$condition_occurrence %>%
 #> Rows: ??
 #> Columns: 6
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ person_id                 <int> 708, 792, 501, 560, 314, 203, 922, 504, 483,…
-#> $ condition_start_date      <date> 1941-10-11, 1945-07-07, 1977-01-15, 1937-02…
-#> $ condition_end_date        <date> 1949-03-09, 1951-05-14, 2040-08-29, 1937-08…
+#> $ person_id                 <int> 322, 848, 164, 947, 854, 952, 142, 885, 993,…
+#> $ condition_start_date      <date> 2053-12-28, 1941-08-12, 1999-01-04, 2090-08…
+#> $ condition_end_date        <date> 2058-12-22, 2043-11-26, 2007-08-01, 2097-07…
 #> $ condition_occurrence_id   <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1…
-#> $ condition_concept_id      <int> 2, 7, 2, 8, 6, 1, 10, 7, 7, 6, 8, 6, 4, 6, 9…
+#> $ condition_concept_id      <int> 1, 5, 4, 4, 5, 5, 5, 9, 5, 4, 9, 9, 10, 8, 4…
 #> $ condition_type_concept_id <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 
 cdm$condition_occurrence <- cdm$condition_occurrence %>%
@@ -106,14 +105,14 @@ cdm$condition_occurrence %>%
 #> Rows: ??
 #> Columns: 8
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ person_id                 <int> 708, 792, 501, 560, 314, 203, 922, 504, 483,…
-#> $ condition_start_date      <date> 1941-10-11, 1945-07-07, 1977-01-15, 1937-02…
-#> $ condition_end_date        <date> 1949-03-09, 1951-05-14, 2040-08-29, 1937-08…
-#> $ condition_occurrence_id   <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 1…
-#> $ condition_concept_id      <int> 2, 7, 2, 8, 6, 1, 10, 7, 7, 6, 4, 6, 9, 9, 5…
+#> $ person_id                 <int> 50, 115, 127, 142, 164, 186, 193, 200, 201, …
+#> $ condition_start_date      <date> 1969-11-13, 2050-05-15, 2073-10-08, 1940-11…
+#> $ condition_end_date        <date> 1971-01-14, 2064-06-24, 2089-05-15, 1964-12…
+#> $ condition_occurrence_id   <int> 18, 11, 32, 7, 3, 15, 17, 34, 22, 14, 12, 37…
+#> $ condition_concept_id      <int> 1, 9, 6, 5, 4, 4, 8, 5, 2, 8, 9, 10, 1, 10, …
 #> $ condition_type_concept_id <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ age                       <dbl> 22, 11, 18, -28, 20, 15, -39, 55, -8, 15, -5…
-#> $ sex                       <chr> "Female", "Female", "Male", "Female", "Femal…
+#> $ age                       <int> 35, 111, 125, 7, 12, 78, 58, 54, 20, 42, 88,…
+#> $ sex                       <chr> "Female", "Female", "Female", "Female", "Fem…
 ```
 
 We could, for example, then limit our data to only males aged between 18
@@ -123,23 +122,21 @@ and 65
 cdm$condition_occurrence %>%
   filter(age >= 18 & age <= 65) %>%
   filter(sex == "Male")
-#> # Source:   SQL [?? x 8]
+#> # Source:   SQL [9 x 8]
 #> # Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#>    person_id condition_start_date condition_end_date condition_occurrence_id
-#>        <int> <date>               <date>                               <int>
-#>  1       501 1977-01-15           2040-08-29                               3
-#>  2       504 1978-08-06           2033-03-27                               8
-#>  3       808 2018-06-22           2018-11-04                              28
-#>  4       517 1987-07-21           2097-04-13                              33
-#>  5       376 1946-04-13           1975-01-20                              37
-#>  6       787 2020-09-23           2029-04-20                              45
-#>  7       296 2069-10-09           2070-10-03                              50
-#>  8       296 2049-12-20           2067-03-13                              79
-#>  9       665 1972-03-02           1986-11-08                              86
-#> 10       978 1949-08-18           1955-03-31                              87
-#> # ℹ more rows
+#>   person_id condition_start_date condition_end_date condition_occurrence_id
+#>       <int> <date>               <date>                               <int>
+#> 1       193 2045-09-13           2071-06-16                              17
+#> 2       202 2005-09-29           2076-09-19                              14
+#> 3       655 1956-11-22           1957-09-27                              25
+#> 4       670 2006-01-18           2042-12-04                              13
+#> 5       672 1992-04-13           2048-11-16                              23
+#> 6       742 1963-08-12           2007-01-26                              31
+#> 7       852 2035-01-15           2040-04-06                              20
+#> 8       948 1944-12-22           1963-01-19                              26
+#> 9       993 1961-01-29           1975-12-19                               9
 #> # ℹ 4 more variables: condition_concept_id <int>,
-#> #   condition_type_concept_id <int>, age <dbl>, sex <chr>
+#> #   condition_type_concept_id <int>, age <int>, sex <chr>
 ```
 
 #### Adding characteristics of a cohort
@@ -153,10 +150,10 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 4
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 2, 1, 2, 3, 2, 2, 1, 2, 3, 2, 3, 3, 3, 1, 1, 2…
-#> $ subject_id           <int> 683, 760, 84, 279, 981, 833, 576, 311, 105, 873, …
-#> $ cohort_start_date    <date> 1949-03-31, 2008-12-15, 1977-09-03, 1956-09-05, …
-#> $ cohort_end_date      <date> 1957-08-23, 2010-09-04, 2017-05-17, 2025-09-03, …
+#> $ cohort_definition_id <int> 1, 2, 1, 1, 1, 1, 2, 1, 3, 2, 2, 1, 1, 2, 3, 1, 2…
+#> $ subject_id           <int> 804, 115, 126, 721, 245, 28, 344, 208, 955, 934, …
+#> $ cohort_start_date    <date> 1993-06-01, 2011-07-24, 2050-10-09, 1953-12-03, …
+#> $ cohort_end_date      <date> 1994-11-30, 2057-07-10, 2091-11-09, 2002-01-01, …
 ```
 
 We can add age, age groups, sex, and days of prior observation to a
@@ -176,14 +173,14 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 8
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 2, 1, 2, 3, 3, 3, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1…
-#> $ subject_id           <int> 84, 279, 311, 105, 275, 398, 483, 380, 191, 783, …
-#> $ cohort_start_date    <date> 1977-09-03, 1956-09-05, 1968-11-25, 1969-09-09, …
-#> $ cohort_end_date      <date> 2017-05-17, 2025-09-03, 2075-10-04, 1981-08-16, …
-#> $ age                  <dbl> -28, 44, 52, 52, 47, 1, 34, 98, 7, 24, -29, -62, …
-#> $ age_group            <chr> "None", "19 to 65", "19 to 65", "19 to 65", "19 t…
-#> $ sex                  <chr> "Female", "Male", "Female", "Male", "Male", "Fema…
-#> $ prior_observation    <dbl> 6112, 16319, 19322, 19244, 17418, 618, 23225, 359…
+#> $ cohort_definition_id <int> 1, 1, 1, 2, 2, 1, 2, 3, 1, 2, 1, 2, 2, 1, 3, 2, 1…
+#> $ subject_id           <int> 804, 126, 245, 934, 197, 998, 778, 564, 123, 873,…
+#> $ cohort_start_date    <date> 1993-06-01, 2050-10-09, 1999-05-15, 2058-01-04, …
+#> $ cohort_end_date      <date> 1994-11-30, 2091-11-09, 2081-08-11, 2074-07-20, …
+#> $ age                  <int> 15, 32, 66, 134, 28, 8, 25, 82, 64, 12, 82, 88, 6…
+#> $ age_group            <chr> "0 to 18", "19 to 65", "66 to 100", "None", "19 t…
+#> $ sex                  <chr> "Female", "Female", "Male", "Male", "Male", "Male…
+#> $ prior_observation    <int> 5630, 11969, 24240, 48947, 10586, 2926, 9260, 302…
 ```
 
 We could use this information to subset the cohort. For example limiting
@@ -196,19 +193,19 @@ cdm$cohort1 %>%
 #> # Source:   SQL [?? x 8]
 #> # Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #>    cohort_definition_id subject_id cohort_start_date cohort_end_date   age
-#>                   <int>      <int> <date>            <date>          <dbl>
-#>  1                    1         84 1977-09-03        2017-05-17        -28
-#>  2                    2        279 1956-09-05        2025-09-03         44
-#>  3                    1        311 1968-11-25        2075-10-04         52
-#>  4                    2        105 1969-09-09        1981-08-16         52
-#>  5                    3        275 1986-09-09        1990-05-11         47
-#>  6                    3        398 1916-09-10        1946-10-27          1
-#>  7                    3        483 2000-06-04        2020-09-14         34
-#>  8                    1        380 2064-05-24        2071-03-13         98
-#>  9                    2        191 1932-03-23        2037-02-20          7
-#> 10                    2        783 2040-09-25        2042-01-27         24
+#>                   <int>      <int> <date>            <date>          <int>
+#>  1                    1        804 1993-06-01        1994-11-30         15
+#>  2                    1        126 2050-10-09        2091-11-09         32
+#>  3                    1        245 1999-05-15        2081-08-11         66
+#>  4                    2        934 2058-01-04        2074-07-20        134
+#>  5                    2        197 2001-12-26        2076-01-24         28
+#>  6                    1        998 2006-01-05        2055-12-26          8
+#>  7                    2        778 2025-05-09        2028-02-20         25
+#>  8                    3        564 2072-11-30        2077-01-14         82
+#>  9                    1        123 2039-06-27        2095-01-22         64
+#> 10                    2        873 2022-11-07        2029-06-17         12
 #> # ℹ more rows
-#> # ℹ 3 more variables: age_group <chr>, sex <chr>, prior_observation <dbl>
+#> # ℹ 3 more variables: age_group <chr>, sex <chr>, prior_observation <int>
 ```
 
 ### Cohort intersections
@@ -224,10 +221,10 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 4
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 1, 1, 2, 3, 3, 1, 2, 3, 2
-#> $ subject_id           <int> 4, 1, 7, 10, 8, 6, 2, 3, 9, 5
-#> $ cohort_start_date    <date> 2053-02-20, 1953-12-20, 1911-10-31, 2042-10-17, 1…
-#> $ cohort_end_date      <date> 2057-04-01, 1959-02-19, 1953-02-10, 2063-12-31, 1…
+#> $ cohort_definition_id <int> 1, 1, 2, 3, 3, 1, 1, 3, 2, 3
+#> $ subject_id           <int> 1, 10, 2, 4, 5, 6, 8, 7, 3, 9
+#> $ cohort_start_date    <date> 2035-11-04, 1921-03-20, 1975-02-05, 1948-03-01, 1…
+#> $ cohort_end_date      <date> 2056-06-27, 1924-08-01, 2013-10-17, 2041-05-23, 2…
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectFlag(
@@ -240,13 +237,13 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 7
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 1, 2, 3, 3, 2, 1, 1, 3, 2
-#> $ subject_id           <int> 4, 1, 10, 8, 6, 3, 7, 2, 9, 5
-#> $ cohort_start_date    <date> 2053-02-20, 1953-12-20, 2042-10-17, 1938-05-20, 2…
-#> $ cohort_end_date      <date> 2057-04-01, 1959-02-19, 2063-12-31, 1938-07-29, 2…
-#> $ cohort_3_minf_to_m1  <dbl> 1, 0, 0, 0, 1, 0, 0, 0, 0, 0
-#> $ cohort_2_minf_to_m1  <dbl> 0, 1, 1, 0, 0, 0, 0, 0, 0, 0
-#> $ cohort_1_minf_to_m1  <dbl> 0, 0, 0, 1, 0, 1, 0, 0, 0, 0
+#> $ cohort_definition_id <int> 2, 1, 2, 1, 1, 3, 3, 1, 3, 3
+#> $ subject_id           <int> 2, 6, 3, 1, 10, 4, 5, 8, 7, 9
+#> $ cohort_start_date    <date> 1975-02-05, 1994-09-25, 2166-05-03, 2035-11-04, 1…
+#> $ cohort_end_date      <date> 2013-10-17, 2019-06-13, 2166-05-24, 2056-06-27, 1…
+#> $ cohort_3_minf_to_m1  <dbl> 0, 1, 1, 0, 0, 0, 0, 0, 0, 0
+#> $ cohort_2_minf_to_m1  <dbl> 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#> $ cohort_1_minf_to_m1  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ```
 
 #### Count appearances of a certain cohort in a certain window
@@ -260,10 +257,10 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 4
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 2, 3, 1, 3, 3, 2, 2, 2, 2, 2
-#> $ subject_id           <int> 2, 6, 4, 8, 1, 9, 7, 3, 5, 10
-#> $ cohort_start_date    <date> 2008-12-02, 1928-01-08, 1931-04-05, 1964-12-19, 1…
-#> $ cohort_end_date      <date> 2016-05-08, 1929-02-28, 1955-11-14, 1983-12-17, 1…
+#> $ cohort_definition_id <int> 2, 2, 1, 3, 1, 3, 1, 1, 1, 2
+#> $ subject_id           <int> 4, 1, 3, 9, 10, 8, 5, 7, 2, 6
+#> $ cohort_start_date    <date> 1968-11-28, 1924-02-01, 2066-06-12, 2037-06-11, 2…
+#> $ cohort_end_date      <date> 2039-05-07, 1933-07-10, 2067-11-30, 2052-11-05, 2…
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectCount(
@@ -277,12 +274,12 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 6
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 2, 3, 1, 3, 3, 2, 2, 2, 2, 2
-#> $ subject_id           <int> 2, 6, 4, 8, 1, 9, 7, 3, 5, 10
-#> $ cohort_start_date    <date> 2008-12-02, 1928-01-08, 1931-04-05, 1964-12-19, 1…
-#> $ cohort_end_date      <date> 2016-05-08, 1929-02-28, 1955-11-14, 1983-12-17, 1…
-#> $ cohort_1_short_term  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-#> $ cohort_1_mid_term    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#> $ cohort_definition_id <int> 2, 1, 1, 2, 3, 1, 3, 1, 1, 2
+#> $ subject_id           <int> 1, 3, 2, 4, 9, 10, 8, 5, 7, 6
+#> $ cohort_start_date    <date> 1924-02-01, 2066-06-12, 2073-01-11, 1968-11-28, 2…
+#> $ cohort_end_date      <date> 1933-07-10, 2067-11-30, 2096-01-10, 2039-05-07, 2…
+#> $ cohort_1_short_term  <dbl> 0, 1, 1, 0, 0, 0, 0, 0, 0, 0
+#> $ cohort_1_mid_term    <dbl> 1, 1, 1, 0, 0, 0, 0, 0, 0, 0
 ```
 
 #### Add a column with the first/last event in a certain window
@@ -300,10 +297,10 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 4
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 2, 2, 1, 2, 3, 2, 3, 3, 3
-#> $ subject_id           <int> 5, 9, 4, 1, 8, 6, 7, 3, 10, 2
-#> $ cohort_start_date    <date> 2031-12-23, 1995-12-08, 2014-07-08, 1994-06-28, 1…
-#> $ cohort_end_date      <date> 2055-02-03, 2028-07-07, 2035-03-06, 1995-01-23, 1…
+#> $ cohort_definition_id <int> 2, 1, 3, 1, 1, 1, 2, 3, 1, 2
+#> $ subject_id           <int> 6, 3, 1, 9, 8, 5, 2, 4, 7, 10
+#> $ cohort_start_date    <date> 2046-09-01, 2169-07-04, 2019-06-13, 1985-03-23, 1…
+#> $ cohort_end_date      <date> 2056-05-09, 2184-02-17, 2058-06-12, 2001-10-24, 2…
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
@@ -318,11 +315,11 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 5
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 2, 2, 2, 3, 3, 1, 3, 2, 3
-#> $ subject_id           <int> 5, 9, 4, 8, 3, 10, 1, 6, 7, 2
-#> $ cohort_start_date    <date> 2031-12-23, 1995-12-08, 2014-07-08, 1979-10-09, 1…
-#> $ cohort_end_date      <date> 2055-02-03, 2028-07-07, 2035-03-06, 1991-11-29, 1…
-#> $ cohort_1_minf_to_inf <date> 2045-01-03, 2030-01-01, 1948-02-01, 1981-11-19, …
+#> $ cohort_definition_id <int> 1, 2, 2, 1, 3, 1, 1, 2, 3, 1
+#> $ subject_id           <int> 5, 10, 6, 3, 1, 9, 8, 2, 4, 7
+#> $ cohort_start_date    <date> 2018-09-09, 2030-11-01, 2046-09-01, 2169-07-04, 2…
+#> $ cohort_end_date      <date> 2045-01-19, 2037-02-15, 2056-05-09, 2184-02-17, 2…
+#> $ cohort_1_minf_to_inf <date> 2026-11-03, 1996-02-09, NA, NA, NA, NA, NA, NA, …
 ```
 
 Last occurrence:
@@ -333,10 +330,10 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 4
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 3, 3, 3, 2, 3, 1, 1, 3, 2, 1
-#> $ subject_id           <int> 2, 4, 9, 5, 1, 7, 3, 10, 8, 6
-#> $ cohort_start_date    <date> 1929-02-12, 1927-10-23, 1929-10-04, 1988-09-10, 1…
-#> $ cohort_end_date      <date> 1933-08-10, 1943-10-06, 1947-05-11, 2033-03-21, 1…
+#> $ cohort_definition_id <int> 1, 3, 1, 1, 3, 1, 2, 3, 3, 1
+#> $ subject_id           <int> 2, 7, 5, 10, 8, 4, 1, 6, 3, 9
+#> $ cohort_start_date    <date> 1915-03-10, 2016-03-25, 1991-09-12, 2089-03-29, 2…
+#> $ cohort_end_date      <date> 2021-09-16, 2033-01-04, 2002-10-07, 2168-04-02, 2…
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
@@ -351,11 +348,11 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 5
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 3, 1, 1, 3, 3, 3, 2, 1, 3, 2
-#> $ subject_id           <int> 1, 3, 6, 2, 4, 9, 5, 7, 10, 8
-#> $ cohort_start_date    <date> 1924-06-08, 1995-02-24, 2030-06-02, 1929-02-12, 1…
-#> $ cohort_end_date      <date> 1932-06-29, 1999-06-11, 2036-07-30, 1933-08-10, 1…
-#> $ cohort_1_minf_to_inf <date> 1963-06-01, 1971-11-26, 1999-07-05, NA, NA, NA, …
+#> $ cohort_definition_id <int> 1, 1, 3, 1, 3, 1, 2, 3, 3, 1
+#> $ subject_id           <int> 2, 10, 7, 5, 8, 4, 1, 6, 3, 9
+#> $ cohort_start_date    <date> 1915-03-10, 2089-03-29, 2016-03-25, 1991-09-12, 2…
+#> $ cohort_end_date      <date> 2021-09-16, 2168-04-02, 2033-01-04, 2002-10-07, 2…
+#> $ cohort_1_minf_to_inf <date> 1920-09-18, 2121-03-29, NA, NA, NA, NA, NA, NA, …
 ```
 
 #### Add the number of days instead of the date
@@ -369,10 +366,10 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 4
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 3, 1, 2, 3, 2, 2, 3, 3, 2
-#> $ subject_id           <int> 10, 9, 3, 5, 7, 4, 6, 8, 2, 1
-#> $ cohort_start_date    <date> 1949-12-09, 1943-09-19, 2018-05-02, 1945-06-29, 2…
-#> $ cohort_end_date      <date> 1950-01-29, 1986-12-01, 2030-11-05, 1977-01-13, 2…
+#> $ cohort_definition_id <int> 1, 2, 1, 1, 1, 1, 3, 2, 2, 1
+#> $ subject_id           <int> 8, 2, 4, 10, 9, 3, 7, 1, 6, 5
+#> $ cohort_start_date    <date> 1995-03-13, 2035-08-18, 2007-06-02, 2124-02-18, 1…
+#> $ cohort_end_date      <date> 2056-08-10, 2047-02-17, 2009-07-10, 2138-06-19, 1…
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDays(
@@ -387,11 +384,11 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 5
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 3, 3, 2, 2, 3, 1, 1, 2, 3, 2
-#> $ subject_id           <int> 9, 7, 4, 6, 2, 10, 3, 5, 8, 1
-#> $ cohort_start_date    <date> 1943-09-19, 2049-09-22, 1971-06-01, 1946-03-23, 1…
-#> $ cohort_end_date      <date> 1986-12-01, 2053-01-14, 1975-04-14, 1952-01-11, 1…
-#> $ cohort_1_minf_to_inf <dbl> 4218, -1565, -1035, 393, 16653, NA, NA, NA, NA, NA
+#> $ cohort_definition_id <int> 1, 3, 1, 1, 2, 1, 1, 1, 2, 2
+#> $ subject_id           <int> 10, 7, 5, 8, 2, 4, 9, 3, 1, 6
+#> $ cohort_start_date    <date> 2124-02-18, 1947-08-05, 2072-02-15, 1995-03-13, 2…
+#> $ cohort_end_date      <date> 2138-06-19, 2076-10-20, 2073-01-11, 2056-08-10, 2…
+#> $ cohort_1_minf_to_inf <dbl> -1103, 35968, -43877, NA, NA, NA, NA, NA, NA, NA
 ```
 
 #### Combine multiple cohort intersects
@@ -405,10 +402,10 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 4
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 3, 1, 3, 3, 1, 3, 2, 2, 3, 3
-#> $ subject_id           <int> 2, 8, 9, 3, 7, 1, 5, 10, 4, 6
-#> $ cohort_start_date    <date> 1958-06-17, 2000-09-29, 2001-08-19, 1989-02-07, 1…
-#> $ cohort_end_date      <date> 1963-09-07, 2009-12-27, 2039-02-06, 1994-07-16, 1…
+#> $ cohort_definition_id <int> 1, 3, 3, 3, 3, 3, 2, 1, 1, 3
+#> $ subject_id           <int> 2, 9, 1, 10, 8, 6, 7, 3, 4, 5
+#> $ cohort_start_date    <date> 1926-12-03, 2027-10-08, 1956-01-06, 1987-07-06, 2…
+#> $ cohort_end_date      <date> 1931-08-23, 2055-08-04, 1965-02-25, 2032-09-30, 2…
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addCohortIntersectDate(
@@ -428,11 +425,11 @@ cdm$cohort1 %>%
 #> Rows: ??
 #> Columns: 5
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 2, 3, 3, 1, 3, 3, 1, 3, 2, 3
-#> $ subject_id           <int> 10, 4, 2, 8, 9, 3, 7, 1, 5, 6
-#> $ cohort_start_date    <date> 1946-05-11, 1946-11-21, 1958-06-17, 2000-09-29, 2…
-#> $ cohort_end_date      <date> 1985-05-15, 1947-01-03, 1963-09-07, 2009-12-27, 2…
-#> $ cohort_1_minf_to_inf <dbl> 1, 1, 0, 0, 0, 0, 0, 0, 0, 0
+#> $ cohort_definition_id <int> 1, 3, 2, 1, 3, 3, 3, 3, 1, 3
+#> $ subject_id           <int> 2, 9, 7, 3, 1, 10, 8, 6, 4, 5
+#> $ cohort_start_date    <date> 1926-12-03, 2027-10-08, 1937-04-07, 1982-01-06, 1…
+#> $ cohort_end_date      <date> 1931-08-23, 2055-08-04, 1963-01-28, 2000-03-26, 1…
+#> $ cohort_1_minf_to_inf <dbl> 1, 1, 1, 1, 0, 0, 0, 0, 0, 0
 ```
 
 ``` r
