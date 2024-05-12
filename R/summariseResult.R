@@ -242,8 +242,12 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
     # format group strata
     strataGroup <- strataGroup |>
       dplyr::collect() |>
-      visOmopResults::uniteGroup(cols = groupk, keep = TRUE) |>
-      visOmopResults::uniteStrata(cols = stratak, keep = TRUE) |>
+      visOmopResults::uniteGroup(
+        cols = groupk, keep = TRUE, ignore = character()
+      ) |>
+      visOmopResults::uniteStrata(
+        cols = stratak, keep = TRUE, ignore = character()
+      ) |>
       dplyr::select(
         "strata_id", "group_name", "group_level", "strata_name", "strata_level"
       )
