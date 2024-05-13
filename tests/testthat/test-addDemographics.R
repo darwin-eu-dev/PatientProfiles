@@ -1297,3 +1297,20 @@ test_that("allow NA as age_group", {
   expect_true(all(is.na(cdm$cohort1 |> dplyr::pull("age_group"))))
   mockDisconnect(cdm = cdm)
 })
+
+test_that("allow age_group only", {
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+  expect_no_error(
+    cdm$cohort1 <- cdm$cohort1 |>
+      addDemographics(
+        age = FALSE,
+        ageGroup = list(c(0, 39), c(40, Inf)),
+        sex = FALSE,
+        priorObservation = FALSE,
+        futureObservation = FALSE
+      )
+  )
+  expect_true("age_group" %in% colnames(cdm$cohort1))
+  expect_false("age" %in% colnames(cdm$cohort1))
+  mockDisconnect(cdm = cdm)
+})

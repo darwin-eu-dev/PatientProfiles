@@ -113,8 +113,8 @@ addDemographics <- function(x,
   checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
   checkmate::assertLogical(dateOfBirth, any.missing = FALSE, len = 1)
   checkVariableInX(indexDate, x, !(age | priorObservation | futureObservation))
-  if (!(age | sex | priorObservation | futureObservation | dateOfBirth)) {
-    cli::cli_abort("age, sex, priorObservation, futureObservation and dateOfBirth can not be FALSE")
+  if (!(age | sex | priorObservation | futureObservation | dateOfBirth | !is.null(ageGroup))) {
+    cli::cli_abort("age, sex, priorObservation, futureObservation, dateOfBirth and ageGroup can not be FALSE")
   }
   assertCharacter(missingAgeGroupValue, length = 1, na = TRUE)
   assertCharacter(missingSexValue, length = 1, na = TRUE)
