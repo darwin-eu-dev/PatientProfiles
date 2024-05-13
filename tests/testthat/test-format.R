@@ -1,4 +1,10 @@
 test_that("test variableTypes", {
+  expect_no_error(x <- variableTypes(dplyr::tibble()))
+  expect_identical(
+    x,
+    dplyr::tibble("variable_name" = character(), "variable_type" = character())
+  )
+
   x <- dplyr::tibble(
     x1 = c(1, 2, 3), x2 = as.Date(c("2021-01-05", "2025-04-19", "2000-12-12")),
     x3 = c(0, 0, 0), x4 = as.integer(c(1, 0, 1)), x5 = c(-1, -1, -1),

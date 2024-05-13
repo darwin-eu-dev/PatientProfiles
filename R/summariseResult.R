@@ -169,12 +169,29 @@ summariseResult <- function(table,
       format = "{cli::pb_bar}{k}/{nt} group-strata combinations @ {Sys.time()}"
     )
 
+    personVariable <- NULL
+    if (counts) {
+      i <- "person_id" %in% colnames(table)
+      j <- "subject_id" %in% colnames(table)
+      if (i) {
+        if (j) {
+          cli::cli_warn(
+            "person_id and subject_id present in table, `person_id` used as
+            person identifier"
+          )
+        }
+        personVariable <- "person_id"
+      } else if (j) {
+        personVariable <- "subject_id"
+      }
+    }
+
     resultk <- 1
     result <- list()
     for (groupk in group) {
       for (stratak in strata) {
         result[[resultk]] <- summariseInternal(
-          table, groupk, stratak, functions, counts
+          table, groupk, stratak, functions, counts, personVariable
         ) |>
           # order variables
           orderVariables(colOrder, unique(unlist(estimates)))
@@ -211,7 +228,7 @@ summariseResult <- function(table,
   return(result)
 }
 
-summariseInternal <- function(table, groupk, stratak, functions, counts) {
+summariseInternal <- function(table, groupk, stratak, functions, counts, personVariable) {
   result <- list()
 
   # group by relevant variables
@@ -260,7 +277,7 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
 
   # count subjects and records
   if (counts) {
-    result$counts <- countSubjects(table)
+    result$counts <- countSubjects(table, personVariable)
   }
 
   # summariseNumeric
@@ -284,20 +301,7 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
   return(result)
 }
 
-countSubjects <- function(x) {
-  i <- "person_id" %in% colnames(x)
-  j <- "subject_id" %in% colnames(x)
-  if (i) {
-    if (j) {
-      cli::cli_warn(
-        "person_id and subject_id present in table, `person_id` used as person
-        identifier"
-      )
-    }
-    personVariable <- "person_id"
-  } else if (j) {
-    personVariable <- "subject_id"
-  }
+countSubjects <- function(x, personVariable) {
   result <- list()
   result$record <- x %>%
     dplyr::summarise(
@@ -308,7 +312,7 @@ countSubjects <- function(x) {
     dplyr::mutate(
       "variable_name" = "number_records"
     )
-  if (i | j) {
+  if (!is.null(personVariable)) {
     result$subject <- x %>%
       dplyr::summarise(
         "estimate_value" = dplyr::n_distinct(.data[[personVariable]]),

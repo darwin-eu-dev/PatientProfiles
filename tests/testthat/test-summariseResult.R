@@ -45,6 +45,18 @@ test_that("test all functions", {
     )
   )
   expect_true(nrow(emptySR) == 0)
+  expect_true(inherits(emptySR, "summarised_result"))
+
+  expect_no_error(
+    emptySR <- summariseResult(
+      dplyr::tibble(),
+      variables = list(),
+      estimates = list(),
+      counts = FALSE
+    )
+  )
+  expect_true(nrow(emptySR) == 0)
+  expect_true(inherits(emptySR, "summarised_result"))
 
   cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
@@ -124,7 +136,7 @@ test_that("groups and strata", {
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
     dplyr::collect() %>%
-    summariseResult(group = list(c("age_group", "sex")))
+    summariseResult(group = c("age_group", "sex"))
   expect_true(all(result %>%
     dplyr::select("group_name") %>%
     dplyr::distinct() %>%
@@ -153,16 +165,21 @@ test_that("table in db or local", {
       indexDate = "condition_start_date",
       ageGroup = list(c(0, 30), c(31, 60))
     ) %>%
-    summariseResult(strata = list("sex")))
+    summariseResult(strata = "sex"))
 
   # already collected
-  expect_no_error(cdm$condition_occurrence %>%
-    addDemographics(
-      indexDate = "condition_start_date",
-      ageGroup = list(c(0, 30), c(31, 60))
-    ) %>%
-    dplyr::collect() %>%
-    summariseResult(strata = list("sex")))
+  expect_warning(
+    expect_no_error(
+      cdm$condition_occurrence %>%
+        addDemographics(
+          indexDate = "condition_start_date",
+          ageGroup = list(c(0, 30), c(31, 60))
+        ) %>%
+        dplyr::collect() %>%
+        dplyr::mutate("subject_id" = .data$person_id) |>
+        summariseResult(strata = list("sex"))
+    )
+  )
 
   mockDisconnect(cdm = cdm)
 })
