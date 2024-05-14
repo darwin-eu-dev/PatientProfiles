@@ -66,20 +66,20 @@ test_that("test all functions", {
     prior_history = c(365, 25, 14, 48),
     number_visits = c(0, 1, 0, 0)
   )
-  variables <- list(
-    numeric = c(
-      "age", "number_visits", "prior_history"
-    ),
-    categorical = c("sex")
-  )
-  functions <- list(
-    numeric = c("median", "q25", "q75", "count_missing", "percentage_missing"),
-    categorical = c("count", "percentage")
+  variables <- c("age", "number_visits", "prior_history", "sex")
+  functions <- c(
+    "mean", "sd", "median", "q25", "q75", "count_missing", "percentage_missing",
+    "count", "percentage"
   )
   expect_no_error(
     result <- summariseResult(
       table = cohort, variables = variables, estimates = functions
     )
+  )
+
+  expect_identical(
+    dplyr::tibble() |> summariseResult(counts = FALSE),
+    omopgenerics::emptySummarisedResult()
   )
 })
 
@@ -151,6 +151,13 @@ test_that("groups and strata", {
       "None &&& Male")
   ))
 
+  expect_no_error(
+    result <- cdm$condition_occurrence %>%
+      dplyr::collect() %>%
+      dplyr::mutate("sex" = "Missing") |>
+      summariseResult(group = "sex")
+  )
+
   mockDisconnect(cdm = cdm)
 })
 
@@ -179,6 +186,15 @@ test_that("table in db or local", {
         dplyr::mutate("subject_id" = .data$person_id) |>
         summariseResult(strata = list("sex"))
     )
+  )
+
+  expect_no_error(
+    x <- cdm$drug_exposure |>
+      addSex() |>
+      dplyr::collect() |>
+      summariseResult(
+        group = "sex", variables = character(), estimates = character()
+      )
   )
 
   mockDisconnect(cdm = cdm)

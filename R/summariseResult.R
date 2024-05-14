@@ -96,17 +96,6 @@ summariseResult <- function(table,
     if (!is.list(estimates)) {
       estimates <- list(estimates)
     }
-    estimates <- lapply(estimates, function(x) {
-      if ("missing" %in% x) {
-        x <- x[x != "missing"]
-        x <- c(x, "count_missing", "percentage_missing")
-        cli::cli_warn(
-          "'missing' is no longer an option for {.arg estimates}. Use
-          'count_missing' or 'percentage_missing'."
-        )
-      }
-      return(x)
-    })
     if (!is.list(group)) {
       group <- list(group)
     }

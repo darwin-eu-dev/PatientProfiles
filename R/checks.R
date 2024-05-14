@@ -289,32 +289,22 @@ checkCohortNames <- function(x, targetCohortId, name) {
   cohort <- omopgenerics::settings(x)
   filterVariable <- "cohort_definition_id"
   if (is.null(targetCohortId)) {
-    if (is.null(cohort)) {
-      idName <- NULL
-      filterVariable <- NULL
-      targetCohortId <- NULL
-    } else {
-      cohort <- dplyr::collect(cohort)
-      idName <- cohort$cohort_name
-      targetCohortId <- cohort$cohort_definition_id
-    }
+    cohort <- dplyr::collect(cohort)
+    idName <- cohort$cohort_name
+    targetCohortId <- cohort$cohort_definition_id
   } else {
-    if (is.null(cohort)) {
-      idName <- paste0(name, "_", targetCohortId)
-    } else {
-      idName <- cohort %>%
-        dplyr::filter(
-          as.integer(.data$cohort_definition_id) %in%
-            as.integer(.env$targetCohortId)
-        ) %>%
-        dplyr::arrange(.data$cohort_definition_id) %>%
-        dplyr::pull("cohort_name")
-      if (length(idName) != length(targetCohortId)) {
-        cli::cli_abort(
-          "some of the cohort ids given do not exist in the cohortSet of
+    idName <- cohort %>%
+      dplyr::filter(
+        as.integer(.data$cohort_definition_id) %in%
+          as.integer(.env$targetCohortId)
+      ) %>%
+      dplyr::arrange(.data$cohort_definition_id) %>%
+      dplyr::pull("cohort_name")
+    if (length(idName) != length(targetCohortId)) {
+      cli::cli_abort(
+        "some of the cohort ids given do not exist in the cohortSet of
           cdm[[targetCohortName]]"
-        )
-      }
+      )
     }
   }
   parameters <- list(
@@ -823,54 +813,6 @@ assertNumeric <- function(x,
 
     # assert named
     assertNamed(x, named, errorMessage, call)
-  }
-
-  return(invisible(x))
-}
-assertTibble <- function(x,
-                         numberColumns = NULL,
-                         numberRows = NULL,
-                         columns = NULL,
-                         null = FALSE,
-                         call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""),
-    " must be a tibble",
-    ifelse(is.null(numberColumns), "", paste0("; with at least ", numberColumns, " columns")),
-    ifelse(is.null(numberRows), "", paste0("; with at least ", numberRows, " rows")),
-    ifelse(is.null(columns), "", paste0("; the following columns must be present: ", paste0(columns, collapse = ", "))),
-    errorNull(null),
-    "."
-  )
-
-  # assert null
-  if (assertNull(x, null, errorMessage, call)) {
-    # assert class
-    if (!("tbl" %in% class(x))) {
-      cli::cli_abort(errorMessage, call = call)
-    }
-
-    # assert numberColumns
-    if (!is.null(numberColumns)) {
-      if (length(x) != numberColumns) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
-
-    # assert numberRows
-    if (!is.null(numberRows)) {
-      if (nrow(x) != numberRows) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
-
-    # assert columns
-    if (!is.null(columns)) {
-      if (!all(columns %in% colnames(x))) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
   }
 
   return(invisible(x))
