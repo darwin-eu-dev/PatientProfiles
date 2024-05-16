@@ -49,9 +49,6 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCdmName.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersect.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectCount.html</loc>
   </url>
   <url>
@@ -65,9 +62,6 @@
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortName.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersect.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectCount.html</loc>
@@ -103,19 +97,10 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservation.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addIntersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addLargeScaleCharacteristics.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorObservation.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersect.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectCount.html</loc>
@@ -133,64 +118,22 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectFlag.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/assertNameStyle.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/availableEstimates.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/availableFunctions.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/endDateColumn.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/formatCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/gtCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/gtResult.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/mockDisconnect.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/mockPatientProfiles.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/optionsTableCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/optionsTableCohortOverlap.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/optionsTableCohortTiming.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotCohortIntersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotCohortOverlap.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotCohortTiming.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotDemographics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotLargeScaleCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/plotTableIntersect.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/reexports.html</loc>
@@ -205,55 +148,7 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/startDateColumn.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCohortCounts.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCohortIntersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCohortOverlap.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseCohortTiming.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseConceptIntersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseDemographics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseLargeScaleCharacteristics.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseResult.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseTableIntersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tableCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tableCohortIntersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tableCohortOverlap.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tableCohortTiming.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tableDemographics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tableLargeScaleCharacteristics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/tableTableIntersect.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/variableTypes.html</loc>

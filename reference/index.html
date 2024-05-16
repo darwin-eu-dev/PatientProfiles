@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -167,22 +167,6 @@
         <dd>It creates columns to indicate the presence of cohorts</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="add-multiple-values-from-a-cohort-intersection">Add multiple values from a cohort intersection<a class="anchor" aria-label="anchor" href="#add-multiple-values-from-a-cohort-intersection"></a></h3>
-      <div class="section-desc"><p>Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a cohort table.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="addCohortIntersect.html">addCohortIntersect()</a></code> 
-        </dt>
-        <dd>Compute the intersect with a target cohort, you can compute the number of occurrences, a flag of presence, a certain date and/or the time difference</dd>
-      </dl></div><div class="section level2">
-      
       <h3 id="add-a-value-from-a-concept-intersection">Add a value from a concept intersection<a class="anchor" aria-label="anchor" href="#add-a-value-from-a-concept-intersection"></a></h3>
       <div class="section-desc"><p>Add a variable indicating the intersection between a table in the OMOP Common Data Model and a concept.</p></div>
 
@@ -212,22 +196,6 @@
           <code><a href="addConceptIntersectFlag.html">addConceptIntersectFlag()</a></code> 
         </dt>
         <dd>It creates column to indicate the flag overlap information between a table and a concept</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="add-multiple-values-from-a-concept-intersection">Add multiple values from a concept intersection<a class="anchor" aria-label="anchor" href="#add-multiple-values-from-a-concept-intersection"></a></h3>
-      <div class="section-desc"><p>Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a concept.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="addConceptIntersect.html">addConceptIntersect()</a></code> 
-        </dt>
-        <dd>It creates columns to indicate overlap information between a table and a concept</dd>
       </dl></div><div class="section level2">
       
       <h3 id="add-a-value-from-an-omop-standard-table-intersection">Add a value from an omop standard table intersection<a class="anchor" aria-label="anchor" href="#add-a-value-from-an-omop-standard-table-intersection"></a></h3>
@@ -266,54 +234,6 @@
         <dd>Compute a flag intersect with an omop table.</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="add-multiple-values-from-an-omop-standard-table-intersection">Add multiple values from an omop standard table intersection<a class="anchor" aria-label="anchor" href="#add-multiple-values-from-an-omop-standard-table-intersection"></a></h3>
-      <div class="section-desc"><p>Add multiple variables indicating the intersection between a table in the OMOP Common Data Model and a standard omop table.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="addTableIntersect.html">addTableIntersect()</a></code> 
-        </dt>
-        <dd>Compute the intersect with an omop table, you can compute the number of occurrences, a flag of presence, a certain date, the time difference and/or obtain a certain column.</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="add-multiple-values-from-table-intersection">Add multiple values from table intersection<a class="anchor" aria-label="anchor" href="#add-multiple-values-from-table-intersection"></a></h3>
-      <div class="section-desc"><p>Add multiple variables indicating the intersection between two tablea in the OMOP Common Data Model.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="addIntersect.html">addIntersect()</a></code> 
-        </dt>
-        <dd>It creates columns to indicate overlap information between two tables</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="add-multiple-columns-from-large-scale-characteristics">Add multiple columns from large scale characteristics<a class="anchor" aria-label="anchor" href="#add-multiple-columns-from-large-scale-characteristics"></a></h3>
-      <div class="section-desc"><p>Add multiple variables indicating the intersection between concepts in tables in the OMOP Common Data Model.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="addLargeScaleCharacteristics.html">addLargeScaleCharacteristics()</a></code> 
-        </dt>
-        <dd>This function is used to add columns with the large scale characteristics of a cohort table.</dd>
-      </dl></div><div class="section level2">
-      
       <h3 id="summarise-patient-characteristics">Summarise patient characteristics<a class="anchor" aria-label="anchor" href="#summarise-patient-characteristics"></a></h3>
       <div class="section-desc"><p>Function that allow the user to summarise patient characteristics (characteristics must be added priot the use of the function)</p></div>
 
@@ -330,8 +250,8 @@
         <dd>Summarise variables using a set of estimate functions. The output will be a formatted summarised_result object.</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="summarise-patient-characteristic-standard-function">Summarise patient characteristic standard function<a class="anchor" aria-label="anchor" href="#summarise-patient-characteristic-standard-function"></a></h3>
-      <div class="section-desc"><p>Function that allow the user to summarise patient characteristics based on some paramters</p></div>
+      <h3 id="suppress-counts-of-a-summarised-result-object">Suppress counts of a summarised_result object<a class="anchor" aria-label="anchor" href="#suppress-counts-of-a-summarised-result-object"></a></h3>
+      <div class="section-desc"><p>Function that allow the user to suppress counts and estimates for a certain minCellCount</p></div>
 
       
     </div><div id="" class="section level2">
@@ -341,38 +261,13 @@
 
       <dl><dt>
           
-          <code><a href="summariseCharacteristics.html">summariseCharacteristics()</a></code> 
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">suppress</a></code> <code><a href="reexports.html">settings</a></code> 
         </dt>
-        <dd>Summarise characteristics of individuals</dd>
-      </dl><dl><dt>
-          
-          <code><a href="summariseCohortCounts.html">summariseCohortCounts()</a></code> 
-        </dt>
-        <dd>Summarise counts for each different cohort. You can add a list of stratifications.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="summariseCohortIntersect.html">summariseCohortIntersect()</a></code> 
-        </dt>
-        <dd>Summarise cohort intersection information</dd>
-      </dl><dl><dt>
-          
-          <code><a href="summariseConceptIntersect.html">summariseConceptIntersect()</a></code> 
-        </dt>
-        <dd>Summarise concept intersect with a cohort_table</dd>
-      </dl><dl><dt>
-          
-          <code><a href="summariseDemographics.html">summariseDemographics()</a></code> 
-        </dt>
-        <dd>Summarise demographics of individuals</dd>
-      </dl><dl><dt>
-          
-          <code><a href="summariseTableIntersect.html">summariseTableIntersect()</a></code> 
-        </dt>
-        <dd>Summarise table intersection information</dd>
+        <dd>Objects exported from other packages</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="summarise-patient-large-scale-characteristics">Summarise patient large scale characteristics<a class="anchor" aria-label="anchor" href="#summarise-patient-large-scale-characteristics"></a></h3>
-      <div class="section-desc"><p>Summarise large scale characteristics</p></div>
+      <h3 id="create-a-mock-database-with-omop-cdm-format-data">Create a mock database with OMOP CDM format data<a class="anchor" aria-label="anchor" href="#create-a-mock-database-with-omop-cdm-format-data"></a></h3>
+      <div class="section-desc"><p>Function that allow the user to create new OMOP CDM mock data</p></div>
 
       
     </div><div id="" class="section level2">
@@ -382,150 +277,14 @@
 
       <dl><dt>
           
-          <code><a href="summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics()</a></code> 
+          <code><a href="mockDisconnect.html">mockDisconnect()</a></code> 
         </dt>
-        <dd>This function is used to summarise the large scale characteristics of a cohort table</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="summarise-overlap-between-cohorts">Summarise overlap between cohorts<a class="anchor" aria-label="anchor" href="#summarise-overlap-between-cohorts"></a></h3>
-      <div class="section-desc"><p>Summarise overlap between cohorts in the same table</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="summariseCohortOverlap.html">summariseCohortOverlap()</a></code> 
-        </dt>
-        <dd>Summarise cohort overlap</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="summarise-time-between-cohorts">Summarise time between cohorts<a class="anchor" aria-label="anchor" href="#summarise-time-between-cohorts"></a></h3>
-      <div class="section-desc"><p>Summarise time between patients entry dates in cohorts</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="summariseCohortTiming.html">summariseCohortTiming()</a></code> 
-        </dt>
-        <dd>Summarise cohort timing</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="tidy-functions-to-display-results-in-a-more-easy-to-manage-table">Tidy functions to display results in a more easy to manage table<a class="anchor" aria-label="anchor" href="#tidy-functions-to-display-results-in-a-more-easy-to-manage-table"></a></h3>
-      <div class="section-desc"><p>Functions to modify the summarised_result objects into more easy to manage tibbles</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      
-    </div><div class="section level2">
-      
-      <h3 id="format-summarised-result-into-a-more-visual-and-exportable-format-gt-flextables-">Format summarised_result into a more visual and exportable format (gt, flextables, …)<a class="anchor" aria-label="anchor" href="#format-summarised-result-into-a-more-visual-and-exportable-format-gt-flextables-"></a></h3>
-      <div class="section-desc"><p>Functions to format the summarised_result objects into gt and flextables object that latter can be exported as html, docx, pdf, … Ideal for shinyapps and reports.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="formatCharacteristics.html">formatCharacteristics()</a></code> 
-        </dt>
-        <dd>Format a summarised_characteristics object into a visual table.</dd>
+        <dd>Function to disconnect from the mock</dd>
       </dl><dl><dt>
           
-          <code><a href="tableCharacteristics.html">tableCharacteristics()</a></code> 
+          <code><a href="mockPatientProfiles.html">mockPatientProfiles()</a></code> 
         </dt>
-        <dd>Format a summarised_characteristics object into a visual table.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tableCohortIntersect.html">tableCohortIntersect()</a></code> 
-        </dt>
-        <dd>Format a summariseCohortIntersect result into a visual table.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tableCohortOverlap.html">tableCohortOverlap()</a></code> 
-        </dt>
-        <dd>Format a summariseOverlapCohort result into a visual table.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tableCohortTiming.html">tableCohortTiming()</a></code> 
-        </dt>
-        <dd>Format a summariseCohortTiming result into a visual table.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tableDemographics.html">tableDemographics()</a></code> 
-        </dt>
-        <dd>Format a summariseDemographics result into a visual table.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tableLargeScaleCharacteristics.html">tableLargeScaleCharacteristics()</a></code> 
-        </dt>
-        <dd>Format a summarised_large_scale_characteristics object into a visual table.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tableTableIntersect.html">tableTableIntersect()</a></code> 
-        </dt>
-        <dd>Format a summariseTableIntersect result into a visual table.</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="generate-ggplots-from-summarised-result-objects">Generate ggplots from summarised_result objects<a class="anchor" aria-label="anchor" href="#generate-ggplots-from-summarised-result-objects"></a></h3>
-      <div class="section-desc"><p>Functions to generate ggplots from the different summarised_result objects.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="plotCharacteristics.html">plotCharacteristics()</a></code> 
-        </dt>
-        <dd>Create a ggplot from the output of summariseCharacteristics. `r lifecycle::badge("deprecated")`</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotCohortIntersect.html">plotCohortIntersect()</a></code> 
-        </dt>
-        <dd>Plot summariseCohortIntersect output.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotCohortOverlap.html">plotCohortOverlap()</a></code> 
-        </dt>
-        <dd>Plot the result of summariseCohortOverlap.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotCohortTiming.html">plotCohortTiming()</a></code> 
-        </dt>
-        <dd>Plot summariseCohortTiming results.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotDemographics.html">plotDemographics()</a></code> 
-        </dt>
-        <dd>Plot summariseDemographics output.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotLargeScaleCharacteristics.html">plotLargeScaleCharacteristics()</a></code> 
-        </dt>
-        <dd>create a ggplot from the output of summariseLargeScaleCharacteristics.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotTableIntersect.html">plotTableIntersect()</a></code> 
-        </dt>
-        <dd>Plot summariseTableIntersect output.</dd>
+        <dd>It creates a mock database for testing PatientProfiles package</dd>
       </dl></div><div class="section level2">
       
       <h3 id="other-functions">Other functions<a class="anchor" aria-label="anchor" href="#other-functions"></a></h3>
@@ -554,54 +313,14 @@
         <dd>Add cohort name for each cohort_definition_id</dd>
       </dl><dl><dt>
           
-          <code><a href="assertNameStyle.html">assertNameStyle()</a></code> 
-        </dt>
-        <dd>Assert whether a nameStyle contains the needed information.</dd>
-      </dl><dl><dt>
-          
           <code><a href="availableEstimates.html">availableEstimates()</a></code> 
         </dt>
         <dd>Show the available estimates that can be used for the different variable_type supported.</dd>
       </dl><dl><dt>
           
-          <code><a href="availableFunctions.html">availableFunctions()</a></code> 
-        </dt>
-        <dd>Show the available functions for the 4 classifications of data that are supported (numeric, date, binary and categorical)</dd>
-      </dl><dl><dt>
-          
           <code><a href="endDateColumn.html">endDateColumn()</a></code> 
         </dt>
         <dd>Get the name of the end date column for a certain table in the cdm</dd>
-      </dl><dl><dt>
-          
-          <code><a href="gtCharacteristics.html">gtCharacteristics()</a></code> 
-        </dt>
-        <dd>Create a gt table from a summarisedCharacteristics object.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="gtResult.html">gtResult()</a></code> 
-        </dt>
-        <dd>Create a gt table from a summary object.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="mockPatientProfiles.html">mockPatientProfiles()</a></code> 
-        </dt>
-        <dd>It creates a mock database for testing PatientProfiles package</dd>
-      </dl><dl><dt>
-          
-          <code><a href="optionsTableCharacteristics.html">optionsTableCharacteristics()</a></code> 
-        </dt>
-        <dd>Additional arguments for the function tableCharacteristics.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="optionsTableCohortOverlap.html">optionsTableCohortOverlap()</a></code> 
-        </dt>
-        <dd>Additional arguments for the function tableCohortOverlap.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="optionsTableCohortTiming.html">optionsTableCohortTiming()</a></code> 
-        </dt>
-        <dd>Additional arguments for the function tableCohortTiming.</dd>
       </dl><dl><dt>
           
           <code><a href="sourceConceptIdColumn.html">sourceConceptIdColumn()</a></code> 

@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -762,8 +762,9 @@ summarise:</p>
 <span><span class="co">#&gt; Download completed!</span></span></code></pre>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.duckdb.org/" class="external-link">duckdb</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: DBI</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: DBI</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -773,16 +774,18 @@ summarise:</p>
 <span><span class="co">#&gt;     filter, lag</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdmFromCon</a></span><span class="op">(</span></span>
 <span>  con <span class="op">=</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>  cdmSchema <span class="op">=</span> <span class="st">"main"</span>, </span>
 <span>  writeSchema <span class="op">=</span> <span class="st">"main"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Creating CDM database /tmp/RtmpEvKUBh/GiBleed_5.3.zip</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span></span>
+<span><span class="co">#&gt; Creating CDM database /tmp/RtmpiOkLWe/GiBleed_5.3.zip</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span></span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
 <span>  conceptSet <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"sinusitis"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4294548</span>, <span class="fl">4283893</span>, <span class="fl">40481087</span>, <span class="fl">257012</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>  limit <span class="op">=</span> <span class="st">"first"</span>,</span>
@@ -826,24 +829,24 @@ summarise:</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 17</span></span>
-<span><span class="co">#&gt; Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0//tmp/RtmpEvKUBh/file21f3576d7b2e.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0//tmp/RtmpiOkLWe/file1ca320dd5e7e.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1015, 2739, 176, 915, 1847, 3578, 4538, 1967, 501…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1984-07-23, 1955-04-16, 1969-02-09, 1964-08-10, …</span></span>
-<span><span class="co">#&gt; $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2019-05-28, 2015-12-02, 2018-12-20, 2019-03-30, …</span></span>
-<span><span class="co">#&gt; $ age                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 30, 2, 4, 4, 32, 4, 3, 3, 17, 11, 21, 12, 6, 6, 5…</span></span>
-<span><span class="co">#&gt; $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Female", "Male", "Female", "Female", "Fe…</span></span>
-<span><span class="co">#&gt; $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 11228, 759, 1537, 1689, 11855, 1569, 1415, 1327, …</span></span>
-<span><span class="co">#&gt; $ future_observation   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 12727, 22145, 18211, 19955, 17601, 15539, 22413, …</span></span>
-<span><span class="co">#&gt; $ future_aspirin       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ future_morphine      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span><span class="co">#&gt; $ prior_aspirin        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ prior_morphine       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
+<span><span class="co">#&gt; $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4452, 4608, 3069, 4520, 4756, 5234, 2470, 2445, 3…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1965-04-16, 1971-05-29, 1977-09-27, 1946-11-02, …</span></span>
+<span><span class="co">#&gt; $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2018-08-17, 2019-03-07, 2018-09-26, 1996-10-06, …</span></span>
+<span><span class="co">#&gt; $ age                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 9, 16, 16, 19, 11, 17, 15, 19, 18, 22, 23, 12, 20…</span></span>
+<span><span class="co">#&gt; $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Female", "Female", "Male", "Male", "Fe…</span></span>
+<span><span class="co">#&gt; $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3605, 6008, 5886, 7146, 4329, 6546, 5766, 7145, 6…</span></span>
+<span><span class="co">#&gt; $ future_observation   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 19481, 17449, 14974, 18236, 23118, 18983, 16292, …</span></span>
 <span><span class="co">#&gt; $ prior_oxycodone      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span><span class="co">#&gt; $ future_oxycodone     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
+<span><span class="co">#&gt; $ future_oxycodone     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
+<span><span class="co">#&gt; $ future_aspirin       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
+<span><span class="co">#&gt; $ future_morphine      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
+<span><span class="co">#&gt; $ prior_aspirin        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1…</span></span>
+<span><span class="co">#&gt; $ prior_morphine       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
 <span><span class="co">#&gt; $ pharyngitis_before   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ first_visit          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1984-10-19, 2015-11-17, 1975-05-23, 1995-09-17, …</span></span>
-<span><span class="co">#&gt; $ days_to_next_visit   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 88, 22130, 2294, 11360, 4003, 988, 5672, 12769, 4…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ first_visit          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-12-04, 1987-10-15, 1986-08-08, 1981-12-27, …</span></span>
+<span><span class="co">#&gt; $ days_to_next_visit   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 11555, 5983, 3237, 12839, 10841, 8420, 6667, 1183…</span></span></code></pre></div>
 <p>In this table (<code>x</code>) we have a cohort of first occurrences
 of sinusitis, and then we added: demographics; the counts of 3
 ingredients, any time prior and any time after the index date; a flag
@@ -851,7 +854,7 @@ indicating if they had pharyngitis before; date of the first visit; and,
 finally, time to next visit.</p>
 <p>If we want to summarise the age stratified by sex we could use
 tidyverse functions like:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean_age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>, sd_age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span></span>
@@ -859,11 +862,11 @@ tidyverse functions like:</p>
 <span><span class="co">#&gt; Use `na.rm = TRUE` to silence this warning</span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [2 x 3]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0//tmp/RtmpEvKUBh/file21f3576d7b2e.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0//tmp/RtmpiOkLWe/file1ca320dd5e7e.duckdb]</span></span></span>
 <span><span class="co">#&gt;   sex    mean_age sd_age</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Male       7.72   8.14</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Female     7.51   7.46</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Female     7.51   7.46</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Male       7.72   8.14</span></span></code></pre></div>
 <p>This would give us a first insight of the differences of age. But the
 output is not going to be in an standardised format.</p>
 <p>In PatientProfiles we have built a function that:</p>
@@ -875,7 +878,7 @@ the database side (e.g. not all dbms support quantile
 function).</p></li>
 </ul>
 <p>For example we could get the same information like before using:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseResult.html">summariseResult</a></span><span class="op">(</span></span>
 <span>    strata <span class="op">=</span> <span class="st">"sex"</span>,</span>
@@ -886,20 +889,20 @@ function).</p></li>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">strata_name</span>, <span class="va">strata_level</span>, <span class="va">variable_name</span>, <span class="va">estimate_value</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> age: mean, sd</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:23.864101</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:41.815315</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:24.246003</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:42.195061</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
 <span><span class="co">#&gt;   strata_name strata_level variable_name estimate_value  </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> overall     overall      age           7.61212346597248</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> overall     overall      age           7.79743654397839</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> overall     overall      age           7.79743654397838</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> sex         Female       age           7.5127644055434 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> sex         Male         age           7.7154779969651 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> sex         Female       age           7.45793686970358</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> sex         Female       age           7.45793686970357</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> sex         Male         age           8.13712697581574</span></span></code></pre></div>
 <p>You can stratify the results also by “pharyngitis_before”:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseResult.html">summariseResult</a></span><span class="op">(</span></span>
 <span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"pharyngitis_before"</span><span class="op">)</span>,</span>
@@ -910,25 +913,25 @@ function).</p></li>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">strata_name</span>, <span class="va">strata_level</span>, <span class="va">variable_name</span>, <span class="va">estimate_value</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> age: mean, sd</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:24.848353</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:42.782241</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:25.485971</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:43.403414</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 4</span></span></span>
 <span><span class="co">#&gt;    strata_name        strata_level variable_name estimate_value  </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> overall            overall      age           7.61212346597248</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> overall            overall      age           7.79743654397839</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> overall            overall      age           7.79743654397838</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sex                Female       age           7.5127644055434 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> sex                Male         age           7.7154779969651 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> sex                Female       age           7.45793686970358</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> sex                Female       age           7.45793686970357</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> sex                Male         age           8.13712697581574</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> pharyngitis_before 0            age           4.95620875824835</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> pharyngitis_before 1            age           11.9442270058708</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> pharyngitis_before 0            age           5.61220818358421</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> pharyngitis_before 1            age           8.8527966629461</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> pharyngitis_before 1            age           8.85279666294611</span></span></code></pre></div>
 <p>Note that the interaction term was not included, if we want to
 include it we have to specify it as follows:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseResult.html">summariseResult</a></span><span class="op">(</span></span>
 <span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"pharyngitis_before"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"pharyngitis_before"</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -940,22 +943,22 @@ include it we have to specify it as follows:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> age: mean, sd</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:26.078531</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:43.982594</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:26.969063</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:44.879463</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 18 × 4</span></span></span>
 <span><span class="co">#&gt;    strata_name                strata_level variable_name estimate_value  </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> overall                    overall      age           7.61212346597248</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> overall                    overall      age           7.79743654397839</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> overall                    overall      age           7.79743654397838</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sex                        Female       age           7.5127644055434 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> sex                        Male         age           7.7154779969651 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> sex                        Female       age           7.45793686970358</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> sex                        Female       age           7.45793686970357</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> sex                        Male         age           8.13712697581574</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> pharyngitis_before         0            age           4.95620875824835</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> pharyngitis_before         1            age           11.9442270058708</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> pharyngitis_before         0            age           5.61220818358421</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> pharyngitis_before         1            age           8.8527966629461 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> pharyngitis_before         1            age           8.85279666294611</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> sex &amp;&amp;&amp; pharyngitis_before Female &amp;&amp;&amp; 0 age           4.97596153846154</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> sex &amp;&amp;&amp; pharyngitis_before Female &amp;&amp;&amp; 1 age           11.4285714285714</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> sex &amp;&amp;&amp; pharyngitis_before Male &amp;&amp;&amp; 0   age           4.93652694610778</span></span>
@@ -966,7 +969,7 @@ include it we have to specify it as follows:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> sex &amp;&amp;&amp; pharyngitis_before Male &amp;&amp;&amp; 1   age           9.47682947960302</span></span></code></pre></div>
 <p>You can remove overall strata with the includeOverallStrata
 option:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseResult.html">summariseResult</a></span><span class="op">(</span></span>
 <span>    includeOverallStrata <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -979,23 +982,23 @@ option:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> age: mean, sd</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:27.564668</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:45.475793</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:28.081842</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:45.991559</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
 <span><span class="co">#&gt;   strata_name        strata_level variable_name estimate_value  </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> sex                Female       age           7.5127644055434 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> sex                Male         age           7.7154779969651 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> sex                Female       age           7.45793686970358</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> sex                Female       age           7.45793686970357</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> sex                Male         age           8.13712697581574</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> pharyngitis_before 0            age           4.95620875824835</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> pharyngitis_before 1            age           11.9442270058708</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> pharyngitis_before 0            age           5.61220818358421</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> pharyngitis_before 1            age           8.8527966629461</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> pharyngitis_before 1            age           8.85279666294611</span></span></code></pre></div>
 <p>The results model has two levels of grouping (group and strata), you
 can specify them independently:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/addCohortName.html">addCohortName</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseResult.html">summariseResult</a></span><span class="op">(</span></span>
@@ -1011,9 +1014,9 @@ can specify them independently:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> age: mean, sd</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:28.896106</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:46.807277</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:29.770463</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:47.674355</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
 <span><span class="co">#&gt;    group_name  group_level strata_name strata_level variable_name estimate_value</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span></span>
@@ -1029,7 +1032,7 @@ can specify them independently:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> cohort_name sinusitis   pharyngiti… 1            age           8.85279666294…</span></span></code></pre></div>
 <p>We can add or remove number subjects and records (if a person
 identifier is found) counts with the counts parameter:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseResult.html">summariseResult</a></span><span class="op">(</span></span>
 <span>    variables <span class="op">=</span> <span class="st">"age"</span>, </span>
@@ -1040,19 +1043,19 @@ identifier is found) counts with the counts parameter:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> age: mean, sd</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:30.360088</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:48.261828</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:30.569793</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:48.472022</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 4</span></span></span>
 <span><span class="co">#&gt;   strata_name strata_level variable_name   estimate_value  </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> overall     overall      number records  2689            </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> overall     overall      number subjects 2689            </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> overall     overall      age             7.61212346597248</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> overall     overall      age             7.79743654397839</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> overall     overall      age             7.79743654397838</span></span></code></pre></div>
 <p>If you want to specify different groups of estimates per different
 groups of variables you can use lists:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseResult.html">summariseResult</a></span><span class="op">(</span></span>
 <span>    strata <span class="op">=</span> <span class="st">"pharyngitis_before"</span>,</span>
@@ -1067,16 +1070,16 @@ groups of variables you can use lists:</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> age: mean, sd</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> prior_observation: mean, sd</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> sex: count, percentage</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:31.165762</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:49.059474</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:31.680541</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:49.562548</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16 × 4</span></span></span>
 <span><span class="co">#&gt;    strata_name        strata_level variable_name     estimate_value  </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> pharyngitis_before 0            age               4.95620875824835</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> pharyngitis_before 1            age               11.9442270058708</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> pharyngitis_before 0            age               5.61220818358421</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> pharyngitis_before 1            age               8.8527966629461 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> pharyngitis_before 1            age               8.85279666294611</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> pharyngitis_before 0            sex               832             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> pharyngitis_before 1            sex               539             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> pharyngitis_before 0            sex               835             </span></span>
@@ -1088,9 +1091,9 @@ groups of variables you can use lists:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> pharyngitis_before 0            prior_observation 1986.83443311338</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> pharyngitis_before 1            prior_observation 4542.85812133072</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> pharyngitis_before 0            prior_observation 2053.24325390978</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> pharyngitis_before 1            prior_observation 3228.06460521219</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> pharyngitis_before 1            prior_observation 3228.06460521218</span></span></code></pre></div>
 <p>An example of a complete analysis would be:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drugs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/settings.html" class="external-link">settings</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drugs</span><span class="op">)</span><span class="op">$</span><span class="va">cohort_name</span></span>
 <span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/addCohortName.html">addCohortName</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1131,9 +1134,9 @@ groups of variables you can use lists:</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> cohort_end_date: median, q25, q75, min, max</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Table is collected to memory as not all requested estimates are supported on</span></span>
 <span><span class="co">#&gt;   the database side</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-11 12:06:32.622294</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-05-16 10:38:50.502716</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-11 12:06:32.888216</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-16 10:38:50.769382</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 159 × 6</span></span></span>
 <span><span class="co">#&gt;    group_name  group_level strata_name strata_level variable_name estimate_value</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span></span>

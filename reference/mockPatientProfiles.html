@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,210 +60,55 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mockPatientProfiles</span><span class="op">(</span></span>
-<span>  connectionDetails <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>con <span class="op">=</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span>,</span>
-<span>    write_schema <span class="op">=</span> <span class="st">"main"</span>, mock_prefix <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,</span>
-<span>  drug_exposure <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  drug_strength <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  observation_period <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  condition_occurrence <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  visit_occurrence <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  concept_ancestor <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  person <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  death <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohort1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohort2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  drug_concept_id_size <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  ancestor_concept_id_size <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  condition_concept_id_size <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  visit_concept_id_size <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  visit_occurrence_id_size <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  ingredient_concept_id_size <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  drug_exposure_size <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  patient_size <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  min_drug_exposure_start_date <span class="op">=</span> <span class="st">"2000-01-01"</span>,</span>
-<span>  max_drug_exposure_start_date <span class="op">=</span> <span class="st">"2020-01-01"</span>,</span>
-<span>  earliest_date_of_birth <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  latest_date_of_birth <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  earliest_observation_start_date <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  latest_observation_start_date <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  min_days_to_observation_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  max_days_to_observation_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  earliest_condition_start_date <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  latest_condition_start_date <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  min_days_to_condition_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  max_days_to_condition_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  earliest_visit_start_date <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  latest_visit_start_date <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  min_days_to_visit_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  max_days_to_visit_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  con <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  writeSchema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  numberIndividuals <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>connectionDetails</dt>
-<dd><p>Connection an details to create the cdm mock object.</p></dd>
+    <dl><dt>con</dt>
+<dd><p>A DBI connection to create the cdm mock object.</p></dd>
 
 
-<dt>drug_exposure</dt>
-<dd><p>default null user can define its own table.</p></dd>
+<dt>writeSchema</dt>
+<dd><p>Name of an schema on the same connection with writing
+permisions.</p></dd>
 
 
-<dt>drug_strength</dt>
-<dd><p>default null user can define its own table.</p></dd>
-
-
-<dt>observation_period</dt>
-<dd><p>default null user can define its own table.</p></dd>
-
-
-<dt>condition_occurrence</dt>
-<dd><p>default null user can define its own table.</p></dd>
-
-
-<dt>visit_occurrence</dt>
-<dd><p>default null user can define its own visit_occurrence table.</p></dd>
-
-
-<dt>concept_ancestor</dt>
-<dd><p>the concept ancestor table.</p></dd>
-
-
-<dt>person</dt>
-<dd><p>default null user can define its own table.</p></dd>
-
-
-<dt>death</dt>
-<dd><p>default null user can define its own table</p></dd>
-
-
-<dt>cohort1</dt>
-<dd><p>cohort table for test to run in getindication.</p></dd>
-
-
-<dt>cohort2</dt>
-<dd><p>cohort table for test to run in getindication.</p></dd>
-
-
-<dt>drug_concept_id_size</dt>
-<dd><p>number of unique drug concept id.</p></dd>
-
-
-<dt>ancestor_concept_id_size</dt>
-<dd><p>the size of concept ancestor table.</p></dd>
-
-
-<dt>condition_concept_id_size</dt>
-<dd><p>number of unique row in the condition concept table.</p></dd>
-
-
-<dt>visit_concept_id_size</dt>
-<dd><p>number of unique visit concept id.</p></dd>
-
-
-<dt>visit_occurrence_id_size</dt>
-<dd><p>number of unique visit occurrence id.</p></dd>
-
-
-<dt>ingredient_concept_id_size</dt>
-<dd><p>number of unique drug ingredient concept id.</p></dd>
-
-
-<dt>drug_exposure_size</dt>
-<dd><p>number of unique drug exposure.</p></dd>
-
-
-<dt>patient_size</dt>
-<dd><p>number of unique patient.</p></dd>
-
-
-<dt>min_drug_exposure_start_date</dt>
-<dd><p>user define minimum drug exposure start date.</p></dd>
-
-
-<dt>max_drug_exposure_start_date</dt>
-<dd><p>user define maximum drug exposure start date.</p></dd>
-
-
-<dt>earliest_date_of_birth</dt>
-<dd><p>the earliest date of birth of patient in person table format "dd-mm-yyyy".</p></dd>
-
-
-<dt>latest_date_of_birth</dt>
-<dd><p>the latest date of birth for patient in person table format "dd-mm-yyyy".</p></dd>
-
-
-<dt>earliest_observation_start_date</dt>
-<dd><p>the earliest observation start date for patient format "dd-mm-yyyy".</p></dd>
-
-
-<dt>latest_observation_start_date</dt>
-<dd><p>the latest observation start date for patient format "dd-mm-yyyy".</p></dd>
-
-
-<dt>min_days_to_observation_end</dt>
-<dd><p>the minimum number of days of the observational integer.</p></dd>
-
-
-<dt>max_days_to_observation_end</dt>
-<dd><p>the maximum number of days of the observation period integer.</p></dd>
-
-
-<dt>earliest_condition_start_date</dt>
-<dd><p>the earliest condition start date for patient format "dd-mm-yyyy".</p></dd>
-
-
-<dt>latest_condition_start_date</dt>
-<dd><p>the latest condition start date for patient format "dd-mm-yyyy".</p></dd>
-
-
-<dt>min_days_to_condition_end</dt>
-<dd><p>the minimum number of days of the condition integer.</p></dd>
-
-
-<dt>max_days_to_condition_end</dt>
-<dd><p>the maximum number of days of the condition integer.</p></dd>
-
-
-<dt>earliest_visit_start_date</dt>
-<dd><p>the earliest visit start date for patient format "dd-mm-yyyy".</p></dd>
-
-
-<dt>latest_visit_start_date</dt>
-<dd><p>the latest visit start date for patient format "dd-mm-yyyy".</p></dd>
-
-
-<dt>min_days_to_visit_end</dt>
-<dd><p>the minimum number of days of the visit integer.</p></dd>
-
-
-<dt>max_days_to_visit_end</dt>
-<dd><p>the maximum number of days of the visit integer.</p></dd>
-
-
-<dt>seed</dt>
-<dd><p>seed.</p></dd>
+<dt>numberIndividuals</dt>
+<dd><p>Number of individuals to create in the cdm
+reference.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>user self defined tibble table to put in cdm, it can input as many as the user want.</p></dd>
+<dd><p>User self defined tables to put in cdm, it can input as many
+as the user want.</p></dd>
+
+
+<dt>seed</dt>
+<dd><p>A number to set the seed. If NULL seed is not used.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>cdm of the mock database following user's specifications.</p>
+<p>A mock cdm_reference object created following user's specifications.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/">PatientProfiles</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">mockPatientProfiles</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdmDisconnect.html" class="external-link">cdmDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="mockDisconnect.html">mockDisconnect</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
