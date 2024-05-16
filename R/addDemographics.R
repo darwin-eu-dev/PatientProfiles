@@ -17,16 +17,14 @@
 #' Compute demographic characteristics at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm Object that contains a cdm reference. Use CDMConnector to obtain a
-#' cdm reference.
 #' @param indexDate Variable in x that contains the date to compute the
 #' demographics characteristics.
 #' @param age TRUE or FALSE. If TRUE, age will be calculated relative to
 #' indexDate.
-#' @param ageDefaultMonth Month of the year assigned to individuals with missing
+#' @param ageMissingMonth Month of the year assigned to individuals with missing
 #' month of birth.
 #' @param ageName Age variable name.
-#' @param ageDefaultDay day of the month assigned to individuals
+#' @param ageMissingDay day of the month assigned to individuals
 #' with missing day of birth.
 #' @param ageImposeMonth TRUE or FALSE. Whether the month of the date of birth
 #' will be considered as missing for all the individuals.
@@ -48,9 +46,7 @@
 #' @param futureObservationName Future observation variable name.
 #' @param futureObservationType Whether to return a "date" or the number of
 #' "days".
-#'
 #' @param dateOfBirth TRUE or FALSE, if true the date of birth will be return.
-#'
 #' @param dateOfBirthName dateOfBirth column name.
 #'
 #' @return cohort table with the added demographic information columns.
@@ -62,16 +58,15 @@
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addDemographics()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addDemographics <- function(x,
-                            cdm = lifecycle::deprecated(),
                             indexDate = "cohort_start_date",
                             age = TRUE,
                             ageName = "age",
-                            ageDefaultMonth = 1,
-                            ageDefaultDay = 1,
+                            ageMissingMonth = 1,
+                            ageMissingDay = 1,
                             ageImposeMonth = FALSE,
                             ageImposeDay = FALSE,
                             ageGroup = NULL,
@@ -87,29 +82,26 @@ addDemographics <- function(x,
                             futureObservationType = "days",
                             dateOfBirth = FALSE,
                             dateOfBirthName = "date_of_birth") {
-  ## change ageDefaultMonth, ageDefaultDay to integer
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addDemographics(cdm)")
-  }
+  ## change ageMissingMonth, ageMissingDay to integer
+
   cdm <- omopgenerics::cdmReference(x)
 
   ## check for standard types of user error
   personVariable <- checkX(x)
   checkCdm(cdm, c("person", "observation_period"))
-  checkmate::assertLogical(age, any.missing = FALSE, len = 1)
-  if (typeof(ageDefaultMonth) == "character") {
-    ageDefaultMonth <- as.integer(ageDefaultMonth)
+  assertLogical(age, length = 1)
+  if (typeof(ageMissingMonth) == "character") {
+    ageMissingMonth <- as.integer(ageMissingMonth)
   }
-  if (typeof(ageDefaultDay) == "character") {
-    ageDefaultDay <- as.integer(ageDefaultDay)
+  if (typeof(ageMissingDay) == "character") {
+    ageMissingDay <- as.integer(ageMissingDay)
   }
-  checkmate::assertIntegerish(
-    ageDefaultMonth,
-    lower = 1, upper = 12, any.missing = FALSE, len = 1,
-    null.ok = !age
+  assertNumeric(
+    ageMissingMonth, integerish = TRUE, min = 1, max = 12, length = 1,
+    null = !age
   )
   checkmate::assertIntegerish(
-    ageDefaultDay,
+    ageMissingDay,
     lower = 1, upper = 31, any.missing = FALSE, len = 1,
     null.ok = !age
   )
@@ -121,11 +113,11 @@ addDemographics <- function(x,
   checkmate::assertLogical(futureObservation, any.missing = FALSE, len = 1)
   checkmate::assertLogical(dateOfBirth, any.missing = FALSE, len = 1)
   checkVariableInX(indexDate, x, !(age | priorObservation | futureObservation))
-  if (!(age | sex | priorObservation | futureObservation | dateOfBirth)) {
-    cli::cli_abort("age, sex, priorObservation, futureObservation and dateOfBirth can not be FALSE")
+  if (!(age | sex | priorObservation | futureObservation | dateOfBirth | !is.null(ageGroup))) {
+    cli::cli_abort("age, sex, priorObservation, futureObservation, dateOfBirth and ageGroup can not be FALSE")
   }
-  checkmate::assertCharacter(missingAgeGroupValue, len = 1, any.missing = FALSE)
-  checkmate::assertCharacter(missingSexValue, len = 1, any.missing = FALSE)
+  assertCharacter(missingAgeGroupValue, length = 1, na = TRUE)
+  assertCharacter(missingSexValue, length = 1, na = TRUE)
   assertChoice(priorObservationType, c("date", "days"), length = 1)
   assertChoice(futureObservationType, c("date", "days"), length = 1)
 
@@ -165,119 +157,106 @@ addDemographics <- function(x,
     )
   }
 
-  # Start code
-  startTibble <- x
-  startNames <- colnames(x)
-
-  if(dateOfBirth){
-    startNames <- c(startNames,"date_of_birth")
+  ids <- uniqueColumnName(
+    c(colnames(cdm$person), colnames(cdm$observation_period), colnames(x)), 5
+  )
+  idBirth <- ids[1]
+  idGender <- ids[2]
+  idStart <- ids[3]
+  idEnd <- ids[4]
+  if (age == FALSE & !is.null(ageGroup)) {
+    ageName <- ids[5]
   }
-
-  personDetails <- cdm[["person"]] %>%
-    dplyr::select(
-      "person_id",
-      "gender_concept_id",
-      "year_of_birth",
-      "month_of_birth",
-      "day_of_birth"
-    ) %>%
-    dplyr::rename(!!personVariable := "person_id")
 
   if (priorObservation == TRUE || futureObservation == TRUE) {
     # most recent observation period (in case there are multiple)
-    obsPeriodDetails <- x %>%
-      dplyr::select(dplyr::all_of(c(personVariable, indexDate))) %>%
-      dplyr::distinct() %>%
-      dplyr::inner_join(
-        cdm[["observation_period"]] %>%
-          dplyr::rename(!!personVariable := "person_id") %>%
-          dplyr::select(
-            dplyr::all_of(personVariable),
-            "observation_period_start_date",
-            "observation_period_end_date"
+    x <- x |>
+      dplyr::left_join(
+        x %>%
+          dplyr::select(dplyr::all_of(c(personVariable, indexDate))) %>%
+          dplyr::distinct() %>%
+          dplyr::inner_join(
+            cdm[["observation_period"]] %>%
+              dplyr::rename(!!personVariable := "person_id") %>%
+              dplyr::select(
+                dplyr::all_of(personVariable),
+                !!idStart := "observation_period_start_date",
+                !!idEnd := "observation_period_end_date"
+              ),
+            by = personVariable
+          ) %>%
+          dplyr::filter(
+            .data[[idStart]] <= .data[[indexDate]] &
+              .data[[idEnd]] >= .data[[indexDate]]
           ),
-        by = personVariable
-      ) %>%
-      dplyr::filter(
-        .data$observation_period_start_date <= .data[[indexDate]] &
-          .data$observation_period_end_date >= .data[[indexDate]]
+        by = c(personVariable, indexDate)
       )
   }
 
   # update dates
-  if (age | dateOfBirth) {
-    personDetails <- personDetails %>%
-      dplyr::filter(!is.na(.data$year_of_birth)) %>%
-      addDateOfBirth(
-        name = "date_of_birth",
-        missingDay = ageDefaultDay,
-        missingMonth = ageDefaultMonth,
+  if (age | !is.null(ageGroup) | dateOfBirth | sex) {
+    if (age == FALSE & dateOfBirth == FALSE & is.null(ageGroup)) {
+      nm1 <- NULL
+    } else {
+      nm1 <- idBirth
+    }
+    if (sex) {
+      nm2 <- idGender
+    } else {
+      nm2 <- NULL
+    }
+    x <- x %>%
+      joinPersonTable(
+        name = nm1,
+        missingDay = ageMissingDay,
+        missingMonth = ageMissingMonth,
         imposeDay = ageImposeDay,
-        imposeMonth = ageImposeMonth
+        imposeMonth = ageImposeMonth,
+        genderConceptId = nm2
       )
   }
 
-  # join if not the person table
-  if (any(!c("person_id", "gender_concept_id") %in% colnames(x))) {
-
-    addCols <- colnames(personDetails)[
-      which(colnames(personDetails) != personVariable)]
-
-    if(any(addCols %in%
-           colnames(x))
-    ){
-      checkNewName(name = addCols, x = x)
-      x <- x %>%
-        dplyr::select(!dplyr::any_of(addCols))
-    }
-
-    x <- x %>%
-      dplyr::left_join(
-        personDetails %>%
-          dplyr::select(dplyr::any_of(c(
-            personVariable,
-            addCols
-          ))),
-        by = personVariable
-      )
-  }
-
-  if (priorObservation == TRUE || futureObservation == TRUE) {
-
-    addCols <- colnames(obsPeriodDetails)[
-      which(!colnames(obsPeriodDetails) %in% c(personVariable, indexDate))]
-
-    if (any(addCols %in% colnames(x))){
-      checkNewName(name = addCols, x = x)
-      x <- x %>%
-        dplyr::select(!dplyr::any_of(addCols))
-    }
-
-    x <- x %>%
-      dplyr::left_join(obsPeriodDetails,
-                       by = c(personVariable, indexDate)
-      )
-  }
-
-  if (age == TRUE) {
-    aQ <- ageQuery(indexDate, name = ageName)
+  if (age == TRUE | !is.null(ageGroup)) {
+    aQ <- glue::glue(
+      'as.integer(floor(dbplyr::sql(CDMConnector::datediff(
+    start = "{idBirth}", end = "{indexDate}", interval = "year"
+    ))))'
+    ) %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(glue::glue(ageName))
   } else {
     aQ <- NULL
   }
 
   if (sex == TRUE) {
-    sQ <- sexQuery(name = sexName, missingValue = missingSexValue)
+    if (is.na(missingSexValue)) {
+      sQ <- glue::glue(
+        'dplyr::case_when(.data[["{idGender}"]] == 8507 ~ "Male",
+    .data[["{idGender}"]] == 8532 ~ "Female",
+      TRUE ~ NA_character_)'
+      ) %>%
+        rlang::parse_exprs() %>%
+        rlang::set_names(glue::glue(sexName))
+    } else {
+      sQ <- glue::glue(
+        'dplyr::case_when(.data[["{idGender}"]] == 8507 ~ "Male",
+    .data[["{idGender}"]] == 8532 ~ "Female",
+      TRUE ~ "{missingSexValue}")'
+      ) %>%
+        rlang::parse_exprs() %>%
+        rlang::set_names(glue::glue(sexName))
+    }
   } else {
     sQ <- NULL
   }
 
   if (priorObservation == TRUE) {
     if (priorObservationType == "days") {
-      pHQ <-  glue::glue(
-        'local(CDMConnector::datediff("observation_period_start_date","{indexDate}"))'
+      pHQ <- glue::glue(
+        'as.integer(local(CDMConnector::datediff("{idStart}","{indexDate}")))'
       )
     } else {
-      pHQ <- ".data$observation_period_start_date"
+      pHQ <- glue::glue('.data[["{idStart}"]]')
     }
     pHQ <- pHQ %>%
       rlang::parse_exprs() %>%
@@ -288,11 +267,11 @@ addDemographics <- function(x,
 
   if (futureObservation == TRUE) {
     if (futureObservationType == "days") {
-      fOQ <-  glue::glue(
-        'local(CDMConnector::datediff("{indexDate}","observation_period_end_date"))'
+      fOQ <- glue::glue(
+        'as.integer(local(CDMConnector::datediff("{indexDate}","{idEnd}")))'
       )
     } else {
-      fOQ <- ".data$observation_period_end_date"
+      fOQ <- glue::glue('.data[["{idEnd}"]]')
     }
     fOQ <- fOQ |>
       rlang::parse_exprs() %>%
@@ -301,76 +280,54 @@ addDemographics <- function(x,
     fOQ <- NULL
   }
 
-  x <- x %>%
-    dplyr::mutate(
-      !!!aQ,
-      !!!sQ,
-      !!!pHQ,
-      !!!fOQ
-    )
-
-  x <- x %>%
-    dplyr::select(
-      dplyr::all_of(startNames),
-      dplyr::any_of(c(
-        ageName, sexName, priorObservationName, futureObservationName
-      ))
-    )
-
-  if (dateOfBirth == TRUE) {
-    x <- x %>%
-      dplyr::rename(!!dateOfBirthName := "date_of_birth")
+  if (dateOfBirth) {
+    dobQ <- glue::glue('.data[["{idBirth}"]]') |>
+      rlang::parse_exprs() |>
+      rlang::set_names(dateOfBirthName)
+  } else {
+    dobQ <- NULL
   }
 
-  x <- x %>% dplyr::compute()
+  x <- x %>%
+    dplyr::mutate(!!!aQ, !!!sQ, !!!pHQ, !!!fOQ, !!!dobQ) |>
+    dplyr::select(!dplyr::any_of(ids[1:4])) |>
+    dplyr::compute()
 
   if (!is.null(ageGroup)) {
-    x <- addCategories(
-      x = x,
-      variable = ageName,
-      categories = ageGroup,
-      missingCategoryValue = missingAgeGroupValue
-    )
+    x <- x |>
+      addCategories(
+        variable = ageName,
+        categories = ageGroup,
+        missingCategoryValue = missingAgeGroupValue
+      )
+    if (age == FALSE) {
+      x <- x |> dplyr::select(-dplyr::all_of(ageName))
+    }
   }
 
   return(x)
 }
 
-
-
-ageQuery <- function(indexDate, name) {
-  return(glue::glue('floor(dbplyr::sql(
-    CDMConnector::datediff(
-      start = "date_of_birth",
-      end = "{indexDate}",
-      interval = "year"
-    )
-  ))') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
+uniqueColumnName <- function(cols = character(), n = 1, nletters = 2) {
+  x <- rep(list(letters), nletters) |>
+    rlang::set_names(paste0("id_", seq_len(nletters)))
+  tidyr::expand_grid(!!!x) |>
+    tidyr::unite(col = "id", dplyr::starts_with("id_"), sep = "") |>
+    dplyr::mutate("id" = paste0("id_", .data$id)) |>
+    dplyr::filter(!.data$id %in% .env$cols) |>
+    dplyr::sample_n(size = .env$n) |>
+    dplyr::pull("id")
 }
-
-sexQuery <- function(name, missingValue) {
-  return(glue::glue('dplyr::case_when(
-      .data$gender_concept_id == 8507 ~ "Male",
-      .data$gender_concept_id == 8532 ~ "Female",
-      TRUE ~ "{missingValue}")') %>%
-           rlang::parse_exprs() %>%
-           rlang::set_names(glue::glue(name)))
-}
-
-
 
 #' Compute the age of the individuals at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the age.
 #' @param ageName Name of the new column that contains age.
 #' @param ageGroup List of age groups to be added.
-#' @param ageDefaultMonth Month of the year assigned to individuals with missing
+#' @param ageMissingMonth Month of the year assigned to individuals with missing
 #' month of birth. By default: 1.
-#' @param ageDefaultDay day of the month assigned to individuals with missing
+#' @param ageMissingDay day of the month assigned to individuals with missing
 #' day of birth. By default: 1.
 #' @param ageImposeMonth Whether the month of the date of birth will be
 #' considered as missing for all the individuals.
@@ -387,29 +344,25 @@ sexQuery <- function(name, missingValue) {
 #'
 #' cdm$cohort1 |>
 #'   addAge()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addAge <- function(x,
-                   cdm = lifecycle::deprecated(),
                    indexDate = "cohort_start_date",
                    ageName = "age",
                    ageGroup = NULL,
-                   ageDefaultMonth = 1,
-                   ageDefaultDay = 1,
+                   ageMissingMonth = 1,
+                   ageMissingDay = 1,
                    ageImposeMonth = FALSE,
                    ageImposeDay = FALSE,
                    missingAgeGroupValue = "None") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addAge(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
       age = TRUE,
       ageName = ageName,
       ageGroup = ageGroup,
-      ageDefaultDay = ageDefaultDay,
-      ageDefaultMonth = ageDefaultMonth,
+      ageMissingDay = ageMissingDay,
+      ageMissingMonth = ageMissingMonth,
       ageImposeDay = ageImposeDay,
       ageImposeMonth = ageImposeMonth,
       missingAgeGroupValue = missingAgeGroupValue,
@@ -428,7 +381,6 @@ addAge <- function(x,
 #' certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
 #' @param futureObservationName name of the new column to be added.
@@ -445,23 +397,19 @@ addAge <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addFutureObservation()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addFutureObservation <- function(x,
-                                 cdm = lifecycle::deprecated(),
                                  indexDate = "cohort_start_date",
                                  futureObservationName = "future_observation",
                                  futureObservationType = "days") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addFutureObservation(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
       age = FALSE,
       ageGroup = NULL,
-      ageDefaultDay = NULL,
-      ageDefaultMonth = NULL,
+      ageMissingDay = NULL,
+      ageMissingMonth = NULL,
       ageImposeDay = FALSE,
       ageImposeMonth = FALSE,
       sex = FALSE,
@@ -481,7 +429,6 @@ addFutureObservation <- function(x,
 #' at a certain date
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the prior
 #' observation.
 #' @param priorObservationName name of the new column to be added.
@@ -498,23 +445,19 @@ addFutureObservation <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addPriorObservation()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addPriorObservation <- function(x,
-                                cdm = lifecycle::deprecated(),
                                 indexDate = "cohort_start_date",
                                 priorObservationName = "prior_observation",
                                 priorObservationType = "days") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addPriorObservation(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
       age = FALSE,
       ageGroup = NULL,
-      ageDefaultDay = NULL,
-      ageDefaultMonth = NULL,
+      ageMissingDay = NULL,
+      ageMissingMonth = NULL,
       ageImposeDay = FALSE,
       ageImposeMonth = FALSE,
       sex = FALSE,
@@ -533,14 +476,12 @@ addPriorObservation <- function(x,
 #' Indicate if a certain record is within the observation period
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
 #' @param window window to consider events of.
 #' @param completeInterval If the individuals are in observation for the full window.
 #' @param nameStyle Name of the new columns to create, it must contain
 #' "window_name" if multiple windows are provided.
-#' @param name deprecated.
 #'
 #' @return cohort table with the added binary column assessing inObservation.
 #' @export
@@ -550,29 +491,14 @@ addPriorObservation <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addInObservation()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addInObservation <- function(x,
-                             cdm = lifecycle::deprecated(),
                              indexDate = "cohort_start_date",
-                             window = c(0,0),
+                             window = c(0, 0),
                              completeInterval = FALSE,
-                             name = lifecycle::deprecated(),
                              nameStyle = "in_observation") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "inObservation(cdm)")
-  }
-  if (lifecycle::is_present(name)) {
-    lifecycle::deprecate_warn(
-      when = "0.7.0", what = "addInObservation(name)",
-      with = "addInObservation(nameStyle)"
-    )
-    if (missing(nameStyle)) {
-      nameStyle <- name
-    }
-  }
-
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -585,6 +511,19 @@ addInObservation <- function(x,
   checkWindow(window)
   names(window) <- getWindowNames(window)
   assertNameStyle(nameStyle = nameStyle, values = list("window_name" = window))
+  overwriteCols <- glue::glue(nameStyle, window_name = names(window))
+  overwriteCols <- overwriteCols[overwriteCols %in% colnames(x)]
+  if (length(overwriteCols) > 0) {
+    cli::cli_warn(c("!" = "{overwriteCols} column{?s} will be overwritten"))
+    x <- x |>
+      dplyr::select(!dplyr::all_of(overwriteCols))
+  }
+
+  ids <- uniqueColumnName(
+    c(colnames(cdm$person), colnames(cdm$observation_period), colnames(x)), 2, 3
+  )
+  idPrior <- ids[1]
+  idFuture <- ids[2]
 
   x <- x %>%
     addDemographics(
@@ -592,39 +531,35 @@ addInObservation <- function(x,
       age = FALSE,
       sex = FALSE,
       priorObservation = TRUE,
-      priorObservationName = "tmp_prior",
+      priorObservationName = idPrior,
       futureObservation = TRUE,
-      futureObservationName = "tmp_future"
+      futureObservationName = idFuture
     ) |>
-    dplyr::mutate("tmp_prior" = - .data$tmp_prior)
+    dplyr::mutate(!!idPrior := -.data[[idPrior]])
 
   for (k in seq_along(window)) {
-
     win <- window[[k]]
     window_name <- names(window)[k]
     nam <- glue::glue(nameStyle) |> as.character()
 
-    if(all(win == c(0,0))) {
-
+    if (all(win == c(0, 0))) {
       x <- x %>%
         dplyr::mutate(!!nam := as.numeric(
-          dplyr::if_else(is.na(.data$tmp_prior), 0, 1)
+          dplyr::if_else(is.na(.data[[idPrior]]), 0, 1)
         ))
-
     } else {
-
       lower <- win[1]
       upper <- win[2]
 
-      if(completeInterval == TRUE){
-        if (is.infinite(lower) |is.infinite(upper)) {
+      if (completeInterval == TRUE) {
+        if (is.infinite(lower) | is.infinite(upper)) {
           x <- x %>% dplyr::mutate(!!nam := 0)
         } else {
           x <- x %>%
             dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-              !is.na(.data$tmp_prior) &
-                .data$tmp_prior <= .env$lower &
-                .env$upper <= .data$tmp_future,
+              !is.na(.data[[idPrior]]) &
+                .data[[idPrior]] <= .env$lower &
+                .env$upper <= .data[[idFuture]],
               1,
               0
             )))
@@ -634,13 +569,13 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior), 1, 0
+                !is.na(.data[[idPrior]]), 1, 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior) &
-                  .data$tmp_prior <= .env$upper,
+                !is.na(.data[[idPrior]]) &
+                  .data[[idPrior]] <= .env$upper,
                 1,
                 0
               )))
@@ -649,30 +584,28 @@ addInObservation <- function(x,
           if (is.infinite(upper)) {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior) &
-                  .env$lower <= .data$tmp_future,
+                !is.na(.data[[idPrior]]) &
+                  .env$lower <= .data[[idFuture]],
                 1,
                 0
               )))
           } else {
             x <- x %>%
               dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data$tmp_prior) &
-                  .data$tmp_prior <= .env$upper &
-                  .env$lower <= .data$tmp_future,
+                !is.na(.data[[idPrior]]) &
+                  .data[[idPrior]] <= .env$upper &
+                  .env$lower <= .data[[idFuture]],
                 1,
                 0
               )))
           }
         }
       }
-
     }
-
   }
 
   x <- x |>
-    dplyr::select(-"tmp_prior", -"tmp_future") |>
+    dplyr::select(!dplyr::all_of(ids)) |>
     dplyr::compute()
 
   return(x)
@@ -681,7 +614,6 @@ addInObservation <- function(x,
 #' Compute the sex of the individuals
 #'
 #' @param x Table with individuals in the cdm.
-#' @param cdm A cdm_reference object.
 #' @param sexName name of the new column to be added.
 #' @param missingSexValue Value to include if missing sex.
 #'
@@ -693,23 +625,19 @@ addInObservation <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addSex()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addSex <- function(x,
-                   cdm = lifecycle::deprecated(),
                    sexName = "sex",
                    missingSexValue = "None") {
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn("0.6.0", "addSex(cdm)")
-  }
   x <- x %>%
     addDemographics(
       indexDate = NULL,
       age = FALSE,
       ageGroup = NULL,
-      ageDefaultDay = NULL,
-      ageDefaultMonth = NULL,
+      ageMissingDay = NULL,
+      ageMissingMonth = NULL,
       ageImposeDay = FALSE,
       ageImposeMonth = FALSE,
       sex = TRUE,

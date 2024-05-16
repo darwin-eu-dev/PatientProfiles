@@ -14,82 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It creates columns to indicate overlap information between two tables
-#'
-#' `r lifecycle::badge("deprecated")`
-#'
-#' @param x Table with individuals in the cdm.
-#' @param tableName name of the cohort that we want to check for overlap.
-#' @param filterVariable the variable that we are going to use to filter (e.g.
-#' cohort_definition_id).
-#' @param filterId the value of filterVariable that we are interested in, it can
-#' be a vector.
-#' @param idName the name of each filterId, must have same length than
-#' filterId.
-#' @param value value of interest to add: it can be count, flag, date or time.
-#' @param window window to consider events of.
-#' @param indexDate Variable in x that contains the date to compute the
-#' intersection.
-#' @param censorDate whether to censor overlap events at a date column of x.
-#' @param targetStartDate date of reference in cohort table, either for start
-#' (in overlap) or on its own (for incidence).
-#' @param targetEndDate date of reference in cohort table, either for end
-#' (overlap) or NULL (if incidence).
-#' @param order last or first date to use for date/time calculations.
-#' @param nameStyle naming of the added column or columns, should include
-#' required parameters.
-#'
-#' @return table with added columns with overlap information.
-#'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#'
-#' cdm <- mockPatientProfiles()
-#' result <- cdm$cohort1 %>%
-#'   addIntersect(tableName = "cohort2", value = "date") %>%
-#'   dplyr::collect()
-#' CDMConnector::cdmDisconnect(cdm = cdm)
-#' }
-#'
-addIntersect <- function(x,
-                         tableName,
-                         value,
-                         filterVariable = NULL,
-                         filterId = NULL,
-                         idName = NULL,
-                         window = list(c(0, Inf)),
-                         indexDate = "cohort_start_date",
-                         censorDate = NULL,
-                         targetStartDate = startDateColumn(tableName),
-                         targetEndDate = endDateColumn(tableName),
-                         order = "first",
-                         nameStyle = "{value}_{id_name}_{window_name}") {
-  lifecycle::deprecate_warn("0.7.0", "addIntersect()")
-  .addIntersect(
-    x = x, tableName = tableName, value = value,
-    filterVariable = filterVariable, filterId = filterId, idName = idName,
-    window = window, indexDate = indexDate, censorDate = censorDate,
-    targetStartDate = targetStartDate, targetEndDate = targetEndDate,
-    order = order, nameStyle = nameStyle
-  )
-}
-
 .addIntersect <- function(x,
-                         tableName,
-                         value,
-                         filterVariable = NULL,
-                         filterId = NULL,
-                         idName = NULL,
-                         window = list(c(0, Inf)),
-                         indexDate = "cohort_start_date",
-                         censorDate = NULL,
-                         targetStartDate = startDateColumn(tableName),
-                         targetEndDate = endDateColumn(tableName),
-                         order = "first",
-                         nameStyle = "{value}_{id_name}_{window_name}") {
+                          tableName,
+                          value,
+                          filterVariable = NULL,
+                          filterId = NULL,
+                          idName = NULL,
+                          window = list(c(0, Inf)),
+                          indexDate = "cohort_start_date",
+                          censorDate = NULL,
+                          targetStartDate = startDateColumn(tableName),
+                          targetEndDate = endDateColumn(tableName),
+                          order = "first",
+                          nameStyle = "{value}_{id_name}_{window_name}") {
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -174,14 +111,15 @@ addIntersect <- function(x,
       indexDate = "index_date", age = FALSE, sex = FALSE,
       priorObservationName = "start_obs", futureObservationName = "end_obs"
     ) %>%
-    dplyr::mutate("start_obs" = - .data$start_obs)
+    dplyr::mutate("start_obs" = -.data$start_obs)
   if (!is.null(censorDate)) {
     result <- result %>%
       dplyr::mutate(
         "censor_time" = !!CDMConnector::datediff("index_date", "censor_time"),
         "end_obs" = dplyr::if_else(
           .data$censor_time < .data$end_obs, .data$censor_time, .data$end_obs
-      )) |>
+        )
+      ) |>
       dplyr::select(-"censor_time")
   }
   result <- result |>
@@ -349,15 +287,15 @@ addIntersect <- function(x,
         dplyr::any_of(c("count", "flag")),
         names_to = "value",
         values_to = "values"
-      )  %>%
+      ) %>%
       tidyr::pivot_wider(
         names_from = c("value", "id_name", "window_name"),
         values_from = "values",
         names_glue = nameStyle,
         values_fill = 0
       ) %>%
-    dplyr::rename(!!indexDate := "index_date") %>%
-    dplyr::rename_all(tolower)
+      dplyr::rename(!!indexDate := "index_date") %>%
+      dplyr::rename_all(tolower)
 
     newColCountFlag <- colnames(resultCountFlagPivot)
     newColCountFlag <- newColCountFlag[newColCountFlag %in% newCols$colnam]
@@ -400,7 +338,8 @@ addIntersect <- function(x,
 
       x <- x %>%
         dplyr::left_join(
-          resultDateTimeOtherX, by = c(personVariable, indexDate)
+          resultDateTimeOtherX,
+          by = c(personVariable, indexDate)
         )
     }
 
@@ -410,7 +349,6 @@ addIntersect <- function(x,
         temporary = FALSE,
         overwrite = TRUE
       )
-
   }
 
   # missing columns
@@ -419,8 +357,7 @@ addIntersect <- function(x,
 
   for (val in as.character(unique(newCols$value))) {
     cols <- newCols$colnam[newCols$value == val]
-    valk <- switch(
-      val,
+    valk <- switch(val,
       flag = 0,
       count = 0,
       days = as.numeric(NA),

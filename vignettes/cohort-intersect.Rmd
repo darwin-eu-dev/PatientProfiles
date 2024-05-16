@@ -26,10 +26,7 @@ library(duckdb)
 library(dplyr)
 library(ggplot2)
 
-cdm <- mockPatientProfiles(
-  patient_size = 1000,
-  drug_exposure_size = 1000
-)
+cdm <- mockPatientProfiles(numberIndividuals = 1000)
 
 cdm$cohort1 %>%
   glimpse()
@@ -140,13 +137,9 @@ Whether we consider there to be a cohort intersection between the common cold an
 
 ```{r, message= FALSE, warning=FALSE}
 cdm <- mockPatientProfiles(
-  list(
-    con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-    write_schema = "main"
-  ),
   cohort1 = common_cold,
   cohort2 = aspirin,
-  patient_size = 2
+  numberIndividuals = 2
 )
 ```
 

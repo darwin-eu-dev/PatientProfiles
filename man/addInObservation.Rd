@@ -6,18 +6,14 @@
 \usage{
 addInObservation(
   x,
-  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   window = c(0, 0),
   completeInterval = FALSE,
-  name = lifecycle::deprecated(),
   nameStyle = "in_observation"
 )
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{A cdm_reference object.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 observation flag.}
@@ -25,8 +21,6 @@ observation flag.}
 \item{window}{window to consider events of.}
 
 \item{completeInterval}{If the individuals are in observation for the full window.}
-
-\item{name}{deprecated.}
 
 \item{nameStyle}{Name of the new columns to create, it must contain
 "window_name" if multiple windows are provided.}
@@ -42,7 +36,7 @@ Indicate if a certain record is within the observation period
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addInObservation()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

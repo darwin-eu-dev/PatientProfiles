@@ -51,7 +51,7 @@ cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addTableIntersectDate(tableName = "visit_occurrence")
 
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

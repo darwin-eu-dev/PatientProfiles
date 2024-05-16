@@ -14,84 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It creates columns to indicate overlap information between a table and a
-#' concept
-#'
-#' @param x Table with individuals in the cdm.
-#' @param conceptSet Concept set list.
-#' @param indexDate Variable in x that contains the date to compute the
-#' intersection.
-#' @param censorDate whether to censor overlap events at a date column of x
-#' @param window window to consider events in.
-#' @param targetStartDate Event start date to use for the intersection.
-#' @param targetEndDate Event end date to use for the intersection.
-#' @param order last or first date to use for date/days calculations.
-#' @param value Choices between c("value", "flag", "days", "date").
-#' @param nameStyle naming of the added column or columns, should include
-#' required parameters.
-#'
-#' @return table with added columns with overlap information
-#'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(PatientProfiles)
-#' cdm <- mockPatientProfiles()
-#'  concept <- dplyr::tibble(
-#'   concept_id = c(1125315),
-#'   domain_id = "Drug",
-#'   vocabulary_id = NA_character_,
-#'   concept_class_id = "Ingredient",
-#'   standard_concept = "S",
-#'   concept_code = NA_character_,
-#'   valid_start_date = as.Date("1900-01-01"),
-#'   valid_end_date = as.Date("2099-01-01"),
-#'   invalid_reason = NA_character_
-#'  ) %>%
-#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
-#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
-#' result <- cdm$cohort1 %>%
-#'  addConceptIntersect(
-#'   conceptSet = list("acetaminophen"=1125315)
-#'   ) %>%
-#'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
-#'  }
-#'
-addConceptIntersect <- function(x,
-                                conceptSet,
-                                indexDate = "cohort_start_date",
-                                censorDate = NULL,
-                                window = list(c(0, Inf)),
-                                targetStartDate = "event_start_date",
-                                targetEndDate = "event_end_date",
-                                order = "first",
-                                value = c("flag", "count", "date", "days"),
-                                nameStyle = "{value}_{concept_name}_{window_name}") {
-  lifecycle::deprecate_warn(
-    when = "0.6.0",
-    what = "addConceptIntersect()",
-    details = c(
-      "please use the specific functions instead:",
-      "*" = "addConceptIntersectFlag()", "*" = "addConceptIntersectCount()",
-      "*" = "addConceptIntersectDate()", "*" = "addConceptIntersectDays()"
-    )
-  )
-  .addConceptIntersect(
-    x = x,
-    conceptSet = conceptSet,
-    indexDate = indexDate,
-    censorDate = censorDate,
-    window = window,
-    targetStartDate = targetStartDate,
-    targetEndDate = targetEndDate,
-    order = order,
-    value = value,
-    nameStyle = nameStyle
-  )
-}
-
 .addConceptIntersect <- function(x,
                                  conceptSet,
                                  indexDate = "cohort_start_date",
@@ -178,8 +100,7 @@ subsetTable <- function(x) {
   domains <- unique(domains)
 
   lapply(domains, function(domain) {
-    tableName <- switch(
-      domain,
+    tableName <- switch(domain,
       "device" = "device_exposure",
       "specimen" = "specimen",
       "measurement" = "measurement",
@@ -245,7 +166,7 @@ subsetTable <- function(x) {
 #' \donttest{
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#'  concept <- dplyr::tibble(
+#' concept <- dplyr::tibble(
 #'   concept_id = c(1125315),
 #'   domain_id = "Drug",
 #'   vocabulary_id = NA_character_,
@@ -255,16 +176,16 @@ subsetTable <- function(x) {
 #'   valid_start_date = as.Date("1900-01-01"),
 #'   valid_end_date = as.Date("2099-01-01"),
 #'   invalid_reason = NA_character_
-#'  ) %>%
-#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
-#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' ) %>%
+#'   dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#' cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 #' result <- cdm$cohort1 %>%
-#'  addConceptIntersectFlag(
-#'   conceptSet = list("acetaminophen"=1125315)
+#'   addConceptIntersectFlag(
+#'     conceptSet = list("acetaminophen" = 1125315)
 #'   ) %>%
-#'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
-#'  }
+#'   dplyr::collect()
+#' mockDisconnect(cdm = cdm)
+#' }
 #'
 addConceptIntersectFlag <- function(x,
                                     conceptSet,
@@ -310,7 +231,7 @@ addConceptIntersectFlag <- function(x,
 #' \donttest{
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#'  concept <- dplyr::tibble(
+#' concept <- dplyr::tibble(
 #'   concept_id = c(1125315),
 #'   domain_id = "Drug",
 #'   vocabulary_id = NA_character_,
@@ -320,16 +241,16 @@ addConceptIntersectFlag <- function(x,
 #'   valid_start_date = as.Date("1900-01-01"),
 #'   valid_end_date = as.Date("2099-01-01"),
 #'   invalid_reason = NA_character_
-#'  ) %>%
-#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
-#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' ) %>%
+#'   dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#' cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 #' result <- cdm$cohort1 %>%
-#'  addConceptIntersectCount(
-#'   conceptSet = list("acetaminophen"=1125315)
+#'   addConceptIntersectCount(
+#'     conceptSet = list("acetaminophen" = 1125315)
 #'   ) %>%
-#'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
-#'  }
+#'   dplyr::collect()
+#' mockDisconnect(cdm = cdm)
+#' }
 #'
 addConceptIntersectCount <- function(x,
                                      conceptSet,
@@ -375,7 +296,7 @@ addConceptIntersectCount <- function(x,
 #' \donttest{
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#'  concept <- dplyr::tibble(
+#' concept <- dplyr::tibble(
 #'   concept_id = c(1125315),
 #'   domain_id = "Drug",
 #'   vocabulary_id = NA_character_,
@@ -385,16 +306,16 @@ addConceptIntersectCount <- function(x,
 #'   valid_start_date = as.Date("1900-01-01"),
 #'   valid_end_date = as.Date("2099-01-01"),
 #'   invalid_reason = NA_character_
-#'  ) %>%
-#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
-#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' ) %>%
+#'   dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#' cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 #' result <- cdm$cohort1 %>%
-#'  addConceptIntersectDate(
-#'   conceptSet = list("acetaminophen"=1125315)
+#'   addConceptIntersectDate(
+#'     conceptSet = list("acetaminophen" = 1125315)
 #'   ) %>%
-#'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
-#'  }
+#'   dplyr::collect()
+#' mockDisconnect(cdm = cdm)
+#' }
 #'
 addConceptIntersectDate <- function(x,
                                     conceptSet,
@@ -440,7 +361,7 @@ addConceptIntersectDate <- function(x,
 #' \donttest{
 #' library(PatientProfiles)
 #' cdm <- mockPatientProfiles()
-#'  concept <- dplyr::tibble(
+#' concept <- dplyr::tibble(
 #'   concept_id = c(1125315),
 #'   domain_id = "Drug",
 #'   vocabulary_id = NA_character_,
@@ -450,16 +371,16 @@ addConceptIntersectDate <- function(x,
 #'   valid_start_date = as.Date("1900-01-01"),
 #'   valid_end_date = as.Date("2099-01-01"),
 #'   invalid_reason = NA_character_
-#'  ) %>%
-#'  dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
-#'  cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' ) %>%
+#'   dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#' cdm <- CDMConnector::insertTable(cdm, "concept", concept)
 #' result <- cdm$cohort1 %>%
-#'  addConceptIntersectDays(
-#'   conceptSet = list("acetaminophen"=1125315)
+#'   addConceptIntersectDays(
+#'     conceptSet = list("acetaminophen" = 1125315)
 #'   ) %>%
-#'  dplyr::collect()
-#'  CDMConnector::cdmDisconnect(cdm = cdm)
-#'  }
+#'   dplyr::collect()
+#' mockDisconnect(cdm = cdm)
+#' }
 #'
 addConceptIntersectDays <- function(x,
                                     conceptSet,

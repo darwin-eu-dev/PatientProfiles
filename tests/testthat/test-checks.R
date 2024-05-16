@@ -30,7 +30,10 @@ test_that("test checkCategory with length 1 ", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    person = person,
     observation_period = op
   )
 
@@ -48,24 +51,86 @@ test_that("test checkCategory with length 1 ", {
 
   expect_error(cdm$cohort1 %>% addAge(indexDate = "cohort_start_date") %>%
     addCategories("age", categories))
+
+  expect_error(checkX(dplyr::tibble()))
+
+  expect_error(checkX(cdm$person |> dplyr::mutate("subject_id" = 1)))
+
+  expect_error(checkX(cdm$person |> dplyr::select(-"person_id")))
+
+  expect_error(checkCdm(list()))
+
+  expect_warning(checkValue(
+    "flag", cdm$person |> dplyr::mutate("flag" = 1), "person"
+  ))
+
+  expect_error(checkCohortNames(dplyr::tibble()))
+
+  expect_error(checkExclude(1))
+
+  expect_error(checkTable(1))
+
+  expect_error(checkStrata(1))
+
+  expect_error(checkStrata(list("sex"), dplyr::tibble()))
+
+  expect_error(checkVariablesFunctions(list("sex"), list("count", "mean")))
+
+  expect_error(checkVariablesFunctions(list("a" = "sex"), list("b" = "count")))
+
+  expect_identical(
+    checkVariablesFunctions(list(), list()),
+    rep(list(character()), 4) |>
+      rlang::set_names(c("variable_name", "estimate_name", "variable_type", "estimate_type")) |>
+      dplyr::as_tibble()
+  )
+
+  expect_error(checkAgeGroup(list(c(-5, 0))))
+
+  expect_error(checkWindow(c(0, 180)))
+
+  expect_no_error(
+    x <- checkVariablesFunctions(
+      variables = list(c("age", "bin")),
+      estimates = list(c("count", "mean")),
+      table = dplyr::tibble("age" = 3, "bin" = 1)
+    )
+  )
+  expect_true("count" %in% x$estimate_name[x$variable_name == "bin"])
+  expect_false("count" %in% x$estimate_name[x$variable_name == "age"])
+
+  expect_error(assertCharacter("ASD", minNumCharacter = 4))
+
+  expect_error(assertList(list("ac"), class = "cdm"))
+
+  expect_error(assertNumeric("asd"))
+
+  expect_error(assertNumeric(5, min = 6))
+
+  expect_error(assertNumeric(6, max = 5))
+
+  expect_no_error(assertClass(NULL, class = "cdm", null = T))
+  expect_error(assertClass(NULL, class = "cdm", null = F))
+
+  expect_error(assertCharacter(NA_character_))
+
+  expect_error(checkStrata(list(3)))
+
+  expect_error(assertCharacter("sadv", named = T))
+
+  expect_error(assertChoice(2, c("asd", "sad")))
+
+  expect_error(assertLogical(1))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that(" test checkNewName renames duplicate column names in addInObservation  ", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
     subject_id = c(1, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    ),
+    cohort_start_date = as.Date(c("2020-01-01", "2020-01-15")),
+    cohort_end_date = as.Date(c("2020-01-01", "2020-01-15")),
     flag = c(0, 0)
   )
   person <- dplyr::tibble(
@@ -86,11 +151,19 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    person = person,
     observation_period = op
   )
 
-  expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
+  expect_true(all(c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", "flag"
+  ) == colnames(cdm$cohort1)))
+  expect_warning(x <- cdm$cohort1 |> addInObservation(nameStyle = "flag"))
+
   expect_true(all(c(
     "cohort_definition_id", "subject_id", "cohort_start_date",
     "cohort_end_date", "flag"
@@ -100,50 +173,15 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
     "cohort_definition_id", "subject_id", "cohort_start_date",
     "cohort_end_date", "flag", "flag_new"
   ) == colnames(y)))
-
-  cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1),
-    subject_id = c(1, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    ),
-    flag = c(0, 0),
-    flag_1 = c(0, 0)
-  )
-  cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
-    observation_period = op
-  )
-
-  expect_warning(x <- addInObservation(cdm$cohort1, name = "flag"))
-  expect_true(all(c(
-    "cohort_definition_id", "subject_id", "cohort_start_date",
-    "cohort_end_date", "flag", "flag_1"
-  ) == colnames(x)))
-  expect_true(x |> dplyr::pull("flag") |> unique() == 1)
-  expect_true(x |> dplyr::pull("flag_1") |> unique() == 0)
-  y <- addInObservation(cdm$cohort1, nameStyle = "flag_new")
-  expect_true(all(c(
-    "cohort_definition_id", "subject_id", "cohort_start_date",
-    "cohort_end_date", "flag", "flag_1", "flag_new"
-  ) == colnames(y)))
-  expect_true(y |> dplyr::pull("flag") |> unique() == 0)
-  expect_true(y |> dplyr::pull("flag_new") |> unique() == 1)
-  expect_true(y |> dplyr::pull("flag_1") |> unique() == 0)
-
 })
 
 test_that(" test checkWindow in addIntersect", {
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 2)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 2
+  )
 
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-NA, 0)), value = "date"))
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-365, 0, 1)), value = "date"))
@@ -152,6 +190,8 @@ test_that(" test checkWindow in addIntersect", {
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(30, -365)), value = "date"))
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(Inf, Inf)), value = "date"))
   expect_error(cdm$cohort1 %>% .addIntersect(tableName = "cohort2", window = list(c(-Inf, -Inf)), value = "date"))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test checkSnakeCase", {
@@ -169,8 +209,12 @@ test_that("check window", {
   window <- list("short" = c(0, 9), c(10, 20), c(20, 35), "long" = c(-50, 10))
   windowCorrected <- checkWindow(window)
   expect_true("list" %in% class(windowCorrected))
-  expect_true(all(lapply(windowCorrected, function(x){x[1]}) |> unlist() == c(0, 10, 20, -50)))
-  expect_true(all(lapply(windowCorrected, function(x){x[2]}) |> unlist() == c(9, 20, 35, 10)))
+  expect_true(all(lapply(windowCorrected, function(x) {
+    x[1]
+  }) |> unlist() == c(0, 10, 20, -50)))
+  expect_true(all(lapply(windowCorrected, function(x) {
+    x[2]
+  }) |> unlist() == c(9, 20, 35, 10)))
   expect_true(all(names(windowCorrected) == c("short", "10_to_20", "20_to_35", "long")))
 })
 
@@ -190,37 +234,15 @@ test_that("checkNameStyle", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
     subject_id = c(1, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-01",
-        "2020-01-15"
-      )
-    )
+    cohort_start_date = as.Date(c("2020-01-01", "2020-01-15")),
+    cohort_end_date = cohort_start_date
   )
 
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1),
     subject_id = c(1, 1, 2),
-    cohort_start_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2020-01-15",
-        "2020-01-25",
-        "2020-01-26"
-      )
-    ),
+    cohort_start_date = as.Date(c("2020-01-15", "2020-01-25", "2020-01-26")),
+    cohort_end_date = cohort_start_date,
   )
 
   person <- dplyr::tibble(
@@ -241,8 +263,12 @@ test_that("checkNameStyle", {
   )
 
   cdm <- mockPatientProfiles(
-    connectionDetails = connectionDetails, cohort1 = cohort1, person = person,
-    observation_period = op, cohort2 = cohort2
+    con = connection(),
+    writeSchema = writeSchema(),
+    cohort1 = cohort1,
+    person = person,
+    observation_period = op,
+    cohort2 = cohort2
   )
 
   expect_true(all(c("count_all", "flag_all") %in% colnames(cdm$cohort1 %>% .addIntersect(

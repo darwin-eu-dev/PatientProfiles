@@ -41,21 +41,26 @@
 #'       "0 to 39" = c(0, 39), "40 to 79" = c(40, 79), "80 to 150" = c(80, 150)
 #'     ))
 #'   )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 addCategories <- function(x,
                           variable,
                           categories,
                           missingCategoryValue = "None",
                           overlap = FALSE) {
-  checkmate::assertClass(x, "cdm_table")
-  checkmate::assertCharacter(variable, len = 1, any.missing = FALSE)
-  checkmate::assertTRUE(variable %in% colnames(x))
-  checkmate::assertNumeric(dplyr::pull(utils::head(x, 1), variable))
-  checkmate::assertList(
-    categories,
-    types = "list", any.missing = FALSE, unique = TRUE, min.len = 1
-  )
+  assertClass(x, "cdm_table")
+  assertCharacter(variable, length = 1)
+  if (!variable %in% colnames(x)) {
+    cli::cli_abort("{variable} is not a column of x")
+  }
+  var <- dplyr::pull(utils::head(x, 1), variable)
+  if (!inherits(var, "numeric") &
+      !inherits(var, "integer") &
+      !inherits(var, "Date")) {
+    cli::cli_abort("{variable} must be a numeric or date variable")
+  }
+  assertList(categories, class = "list")
+  assertCharacter(missingCategoryValue, length = 1, na = TRUE)
 
   if (length(unique(names(categories))) < length((names(categories)))) {
     cli::cli_abort(
@@ -146,11 +151,17 @@ addCategories <- function(x,
         }
         sqlCategories <- gsub("#ELSE#", newSql, sqlCategories)
       }
-      sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
-        is.null(missingCategoryValue), NA, missingCategoryValue
-      ), "\""), sqlCategories) %>%
-        rlang::parse_exprs() %>%
-        rlang::set_names(glue::glue(name))
+      if (is.na(missingCategoryValue)) {
+        sqlCategories <- gsub("#ELSE#", "NA_character_", sqlCategories) %>%
+          rlang::parse_exprs() %>%
+          rlang::set_names(glue::glue(name))
+      } else {
+        sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
+          is.null(missingCategoryValue), NA, missingCategoryValue
+        ), "\""), sqlCategories) %>%
+          rlang::parse_exprs() %>%
+          rlang::set_names(glue::glue(name))
+      }
       x <- x %>%
         dplyr::mutate(!!!sqlCategories)
     } else {

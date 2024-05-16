@@ -28,7 +28,6 @@
 #' set of estimate names.
 #' @param estimates Estimates to obtain, it can be a list to point to different
 #' set of variables.
-#' @param functions deprecated.
 #' @param counts Whether to compute number of records and number of subjects.
 #'
 #' @return A summarised_result object with the summarised data of interest.
@@ -45,7 +44,7 @@
 #'   addDemographics() %>%
 #'   collect()
 #' result <- summariseResult(x)
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 summariseResult <- function(table,
@@ -54,20 +53,8 @@ summariseResult <- function(table,
                             strata = list(),
                             includeOverallStrata = TRUE,
                             variables = NULL,
-                            functions = lifecycle::deprecated(),
                             estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
                             counts = TRUE) {
-  if (lifecycle::is_present(functions)) {
-    lifecycle::deprecate_warn(
-      when = "0.7.0",
-      what = "summariseResult(functions)",
-      with = "summariseResult(estimates)"
-    )
-    if (missing(estimates)) {
-      estimates <- functions
-    }
-  }
-
   # initial checks
   checkTable(table)
   if (length(variables) == 0 & length(estimates) == 0 & counts == FALSE) {
@@ -88,8 +75,8 @@ summariseResult <- function(table,
 
   # create the summary for overall
   if (table %>%
-      dplyr::count() %>%
-      dplyr::pull() == 0) {
+    dplyr::count() %>%
+    dplyr::pull() == 0) {
     if (counts) {
       result <- dplyr::tibble(
         "group_name" = "overall", "group_level" = "overall",
@@ -109,17 +96,6 @@ summariseResult <- function(table,
     if (!is.list(estimates)) {
       estimates <- list(estimates)
     }
-    estimates <- lapply(estimates, function(x) {
-      if ("missing" %in% x) {
-        x <- x[x != "missing"]
-        x <- c(x, "count_missing", "percentage_missing")
-        cli::cli_warn(
-          "'missing' is no longer an option for {.arg estimates}. Use
-          'count_missing' or 'percentage_missing'."
-        )
-      }
-      return(x)
-    })
     if (!is.list(group)) {
       group <- list(group)
     }
@@ -182,12 +158,29 @@ summariseResult <- function(table,
       format = "{cli::pb_bar}{k}/{nt} group-strata combinations @ {Sys.time()}"
     )
 
+    personVariable <- NULL
+    if (counts) {
+      i <- "person_id" %in% colnames(table)
+      j <- "subject_id" %in% colnames(table)
+      if (i) {
+        if (j) {
+          cli::cli_warn(
+            "person_id and subject_id present in table, `person_id` used as
+            person identifier"
+          )
+        }
+        personVariable <- "person_id"
+      } else if (j) {
+        personVariable <- "subject_id"
+      }
+    }
+
     resultk <- 1
     result <- list()
     for (groupk in group) {
       for (stratak in strata) {
         result[[resultk]] <- summariseInternal(
-          table, groupk, stratak, functions, counts
+          table, groupk, stratak, functions, counts, personVariable
         ) |>
           # order variables
           orderVariables(colOrder, unique(unlist(estimates)))
@@ -224,7 +217,7 @@ summariseResult <- function(table,
   return(result)
 }
 
-summariseInternal <- function(table, groupk, stratak, functions, counts) {
+summariseInternal <- function(table, groupk, stratak, functions, counts, personVariable) {
   result <- list()
 
   # group by relevant variables
@@ -255,8 +248,12 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
     # format group strata
     strataGroup <- strataGroup |>
       dplyr::collect() |>
-      visOmopResults::uniteGroup(cols = groupk, keep = TRUE) |>
-      visOmopResults::uniteStrata(cols = stratak, keep = TRUE) |>
+      visOmopResults::uniteGroup(
+        cols = groupk, keep = TRUE, ignore = character()
+      ) |>
+      visOmopResults::uniteStrata(
+        cols = stratak, keep = TRUE, ignore = character()
+      ) |>
       dplyr::select(
         "strata_id", "group_name", "group_level", "strata_name", "strata_level"
       )
@@ -269,7 +266,7 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
 
   # count subjects and records
   if (counts) {
-    result$counts <- countSubjects(table)
+    result$counts <- countSubjects(table, personVariable)
   }
 
   # summariseNumeric
@@ -293,20 +290,7 @@ summariseInternal <- function(table, groupk, stratak, functions, counts) {
   return(result)
 }
 
-countSubjects <- function(x) {
-  i <- "person_id" %in% colnames(x)
-  j <- "subject_id" %in% colnames(x)
-  if (i) {
-    if (j) {
-      cli::cli_warn(
-        "person_id and subject_id present in table, `person_id` used as person
-        identifier"
-      )
-    }
-    personVariable <- "person_id"
-  } else if (j) {
-    personVariable <- "subject_id"
-  }
+countSubjects <- function(x, personVariable) {
   result <- list()
   result$record <- x %>%
     dplyr::summarise(
@@ -317,7 +301,7 @@ countSubjects <- function(x) {
     dplyr::mutate(
       "variable_name" = "number_records"
     )
-  if (i | j) {
+  if (!is.null(personVariable)) {
     result$subject <- x %>%
       dplyr::summarise(
         "estimate_value" = dplyr::n_distinct(.data[[personVariable]]),
@@ -438,7 +422,9 @@ summariseBinary <- function(table, functions) {
       .data$variable_type != "categorical" &
         .data$estimate_name %in% c("count", "percentage")
     )
-  binNum <- binFuns |> dplyr::pull("variable_name") |> unique()
+  binNum <- binFuns |>
+    dplyr::pull("variable_name") |>
+    unique()
   if (length(binNum) > 0) {
     num <- table |>
       dplyr::summarise(dplyr::across(
@@ -499,7 +485,7 @@ summariseBinary <- function(table, functions) {
           by = c("strata_id", "variable_name")
         ) |>
         dplyr::mutate(
-          "estimate_value" = 100*.data$numerator/.data$denominator,
+          "estimate_value" = 100 * .data$numerator / .data$denominator,
           "estimate_name" = "percentage",
           "estimate_type" = "percentage"
         ) |>
@@ -524,7 +510,7 @@ summariseCategories <- function(table, functions) {
     dplyr::filter(.data$variable_type == "categorical")
   result <- list()
   catVars <- unique(catFuns$variable_name)
-  if(length(catVars) > 0) {
+  if (length(catVars) > 0) {
     den <- table |>
       dplyr::tally(name = "denominator") |>
       dplyr::collect() |>
@@ -561,7 +547,6 @@ summariseCategories <- function(table, functions) {
           "estimate_type", "estimate_value"
         ) |>
         dplyr::filter(.data$estimate_name %in% .env$est)
-
     }
   }
   return(dplyr::bind_rows(result))
@@ -595,7 +580,7 @@ summariseMissings <- function(table, functions) {
         names_to = "variable_name",
         values_to = "count_missing"
       ) |>
-      dplyr::mutate("percentage_missing" = 100*.data$count_missing/.data$den) |>
+      dplyr::mutate("percentage_missing" = 100 * .data$count_missing / .data$den) |>
       dplyr::select(-"den") |>
       tidyr::pivot_longer(
         cols = c("count_missing", "percentage_missing"),

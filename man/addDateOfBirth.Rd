@@ -6,7 +6,6 @@
 \usage{
 addDateOfBirth(
   x,
-  cdm = lifecycle::deprecated(),
   name = "date_of_birth",
   missingDay = 1,
   missingMonth = 1,
@@ -16,8 +15,6 @@ addDateOfBirth(
 }
 \arguments{
 \item{x}{Table in the cdm that contains 'person_id' or 'subject_id'.}
-
-\item{cdm}{A cdm_reference object.}
 
 \item{name}{Name of the column to be added with the date of birth.}
 
@@ -43,6 +40,6 @@ library(PatientProfiles)
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addDateOfBirth()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 }

@@ -14,124 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Compute the intersect with an omop table, you can compute the number of
-#' occurrences, a flag of presence, a certain date, the time difference and/or
-#' obtain a certain column.
-#'
-#' @param x Table with individuals in the cdm.
-#' @param tableName Name of the table to intersect with. Options:
-#' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-#' device_exposure, measurement, observation, drug_era, condition_era, specimen.
-#' @param indexDate Variable in x that contains the date to compute the
-#' intersection.
-#' @param censorDate whether to censor overlap events at a specific date
-#' or a column date of x.
-#' @param window window to consider events in.
-#' @param order which record is considered in case of multiple records (only
-#' required for date and days options).
-#' @param targetStartDate Column name with start date for comparison.
-#' @param targetEndDate Column name with end date for comparison.
-#' @param flag TRUE or FALSE. If TRUE, flag will calculated for this
-#' intersection.
-#' @param count TRUE or FALSE. If TRUE, the number of counts will be calculated
-#' for this intersection.
-#' @param date TRUE or FALSE. If TRUE, date will be calculated for this
-#' intersection.
-#' @param days TRUE or FALSE. If TRUE, time difference in days will be
-#' calculated for this intersection.
-#' @param field Other columns from the table to intersect.
-#' @param nameStyle naming of the added column or columns, should include
-#' required parameters.
-#'
-#' @return table with added columns with intersect information.
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' cdm <- mockPatientProfiles()
-#'
-#' cdm$cohort1 %>%
-#'   addTableIntersect(tableName = "visit_occurrence")
-#' CDMConnector::cdmDisconnect(cdm = cdm)
-#' }
-#'
-addTableIntersect <- function(x,
-                              tableName,
-                              indexDate = "cohort_start_date",
-                              censorDate = NULL,
-                              window = list(c(0, Inf)),
-                              order = "first",
-                              targetStartDate = startDateColumn(tableName),
-                              targetEndDate = endDateColumn(tableName),
-                              flag = TRUE,
-                              count = TRUE,
-                              date = TRUE,
-                              days = TRUE,
-                              field = character(),
-                              nameStyle = "{table_name}_{value}_{window_name}") {
-  lifecycle::deprecate_warn(
-    when = "0.6.0",
-    what = "addTableIntersect()",
-    details = c(
-      "please use the specific functions instead:",
-      "*" = "addTableIntersectFlag()", "*" = "addTableIntersectCount()",
-      "*" = "addTableIntersectDate()", "*" = "addTableIntersectDays()"
-    )
-  )
-  .addTableIntersect(
-    x = x, tableName = tableName, indexDate = indexDate,
-    censorDate = censorDate, window = window, order = order,
-    targetStartDate = targetStartDate, targetEndDate = targetEndDate,
-    flag = flag, count = count, date = date, days = days, field = field,
-    nameStyle = nameStyle
-  )
-}
-
-.addTableIntersect <- function(x,
-                               tableName,
-                               indexDate = "cohort_start_date",
-                               censorDate = NULL,
-                               window = list(c(0, Inf)),
-                               order = "first",
-                               targetStartDate = startDateColumn(tableName),
-                               targetEndDate = endDateColumn(tableName),
-                               flag = TRUE,
-                               count = TRUE,
-                               date = TRUE,
-                               days = TRUE,
-                               field = character(),
-                               nameStyle = "{table_name}_{value}_{window_name}") {
-  cdm <- omopgenerics::cdmReference(x)
-  checkCdm(cdm, tables = tableName)
-  nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
-  checkmate::assertLogical(flag, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(count, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(date, any.missing = FALSE, len = 1)
-  checkmate::assertLogical(days, any.missing = FALSE, len = 1)
-  checkmate::assertTRUE(flag | count | date | days | length(field)>0)
-  value <- c("flag", "count", "date", "days")[c(flag, count, date, days)]
-  value <- c(value, field)
-
-
-  x <- x %>%
-    .addIntersect(
-      tableName = tableName,
-      filterVariable = NULL,
-      filterId = NULL,
-      idName = NULL,
-      value = value,
-      indexDate = indexDate,
-      targetStartDate = targetStartDate,
-      targetEndDate = targetEndDate,
-      window = window,
-      order = order,
-      nameStyle = nameStyle,
-      censorDate = censorDate
-    )
-
-  return(x)
-}
-
 #' Compute a flag intersect with an omop table.
 #'
 #' @param x Table with individuals in the cdm.
@@ -157,7 +39,7 @@ addTableIntersect <- function(x,
 #'
 #' cdm$cohort1 %>%
 #'   addTableIntersectFlag(tableName = "visit_occurrence")
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectFlag <- function(x,
@@ -217,7 +99,7 @@ addTableIntersectFlag <- function(x,
 #' cdm$cohort1 %>%
 #'   addTableIntersectCount(tableName = "visit_occurrence")
 #'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectCount <- function(x,
@@ -278,7 +160,7 @@ addTableIntersectCount <- function(x,
 #' cdm$cohort1 %>%
 #'   addTableIntersectDate(tableName = "visit_occurrence")
 #'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectDate <- function(x,
@@ -339,7 +221,7 @@ addTableIntersectDate <- function(x,
 #' cdm$cohort1 %>%
 #'   addTableIntersectDays(tableName = "visit_occurrence")
 #'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectDays <- function(x,
@@ -403,12 +285,12 @@ addTableIntersectDays <- function(x,
 #' cdm <- mockPatientProfiles()
 #' cdm$cohort1 %>%
 #'   addTableIntersectField(
-#'    tableName = "visit_occurrence",
-#'    field = "visit_concept_id",
-#'    order = "last",
-#'    window = c(-Inf, -1)
-#' )
-#' CDMConnector::cdmDisconnect(cdm = cdm)
+#'     tableName = "visit_occurrence",
+#'     field = "visit_concept_id",
+#'     order = "last",
+#'     window = c(-Inf, -1)
+#'   )
+#' mockDisconnect(cdm = cdm)
 #' }
 #'
 addTableIntersectField <- function(x,

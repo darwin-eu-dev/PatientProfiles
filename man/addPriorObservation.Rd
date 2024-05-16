@@ -7,7 +7,6 @@ at a certain date}
 \usage{
 addPriorObservation(
   x,
-  cdm = lifecycle::deprecated(),
   indexDate = "cohort_start_date",
   priorObservationName = "prior_observation",
   priorObservationType = "days"
@@ -15,8 +14,6 @@ addPriorObservation(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{A cdm_reference object.}
 
 \item{indexDate}{Variable in x that contains the date to compute the prior
 observation.}
@@ -40,6 +37,6 @@ cdm <- mockPatientProfiles()
 
 cdm$cohort1 \%>\%
   addPriorObservation()
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 }

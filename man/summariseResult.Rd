@@ -12,7 +12,6 @@ summariseResult(
   strata = list(),
   includeOverallStrata = TRUE,
   variables = NULL,
-  functions = lifecycle::deprecated(),
   estimates = c("min", "q25", "median", "q75", "max", "count", "percentage"),
   counts = TRUE
 )
@@ -32,8 +31,6 @@ strata will be reported when a list of strata has been specified.}
 
 \item{variables}{Variables to summarise, it can be a list to point to different
 set of estimate names.}
-
-\item{functions}{deprecated.}
 
 \item{estimates}{Estimates to obtain, it can be a list to point to different
 set of variables.}
@@ -57,7 +54,7 @@ x <- cdm$cohort1 \%>\%
   addDemographics() \%>\%
   collect()
 result <- summariseResult(x)
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

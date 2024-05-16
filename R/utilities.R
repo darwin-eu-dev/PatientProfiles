@@ -59,8 +59,7 @@ addCohortName <- function(cohort) {
 #' }
 #'
 addCdmName <- function(table, cdm = omopgenerics::cdmReference(table)) {
-
-    name <- omopgenerics::cdmName(cdm)
+  name <- omopgenerics::cdmName(cdm)
 
   table %>% dplyr::mutate("cdm_name" = .env$name)
 }

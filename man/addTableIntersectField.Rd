@@ -58,12 +58,12 @@ entries with the target columns in a window of the user's choice.
 cdm <- mockPatientProfiles()
 cdm$cohort1 \%>\%
   addTableIntersectField(
-   tableName = "visit_occurrence",
-   field = "visit_concept_id",
-   order = "last",
-   window = c(-Inf, -1)
-)
-CDMConnector::cdmDisconnect(cdm = cdm)
+    tableName = "visit_occurrence",
+    field = "visit_concept_id",
+    order = "last",
+    window = c(-Inf, -1)
+  )
+mockDisconnect(cdm = cdm)
 }
 
 }

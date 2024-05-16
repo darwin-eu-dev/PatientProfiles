@@ -7,7 +7,6 @@ cohort}
 \usage{
 addCohortIntersectCount(
   x,
-  cdm = lifecycle::deprecated(),
   targetCohortTable,
   targetCohortId = NULL,
   indexDate = "cohort_start_date",
@@ -20,9 +19,6 @@ addCohortIntersectCount(
 }
 \arguments{
 \item{x}{Table with individuals in the cdm.}
-
-\item{cdm}{Object that contains a cdm reference. Use CDMConnector to obtain a
-cdm reference.}
 
 \item{targetCohortTable}{name of the cohort that we want to check for overlap.}
 
@@ -60,7 +56,7 @@ cdm$cohort1 \%>\%
   addCohortIntersectCount(
     targetCohortTable = "cohort2"
   )
-CDMConnector::cdmDisconnect(cdm = cdm)
+mockDisconnect(cdm = cdm)
 }
 
 }

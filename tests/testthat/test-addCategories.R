@@ -1,11 +1,24 @@
 test_that("addCategories, functionality", {
   skip_on_cran()
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    person = dplyr::tibble(
+      "person_id" = 1:3, "gender_concept_id" = 0L, "year_of_birth" = 2000L,
+      "race_concept_id" = 0L, "ethnicity_concept_id" = 0L
+    ),
+    cohort1 = dplyr::tibble(
+      "cohort_definition_id" = 1L,
+      "subject_id" = c(1L, 2L, 3L),
+      "cohort_start_date" = as.Date(c("2045-01-01", "2052-01-01", "2060-01-01")),
+      "cohort_end_date" = as.Date(c("2045-01-01", "2052-01-01", "2060-01-01"))
+    )
+  )
   agegroup <- cdm$cohort1 %>%
     addAge() %>%
     addCategories(
       variable = "age",
-      categories = list("age_group" = list(c(0, 40), c(41, 120)))
+      categories = list("age_group" = list(c(0, 49), c(50, 120)))
     ) %>%
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
@@ -20,19 +33,28 @@ test_that("addCategories, functionality", {
     dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
-  expect_true(all(agegroup %>%
-    dplyr::pull(age_group) ==
-    c("0 to 40", "0 to 40", "41 to 120", "41 to 120")))
-
-  expect_true(all(agegroupOverlap %>%
-    dplyr::pull(age_group) ==
-    c("0 to 55", "0 to 55", "50 to 120", "0 to 55 and 50 to 120")
+  expect_true(all(
+    agegroup %>%
+      dplyr::pull(age_group) == c("0 to 49", "50 to 120", "50 to 120")
   ))
+
+  expect_true(all(
+    agegroupOverlap %>%
+      dplyr::pull(age_group) == c("0 to 55", "0 to 55 and 50 to 120", "50 to 120")
+  ))
+
+  expect_error(
+    cdm$cohort1 |>
+      addSex() |>
+      addCategories(variable = "sex")
+  )
+
+  mockDisconnect(cdm)
 })
 
-test_that("addCategory with both upper and lower infinite, age",{
+test_that("addCategory with both upper and lower infinite, age", {
   skip_on_cran()
-  cdm <- PatientProfiles::mockPatientProfiles()
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_no_error(
     agegroup <- cdm$cohort1 %>%
       addAge() %>%
@@ -45,7 +67,7 @@ test_that("addCategory with both upper and lower infinite, age",{
   )
   expect_true(
     all(agegroup %>%
-          dplyr::pull("age_group") == "any")
+      dplyr::pull("age_group") == "any")
   )
 
   expect_no_error(
@@ -61,7 +83,10 @@ test_that("addCategory with both upper and lower infinite, age",{
   expect_true(
     "50 or below" %in% (
       agegroup2 %>% dplyr::pull("age_group")
-    ))
+    )
+  )
+
+  mockDisconnect(cdm)
 })
 
 test_that("addCategories with infinity", {
@@ -73,8 +98,13 @@ test_that("addCategories with infinity", {
       "2020-01-01", NA, "2020-12-21", "2020-08-01", "2025-01-01", "2020-01-18"
     ))
   )
-  cdm <- mockPatientProfiles(connectionDetails, seed = 11, patient_size = 10)
-  cdm <- CDMConnector::insertTable(cdm = cdm, name = "table", table = table)
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+    seed = 11,
+    numberIndividuals = 10
+  )
+  cdm <- omopgenerics::insertTable(cdm = cdm, name = "table", table = table)
   table <- cdm$table %>%
     addCategories(
       variable = "prior_history", categories = list(
@@ -105,5 +135,5 @@ test_that("addCategories with infinity", {
     "2019-01-01 to 2019-01-01", "2023-01-01 to 2023-01-01",
     "2019-01-01 to 2019-01-01"
   )))
-  CDMConnector::dropTable(cdm = cdm, name = "table")
+  mockDisconnect(cdm)
 })

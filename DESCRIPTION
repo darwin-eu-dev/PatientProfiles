@@ -1,7 +1,7 @@
 Package: PatientProfiles
 Type: Package
 Title: Identify Characteristics of Patients in the OMOP Common Data Model
-Version: 0.8.0
+Version: 1.0.0
 Authors@R: c(
     person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")),
@@ -58,13 +58,11 @@ Imports:
     dplyr,
     tidyr,
     checkmate,
-    lubridate,
     rlang,
     cli,
     stringr,
-    omopgenerics (>= 0.1.2),
+    omopgenerics (>= 0.2.0),
     visOmopResults (>= 0.2.0),
-    lifecycle,
     purrr
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 BugReports: https://github.com/darwin-eu-dev/PatientProfiles/issues
@@ -74,7 +72,3 @@ Depends:
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 VignetteBuilder: knitr
-Remotes:
-    darwin-eu/CDMConnector,
-    darwin-eu-dev/omopgenerics,
-    darwin-eu/visOmopResults
