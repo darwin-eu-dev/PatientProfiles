@@ -14,9 +14,11 @@ Authors@R: c(
     person("Edward", "Burn", , "edward.burn@ndorms.ox.ac.uk", role = c("aut"),
     comment = c(ORCID = "0000-0002-9286-1128")),
     person("Nuria", "Mercade-Besora", , "nuria.mercadebesora@ndorms.ox.ac.uk", 
-    role = c("ctb"), comment = c(ORCID = "0009-0006-7948-3747")),
+    role = c("aut"), comment = c(ORCID = "0009-0006-7948-3747")),
     person("Xintong", "Li", , "xintong.li@ndorms.ox.ac.uk", role = c("ctb"),
-    comment = c(ORCID = "0000-0002-6872-5804"))
+    comment = c(ORCID = "0000-0002-6872-5804")),
+    person("Xihang", "Chen", , "xihang.chen@ndorms.ox.ac.uk", role = c("ctb"),
+    comment = c(ORCID = "0009-0001-8112-8959"))
     )
 Maintainer: Marti Catala <marti.catalasabate@ndorms.ox.ac.uk>
 Description: Identify the characteristics of patients in data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model.

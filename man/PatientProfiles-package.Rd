@@ -27,12 +27,13 @@ Authors:
   \item Mike Du \email{mike.du@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9517-8834}{ORCID})
   \item Kim Lopez-Guell \email{kim.lopez@spc.ox.ac.uk} (\href{https://orcid.org/0000-0002-8462-8668}{ORCID})
   \item Edward Burn \email{edward.burn@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9286-1128}{ORCID})
+  \item Nuria Mercade-Besora \email{nuria.mercadebesora@ndorms.ox.ac.uk} (\href{https://orcid.org/0009-0006-7948-3747}{ORCID})
 }
 
 Other contributors:
 \itemize{
-  \item Nuria Mercade-Besora \email{nuria.mercadebesora@ndorms.ox.ac.uk} (\href{https://orcid.org/0009-0006-7948-3747}{ORCID}) [contributor]
   \item Xintong Li \email{xintong.li@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-6872-5804}{ORCID}) [contributor]
+  \item Xihang Chen \email{xihang.chen@ndorms.ox.ac.uk} (\href{https://orcid.org/0009-0001-8112-8959}{ORCID}) [contributor]
 }
 
 }
