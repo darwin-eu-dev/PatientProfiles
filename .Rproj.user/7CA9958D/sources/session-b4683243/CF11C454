@@ -1,0 +1,26 @@
+{
+    "id": "CF11C454",
+    "path": "~/Desktop/PatientProfiles/R/addConceptIntersect.R",
+    "project_path": "R/addConceptIntersect.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1716364709024.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "120,55",
+        "scrollLine": "101"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1716364846,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1716364846282,
+    "read_only": false,
+    "read_only_alternatives": []
+}
