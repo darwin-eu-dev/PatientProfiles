@@ -184,3 +184,46 @@ test_that("domain name not in cdm", {
 
   mockDisconnect(cdm = cdm)
 })
+
+test_that("missing event end date", {
+
+  skip_on_cran()
+  if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") {
+    Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
+  }
+  if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) {
+    dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
+  }
+  if (!CDMConnector::eunomia_is_available()) {
+    invisible(utils::capture.output(CDMConnector::downloadEunomiaData(pathToData = Sys.getenv("EUNOMIA_DATA_FOLDER"))))
+  }
+  con <- DBI::dbConnect(duckdb::duckdb(),
+                        dbdir = CDMConnector::eunomia_dir())
+
+cohort <- dplyr::tibble(
+  cohort_definition_id = 1,
+  subject_id = 273L,
+  cohort_start_date = as.Date("2012-10-10"),
+  cohort_end_date = as.Date("2013-10-10")
+)
+
+DBI::dbWriteTable(con, "cohort", cohort)
+cdm <- CDMConnector::cdm_from_con(con,
+                                  cdm_schema = "main", write_schema = "main",
+                                  cohort_tables = "cohort")
+
+cdm <- cdm %>%
+  CDMConnector::cdm_subset(person_id = 273L)
+
+
+expect_true(cdm$cohort %>%
+  PatientProfiles::addConceptIntersectFlag(
+    conceptSet = list(a = 192671L),
+    window = c(-Inf, 0)
+  ) |>
+  dplyr::pull("a_minf_to_0") == 1)
+
+
+CDMConnector::cdm_disconnect(cdm)
+
+})
