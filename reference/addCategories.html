@@ -67,7 +67,8 @@
 <span>  <span class="va">variable</span>,</span>
 <span>  <span class="va">categories</span>,</span>
 <span>  missingCategoryValue <span class="op">=</span> <span class="st">"None"</span>,</span>
-<span>  overlap <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  overlap <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,12 +96,16 @@ given.</p></dd>
 <dt>overlap</dt>
 <dd><p>TRUE if the categories given overlap.</p></dd>
 
+
+<dt>name</dt>
+<dd><p>Name of the new table, if NULL a temporary table is returned.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>tibble with the categorical variable added.</p>
+<p>The x table with the categorical variable added.</p>
     </div>
 
     <div class="section level2">
