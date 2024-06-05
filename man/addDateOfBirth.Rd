@@ -6,17 +6,18 @@
 \usage{
 addDateOfBirth(
   x,
-  name = "date_of_birth",
+  dateOfBirthName = "date_of_birth",
   missingDay = 1,
   missingMonth = 1,
   imposeDay = FALSE,
-  imposeMonth = FALSE
+  imposeMonth = FALSE,
+  name = NULL
 )
 }
 \arguments{
 \item{x}{Table in the cdm that contains 'person_id' or 'subject_id'.}
 
-\item{name}{Name of the column to be added with the date of birth.}
+\item{dateOfBirthName}{Name of the column to be added with the date of birth.}
 
 \item{missingDay}{Day of the individuals with no or imposed day of birth.}
 
@@ -26,6 +27,8 @@ birth.}
 \item{imposeDay}{Whether to impose day of birth.}
 
 \item{imposeMonth}{Whether to impose month of birth.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 The function returns the table x with an extra column that contains

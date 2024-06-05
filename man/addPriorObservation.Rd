@@ -9,7 +9,8 @@ addPriorObservation(
   x,
   indexDate = "cohort_start_date",
   priorObservationName = "prior_observation",
-  priorObservationType = "days"
+  priorObservationType = "days",
+  name = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ observation.}
 
 \item{priorObservationType}{Whether to return a "date" or the number of
 "days".}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 cohort table with added column containing prior observation of the

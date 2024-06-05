@@ -9,7 +9,8 @@ addCategories(
   variable,
   categories,
   missingCategoryValue = "None",
-  overlap = FALSE
+  overlap = FALSE,
+  name = NULL
 )
 }
 \arguments{
@@ -25,9 +26,11 @@ any named category. If NULL or NA, missing will values will be
 given.}
 
 \item{overlap}{TRUE if the categories given overlap.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
-tibble with the categorical variable added.
+The x table with the categorical variable added.
 }
 \description{
 Categorize a numeric variable

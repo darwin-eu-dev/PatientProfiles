@@ -13,7 +13,8 @@ addAge(
   ageMissingDay = 1,
   ageImposeMonth = FALSE,
   ageImposeDay = FALSE,
-  missingAgeGroupValue = "None"
+  missingAgeGroupValue = "None",
+  name = NULL
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ considered as missing for all the individuals.}
 as missing for all the individuals.}
 
 \item{missingAgeGroupValue}{Value to include if missing age.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 tibble with the age column added.

@@ -29,8 +29,10 @@
 #' @param targetEndDate Column name with end date for comparison.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with intersect information.
+#'
 #' @export
 #'
 #' @examples
@@ -49,7 +51,8 @@ addTableIntersectFlag <- function(x,
                                   window = list(c(0, Inf)),
                                   targetStartDate = startDateColumn(tableName),
                                   targetEndDate = endDateColumn(tableName),
-                                  nameStyle = "{table_name}_{window_name}") {
+                                  nameStyle = "{table_name}_{window_name}",
+                                  name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
@@ -67,7 +70,8 @@ addTableIntersectFlag <- function(x,
       window = window,
       order = "first",
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)
@@ -88,8 +92,10 @@ addTableIntersectFlag <- function(x,
 #' @param targetEndDate Column name with end date for comparison.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with intersect information.
+#'
 #' @export
 #'
 #' @examples
@@ -109,7 +115,8 @@ addTableIntersectCount <- function(x,
                                    window = list(c(0, Inf)),
                                    targetStartDate = startDateColumn(tableName),
                                    targetEndDate = endDateColumn(tableName),
-                                   nameStyle = "{table_name}_{window_name}") {
+                                   nameStyle = "{table_name}_{window_name}",
+                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
@@ -127,7 +134,8 @@ addTableIntersectCount <- function(x,
       window = window,
       order = "first",
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)
@@ -149,6 +157,7 @@ addTableIntersectCount <- function(x,
 #' required for date and days options).
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -170,7 +179,8 @@ addTableIntersectDate <- function(x,
                                   window = list(c(0, Inf)),
                                   targetDate = startDateColumn(tableName),
                                   order = "first",
-                                  nameStyle = "{table_name}_{window_name}") {
+                                  nameStyle = "{table_name}_{window_name}",
+                                  name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
@@ -188,7 +198,8 @@ addTableIntersectDate <- function(x,
       window = window,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)
@@ -210,6 +221,7 @@ addTableIntersectDate <- function(x,
 #' required for date and days options).
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -231,7 +243,8 @@ addTableIntersectDays <- function(x,
                                   window = list(c(0, Inf)),
                                   targetDate = startDateColumn(tableName),
                                   order = "first",
-                                  nameStyle = "{table_name}_{window_name}") {
+                                  nameStyle = "{table_name}_{window_name}",
+                                  name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
@@ -249,7 +262,8 @@ addTableIntersectDays <- function(x,
       window = window,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)
@@ -276,6 +290,7 @@ addTableIntersectDays <- function(x,
 #' required for date and days options).
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with intersect information.
 #' @export
@@ -301,7 +316,8 @@ addTableIntersectField <- function(x,
                                    window = list(c(0, Inf)),
                                    targetDate = startDateColumn(tableName),
                                    order = "first",
-                                   nameStyle = "{table_name}_{extra_value}_{window_name}") {
+                                   nameStyle = "{table_name}_{extra_value}_{window_name}",
+                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
@@ -320,7 +336,8 @@ addTableIntersectField <- function(x,
       window = window,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)

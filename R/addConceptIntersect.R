@@ -23,7 +23,8 @@
                                  targetEndDate = "event_end_date",
                                  order = "first",
                                  value,
-                                 nameStyle = "{value}_{concept_name}_{window_name}") {
+                                 nameStyle = "{value}_{concept_name}_{window_name}",
+                                 name) {
   # initial checks
   omopgenerics::newCodelist(conceptSet)
   assertChoice(targetStartDate, choices = c("event_start_date", "event_end_date"), length = 1)
@@ -59,7 +60,8 @@
       censorDate = censorDate,
       targetStartDate = targetStartDate,
       targetEndDate = targetEndDate,
-      nameStyle = nameStyle
+      nameStyle = nameStyle,
+      name = name
     )
 
   # drop intermediate tables
@@ -157,6 +159,7 @@ subsetTable <- function(x) {
 #' @param targetEndDate Event end date to use for the intersection.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -194,7 +197,8 @@ addConceptIntersectFlag <- function(x,
                                     window = list(c(0, Inf)),
                                     targetStartDate = "event_start_date",
                                     targetEndDate = "event_end_date",
-                                    nameStyle = "{concept_name}_{window_name}") {
+                                    nameStyle = "{concept_name}_{window_name}",
+                                    name = NULL) {
   .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
@@ -205,7 +209,8 @@ addConceptIntersectFlag <- function(x,
     targetEndDate = targetEndDate,
     order = "first",
     value = "flag",
-    nameStyle = nameStyle
+    nameStyle = nameStyle,
+    name = name
   )
 }
 
@@ -222,6 +227,7 @@ addConceptIntersectFlag <- function(x,
 #' @param targetEndDate Event end date to use for the intersection.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -259,7 +265,8 @@ addConceptIntersectCount <- function(x,
                                      window = list(c(0, Inf)),
                                      targetStartDate = "event_start_date",
                                      targetEndDate = "event_end_date",
-                                     nameStyle = "{concept_name}_{window_name}") {
+                                     nameStyle = "{concept_name}_{window_name}",
+                                     name = NULL) {
   .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
@@ -270,7 +277,8 @@ addConceptIntersectCount <- function(x,
     targetEndDate = targetEndDate,
     order = "first",
     value = "count",
-    nameStyle = nameStyle
+    nameStyle = nameStyle,
+    name = name
   )
 }
 
@@ -287,6 +295,7 @@ addConceptIntersectCount <- function(x,
 #' @param order last or first date to use for date/days calculations.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -324,7 +333,8 @@ addConceptIntersectDate <- function(x,
                                     window = list(c(0, Inf)),
                                     targetDate = "event_start_date",
                                     order = "first",
-                                    nameStyle = "{concept_name}_{window_name}") {
+                                    nameStyle = "{concept_name}_{window_name}",
+                                    name = NULL) {
   .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
@@ -335,7 +345,8 @@ addConceptIntersectDate <- function(x,
     targetEndDate = NULL,
     order = order,
     value = "date",
-    nameStyle = nameStyle
+    nameStyle = nameStyle,
+    name = name
   )
 }
 
@@ -352,6 +363,7 @@ addConceptIntersectDate <- function(x,
 #' @param order last or first date to use for date/days calculations.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with overlap information
 #'
@@ -389,7 +401,8 @@ addConceptIntersectDays <- function(x,
                                     window = list(c(0, Inf)),
                                     targetDate = "event_start_date",
                                     order = "first",
-                                    nameStyle = "{concept_name}_{window_name}") {
+                                    nameStyle = "{concept_name}_{window_name}",
+                                    name = NULL) {
   .addConceptIntersect(
     x = x,
     conceptSet = conceptSet,
@@ -400,6 +413,7 @@ addConceptIntersectDays <- function(x,
     targetEndDate = NULL,
     order = order,
     value = "days",
-    nameStyle = nameStyle
+    nameStyle = nameStyle,
+    name = name
   )
 }

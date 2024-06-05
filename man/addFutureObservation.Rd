@@ -9,7 +9,8 @@ addFutureObservation(
   x,
   indexDate = "cohort_start_date",
   futureObservationName = "future_observation",
-  futureObservationType = "days"
+  futureObservationType = "days",
+  name = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ observation.}
 
 \item{futureObservationType}{Whether to return a "date" or the number of
 "days".}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 cohort table with added column containing future observation of the

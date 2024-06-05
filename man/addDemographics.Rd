@@ -25,7 +25,8 @@ addDemographics(
   futureObservationName = "future_observation",
   futureObservationType = "days",
   dateOfBirth = FALSE,
-  dateOfBirthName = "date_of_birth"
+  dateOfBirthName = "date_of_birth",
+  name = NULL
 )
 }
 \arguments{
@@ -81,6 +82,8 @@ calculated.}
 \item{dateOfBirth}{TRUE or FALSE, if true the date of birth will be return.}
 
 \item{dateOfBirthName}{dateOfBirth column name.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 cohort table with the added demographic information columns.

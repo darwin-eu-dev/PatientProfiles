@@ -30,6 +30,7 @@
 #' @param window window to consider events of.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with overlap information.
 #' @export
@@ -53,7 +54,8 @@ addCohortIntersectFlag <- function(x,
                                    targetStartDate = "cohort_start_date",
                                    targetEndDate = "cohort_end_date",
                                    window = list(c(0, Inf)),
-                                   nameStyle = "{cohort_name}_{window_name}") {
+                                   nameStyle = "{cohort_name}_{window_name}",
+                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
@@ -72,7 +74,8 @@ addCohortIntersectFlag <- function(x,
       targetEndDate = targetEndDate,
       window = window,
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)
@@ -95,6 +98,7 @@ addCohortIntersectFlag <- function(x,
 #' @param window window to consider events of.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table with added columns with overlap information.
 #' @export
@@ -118,7 +122,8 @@ addCohortIntersectCount <- function(x,
                                     targetStartDate = "cohort_start_date",
                                     targetEndDate = "cohort_end_date",
                                     window = list(c(0, Inf)),
-                                    nameStyle = "{cohort_name}_{window_name}") {
+                                    nameStyle = "{cohort_name}_{window_name}",
+                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
@@ -137,7 +142,8 @@ addCohortIntersectCount <- function(x,
       targetEndDate = targetEndDate,
       window = window,
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)
@@ -163,6 +169,7 @@ addCohortIntersectCount <- function(x,
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return x along with additional columns for each cohort of interest.
 #' @export
@@ -186,7 +193,8 @@ addCohortIntersectDays <- function(x,
                                    targetDate = "cohort_start_date",
                                    order = "first",
                                    window = c(0, Inf),
-                                   nameStyle = "{cohort_name}_{window_name}") {
+                                   nameStyle = "{cohort_name}_{window_name}",
+                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
@@ -206,7 +214,8 @@ addCohortIntersectDays <- function(x,
       targetEndDate = NULL,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)
@@ -232,6 +241,7 @@ addCohortIntersectDays <- function(x,
 #' Records outside of this time period will be ignored.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return x along with additional columns for each cohort of interest.
 #' @export
@@ -255,7 +265,8 @@ addCohortIntersectDate <- function(x,
                                    targetDate = "cohort_start_date",
                                    order = "first",
                                    window = c(0, Inf),
-                                   nameStyle = "{cohort_name}_{window_name}") {
+                                   nameStyle = "{cohort_name}_{window_name}",
+                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
@@ -275,7 +286,8 @@ addCohortIntersectDate <- function(x,
       targetEndDate = NULL,
       order = order,
       nameStyle = nameStyle,
-      censorDate = censorDate
+      censorDate = censorDate,
+      name = name
     )
 
   return(x)

@@ -10,7 +10,8 @@ addDeathDays(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = c(0, Inf),
-  deathDaysName = "days_to_death"
+  deathDaysName = "days_to_death",
+  name = NULL
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ addDeathDays(
 \item{window}{window to consider events over.}
 
 \item{deathDaysName}{name of the new column to be added.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 table x with the added column with death information added.

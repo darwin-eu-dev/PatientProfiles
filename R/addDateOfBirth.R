@@ -17,12 +17,13 @@
 #' Add a column with the individual birth date
 #'
 #' @param x Table in the cdm that contains 'person_id' or 'subject_id'.
-#' @param name Name of the column to be added with the date of birth.
+#' @param dateOfBirthName Name of the column to be added with the date of birth.
 #' @param missingDay Day of the individuals with no or imposed day of birth.
 #' @param missingMonth Month of the individuals with no or imposed month of
 #' birth.
 #' @param imposeDay Whether to impose day of birth.
 #' @param imposeMonth Whether to impose month of birth.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return The function returns the table x with an extra column that contains
 #' the date of birth.
@@ -38,31 +39,37 @@
 #' mockDisconnect(cdm = cdm)
 #' }
 addDateOfBirth <- function(x,
-                           name = "date_of_birth",
+                           dateOfBirthName = "date_of_birth",
                            missingDay = 1,
                            missingMonth = 1,
                            imposeDay = FALSE,
-                           imposeMonth = FALSE) {
+                           imposeMonth = FALSE,
+                           name = NULL) {
+  comp <- newTable(name)
+
   joinPersonTable(
-    x = x, name = name, missingDay = missingDay, missingMonth = missingMonth,
-    imposeDay = imposeDay, imposeMonth = imposeMonth, genderConceptId = NULL
-  )
+    x = x, dateOfBirthName = dateOfBirthName, missingDay = missingDay,
+    missingMonth = missingMonth, imposeDay = imposeDay,
+    imposeMonth = imposeMonth, genderConceptId = NULL
+  ) |>
+    dplyr::compute(name = comp$name, temporary = comp$temporary)
 }
 
 joinPersonTable <- function(x,
-                            name,
+                            dateOfBirthName,
                             missingDay,
                             missingMonth,
                             imposeDay,
                             imposeMonth,
-                            genderConceptId) {
+                            genderConceptId,
+                            name) {
   cdm <- omopgenerics::cdmReference(x)
 
   personVariable <- checkX(x)
 
   person <- cdm$person
 
-  if (!is.null(name)) {
+  if (!is.null(dateOfBirthName)) {
     person <- person %>%
       dplyr::filter(!is.na(.data$year_of_birth))
 
@@ -93,7 +100,7 @@ joinPersonTable <- function(x,
         month_of_birth1 = as.character(as.integer(.data$month_of_birth)),
         day_of_birth1 = as.character(as.integer(.data$day_of_birth))
       ) %>%
-      dplyr::mutate(!!name := as.Date(paste0(
+      dplyr::mutate(!!dateOfBirthName := as.Date(paste0(
         .data$year_of_birth1, "-", .data$month_of_birth1, "-",
         .data$day_of_birth1
       )))
@@ -103,12 +110,14 @@ joinPersonTable <- function(x,
     person <- person |>
       dplyr::select(
         !!personVariable := "person_id",
-        dplyr::all_of(name),
+        dplyr::all_of(dateOfBirthName),
         !!genderConceptId := "gender_concept_id"
       )
   } else {
     person <- person |>
-      dplyr::select(!!personVariable := "person_id", dplyr::all_of(name))
+      dplyr::select(
+        !!personVariable := "person_id", dplyr::all_of(dateOfBirthName)
+      )
   }
 
   x <- x |>

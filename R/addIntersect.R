@@ -26,7 +26,9 @@
                           targetStartDate = startDateColumn(tableName),
                           targetEndDate = endDateColumn(tableName),
                           order = "first",
-                          nameStyle = "{value}_{id_name}_{window_name}") {
+                          nameStyle = "{value}_{id_name}_{window_name}",
+                          name = NULL) {
+  comp <- newTable(name)
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -112,7 +114,8 @@
     ) |>
     addDemographics(
       indexDate = "index_date", age = FALSE, sex = FALSE,
-      priorObservationName = "start_obs", futureObservationName = "end_obs"
+      priorObservationName = "start_obs", futureObservationName = "end_obs",
+      name = omopgenerics::uniqueTableName(tablePrefix)
     ) %>%
     dplyr::mutate("start_obs" = -.data$start_obs)
   if (!is.null(censorDate)) {
@@ -400,7 +403,8 @@
           indexDate = indexDate,
           window = window[[k]],
           completeInterval = F,
-          nameStyle = tmpName
+          nameStyle = tmpName,
+          name = omopgenerics::uniqueTableName(tablePrefix)
         ) |>
         dplyr::mutate(dplyr::across(
           .cols = dplyr::all_of(cols),
@@ -410,7 +414,7 @@
     }
   }
 
-  x <- dplyr::compute(x)
+  x <- x |> dplyr::compute(name = comp$name, temporary = comp$temporary)
 
   omopgenerics::dropTable(
     cdm = cdm, name = dplyr::starts_with(tablePrefix)
