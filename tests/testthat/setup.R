@@ -39,3 +39,7 @@ connection <- function(dbToTest = Sys.getenv("DB_TO_TEST", "duckdb")) {
     )
   )
 }
+readTables <- function(cdm) {
+  con <- CDMConnector::cdmCon(cdm)
+  CDMConnector::listTables(con = con) |> sort()
+}

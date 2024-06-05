@@ -2,6 +2,10 @@
 
 * addConceptIntersect now includes records with missing end date under the 
   assumption that end date is equal to start date.
+  
+* add* functions have a new argument called `name` to decide if we want a 
+  resultant temp table (`name = NULL`) or have a permanent table with a certain 
+  name
 
 # PatientProfiles 1.0.0
 

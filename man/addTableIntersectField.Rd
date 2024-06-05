@@ -15,7 +15,8 @@ addTableIntersectField(
   window = list(c(0, Inf)),
   targetDate = startDateColumn(tableName),
   order = "first",
-  nameStyle = "{table_name}_{extra_value}_{window_name}"
+  nameStyle = "{table_name}_{extra_value}_{window_name}",
+  name = NULL
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ required for date and days options).}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 table with added columns with intersect information.

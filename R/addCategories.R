@@ -24,8 +24,9 @@
 #' any named category. If NULL or NA, missing will values will be
 #' given.
 #' @param overlap TRUE if the categories given overlap.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
-#' @return tibble with the categorical variable added.
+#' @return The x table with the categorical variable added.
 #'
 #' @export
 #'
@@ -47,7 +48,9 @@ addCategories <- function(x,
                           variable,
                           categories,
                           missingCategoryValue = "None",
-                          overlap = FALSE) {
+                          overlap = FALSE,
+                          name = NULL) {
+  comp <- newTable(name)
   assertClass(x, "cdm_table")
   assertCharacter(variable, length = 1)
   if (!variable %in% colnames(x)) {
@@ -114,9 +117,11 @@ addCategories <- function(x,
     }
   }
 
+  tablePrefix <- omopgenerics::tmpPrefix()
+
   for (k in seq_along(categories)) {
     categoryTibbleK <- categoryTibble[[k]]
-    name <- names(categoryTibble)[k]
+    nm <- names(categoryTibble)[k]
     if (!overlap) {
       sqlCategories <- "#ELSE#"
       for (i in 1:nrow(categoryTibbleK)) {
@@ -152,55 +157,62 @@ addCategories <- function(x,
         sqlCategories <- gsub("#ELSE#", newSql, sqlCategories)
       }
       if (is.na(missingCategoryValue)) {
-        sqlCategories <- gsub("#ELSE#", "NA_character_", sqlCategories) %>%
-          rlang::parse_exprs() %>%
-          rlang::set_names(glue::glue(name))
+        sqlCategories <- gsub("#ELSE#", "NA_character_", sqlCategories)
       } else {
         sqlCategories <- gsub("#ELSE#", paste0("\"", ifelse(
           is.null(missingCategoryValue), NA, missingCategoryValue
-        ), "\""), sqlCategories) %>%
-          rlang::parse_exprs() %>%
-          rlang::set_names(glue::glue(name))
+        ), "\""), sqlCategories)
       }
+      sqlCategories <- sqlCategories %>%
+        rlang::parse_exprs() %>%
+        rlang::set_names(glue::glue(nm))
       x <- x %>%
         dplyr::mutate(!!!sqlCategories)
     } else {
-      x <- dplyr::mutate(x, !!name := as.character(NA))
+      x <- dplyr::mutate(x, !!nm := as.character(NA))
       for (i in 1:nrow(categoryTibbleK)) {
         lower <- categoryTibbleK$lower_bound[i]
         upper <- categoryTibbleK$upper_bound[i]
         category <- categoryTibbleK$category_label[i]
         x <- x %>%
-          dplyr::mutate(!!name := dplyr::if_else(
-            is.na(.data[[name]]) &
+          dplyr::mutate(!!nm := dplyr::if_else(
+            is.na(.data[[nm]]) &
               .data[[variable]] >= .env$lower &
               .data[[variable]] <= .env$upper,
             .env$category,
             dplyr::if_else(
-              !is.na(.data[[name]]) &
+              !is.na(.data[[nm]]) &
                 .data[[variable]] >= .env$lower &
                 .data[[variable]] <= .env$upper,
-              paste0(.data[[name]], " and ", .env$category),
-              .data[[name]]
+              paste0(.data[[nm]], " and ", .env$category),
+              .data[[nm]]
             )
           ))
       }
       # add missing as category
       if (!is.null(missingCategoryValue) && !is.na(missingCategoryValue)) {
         x <- x %>%
-          dplyr::mutate(!!name := dplyr::if_else(!is.na(.data[[name]]),
-            .data[[name]],
+          dplyr::mutate(!!nm := dplyr::if_else(!is.na(.data[[nm]]),
+            .data[[nm]],
             .env$missingCategoryValue
           ))
       }
     }
 
-    x <- x %>% dplyr::compute()
+    x <- x %>%
+      dplyr::compute(
+        name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
+      )
   }
 
   if (date) {
     x <- x %>% dplyr::select(-dplyr::all_of(variable))
   }
+
+  x <- x |> dplyr::compute(name = comp$name, temporary = comp$temporary)
+
+  cdm <- omopgenerics::cdmReference(x)
+  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   return(x)
 }

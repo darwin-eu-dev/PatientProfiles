@@ -48,6 +48,7 @@
 #' "days".
 #' @param dateOfBirth TRUE or FALSE, if true the date of birth will be return.
 #' @param dateOfBirthName dateOfBirth column name.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return cohort table with the added demographic information columns.
 #' @export
@@ -81,10 +82,12 @@ addDemographics <- function(x,
                             futureObservationName = "future_observation",
                             futureObservationType = "days",
                             dateOfBirth = FALSE,
-                            dateOfBirthName = "date_of_birth") {
+                            dateOfBirthName = "date_of_birth",
+                            name = NULL) {
   ## change ageMissingMonth, ageMissingDay to integer
 
   cdm <- omopgenerics::cdmReference(x)
+  comp <- newTable(name)
 
   ## check for standard types of user error
   personVariable <- checkX(x)
@@ -207,7 +210,7 @@ addDemographics <- function(x,
     }
     x <- x %>%
       joinPersonTable(
-        name = nm1,
+        dateOfBirthName = nm1,
         missingDay = ageMissingDay,
         missingMonth = ageMissingMonth,
         imposeDay = ageImposeDay,
@@ -291,14 +294,16 @@ addDemographics <- function(x,
   x <- x %>%
     dplyr::mutate(!!!aQ, !!!sQ, !!!pHQ, !!!fOQ, !!!dobQ) |>
     dplyr::select(!dplyr::any_of(ids[1:4])) |>
-    dplyr::compute()
+    dplyr::compute(name = comp$name, temporary = comp$temporary)
 
   if (!is.null(ageGroup)) {
+    if (comp$temporary) comp$name <- NULL
     x <- x |>
       addCategories(
         variable = ageName,
         categories = ageGroup,
-        missingCategoryValue = missingAgeGroupValue
+        missingCategoryValue = missingAgeGroupValue,
+        name = comp$name
       )
     if (age == FALSE) {
       x <- x |> dplyr::select(-dplyr::all_of(ageName))
@@ -334,6 +339,7 @@ uniqueColumnName <- function(cols = character(), n = 1, nletters = 2) {
 #' @param ageImposeDay Whether the day of the date of birth will be considered
 #' as missing for all the individuals.
 #' @param missingAgeGroupValue Value to include if missing age.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return tibble with the age column added.
 #' @export
@@ -354,7 +360,8 @@ addAge <- function(x,
                    ageMissingDay = 1,
                    ageImposeMonth = FALSE,
                    ageImposeDay = FALSE,
-                   missingAgeGroupValue = "None") {
+                   missingAgeGroupValue = "None",
+                   name = NULL) {
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -371,7 +378,8 @@ addAge <- function(x,
       futureObservation = FALSE,
       sexName = NULL,
       priorObservationName = NULL,
-      futureObservationName = NULL
+      futureObservationName = NULL,
+      name = name
     )
 
   return(x)
@@ -386,6 +394,7 @@ addAge <- function(x,
 #' @param futureObservationName name of the new column to be added.
 #' @param futureObservationType Whether to return a "date" or the number of
 #' "days".
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return cohort table with added column containing future observation of the
 #' individuals.
@@ -402,7 +411,8 @@ addAge <- function(x,
 addFutureObservation <- function(x,
                                  indexDate = "cohort_start_date",
                                  futureObservationName = "future_observation",
-                                 futureObservationType = "days") {
+                                 futureObservationType = "days",
+                                 name = NULL) {
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -419,7 +429,8 @@ addFutureObservation <- function(x,
       futureObservationType = futureObservationType,
       ageName = NULL,
       sexName = NULL,
-      priorObservationName = NULL
+      priorObservationName = NULL,
+      name = name
     )
 
   return(x)
@@ -434,9 +445,11 @@ addFutureObservation <- function(x,
 #' @param priorObservationName name of the new column to be added.
 #' @param priorObservationType Whether to return a "date" or the number of
 #' "days".
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return cohort table with added column containing prior observation of the
 #' individuals.
+#'
 #' @export
 #'
 #' @examples
@@ -450,7 +463,8 @@ addFutureObservation <- function(x,
 addPriorObservation <- function(x,
                                 indexDate = "cohort_start_date",
                                 priorObservationName = "prior_observation",
-                                priorObservationType = "days") {
+                                priorObservationType = "days",
+                                name = NULL) {
   x <- x %>%
     addDemographics(
       indexDate = indexDate,
@@ -467,7 +481,8 @@ addPriorObservation <- function(x,
       futureObservation = FALSE,
       ageName = NULL,
       sexName = NULL,
-      futureObservationName = NULL
+      futureObservationName = NULL,
+      name = name
     )
 
   return(x)
@@ -482,6 +497,7 @@ addPriorObservation <- function(x,
 #' @param completeInterval If the individuals are in observation for the full window.
 #' @param nameStyle Name of the new columns to create, it must contain
 #' "window_name" if multiple windows are provided.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return cohort table with the added binary column assessing inObservation.
 #' @export
@@ -498,7 +514,9 @@ addInObservation <- function(x,
                              indexDate = "cohort_start_date",
                              window = c(0, 0),
                              completeInterval = FALSE,
-                             nameStyle = "in_observation") {
+                             nameStyle = "in_observation",
+                             name = NULL) {
+  comp <- newTable(name)
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -519,6 +537,8 @@ addInObservation <- function(x,
       dplyr::select(!dplyr::all_of(overwriteCols))
   }
 
+  tablePrefix <- omopgenerics::tmpPrefix()
+
   ids <- uniqueColumnName(
     c(colnames(cdm$person), colnames(cdm$observation_period), colnames(x)), 2, 3
   )
@@ -533,7 +553,8 @@ addInObservation <- function(x,
       priorObservation = TRUE,
       priorObservationName = idPrior,
       futureObservation = TRUE,
-      futureObservationName = idFuture
+      futureObservationName = idFuture,
+      name = omopgenerics::uniqueTableName(tablePrefix)
     ) |>
     dplyr::mutate(!!idPrior := -.data[[idPrior]])
 
@@ -606,7 +627,9 @@ addInObservation <- function(x,
 
   x <- x |>
     dplyr::select(!dplyr::all_of(ids)) |>
-    dplyr::compute()
+    dplyr::compute(name = comp$name, temporary = comp$temporary)
+
+  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   return(x)
 }
@@ -616,8 +639,10 @@ addInObservation <- function(x,
 #' @param x Table with individuals in the cdm.
 #' @param sexName name of the new column to be added.
 #' @param missingSexValue Value to include if missing sex.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table x with the added column with sex information.
+#'
 #' @export
 #'
 #' @examples
@@ -630,7 +655,8 @@ addInObservation <- function(x,
 #'
 addSex <- function(x,
                    sexName = "sex",
-                   missingSexValue = "None") {
+                   missingSexValue = "None",
+                   name = NULL) {
   x <- x %>%
     addDemographics(
       indexDate = NULL,
@@ -647,7 +673,8 @@ addSex <- function(x,
       futureObservation = FALSE,
       ageName = NULL,
       priorObservationName = NULL,
-      futureObservationName = NULL
+      futureObservationName = NULL,
+      name = name
     )
 
   return(x)

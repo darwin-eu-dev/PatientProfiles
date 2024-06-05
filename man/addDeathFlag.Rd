@@ -10,7 +10,8 @@ addDeathFlag(
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = c(0, Inf),
-  deathFlagName = "death"
+  deathFlagName = "death",
+  name = NULL
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ addDeathFlag(
 \item{window}{window to consider events over.}
 
 \item{deathFlagName}{name of the new column to be added.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 table x with the added column with death information added.

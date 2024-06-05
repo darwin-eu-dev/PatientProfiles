@@ -22,6 +22,7 @@
 #' @param censorDate Name of a column to stop followup.
 #' @param window window to consider events over.
 #' @param deathDateName name of the new column to be added.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table x with the added column with death information added.
 #' @export
@@ -38,14 +39,16 @@ addDeathDate <- function(x,
                          indexDate = "cohort_start_date",
                          censorDate = NULL,
                          window = c(0, Inf),
-                         deathDateName = "date_of_death") {
+                         deathDateName = "date_of_death",
+                         name = NULL) {
   addDeath(
     x = x,
     value = "date",
     indexDate = indexDate,
     censorDate = censorDate,
     window = window,
-    deathName = deathDateName
+    deathName = deathDateName,
+    name = name
   )
 }
 
@@ -57,6 +60,7 @@ addDeathDate <- function(x,
 #' @param censorDate Name of a column to stop followup.
 #' @param window window to consider events over.
 #' @param deathDaysName name of the new column to be added.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table x with the added column with death information added.
 #' @export
@@ -73,14 +77,16 @@ addDeathDays <- function(x,
                          indexDate = "cohort_start_date",
                          censorDate = NULL,
                          window = c(0, Inf),
-                         deathDaysName = "days_to_death") {
+                         deathDaysName = "days_to_death",
+                         name = NULL) {
   addDeath(
     x = x,
     value = "days",
     indexDate = indexDate,
     censorDate = censorDate,
     window = window,
-    deathName = deathDaysName
+    deathName = deathDaysName,
+    name = name
   )
 }
 
@@ -93,6 +99,7 @@ addDeathDays <- function(x,
 #' @param censorDate Name of a column to stop followup.
 #' @param window window to consider events over.
 #' @param deathFlagName name of the new column to be added.
+#' @param name Name of the new table, if NULL a temporary table is returned.
 #'
 #' @return table x with the added column with death information added.
 #' @export
@@ -109,14 +116,16 @@ addDeathFlag <- function(x,
                          indexDate = "cohort_start_date",
                          censorDate = NULL,
                          window = c(0, Inf),
-                         deathFlagName = "death") {
+                         deathFlagName = "death",
+                         name = NULL) {
   addDeath(
     x = x,
     value = "flag",
     indexDate = indexDate,
     censorDate = censorDate,
     window = window,
-    deathName = deathFlagName
+    deathName = deathFlagName,
+    name = name
   )
 }
 
@@ -127,7 +136,8 @@ addDeath <- function(x,
                      indexDate,
                      censorDate,
                      window,
-                     deathName) {
+                     deathName,
+                     name) {
 
   # input validation
   cdm <- omopgenerics::cdmReference(x)
@@ -161,7 +171,8 @@ addDeath <- function(x,
       targetStartDate = "death_date",
       targetEndDate = NULL,
       order = "first",
-      nameStyle = deathName
+      nameStyle = deathName,
+      name = name
     )
 
   return(x)

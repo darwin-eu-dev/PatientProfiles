@@ -9,7 +9,8 @@ addInObservation(
   indexDate = "cohort_start_date",
   window = c(0, 0),
   completeInterval = FALSE,
-  nameStyle = "in_observation"
+  nameStyle = "in_observation",
+  name = NULL
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ observation flag.}
 
 \item{nameStyle}{Name of the new columns to create, it must contain
 "window_name" if multiple windows are provided.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 cohort table with the added binary column assessing inObservation.

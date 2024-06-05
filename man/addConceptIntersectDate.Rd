@@ -13,7 +13,8 @@ addConceptIntersectDate(
   window = list(c(0, Inf)),
   targetDate = "event_start_date",
   order = "first",
-  nameStyle = "{concept_name}_{window_name}"
+  nameStyle = "{concept_name}_{window_name}",
+  name = NULL
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ intersection.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters.}
+
+\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 table with added columns with overlap information
