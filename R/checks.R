@@ -316,7 +316,11 @@ checkCohortNames <- function(x, targetCohortId, name) {
 }
 
 #' @noRd
-checkSnakeCase <- function(name, verbose = TRUE) {
+checkSnakeCase <- function(name, verbose = TRUE, null = FALSE, call = parent.frame()) {
+  assertCharacter(name, call = call, length = 1, null = null)
+  if (is.null(name)) {
+    return(invisible(name))
+  }
   wrong <- FALSE
   for (i in seq_along(name)) {
     n <- name[i]
@@ -339,7 +343,7 @@ checkSnakeCase <- function(name, verbose = TRUE) {
     cli::cli_alert("names have been changed to lower case")
     cli::cli_alert("special symbols in names have been changed to '_'")
   }
-  invisible(name)
+  return(invisible(name))
 }
 
 #' @noRd
@@ -897,4 +901,8 @@ errorNull <- function(null) {
     str <- "; it can not be NULL"
   }
   return(str)
+}
+
+validateInteger <- function(x) {
+  if (is.)
 }
