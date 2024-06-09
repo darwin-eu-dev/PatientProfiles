@@ -31,7 +31,12 @@ test_that("addDemographics, input length, type", {
   expect_error(addDemographics(cdm$cohort1, indexDate = "condition_start_date"))
   expect_error(addDemographics(cdm$cohort1, indexDate = c("cohort_start_date", "cohort_end_date")))
   expect_error(addDemographics(cdm$cohort1, ageGroup = 10))
-  expect_error(addDemographics(cdm$cohort1, age = FALSE, sex = FALSE, priorObservation = FALSE, futureObservation = FALSE))
+  expect_identical(
+    cdm$cohort1 |> dplyr::collect(),
+    cdm$cohort1 |>
+      addDemographics(age = FALSE, sex = FALSE, priorObservation = FALSE, futureObservation = FALSE) |>
+      dplyr::collect()
+  )
 })
 
 test_that("addDemographics, cohort and condition_occurrence", {
@@ -256,8 +261,8 @@ test_that("partial demographics - cohorts", {
   expect_equal(
     colnames(cdm$cohort1e),
     c("cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", "age", "sex", "prior_observation",
-      "future_observation", "age_group")
+      "cohort_end_date", "age", "age_group", "sex", "prior_observation",
+      "future_observation")
   )
 })
 
