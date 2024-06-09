@@ -319,6 +319,8 @@ addSexQuery <- function(x,
 
 #' Query to add a column with the individual birth date
 #'
+#' \\ifelse{html}{\\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\\strong{[Experimental]}}
+#'
 #' @param x Table in the cdm that contains 'person_id' or 'subject_id'.
 #' @param dateOfBirthName Name of the column to be added with the date of birth.
 #' @param missingDay Day of the individuals with no or imposed day of birth.
