@@ -46,6 +46,9 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAgeQuery.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCategories.html</loc>
   </url>
   <url>
@@ -82,6 +85,9 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirth.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirthQuery.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathDate.html</loc>
   </url>
   <url>
@@ -94,16 +100,31 @@
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographicsQuery.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addFutureObservation.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addFutureObservationQuery.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservation.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservationQuery.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorObservation.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorObservationQuery.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSexQuery.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectCount.html</loc>
