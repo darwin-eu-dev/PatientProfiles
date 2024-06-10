@@ -39,18 +39,10 @@ Suggests:
     spelling,
     RPostgres,
     dbplyr,
-    PaRe,
     here,
-    magick,
-    plotly,
-    ggraph,
     DT,
-    cowplot,
-    DiagrammeRsvg,
     DBI,
     gt,
-    flextable,
-    ggpubr,
     tictoc,
     withr,
     scales
@@ -65,7 +57,8 @@ Imports:
     stringr,
     omopgenerics (>= 0.2.0),
     visOmopResults (>= 0.2.0),
-    purrr
+    purrr,
+    lifecycle
 URL: https://darwin-eu-dev.github.io/PatientProfiles/
 BugReports: https://github.com/darwin-eu-dev/PatientProfiles/issues
 Language: en-US

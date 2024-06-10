@@ -73,3 +73,23 @@ newTable <- function(name, call = parent.frame()) {
   }
   return(x)
 }
+uniqueColumnName <- function(cols = character(), n = 1, nletters = 2) {
+  x <- rep(list(letters), nletters) |>
+    rlang::set_names(paste0("id_", seq_len(nletters)))
+  tidyr::expand_grid(!!!x) |>
+    tidyr::unite(col = "id", dplyr::starts_with("id_"), sep = "") |>
+    dplyr::mutate("id" = paste0("id_", .data$id)) |>
+    dplyr::filter(!.data$id %in% .env$cols) |>
+    dplyr::sample_n(size = .env$n) |>
+    dplyr::pull("id")
+}
+computeTable <- function(x, name) {
+  if (is.null(name) || is.na(name)) {
+    x <- x |>
+      dplyr::compute(name = omopgenerics::uniqueTableName(), temporary = TRUE)
+  } else {
+    x <- x |>
+      dplyr::compute(name = name, temporary = FALSE)
+  }
+  return(x)
+}

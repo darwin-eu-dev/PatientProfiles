@@ -31,7 +31,12 @@ test_that("addDemographics, input length, type", {
   expect_error(addDemographics(cdm$cohort1, indexDate = "condition_start_date"))
   expect_error(addDemographics(cdm$cohort1, indexDate = c("cohort_start_date", "cohort_end_date")))
   expect_error(addDemographics(cdm$cohort1, ageGroup = 10))
-  expect_error(addDemographics(cdm$cohort1, age = FALSE, sex = FALSE, priorObservation = FALSE, futureObservation = FALSE))
+  expect_identical(
+    cdm$cohort1 |> dplyr::collect(),
+    cdm$cohort1 |>
+      addDemographics(age = FALSE, sex = FALSE, priorObservation = FALSE, futureObservation = FALSE) |>
+      dplyr::collect()
+  )
 })
 
 test_that("addDemographics, cohort and condition_occurrence", {
@@ -256,8 +261,8 @@ test_that("partial demographics - cohorts", {
   expect_equal(
     colnames(cdm$cohort1e),
     c("cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", "age", "sex", "prior_observation",
-      "future_observation", "age_group")
+      "cohort_end_date", "age", "age_group", "sex", "prior_observation",
+      "future_observation")
   )
 })
 
@@ -1313,4 +1318,43 @@ test_that("allow age_group only", {
   expect_true("age_group" %in% colnames(cdm$cohort1))
   expect_false("age" %in% colnames(cdm$cohort1))
   mockDisconnect(cdm = cdm)
+})
+
+test_that("query gives same result as main function", {
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+ # we should get the same results if compute was internal or not
+ result_1 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics() %>%
+    dplyr::collect()
+ result_2 <- cdm$cohort1 %>%
+    addDemographicsQuery() |>
+    dplyr::collect()
+ expect_equal(result_1, result_2)
+
+ # check no tables are created along the way with query
+ start_tables <- CDMConnector::listSourceTables(cdm)
+ cdm$cohort1 %>%
+   addDemographicsQuery()
+ end_tables <- CDMConnector::listSourceTables(cdm)
+ expect_equal(start_tables, end_tables)
+
+ mockDisconnect(cdm)
+})
+
+test_that("table names", {
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+  # we should get the same results if compute was internal or not
+
+  # by default will create a temp table if no name supplied
+  expect_no_error(cdm$cohort2 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics())
+
+  # providing a name will create a table with that name
+  # must be the same on both sides of assinment
+  expect_error(cdm$cohort2 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics(name = "cohort_3"))
+  expect_no_error(cdm$cohort_3 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics(name = "cohort_3"))
+
+  mockDisconnect(cdm)
 })

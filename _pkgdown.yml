@@ -37,6 +37,10 @@ reference:
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a standard omop table.
 - contents:
   - matches("addTableIntersectFlag|addTableIntersectCount|addTableIntersectDays|addTableIntersectDate|addTableIntersectField")
+- subtitle: Query functions
+  desc: These functions add the same information than their analogous add* function but, the result is not computed into a table.
+- contents:
+  - contains("Query")
 - subtitle: Summarise patient characteristics
   desc: Function that allow the user to summarise patient characteristics (characteristics must be added priot the use of the function)
 - contents:

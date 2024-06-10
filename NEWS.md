@@ -5,7 +5,8 @@
   
 * add* functions have a new argument called `name` to decide if we want a 
   resultant temp table (`name = NULL`) or have a permanent table with a certain 
-  name
+  name. Additional functions are provided, e.g. addDemographicsQuery, where the 
+  result is not computed.
 
 # PatientProfiles 1.0.0
 

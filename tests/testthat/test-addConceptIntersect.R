@@ -224,6 +224,6 @@ expect_true(cdm$cohort %>%
   dplyr::pull("a_minf_to_0") == 1)
 
 
-CDMConnector::cdm_disconnect(cdm)
+ mockDisconnect(cdm)
 
 })

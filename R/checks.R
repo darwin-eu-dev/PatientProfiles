@@ -65,70 +65,6 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 }
 
 #' @noRd
-checkCategory <- function(category, overlap = FALSE, type = "numeric") {
-  assertList(category, class = type)
-
-  if (is.null(names(category))) {
-    names(category) <- rep("", length(category))
-  }
-
-  # check length
-  category <- lapply(category, function(x) {
-    if (length(x) == 1) {
-      x <- c(x, x)
-    } else if (length(x) > 2) {
-      cli::cli_abort(
-        paste0(
-          "Categories should be formed by a lower bound and an upper bound, ",
-          "no more than two elements should be provided."
-        ),
-        call. = FALSE
-      )
-    }
-    invisible(x)
-  })
-
-  # check lower bound is smaller than upper bound
-  checkLower <- unlist(lapply(category, function(x) {
-    x[1] <= x[2]
-  }))
-  if (!(all(checkLower))) {
-    cli::cli_abort("Lower bound should be equal or smaller than upper bound")
-  }
-
-  # built tibble
-  result <- lapply(category, function(x) {
-    dplyr::tibble(lower_bound = x[1], upper_bound = x[2])
-  }) %>%
-    dplyr::bind_rows() %>%
-    dplyr::mutate(category_label = names(.env$category)) %>%
-    dplyr::mutate(category_label = dplyr::if_else(
-      .data$category_label == "",
-      dplyr::case_when(
-        is.infinite(.data$lower_bound) & is.infinite(.data$upper_bound) ~ "any",
-        is.infinite(.data$lower_bound) ~ paste(.data$upper_bound, "or below"),
-        is.infinite(.data$upper_bound) ~ paste(.data$lower_bound, "or above"),
-        TRUE ~ paste(.data$lower_bound, "to", .data$upper_bound)
-      ),
-      .data$category_label
-    )) %>%
-    dplyr::arrange(.data$lower_bound)
-
-  # check overlap
-  if (!overlap) {
-    if (nrow(result) > 1) {
-      lower <- result$lower_bound[2:nrow(result)]
-      upper <- result$upper_bound[1:(nrow(result) - 1)]
-      if (!all(lower > upper)) {
-        cli::cli_abort("There can not be overlap between categories")
-      }
-    }
-  }
-
-  invisible(result)
-}
-
-#' @noRd
 checkAgeGroup <- function(ageGroup, overlap = FALSE) {
   assertList(ageGroup, null = TRUE)
   if (!is.null(ageGroup)) {
@@ -153,25 +89,26 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
 }
 
 #' @noRd
-checkWindow <- function(window) {
+checkWindow <- function(window, call = parent.frame()) {
   if (!is.list(window)) {
-    cli::cli_abort("window must be a list")
+    cli::cli_abort("window must be a list", call = call)
   }
 
   # Find if any NA, throw warning that it will be changed to Inf, change it later
   if (any(unlist(lapply(window, is.na)))) {
-    cli::cli_abort("NA found in window, please use Inf or -Inf instead")
+    cli::cli_abort("NA found in window, please use Inf or -Inf instead", call = call)
   }
 
   originalWindow <- window
   # change inf to NA to check for floats, as Inf won't pass integerish check
   window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
-  checkmate::assertList(window, types = "integerish")
+  assertList(window, class = "numeric", call = call)
+  assertNumeric(window |> unlist(), integerish = TRUE, na = TRUE, call = call)
   window <- originalWindow
 
   # if any element of window list has length over 2, throw error
   if (any(lengths(window) > 2)) {
-    cli::cli_abort("window can only contain two values: windowStart and windowEnd")
+    cli::cli_abort("window can only contain two values: windowStart and windowEnd", call = call)
   }
 
   # eg if list(1,2,3), change to list(c(1,1), c(2,2), c(3,3))
@@ -193,13 +130,13 @@ checkWindow <- function(window) {
   }) %>% unlist()
 
   if (any(lower > upper)) {
-    cli::cli_abort("First element in window must be smaller or equal to the second one")
+    cli::cli_abort("First element in window must be smaller or equal to the second one", call = call)
   }
   if (any(is.infinite(lower) & lower == upper & sign(upper) == 1)) {
-    cli::cli_abort("Not both elements in the window can be +Inf")
+    cli::cli_abort("Not both elements in the window can be +Inf", call = call)
   }
   if (any(is.infinite(lower) & lower == upper & sign(upper) == -1)) {
-    cli::cli_abort("Not both elements in the window can be -Inf")
+    cli::cli_abort("Not both elements in the window can be -Inf", call = call)
   }
 
   invisible(window)
@@ -316,7 +253,11 @@ checkCohortNames <- function(x, targetCohortId, name) {
 }
 
 #' @noRd
-checkSnakeCase <- function(name, verbose = TRUE) {
+checkSnakeCase <- function(name, verbose = TRUE, null = FALSE, call = parent.frame()) {
+  assertCharacter(name, call = call, null = null)
+  if (is.null(name)) {
+    return(invisible(name))
+  }
   wrong <- FALSE
   for (i in seq_along(name)) {
     n <- name[i]
@@ -339,7 +280,7 @@ checkSnakeCase <- function(name, verbose = TRUE) {
     cli::cli_alert("names have been changed to lower case")
     cli::cli_alert("special symbols in names have been changed to '_'")
   }
-  invisible(name)
+  return(invisible(name))
 }
 
 #' @noRd
@@ -898,3 +839,201 @@ errorNull <- function(null) {
   }
   return(str)
 }
+
+# checks demographics
+validateX <- function(x, call) {
+  assertClass(x, class = "cdm_table", call = call)
+  cols <- colnames(x)
+  n <- sum(c("person_id", "subject_id") %in% cols)
+  if (n == 0) cli::cli_abort("No person indentifier (person_id/subject_id) found in x.", call = call)
+  if (n == 2) cli::cli_abort("Only person_id or subject_id can be present in x.", call = call)
+  return(x)
+}
+validateLogical <- function(x, null = FALSE, call) {
+  if (null) return(NULL)
+  err <- paste(substitute(x), "must be TRUE or FALSE") |> rlang::set_names("!")
+  if (!is.logical(x)) cli::cli_abort(message = err, call = call)
+  if (length(x) != 1) cli::cli_abort(message = err, call = call)
+  if (is.na(x)) cli::cli_abort(message = err, call = call)
+  return(x)
+}
+validateIndexDate <- function(indexDate, null, x, call) {
+  if (null) return(NULL)
+  assertCharacter(indexDate, length = 1, call = call)
+  if (!indexDate %in% colnames(x)) {
+    cli::cli_abort("indexDate must be a column in x.", call = call)
+  }
+  xx <- x |>
+    dplyr::select(dplyr::all_of(indexDate)) |>
+    utils::head(1) |>
+    dplyr::pull()
+  if (!inherits(xx, "Date") && !inherits(xx, "POSIXt")) {
+    cli::cli_abort("x[[{indexDate}]] is not a date column.", call = call)
+  }
+  return(indexDate)
+}
+validateColumn <- function(col, null, call) {
+  if (null) return(NULL)
+
+  nm <- paste0(substitute(col))
+
+  err <- "{nm} must be a snake_case character vector"
+  if (!is.character(col)) cli::cli_abort(message = err, call = call)
+  if (length(col) != 1) cli::cli_abort(message = err, call = call)
+  if (is.na(col)) cli::cli_abort(message = err, call = call)
+
+  scCol <- omopgenerics::toSnakeCase(col)
+
+  if (scCol != col) {
+    cli::cli_warn(
+      c("!" = "{nm} has been modified to be snake_case, {col} -> {scCol}"),
+      call = call
+    )
+  }
+
+  return(scCol)
+}
+validateAgeMissingMonth <- function(ageMissingMonth, null, call) {
+  if (null) return(ageMissingMonth)
+
+  if (is.character(ageMissingMonth)) {
+    ageMissingMonth <- as.numeric(ageMissingMonth)
+  }
+  assertNumeric(ageMissingMonth, integerish = TRUE, min = 1, max = 12, call = call)
+  ageMissingMonth <- as.integer(ageMissingMonth)
+
+  return(ageMissingMonth)
+}
+validateAgeMissingDay <- function(ageMissingDay, null, call) {
+  if (null) return(ageMissingDay)
+
+  if (is.character(ageMissingDay)) {
+    ageMissingDay <- as.numeric(ageMissingDay)
+  }
+  assertNumeric(ageMissingDay, integerish = TRUE, min = 1, max = 12, call = call)
+  ageMissingDay <- as.integer(ageMissingDay)
+
+  return(ageMissingDay)
+}
+validateAgeGroup <- function(ageGroup, call) {
+  if (length(ageGroup) == 0) return(NULL)
+  assertList(ageGroup, call = call)
+  if (is.numeric(ageGroup[[1]])) {
+    ageGroup <- list("age_group" = ageGroup)
+  }
+  for (k in seq_along(ageGroup)) {
+    invisible(checkCategory(ageGroup[[k]], call = call))
+    if (any(ageGroup[[k]] |> unlist() |> unique() < 0)) {
+      cli::cli_abort("ageGroup can't contain negative values", call = call)
+    }
+    if (is.null(names(ageGroup[[k]]))) {
+      nms <- rep("", length(ageGroup[[k]]))
+    } else {
+      nms <- names(ageGroup[[k]])
+    }
+    for (i in seq_along(nms)) {
+      if (nms[i] == "") {
+        if (is.infinite(ageGroup[[k]][[i]][2])) {
+          nms[i] <- paste(round(ageGroup[[k]][[i]][1]), "or above")
+        } else {
+          nms[i] <- paste(
+            round(ageGroup[[k]][[i]][1]), "to", round(ageGroup[[k]][[i]][2])
+          )
+        }
+      }
+    }
+    names(ageGroup[[k]]) <- nms
+  }
+  if (is.null(names(ageGroup))) {
+    names(ageGroup) <- paste0("age_group_", 1:length(ageGroup))
+  }
+  if ("" %in% names(ageGroup)) {
+    id <- which(names(ageGroup) == "")
+    names(ageGroup)[id] <- paste0("age_group_", id)
+  }
+  invisible(ageGroup)
+}
+validateMissingValue <- function(x, null, call) {
+  if (null) return(NULL)
+  nm <- paste0(substitute(x))
+  err <- "{nm} must be a character of length 1." |> rlang::set_names("!")
+  if (!is.character(x)) cli::cli_abort(message = err, call = call)
+  if (length(x) != 1) cli::cli_abort(message = err, call = call)
+  return(x)
+}
+validateType <- function(x, null, call) {
+  if (null) return(NULL)
+  nm <- paste0(substitute(x))
+  err <- "{nm} must be a choice between 'date' or 'days'." |>
+    rlang::set_names("!")
+  if (!is.character(x)) cli::cli_abort(message = err, call = call)
+  if (length(x) != 1) cli::cli_abort(message = err, call = call)
+  if (!x %in% c("date", "days")) cli::cli_abort(message = err, call = call)
+  return(x)
+}
+validateName <- function(name, call = parent.frame()) {
+  assertCharacter(name, length = 1, null = TRUE, call = call)
+}
+
+checkCategory <- function(category, overlap = FALSE, type = "numeric", call = parent.frame()) {
+  assertList(category, class = type, call = call)
+
+  if (is.null(names(category))) {
+    names(category) <- rep("", length(category))
+  }
+
+  # check length
+  category <- lapply(category, function(x) {
+    if (length(x) == 1) {
+      x <- c(x, x)
+    } else if (length(x) > 2) {
+      cli::cli_abort(
+        "Please specify only two values (lower bound and upper bound) per category",
+        call = call
+      )
+    }
+    invisible(x)
+  })
+
+  # check lower bound is smaller than upper bound
+  checkLower <- unlist(lapply(category, function(x) {
+    x[1] <= x[2]
+  }))
+  if (!(all(checkLower))) {
+    "Lower bound should be equal or smaller than upper bound" |>
+      cli::cli_abort(call = call)
+  }
+
+  # built tibble
+  result <- lapply(category, function(x) {
+    dplyr::tibble(lower_bound = x[1], upper_bound = x[2])
+  }) %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(category_label = names(.env$category)) %>%
+    dplyr::mutate(category_label = dplyr::if_else(
+      .data$category_label == "",
+      dplyr::case_when(
+        is.infinite(.data$lower_bound) & is.infinite(.data$upper_bound) ~ "any",
+        is.infinite(.data$lower_bound) ~ paste(.data$upper_bound, "or below"),
+        is.infinite(.data$upper_bound) ~ paste(.data$lower_bound, "or above"),
+        TRUE ~ paste(.data$lower_bound, "to", .data$upper_bound)
+      ),
+      .data$category_label
+    )) %>%
+    dplyr::arrange(.data$lower_bound)
+
+  # check overlap
+  if (!overlap) {
+    if (nrow(result) > 1) {
+      lower <- result$lower_bound[2:nrow(result)]
+      upper <- result$upper_bound[1:(nrow(result) - 1)]
+      if (!all(lower > upper)) {
+        "There can not be overlap between categories" |>
+          cli::cli_abort(call = call)
+      }
+    }
+  }
+
+  invisible(result)
+}
+
