@@ -650,3 +650,11 @@ ageGroupQuery <- function(ageName, ageGroup, missingAgeGroupValue) {
     rlang::parse_exprs() |>
     rlang::set_names(names(ageGroup))
 }
+
+
+## This function is never called
+## Exists to suppress this NOTE:
+## Namespace in Imports field not imported from: ‘lifecycle’
+lc <- function() {
+  lifecycle::badge("experimental")
+}
