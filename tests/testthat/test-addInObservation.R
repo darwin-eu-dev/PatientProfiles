@@ -162,3 +162,24 @@ test_that("addInObservation, window", {
 
   mockDisconnect(cdm = cdm)
 })
+
+test_that("query gives same result as main function", {
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+  # we should get the same results if compute was internal or not
+  result_1 <- cdm$cohort1 %>%
+    addInObservation() %>%
+    dplyr::collect()
+  result_2 <- cdm$cohort1 %>%
+    addInObservationQuery() |>
+    dplyr::collect()
+  expect_equal(result_1, result_2)
+
+  # check no tables are created along the way with query
+  start_tables <- CDMConnector::listSourceTables(cdm)
+  cdm$cohort1 %>%
+    addInObservationQuery()
+  end_tables <- CDMConnector::listSourceTables(cdm)
+  expect_equal(start_tables, end_tables)
+
+  mockDisconnect(cdm)
+})

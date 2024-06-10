@@ -1338,7 +1338,7 @@ test_that("query gives same result as main function", {
  end_tables <- CDMConnector::listSourceTables(cdm)
  expect_equal(start_tables, end_tables)
 
- CDMConnector::cdm_disconnect(cdm)
+ mockDisconnect(cdm)
 })
 
 test_that("table names", {
@@ -1356,5 +1356,5 @@ test_that("table names", {
   expect_no_error(cdm$cohort_3 <- cdm$cohort1 %>%
     PatientProfiles::addDemographics(name = "cohort_3"))
 
-  CDMConnector::cdm_disconnect(cdm)
+  mockDisconnect(cdm)
 })

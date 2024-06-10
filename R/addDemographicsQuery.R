@@ -764,7 +764,7 @@ addInObservationQuery <- function(x,
       } else {
         if (is.infinite(lower)) {
           if (is.infinite(upper)) {
-            nQ <= "1"
+            nQ <- "1"
           } else {
             nQ <- "dplyr::if_else(.data[['{startDif}']] <= {upper}, 1L, 0L)"
           }
