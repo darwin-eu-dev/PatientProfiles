@@ -341,7 +341,7 @@ addSexQuery <- function(x,
 #'
 #' @description
 #' `r lifecycle::badge("experimental")`
-#' Same as `addDateOfBirthQuery()`, except query is not computed to a table.
+#' Same as `addDateOfBirth()`, except query is not computed to a table.
 #'
 #' @param x Table in the cdm that contains 'person_id' or 'subject_id'.
 #' @param dateOfBirthName Name of the column to be added with the date of birth.
@@ -651,6 +651,152 @@ ageGroupQuery <- function(ageName, ageGroup, missingAgeGroupValue) {
     rlang::set_names(names(ageGroup))
 }
 
+#' Query to add a new column to indicate if a certain record is within the
+#' observation period
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Same as `addInObservation()`, except query is not computed to a table.
+#'
+#' @param x Table with individuals in the cdm.
+#' @param indexDate Variable in x that contains the date to compute the
+#' observation flag.
+#' @param window window to consider events of.
+#' @param completeInterval If the individuals are in observation for the full window.
+#' @param nameStyle Name of the new columns to create, it must contain
+#' "window_name" if multiple windows are provided.
+#'
+#' @return cohort table with the added binary column assessing inObservation.
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' cdm <- mockPatientProfiles()
+#' cdm$cohort1 %>%
+#'   addInObservationQuery()
+#' mockDisconnect(cdm = cdm)
+#' }
+#'
+addInObservationQuery <- function(x,
+                                   indexDate = "cohort_start_date",
+                                   window = c(0, 0),
+                                   completeInterval = FALSE,
+                                   nameStyle = "in_observation") {
+  x |>
+    .addInObservationQuery(
+      indexDate = indexDate,
+      window = window,
+      completeInterval = completeInterval,
+      nameStyle = nameStyle
+    )
+}
+
+.addInObservationQuery <- function(x,
+                                   indexDate = "cohort_start_date",
+                                   window = c(0, 0),
+                                   completeInterval = FALSE,
+                                   nameStyle = "in_observation",
+                                   call = parent.frame()) {
+  x <- validateX(x, call = call)
+  indexDate <- validateIndexDate(indexDate, null = FALSE, x = x, call = call)
+  if (!is.list(window)) window <- list(window)
+  window <- checkWindow(window, call = call)
+  names(window) <- getWindowNames(window)
+  assertNameStyle(nameStyle = nameStyle, values = list("window_name" = window), call = call)
+  newColumns <- glue::glue(nameStyle, window_name = names(window))
+  overwriteCols <- newColumns[newColumns %in% colnames(x)]
+  if (length(overwriteCols) > 0) {
+    cli::cli_warn(c("!" = "{overwriteCols} column{?s} will be overwritten"))
+    x <- x |>
+      dplyr::select(!dplyr::all_of(overwriteCols))
+  }
+
+  cdm <- omopgenerics::cdmReference(x)
+  personVariable <- c("person_id", "subject_id")
+  personVariable <- personVariable[personVariable %in% colnames(x)]
+
+  id <- uniqueColumnName(cols = c(personVariable, indexDate, newColumns), n = 4)
+  start <- id[1]
+  end <- id[2]
+  startDif <- id[3]
+  endDif <- id[4]
+
+  xnew <- x |>
+    dplyr::select(dplyr::all_of(c(personVariable, indexDate))) |>
+    dplyr::distinct() |>
+    dplyr::inner_join(
+      cdm$observation_period |>
+        dplyr::select(
+          !!personVariable := "person_id",
+          !!start := "observation_period_start_date",
+          !!end := "observation_period_end_date"
+        ),
+      by = personVariable
+    ) |>
+    dplyr::filter(
+      .data[[indexDate]] <= .data[[end]] && .data[[indexDate]] >= .data[[start]]
+    ) %>%
+    dplyr::mutate(
+      !!startDif := !!CDMConnector::datediff(indexDate, start),
+      !!endDif := !!CDMConnector::datediff(indexDate, end)
+    )
+
+  qR <- NULL
+  for (k in seq_along(window)) {
+    win <- window[[k]]
+    window_name <- names(window)[k]
+    nam <- glue::glue(nameStyle) |> as.character()
+
+    if (all(win == c(0, 0))) {
+      nQ <- "1"
+    } else {
+      lower <- win[1]
+      upper <- win[2]
+
+      if (completeInterval == TRUE) {
+        if (is.infinite(lower) | is.infinite(upper)) {
+          nQ <- "0"
+        } else {
+          nQ <- "dplyr::if_else(
+            .data[['{startDif}']] <= {lower} & .data[['{endDif}']] >= {upper}, 1L, 0L
+          )"
+        }
+      } else {
+        if (is.infinite(lower)) {
+          if (is.infinite(upper)) {
+            nQ <= "1"
+          } else {
+            nQ <- "dplyr::if_else(.data[['{startDif}']] <= {upper}, 1L, 0L)"
+          }
+        } else {
+          if (is.infinite(upper)) {
+            nQ <- "dplyr::if_else({lower} <= .data[['{endDif}']], 1L, 0L)"
+          } else {
+            nQ <- "dplyr::if_else(
+            {lower} <= .data[['{endDif}']] & .data[['{startDif}']] <= {upper}, 1L, 0L
+            )"
+          }
+        }
+      }
+    }
+    nQ <- paste0("as.integer(", nQ, ")") |>
+      glue::glue() |>
+      rlang::parse_exprs() |>
+      rlang::set_names(nam)
+    qR <- c(qR, nQ)
+  }
+
+  x <- x |>
+    dplyr::left_join(
+      xnew |> dplyr::mutate(!!!qR) |> dplyr::select(!dplyr::all_of(id)),
+      by = c(personVariable, indexDate)
+    ) |>
+    dplyr::mutate(dplyr::across(
+      dplyr::all_of(newColumns), ~ as.integer(dplyr::if_else(is.na(.x), 0L, .x))
+    ))
+
+  return(x)
+}
 
 ## This function is never called
 ## Exists to suppress this NOTE:

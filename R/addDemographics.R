@@ -315,122 +315,15 @@ addInObservation <- function(x,
                              completeInterval = FALSE,
                              nameStyle = "in_observation",
                              name = NULL) {
-  comp <- newTable(name)
-  if (!is.list(window)) {
-    window <- list(window)
-  }
-
-  ## check for standard types of user error
-  cdm <- omopgenerics::cdmReference(x)
-  personVariable <- checkX(x)
-  checkCdm(cdm, c("observation_period"))
-  checkVariableInX(indexDate, x)
-  checkWindow(window)
-  names(window) <- getWindowNames(window)
-  assertNameStyle(nameStyle = nameStyle, values = list("window_name" = window))
-  overwriteCols <- glue::glue(nameStyle, window_name = names(window))
-  overwriteCols <- overwriteCols[overwriteCols %in% colnames(x)]
-  if (length(overwriteCols) > 0) {
-    cli::cli_warn(c("!" = "{overwriteCols} column{?s} will be overwritten"))
-    x <- x |>
-      dplyr::select(!dplyr::all_of(overwriteCols))
-  }
-
-  tablePrefix <- omopgenerics::tmpPrefix()
-
-  ids <- uniqueColumnName(
-    c(colnames(cdm$person), colnames(cdm$observation_period), colnames(x)), 2, 3
-  )
-  idPrior <- ids[1]
-  idFuture <- ids[2]
-
-  x <- x %>%
-    addDemographics(
+  name <- validateName(name)
+  x |>
+    .addInObservationQuery(
       indexDate = indexDate,
-      age = FALSE,
-      sex = FALSE,
-      priorObservation = TRUE,
-      priorObservationName = idPrior,
-      futureObservation = TRUE,
-      futureObservationName = idFuture,
-      name = omopgenerics::uniqueTableName(tablePrefix)
+      window = window,
+      completeInterval = completeInterval,
+      nameStyle = nameStyle
     ) |>
-    dplyr::mutate(!!idPrior := -.data[[idPrior]])
-
-  for (k in seq_along(window)) {
-    win <- window[[k]]
-    window_name <- names(window)[k]
-    nam <- glue::glue(nameStyle) |> as.character()
-
-    if (all(win == c(0, 0))) {
-      x <- x %>%
-        dplyr::mutate(!!nam := as.numeric(
-          dplyr::if_else(is.na(.data[[idPrior]]), 0, 1)
-        ))
-    } else {
-      lower <- win[1]
-      upper <- win[2]
-
-      if (completeInterval == TRUE) {
-        if (is.infinite(lower) | is.infinite(upper)) {
-          x <- x %>% dplyr::mutate(!!nam := 0)
-        } else {
-          x <- x %>%
-            dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-              !is.na(.data[[idPrior]]) &
-                .data[[idPrior]] <= .env$lower &
-                .env$upper <= .data[[idFuture]],
-              1,
-              0
-            )))
-        }
-      } else {
-        if (is.infinite(lower)) {
-          if (is.infinite(upper)) {
-            x <- x %>%
-              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data[[idPrior]]), 1, 0
-              )))
-          } else {
-            x <- x %>%
-              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data[[idPrior]]) &
-                  .data[[idPrior]] <= .env$upper,
-                1,
-                0
-              )))
-          }
-        } else {
-          if (is.infinite(upper)) {
-            x <- x %>%
-              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data[[idPrior]]) &
-                  .env$lower <= .data[[idFuture]],
-                1,
-                0
-              )))
-          } else {
-            x <- x %>%
-              dplyr::mutate(!!nam := as.numeric(dplyr::if_else(
-                !is.na(.data[[idPrior]]) &
-                  .data[[idPrior]] <= .env$upper &
-                  .env$lower <= .data[[idFuture]],
-                1,
-                0
-              )))
-          }
-        }
-      }
-    }
-  }
-
-  x <- x |>
-    dplyr::select(!dplyr::all_of(ids)) |>
-    dplyr::compute(name = comp$name, temporary = comp$temporary)
-
-  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
-
-  return(x)
+    computeTable(name = name)
 }
 
 #' Compute the sex of the individuals

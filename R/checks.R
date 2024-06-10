@@ -89,25 +89,26 @@ checkAgeGroup <- function(ageGroup, overlap = FALSE) {
 }
 
 #' @noRd
-checkWindow <- function(window) {
+checkWindow <- function(window, call = parent.frame()) {
   if (!is.list(window)) {
-    cli::cli_abort("window must be a list")
+    cli::cli_abort("window must be a list", call = call)
   }
 
   # Find if any NA, throw warning that it will be changed to Inf, change it later
   if (any(unlist(lapply(window, is.na)))) {
-    cli::cli_abort("NA found in window, please use Inf or -Inf instead")
+    cli::cli_abort("NA found in window, please use Inf or -Inf instead", call = call)
   }
 
   originalWindow <- window
   # change inf to NA to check for floats, as Inf won't pass integerish check
   window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
-  checkmate::assertList(window, types = "integerish")
+  assertList(window, class = "numeric", call = call)
+  assertNumeric(window |> unlist(), integerish = TRUE, na = TRUE, call = call)
   window <- originalWindow
 
   # if any element of window list has length over 2, throw error
   if (any(lengths(window) > 2)) {
-    cli::cli_abort("window can only contain two values: windowStart and windowEnd")
+    cli::cli_abort("window can only contain two values: windowStart and windowEnd", call = call)
   }
 
   # eg if list(1,2,3), change to list(c(1,1), c(2,2), c(3,3))
@@ -129,13 +130,13 @@ checkWindow <- function(window) {
   }) %>% unlist()
 
   if (any(lower > upper)) {
-    cli::cli_abort("First element in window must be smaller or equal to the second one")
+    cli::cli_abort("First element in window must be smaller or equal to the second one", call = call)
   }
   if (any(is.infinite(lower) & lower == upper & sign(upper) == 1)) {
-    cli::cli_abort("Not both elements in the window can be +Inf")
+    cli::cli_abort("Not both elements in the window can be +Inf", call = call)
   }
   if (any(is.infinite(lower) & lower == upper & sign(upper) == -1)) {
-    cli::cli_abort("Not both elements in the window can be -Inf")
+    cli::cli_abort("Not both elements in the window can be -Inf", call = call)
   }
 
   invisible(window)
