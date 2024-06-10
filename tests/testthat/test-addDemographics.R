@@ -1319,3 +1319,42 @@ test_that("allow age_group only", {
   expect_false("age" %in% colnames(cdm$cohort1))
   mockDisconnect(cdm = cdm)
 })
+
+test_that("query gives same result as main function", {
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+ # we should get the same results if compute was internal or not
+ result_1 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics() %>%
+    dplyr::collect()
+ result_2 <- cdm$cohort1 %>%
+    addDemographicsQuery() |>
+    dplyr::collect()
+ expect_equal(result_1, result_2)
+
+ # check no tables are created along the way with query
+ start_tables <- CDMConnector::listSourceTables(cdm)
+ cdm$cohort1 %>%
+   addDemographicsQuery()
+ end_tables <- CDMConnector::listSourceTables(cdm)
+ expect_equal(start_tables, end_tables)
+
+ CDMConnector::cdm_disconnect(cdm)
+})
+
+test_that("table names", {
+  cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
+  # we should get the same results if compute was internal or not
+
+  # by default will create a temp table if no name supplied
+  expect_no_error(cdm$cohort2 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics())
+
+  # providing a name will create a table with that name
+  # must be the same on both sides of assinment
+  expect_error(cdm$cohort2 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics(name = "cohort_3"))
+  expect_no_error(cdm$cohort_3 <- cdm$cohort1 %>%
+    PatientProfiles::addDemographics(name = "cohort_3"))
+
+  CDMConnector::cdm_disconnect(cdm)
+})

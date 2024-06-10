@@ -38,7 +38,7 @@ reference:
 - contents:
   - matches("addTableIntersectFlag|addTableIntersectCount|addTableIntersectDays|addTableIntersectDate|addTableIntersectField")
 - subtitle: Query functions
-  desc: These functions add the same information than their homologus add* function but, the result is not computed into a table.
+  desc: These functions add the same information than their analogous add* function but, the result is not computed into a table.
 - contents:
   - contains("Query")
 - subtitle: Summarise patient characteristics
