@@ -33,7 +33,7 @@ the date of birth.
 }
 \description{
 `r lifecycle::badge("experimental")`
-Same as `addDateOfBirthQuery()`, except query is not computed to a table.
+Same as `addDateOfBirth()`, except query is not computed to a table.
 }
 \examples{
 \donttest{
