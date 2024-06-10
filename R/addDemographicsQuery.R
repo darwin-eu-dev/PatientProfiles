@@ -16,6 +16,10 @@
 
 #' Query to add demographic characteristics at a certain date
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Same as `addDemographics()`, except query is not computed to a table.
+#'
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the date to compute the
 #' demographics characteristics.
@@ -109,6 +113,10 @@ addDemographicsQuery <- function(x,
 
 #' Query to add the age of the individuals at a certain date
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Same as `addAge()`, except query is not computed to a table.
+#'
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the date to compute the age.
 #' @param ageName Name of the new column that contains age.
@@ -171,6 +179,10 @@ addAgeQuery <- function(x,
 #' Query to add the number of days till the end of the observation period at a
 #' certain date
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Same as `addFutureObservation()`, except query is not computed to a table.
+#'
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the date to compute the future
 #' observation.
@@ -221,6 +233,10 @@ addFutureObservationQuery <- function(x,
 
 #' Query to add the number of days of prior observation in the current
 #' observation period at a certain date
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Same as `addPriorObservation()`, except query is not computed to a table.
 #'
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the date to compute the prior
@@ -273,6 +289,10 @@ addPriorObservationQuery <- function(x,
 
 #' Query to add the sex of the individuals
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Same as `addSex()`, except query is not computed to a table.
+#'
 #' @param x Table with individuals in the cdm.
 #' @param sexName name of the new column to be added.
 #' @param missingSexValue Value to include if missing sex.
@@ -319,7 +339,9 @@ addSexQuery <- function(x,
 
 #' Query to add a column with the individual birth date
 #'
-#' \\ifelse{html}{\\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\\strong{[Experimental]}}
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Same as `addDateOfBirthQuery()`, except query is not computed to a table.
 #'
 #' @param x Table in the cdm that contains 'person_id' or 'subject_id'.
 #' @param dateOfBirthName Name of the column to be added with the date of birth.

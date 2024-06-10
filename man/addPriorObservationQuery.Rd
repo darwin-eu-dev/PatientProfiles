@@ -28,8 +28,8 @@ cohort table with added column containing prior observation of the
 individuals.
 }
 \description{
-Query to add the number of days of prior observation in the current
-observation period at a certain date
+`r lifecycle::badge("experimental")`
+Same as `addPriorObservation()`, except query is not computed to a table.
 }
 \examples{
 \donttest{

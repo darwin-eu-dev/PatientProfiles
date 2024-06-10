@@ -17,7 +17,8 @@ addSexQuery(x, sexName = "sex", missingSexValue = "None")
 table x with the added column with sex information.
 }
 \description{
-Query to add the sex of the individuals
+`r lifecycle::badge("experimental")`
+Same as `addSex()`, except query is not computed to a table.
 }
 \examples{
 \donttest{

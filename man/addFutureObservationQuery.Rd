@@ -28,8 +28,8 @@ cohort table with added column containing future observation of the
 individuals.
 }
 \description{
-Query to add the number of days till the end of the observation period at a
-certain date
+`r lifecycle::badge("experimental")`
+Same as `addFutureObservation()`, except query is not computed to a table.
 }
 \examples{
 \donttest{

@@ -43,7 +43,8 @@ as missing for all the individuals.}
 tibble with the age column added.
 }
 \description{
-Query to add the age of the individuals at a certain date
+`r lifecycle::badge("experimental")`
+Same as `addAge()`, except query is not computed to a table.
 }
 \examples{
 \donttest{

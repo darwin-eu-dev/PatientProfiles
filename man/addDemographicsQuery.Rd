@@ -86,7 +86,8 @@ calculated.}
 cohort table with the added demographic information columns.
 }
 \description{
-Query to add demographic characteristics at a certain date
+`r lifecycle::badge("experimental")`
+Same as `addDemographics()`, except query is not computed to a table.
 }
 \examples{
 \donttest{
