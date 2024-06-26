@@ -137,3 +137,23 @@ test_that("addCategories with infinity", {
   )))
   mockDisconnect(cdm)
 })
+
+test_that("addCategories check naming", {
+
+  skip_on_cran()
+  cdm <- mockPatientProfiles(
+    con = connection(),
+    writeSchema = writeSchema(),
+  )
+  table <- cdm$cohort1 |> addCategories(
+    variable = "cohort_start_date", categories = list(
+      "date_dummy" = list(
+        "a" = as.Date(c("1991-01-01", "2000-12-31")),
+        "b" = as.Date(c("2001-01-01", "2066-12-31"))
+      )
+    ), missingCategoryValue = "None", overlap = FALSE
+  )
+
+  expect_true(all(table |> dplyr::pull(date_dummy) |> unique() %in% c("a","b","None")))
+
+})

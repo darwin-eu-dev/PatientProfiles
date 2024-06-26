@@ -109,6 +109,7 @@
   result <- x |>
     dplyr::select(
       dplyr::all_of(personVariable),
+      cohort_definition_id,
       "index_date" = dplyr::all_of(indexDate),
       "censor_time" = dplyr::any_of(censorDate)
     ) |>
@@ -180,10 +181,10 @@
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
       resultCF <- resultW %>%
-        dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id) %>%
+        dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id,.data$cohort_definition_id) %>%
         dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
         dplyr::left_join(cdm[[filterTblName]], by = "id") %>%
-        dplyr::select(-"id") %>%
+        dplyr::select(-c("id","cohort_definition_id")) %>%
         dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if ("flag" %in% value) {
         resultCF <- resultCF %>% dplyr::mutate(flag = 1)
