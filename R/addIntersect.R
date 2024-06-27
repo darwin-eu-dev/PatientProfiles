@@ -106,19 +106,13 @@
                                                   .data$start_date,
                                                   .data$end_date))
 
-
-
-  if(!"cohort_definition_id" %in% colnames(x)){
-    x <- x |> dplyr::mutate(cohort_definition_id = 1)
-  }
-
   result <- x |>
     dplyr::select(
       dplyr::all_of(personVariable),
-      cohort_definition_id,
       "index_date" = dplyr::all_of(indexDate),
       "censor_time" = dplyr::any_of(censorDate)
     ) |>
+    dplyr::distinct() |>
     addDemographics(
       indexDate = "index_date", age = FALSE, sex = FALSE,
       priorObservationName = "start_obs", futureObservationName = "end_obs",
@@ -191,10 +185,10 @@
     # add count or flag
     if ("count" %in% value | "flag" %in% value) {
       resultCF <- resultW %>%
-        dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id,.data$cohort_definition_id) %>%
+        dplyr::group_by(.data[[personVariable]], .data$index_date, .data$id) %>%
         dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
         dplyr::left_join(cdm[[filterTblName]], by = "id") %>%
-        dplyr::select(-c("id","cohort_definition_id")) %>%
+        dplyr::select(-"id") %>%
         dplyr::mutate("window_name" = !!tolower(names(window)[i]))
       if ("flag" %in% value) {
         resultCF <- resultCF %>% dplyr::mutate(flag = 1)
