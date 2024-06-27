@@ -1,3 +1,7 @@
+# PatientProfiles 1.1.1
+
+* Fix #670 #671
+
 # PatientProfiles 1.1.0
 
 * addConceptIntersect now includes records with missing end date under the 
