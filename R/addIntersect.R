@@ -112,12 +112,17 @@
       "index_date" = dplyr::all_of(indexDate),
       "censor_time" = dplyr::any_of(censorDate)
     ) |>
+    dplyr::distinct() |>
     addDemographics(
       indexDate = "index_date", age = FALSE, sex = FALSE,
       priorObservationName = "start_obs", futureObservationName = "end_obs",
       name = omopgenerics::uniqueTableName(tablePrefix)
     ) %>%
     dplyr::mutate("start_obs" = -.data$start_obs)
+
+
+
+
   if (!is.null(censorDate)) {
     result <- result %>%
       dplyr::mutate(

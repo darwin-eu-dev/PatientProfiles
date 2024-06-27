@@ -50,6 +50,7 @@ addCategories <- function(x,
                           missingCategoryValue = "None",
                           overlap = FALSE,
                           name = NULL) {
+
   comp <- newTable(name)
   assertClass(x, "cdm_table")
   assertCharacter(variable, length = 1)
@@ -108,7 +109,7 @@ addCategories <- function(x,
     categoryTibble[[nam[k]]] <- checkCategory(categories[[k]],
       overlap = overlap
     )
-    if (date) {
+    if (date & is.null(names(categories[[k]]))) {
       categoryTibble[[nam[k]]] <- categoryTibble[[nam[k]]] %>%
         dplyr::mutate(category_label = paste(
           as.Date(.data$lower_bound, origin = "1970-01-01"), "to",
