@@ -106,6 +106,12 @@
                                                   .data$start_date,
                                                   .data$end_date))
 
+
+
+  if(!"cohort_definition_id" %in% colnames(x)){
+    x <- x |> dplyr::mutate(cohort_definition_id = 1)
+  }
+
   result <- x |>
     dplyr::select(
       dplyr::all_of(personVariable),
@@ -119,6 +125,10 @@
       name = omopgenerics::uniqueTableName(tablePrefix)
     ) %>%
     dplyr::mutate("start_obs" = -.data$start_obs)
+
+
+
+
   if (!is.null(censorDate)) {
     result <- result %>%
       dplyr::mutate(
