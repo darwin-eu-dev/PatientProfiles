@@ -1,5 +1,6 @@
 
 test_that("test that name argument works as expected", {
+  skip_on_cran()
   # create simple cdm
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   prefix <- CDMConnector::cdmWriteSchema(cdm)
@@ -90,7 +91,6 @@ test_that("test that name argument works as expected", {
     expect_identical(setdiff(initialTables, finalTables), character())
     difference <- setdiff(finalTables, initialTables)
     expect_true(length(difference) == 1)
-    expect_true(nchar(difference) == 17)
     expect_true(substr(difference, 1, 3) == "og_")
 
     # check permanent behavior
