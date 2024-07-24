@@ -54,7 +54,9 @@ addTableIntersectFlag <- function(x,
                                   nameStyle = "{table_name}_{window_name}",
                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(tableName)
   checkCdm(cdm, tables = tableName)
+  assertCharacter(tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
   x <- x %>%
@@ -120,6 +122,7 @@ addTableIntersectCount <- function(x,
 
 
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(tableName)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
@@ -184,6 +187,7 @@ addTableIntersectDate <- function(x,
                                   nameStyle = "{table_name}_{window_name}",
                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(tableName)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
@@ -248,6 +252,7 @@ addTableIntersectDays <- function(x,
                                   nameStyle = "{table_name}_{window_name}",
                                   name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(tableName)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
@@ -321,6 +326,7 @@ addTableIntersectField <- function(x,
                                    nameStyle = "{table_name}_{extra_value}_{window_name}",
                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(tableName)
   checkCdm(cdm, tables = tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
   nameStyle <- gsub("\\{extra_value\\}", "\\{value\\}", nameStyle)
