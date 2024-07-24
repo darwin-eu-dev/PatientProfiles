@@ -110,6 +110,7 @@ subsetTable <- function(x) {
       "condition" = "condition_occurrence",
       "observation" = "observation",
       "procedure" = "procedure_occurrence",
+      "episode" = "episode",
       NA_character_
     )
     if (tableName %in% names(cdm)) {
