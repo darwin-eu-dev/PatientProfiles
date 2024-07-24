@@ -38,7 +38,7 @@ Suggests:
     ggplot2,
     spelling,
     RPostgres,
-    dbplyr (>= 2.5.0),
+    dbplyr,
     here,
     DT,
     DBI,
