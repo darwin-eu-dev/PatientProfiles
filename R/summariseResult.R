@@ -350,6 +350,7 @@ summariseNumeric <- function(table, functions) {
           ),
           .groups = "drop"
         ) |>
+        suppressWarnings() |>
         dplyr::collect() |>
         dplyr::mutate(dplyr::across(
           .cols = dplyr::all_of(paste0("estimate_", varEst)),
@@ -367,8 +368,7 @@ summariseNumeric <- function(table, functions) {
           "estimate_value" = dplyr::if_else(
             is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
             NA, .data$estimate_value)
-        ) |>
-        suppressWarnings()
+        )
     }
   } else {
     for (vark in uniqueVariables) {
@@ -384,6 +384,7 @@ summariseNumeric <- function(table, functions) {
           ),
           .groups = "drop"
         ) |>
+        suppressWarnings() |>
         dplyr::collect() |>
         dplyr::mutate(dplyr::across(
           .cols = dplyr::all_of(paste0("variable_", estVar)),
@@ -400,8 +401,7 @@ summariseNumeric <- function(table, functions) {
           "estimate_value" = dplyr::if_else(
             is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
             NA, .data$estimate_value)
-        ) |>
-        suppressWarnings()
+        )
     }
   }
 
