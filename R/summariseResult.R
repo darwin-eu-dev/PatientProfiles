@@ -75,8 +75,8 @@ summariseResult <- function(table,
 
   # create the summary for overall
   if (table %>%
-    dplyr::count() %>%
-    dplyr::pull() == 0) {
+      dplyr::count() %>%
+      dplyr::pull() == 0) {
     if (counts) {
       result <- dplyr::tibble(
         "group_name" = "overall", "group_level" = "overall",
@@ -363,8 +363,12 @@ summariseNumeric <- function(table, functions) {
         dplyr::mutate(
           "variable_name" = substr(.data$variable_name, 10, nchar(.data$variable_name)),
           "variable_level" = NA_character_,
-          "estimate_name" = .env$est
-        )
+          "estimate_name" = .env$est,
+          "estimate_value" = dplyr::if_else(
+            is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
+            NA, .data$estimate_value)
+        ) |>
+        suppressWarnings()
     }
   } else {
     for (vark in uniqueVariables) {
@@ -392,8 +396,12 @@ summariseNumeric <- function(table, functions) {
         ) |>
         dplyr::mutate(
           "estimate_name" = substr(.data$estimate_name, 10, nchar(.data$estimate_name)),
-          "variable_level" = NA_character_, "variable_name" = .env$vark
-        )
+          "variable_level" = NA_character_, "variable_name" = .env$vark,
+          "estimate_value" = dplyr::if_else(
+            is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
+            NA, .data$estimate_value)
+        ) |>
+        suppressWarnings()
     }
   }
 
@@ -495,7 +503,9 @@ summariseBinary <- function(table, functions) {
 
     res <- res |>
       dplyr::mutate(
-        "estimate_value" = as.character(.data$estimate_value),
+        "estimate_value" = dplyr::if_else(
+          is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
+          NA_character_,  as.character(.data$estimate_value)),
         "variable_level" = NA_character_
       )
   } else {
@@ -526,7 +536,10 @@ summariseCategories <- function(table, functions) {
         dplyr::ungroup() |>
         dplyr::inner_join(den, by = "strata_id") |>
         dplyr::mutate(
-          "percentage" = as.character(100 * .data$count / .data$denominator),
+          "percentage" = 100 * .data$count / .data$denominator,
+          "percentage" = dplyr::if_else(
+            is.infinite(.data$percentage) | is.nan(.data$percentage),
+            NA_character_, as.character(.data$percentage)),
           "count" = as.character(.data$count)
         ) |>
         dplyr::select(!"denominator") |>
@@ -590,7 +603,9 @@ summariseMissings <- function(table, functions) {
       dplyr::mutate(
         "variable_name" = substr(.data$variable_name, 4, nchar(.data$variable_name)),
         "variable_level" = NA_character_,
-        "estimate_value" = as.character(.data$estimate_value)
+        "estimate_value" = dplyr::if_else(
+          is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
+          NA_character_,  as.character(.data$estimate_value)),
       ) |>
       dplyr::inner_join(
         functions |>
