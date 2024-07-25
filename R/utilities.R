@@ -66,7 +66,7 @@ addCohortName <- function(cohort) {
 #'
 addCdmName <- function(table, cdm = omopgenerics::cdmReference(table)) {
   name <- omopgenerics::cdmName(cdm)
-  if ("cdm_name" %in% colnames(cohort)) {
+  if ("cdm_name" %in% colnames(table)) {
     cli::cli_inform(c("!" = "`cdm_name` will be overwrite"))
   }
   table %>% dplyr::mutate("cdm_name" = .env$name)
