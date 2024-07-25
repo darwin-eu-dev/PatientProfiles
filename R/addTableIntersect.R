@@ -19,7 +19,8 @@
 #' @param x Table with individuals in the cdm.
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-#' device_exposure, measurement, observation, drug_era, condition_era, specimen.
+#' device_exposure, measurement, observation, drug_era, condition_era, specimen,
+#' episode.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
@@ -82,7 +83,8 @@ addTableIntersectFlag <- function(x,
 #' @param x Table with individuals in the cdm.
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-#' device_exposure, measurement, observation, drug_era, condition_era, specimen.
+#' device_exposure, measurement, observation, drug_era, condition_era, specimen,
+#' episode.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
@@ -148,7 +150,8 @@ addTableIntersectCount <- function(x,
 #' @param x Table with individuals in the cdm.
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-#' device_exposure, measurement, observation, drug_era, condition_era, specimen.
+#' device_exposure, measurement, observation, drug_era, condition_era, specimen,
+#' episode.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
@@ -212,7 +215,8 @@ addTableIntersectDate <- function(x,
 #' @param x Table with individuals in the cdm.
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-#' device_exposure, measurement, observation, drug_era, condition_era, specimen.
+#' device_exposure, measurement, observation, drug_era, condition_era, specimen,
+#' episode.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate whether to censor overlap events at a specific date
@@ -278,7 +282,8 @@ addTableIntersectDays <- function(x,
 #' @param x Table with individuals in the cdm.
 #' @param tableName Name of the table to intersect with. Options:
 #' visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-#' device_exposure, measurement, observation, drug_era, condition_era, specimen.
+#' device_exposure, measurement, observation, drug_era, condition_era, specimen,
+#' episode.
 #' @param field The columns from the table in tableName to intersect over.
 #' For example, if the user uses visit_occurrence in tableName then for field the possible
 #' options include visit_occurrence_id, visit_concept_id, visit_type_concept_id.

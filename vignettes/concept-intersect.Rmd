@@ -173,21 +173,21 @@ dplyr::bind_rows(
 cdm$ankle_sprain |> 
   addCohortIntersectCount(targetCohortTable = "acetaminophen",
                          window = c(-Inf, Inf)) |> 
-  dplyr::group_by(acetaminophen_minf_to_inf)  |> 
+  dplyr::group_by(`161_acetaminophen_minf_to_inf`)  |> 
   dplyr::tally() |> 
   dplyr::collect() |> 
-  dplyr::arrange(desc(acetaminophen_minf_to_inf)) |> 
+  dplyr::arrange(desc(`161_acetaminophen_minf_to_inf`)) |> 
   dplyr::mutate(type = "cohort"),
 cdm$ankle_sprain |> 
   addConceptIntersectCount(conceptSet = acetaminophen_cs, 
                          window = c(-Inf, Inf)) |> 
-  dplyr::group_by(acetaminophen_minf_to_inf) |> 
+  dplyr::group_by(`161_acetaminophen_minf_to_inf`) |> 
   dplyr::tally() |> 
   dplyr::collect() |> 
-  dplyr::arrange(desc(acetaminophen_minf_to_inf)) |> 
+  dplyr::arrange(desc(`161_acetaminophen_minf_to_inf`)) |> 
   dplyr::mutate(type = "concept_set")) |> 
   ggplot() +
-  geom_col(aes(acetaminophen_minf_to_inf, n, fill = type), 
+  geom_col(aes(`161_acetaminophen_minf_to_inf`, n, fill = type), 
            position = "dodge") +
   theme_bw()+
   theme(legend.title = element_blank(), 
