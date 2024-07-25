@@ -21,7 +21,8 @@ addTableIntersectCount(
 
 \item{tableName}{Name of the table to intersect with. Options:
 visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-device_exposure, measurement, observation, drug_era, condition_era, specimen.}
+device_exposure, measurement, observation, drug_era, condition_era, specimen,
+episode.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}

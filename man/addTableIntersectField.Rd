@@ -24,7 +24,8 @@ addTableIntersectField(
 
 \item{tableName}{Name of the table to intersect with. Options:
 visit_occurrence, condition_occurrence, drug_exposure, procedure_occurrence,
-device_exposure, measurement, observation, drug_era, condition_era, specimen.}
+device_exposure, measurement, observation, drug_era, condition_era, specimen,
+episode.}
 
 \item{field}{The columns from the table in tableName to intersect over.
 For example, if the user uses visit_occurrence in tableName then for field the possible
