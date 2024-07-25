@@ -32,9 +32,15 @@
 #' }
 #'
 addCohortName <- function(cohort) {
+  assertClass(cohort, "cohort_table")
+
+  if ("cohort_name" %in% colnames(cohort)) {
+    cli::cli_inform(c("!" = "`cohort_name` will be overwrite"))
+    cohort <- cohort |> dplyr::select(!"cohort_name")
+  }
   cohort %>%
     dplyr::left_join(
-      attr(cohort, "cohort_set") %>%
+      attr(cohort, "cohort_set") |>
         dplyr::select("cohort_definition_id", "cohort_name"),
       by = "cohort_definition_id"
     )
@@ -60,7 +66,9 @@ addCohortName <- function(cohort) {
 #'
 addCdmName <- function(table, cdm = omopgenerics::cdmReference(table)) {
   name <- omopgenerics::cdmName(cdm)
-
+  if ("cdm_name" %in% colnames(cohort)) {
+    cli::cli_inform(c("!" = "`cdm_name` will be overwrite"))
+  }
   table %>% dplyr::mutate("cdm_name" = .env$name)
 }
 
