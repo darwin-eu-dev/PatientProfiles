@@ -57,7 +57,6 @@ addTableIntersectFlag <- function(x,
   cdm <- omopgenerics::cdmReference(x)
   assertCharacter(tableName)
   checkCdm(cdm, tables = tableName)
-  assertCharacter(tableName)
   nameStyle <- gsub("\\{table_name\\}", tableName, nameStyle)
 
   x <- x %>%

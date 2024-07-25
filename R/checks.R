@@ -46,7 +46,7 @@ checkCdm <- function(cdm, tables = NULL) {
     tables <- tables[!(tables %in% names(cdm))]
     if (length(tables) > 0) {
       cli::cli_abort(paste0(
-        substitute(tables), ": ",
+        tables, ": ",
         paste0(tables, collapse = ", "),
         " are not present in the cdm object"
       ))
