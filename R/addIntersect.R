@@ -40,6 +40,7 @@
   # initial checks
   personVariable <- checkX(x)
   checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
+  assertCharacter(tableName)
   checkCdm(cdm, tableName)
   personVariableTable <- checkX(cdm[[tableName]])
   extraValue <- checkValue(value, cdm[[tableName]], tableName)

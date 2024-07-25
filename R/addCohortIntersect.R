@@ -57,6 +57,7 @@ addCohortIntersectFlag <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}",
                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -125,6 +126,7 @@ addCohortIntersectCount <- function(x,
                                     nameStyle = "{cohort_name}_{window_name}",
                                     name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -196,6 +198,7 @@ addCohortIntersectDays <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}",
                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
@@ -268,6 +271,7 @@ addCohortIntersectDate <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}",
                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
+  assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
   assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
