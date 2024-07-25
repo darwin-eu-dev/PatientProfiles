@@ -1,180 +1,62 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/404.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/cohort-intersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/concept-intersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/demographics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/summarise.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/table-intersect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/PatientProfiles-package.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAgeQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCategories.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCdmName.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectCount.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectDate.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectDays.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectFlag.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortName.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectCount.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectDate.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectDays.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectFlag.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirth.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirthQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathDate.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathDays.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathFlag.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographicsQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addFutureObservation.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addFutureObservationQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservation.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservationQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorObservation.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorObservationQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSexQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectCount.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectDate.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectDays.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectField.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectFlag.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/availableEstimates.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/endDateColumn.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/mockDisconnect.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/mockPatientProfiles.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/reexports.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/sourceConceptIdColumn.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/standardConceptIdColumn.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/startDateColumn.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseResult.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/variableTypes.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/404.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/CONTRIBUTING.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/LICENSE-text.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/LICENSE.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/cohort-intersect.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/concept-intersect.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/demographics.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/summarise.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/articles/table-intersect.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/authors.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/news/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/PatientProfiles-package.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addAgeQuery.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCategories.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCdmName.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectCount.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectDate.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectDays.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortIntersectFlag.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addCohortName.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectCount.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectDate.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectDays.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addConceptIntersectFlag.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirth.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDateOfBirthQuery.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathDate.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathDays.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDeathFlag.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographicsQuery.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addFutureObservation.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addFutureObservationQuery.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservation.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addInObservationQuery.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorObservation.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addPriorObservationQuery.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addSexQuery.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectCount.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectDate.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectDays.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectField.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/addTableIntersectFlag.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/availableEstimates.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/endDateColumn.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/mockDisconnect.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/mockPatientProfiles.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/pipe.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/reexports.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/sourceConceptIdColumn.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/standardConceptIdColumn.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/startDateColumn.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/summariseResult.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/PatientProfiles/reference/variableTypes.html</loc></url>
 </urlset>
+

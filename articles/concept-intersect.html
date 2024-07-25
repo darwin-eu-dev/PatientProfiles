@@ -5,7 +5,6 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="PatientProfiles">
 <title>Adding concept intersections • PatientProfiles</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
@@ -15,66 +14,51 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Adding concept intersections">
-<meta property="og:description" content="PatientProfiles">
-<meta property="og:image" content="https://darwin-eu-dev.github.io/PatientProfiles/logo.png">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Adding concept intersections">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <h6 class="dropdown-header" data-toc-skip>PatientProfiles</h6>
-    <a class="dropdown-item" href="../articles/demographics.html">Adding patient demographics</a>
-    <a class="dropdown-item" href="../articles/cohort-intersect.html">Adding cohort intersections</a>
-    <a class="dropdown-item" href="../articles/concept-intersect.html">Adding concept intersections</a>
-    <a class="dropdown-item" href="../articles/table-intersect.html">Adding table intersections</a>
-    <a class="dropdown-item" href="../articles/summarise.html">Summarise result</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>PatientProfiles</h6></li>
+    <li><a class="dropdown-item" href="../articles/demographics.html">Adding patient demographics</a></li>
+    <li><a class="dropdown-item" href="../articles/cohort-intersect.html">Adding cohort intersections</a></li>
+    <li><a class="dropdown-item" href="../articles/concept-intersect.html">Adding concept intersections</a></li>
+    <li><a class="dropdown-item" href="../articles/table-intersect.html">Adding table intersections</a></li>
+    <li><a class="dropdown-item" href="../articles/summarise.html">Summarise result</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/darwin-eu-dev/PatientProfiles/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/darwin-eu-dev/PatientProfiles/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -86,7 +70,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Adding concept intersections</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/PatientProfiles/blob/HEAD/vignettes/concept-intersect.Rmd" class="external-link"><code>vignettes/concept-intersect.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/PatientProfiles/blob/main/vignettes/concept-intersect.Rmd" class="external-link"><code>vignettes/concept-intersect.Rmd</code></a></small>
       <div class="d-none name"><code>concept-intersect.Rmd</code></div>
     </div>
 
@@ -129,17 +113,18 @@ create our cohort of interest, individuals with an ankle sprain.</p>
 <span><span class="co">#&gt;     filter, lag</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                       dbdir <span class="op">=</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Creating CDM database /tmp/RtmpEr0Z4S/GiBleed_5.3.zip</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span><span class="va">con</span>,</span>
+<span><span class="co">#&gt; Creating CDM database /tmp/Rtmp6cyZaY/GiBleed_5.3.zip</span></span>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span><span class="va">con</span>,</span>
 <span>                                   cdm_schem <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>                                   write_schema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Note: method with signature 'DBIConnection#Id' chosen for function 'dbExistsTable',</span></span>
+<span><span class="co">#&gt;  target signature 'duckdb_connection#Id'.</span></span>
+<span><span class="co">#&gt;  "duckdb_connection#ANY" would also be valid</span></span>
 <span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span></span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
@@ -151,25 +136,25 @@ create our cohort of interest, individuals with an ankle sprain.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;ankle_sprain&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEr0Z4S/file1b1e1b0b4551.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.ankle_sprain&gt; [?? x 4]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/Rtmp6cyZaY/file264abe4f811.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          7 1985-05-16        1985-06-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         80 1953-12-31        1954-01-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         86 1952-04-03        1952-05-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         86 2014-12-28        2015-01-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        144 1978-10-30        1978-11-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        187 1977-03-20        1977-04-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        841 2017-08-23        2017-09-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        877 2017-09-03        2017-09-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        940 1950-04-18        1950-05-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">1</span>125 1956-07-20        1956-08-03     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        245 1996-07-21        1996-08-04     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        263 1958-03-31        1958-04-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        404 1962-06-04        1962-07-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        778 1985-01-10        1985-01-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        782 1949-12-14        1950-01-04     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        895 1971-11-18        1971-12-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        950 1985-05-26        1985-06-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1       <span style="text-decoration: underline;">1</span>046 1988-06-13        1988-07-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">1</span>338 2007-11-30        2007-12-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">1</span>459 2006-10-26        2006-11-16     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>Now let’s say we’re interested in summarising use of acetaminophen
 among our ankle sprain cohort. We can start by identifying the relevant
 concepts.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">acetaminophen_cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
 <span>                        name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acetaminophen"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -177,14 +162,14 @@ concepts.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">1 codelist</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - acetaminophen (7 codes)</span></span></code></pre></div>
+<span><span class="co">#&gt; - 161_acetaminophen (7 codes)</span></span></code></pre></div>
 <p>Once we have our codes for acetaminophen we can create variables
 based on these. As with cohort intersections, PatientProfiles provides
 four types of functions for concept intersections.</p>
 <p>First, we can add a binary flag variable indicating whether an
 individual had a record of acetaminophen on the day of their ankle
 sprain or up to 30 days afterwards.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addConceptIntersectFlag.html">addConceptIntersectFlag</a></span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">acetaminophen_cs</span>, </span>
 <span>                          indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>, </span>
@@ -192,15 +177,15 @@ sprain or up to 30 days afterwards.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEr0Z4S/file1b1e1b0b4551.duckdb]</span></span>
-<span><span class="co">#&gt; $ cohort_definition_id  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 86, 841, 877, 1125, 3132, 4403, 4678, 4713, 5…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-16, 1952-04-03, 2017-08-23, 2017-09-03,…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-13, 1952-05-02, 2017-09-20, 2017-09-24,…</span></span>
-<span><span class="co">#&gt; $ acetaminophen_0_to_30 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span></code></pre></div>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/Rtmp6cyZaY/file264abe4f811.duckdb]</span></span>
+<span><span class="co">#&gt; $ cohort_definition_id        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ subject_id                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 1046, 1670, 2079, 3423, 624, 882, 113…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date           <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1988-06-13, 1991-04-13, 2002-…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1988-07-18, 1991-04-27, 2002-…</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_0_to_30` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span></code></pre></div>
 <p>Second, we can count the number of records of acetaminophen in this
 same window for each individual.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addConceptIntersectCount.html">addConceptIntersectCount</a></span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">acetaminophen_cs</span>, </span>
 <span>                          indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>, </span>
@@ -208,15 +193,15 @@ same window for each individual.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEr0Z4S/file1b1e1b0b4551.duckdb]</span></span>
-<span><span class="co">#&gt; $ cohort_definition_id  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 86, 841, 877, 1125, 3132, 4403, 4678, 4713, 5…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-16, 1952-04-03, 2017-08-23, 2017-09-03,…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-13, 1952-05-02, 2017-09-20, 2017-09-24,…</span></span>
-<span><span class="co">#&gt; $ acetaminophen_0_to_30 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span></code></pre></div>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/Rtmp6cyZaY/file264abe4f811.duckdb]</span></span>
+<span><span class="co">#&gt; $ cohort_definition_id        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ subject_id                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 1046, 1670, 2079, 3423, 624, 882, 113…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date           <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1988-06-13, 1991-04-13, 2002-…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1988-07-18, 1991-04-27, 2002-…</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_0_to_30` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span></code></pre></div>
 <p>Third, we could identify the first start date of acetaminophen in
 this window.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addConceptIntersectDate.html">addConceptIntersectDate</a></span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">acetaminophen_cs</span>, </span>
 <span>                          indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>, </span>
@@ -225,15 +210,15 @@ this window.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEr0Z4S/file1b1e1b0b4551.duckdb]</span></span>
-<span><span class="co">#&gt; $ cohort_definition_id  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 86, 841, 877, 1125, 2975, 3132, 4403, 4678, 4…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-16, 1952-04-03, 2017-08-23, 2017-09-03,…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-13, 1952-05-02, 2017-09-20, 2017-09-24,…</span></span>
-<span><span class="co">#&gt; $ acetaminophen_0_to_30 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-16, 1952-04-03, 2017-08-23, 2017-09-03,…</span></span></code></pre></div>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/Rtmp6cyZaY/file264abe4f811.duckdb]</span></span>
+<span><span class="co">#&gt; $ cohort_definition_id        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ subject_id                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 950, 1046, 1670, 2079, 3423, 624, 882…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date           <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1985-05-26, 1988-06-13, 1991-…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1985-06-16, 1988-07-18, 1991-…</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_0_to_30` <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1985-06-05, 1988-06-13, 1991-…</span></span></code></pre></div>
 <p>Or fourth, we can get the number of days to the start date of
 acetaminophen in the window.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addConceptIntersectDays.html">addConceptIntersectDays</a></span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">acetaminophen_cs</span>, </span>
 <span>                          indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>, </span>
@@ -242,12 +227,12 @@ acetaminophen in the window.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEr0Z4S/file1b1e1b0b4551.duckdb]</span></span>
-<span><span class="co">#&gt; $ cohort_definition_id  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 86, 841, 877, 1125, 2975, 3132, 4403, 4678, 4…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-16, 1952-04-03, 2017-08-23, 2017-09-03,…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-13, 1952-05-02, 2017-09-20, 2017-09-24,…</span></span>
-<span><span class="co">#&gt; $ acetaminophen_0_to_30 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span></code></pre></div>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/Rtmp6cyZaY/file264abe4f811.duckdb]</span></span>
+<span><span class="co">#&gt; $ cohort_definition_id        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ subject_id                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 950, 1046, 1670, 2079, 3423, 624, 882…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date           <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1985-05-26, 1988-06-13, 1991-…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1985-06-16, 1988-07-18, 1991-…</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_0_to_30` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="adding-multiple-concept-based-variables">Adding multiple concept based variables<a class="anchor" aria-label="anchor" href="#adding-multiple-concept-based-variables"></a>
@@ -255,7 +240,7 @@ acetaminophen in the window.</p>
 <p>We can add more than one variable at a time when using these
 functions. For example, we might want to add variables for multiple time
 windows.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addConceptIntersectFlag.html">addConceptIntersectFlag</a></span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">acetaminophen_cs</span>, </span>
 <span>                          indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>, </span>
@@ -265,17 +250,17 @@ windows.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 7</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEr0Z4S/file1b1e1b0b4551.duckdb]</span></span>
-<span><span class="co">#&gt; $ cohort_definition_id     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 80, 86, 86, 144, 187, 841, 877, 1125, 1537…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-16, 1953-12-31, 1952-04-03, 2014-12-…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-13, 1954-01-14, 1952-05-02, 2015-01-…</span></span>
-<span><span class="co">#&gt; $ acetaminophen_minf_to_m1 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ acetaminophen_0_to_0     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ acetaminophen_1_to_inf   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, …</span></span></code></pre></div>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/Rtmp6cyZaY/file264abe4f811.duckdb]</span></span>
+<span><span class="co">#&gt; $ cohort_definition_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ subject_id                     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 263, 404, 782, 895, 1046, 1338, 16…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date              <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1958-03-31, 1962-06-04, 19…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date                <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1958-04-14, 1962-07-09, 19…</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_minf_to_m1` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_0_to_0`     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, …</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_1_to_inf`   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span></code></pre></div>
 <p>Or we might want to get variables for multiple drug ingredients of
 interest.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">meds_cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
 <span>                                  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acetaminophen"</span>,</span>
 <span>                                           <span class="st">"amoxicillin"</span>,</span>
@@ -293,25 +278,25 @@ interest.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 18</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEr0Z4S/file1b1e1b0b4551.duckdb]</span></span>
-<span><span class="co">#&gt; $ cohort_definition_id     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ subject_id               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 80, 86, 86, 144, 187, 841, 877, 1125, 1537…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-05-16, 1953-12-31, 1952-04-03, 2014-12-…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1985-06-13, 1954-01-14, 1952-05-02, 2015-01-…</span></span>
-<span><span class="co">#&gt; $ acetaminophen_minf_to_m1 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ acetaminophen_0_to_0     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ amoxicillin_minf_to_m1   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ aspirin_minf_to_m1       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, …</span></span>
-<span><span class="co">#&gt; $ oxycodone_minf_to_m1     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ aspirin_0_to_0           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, …</span></span>
-<span><span class="co">#&gt; $ amoxicillin_0_to_0       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ heparin_minf_to_m1       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ morphine_minf_to_m1      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ warfarin_minf_to_m1      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ morphine_0_to_0          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ oxycodone_0_to_0         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ warfarin_0_to_0          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
-<span><span class="co">#&gt; $ heparin_0_to_0           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span></code></pre></div>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/Rtmp6cyZaY/file264abe4f811.duckdb]</span></span>
+<span><span class="co">#&gt; $ cohort_definition_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ subject_id                     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 245, 263, 404, 782, 895, 1046, 1338, 16…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date              <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-07-21, 1958-03-31, 1962-06-04, 19…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date                <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1996-08-04, 1958-04-14, 1962-07-09, 19…</span></span>
+<span><span class="co">#&gt; $ `5224_heparin_minf_to_m1`      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `7052_morphine_minf_to_m1`     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `7804_oxycodone_minf_to_m1`    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `1191_aspirin_minf_to_m1`      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_minf_to_m1` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ `723_amoxicillin_minf_to_m1`   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, …</span></span>
+<span><span class="co">#&gt; $ `11289_warfarin_minf_to_m1`    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `1191_aspirin_0_to_0`          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `161_acetaminophen_0_to_0`     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, …</span></span>
+<span><span class="co">#&gt; $ `723_amoxicillin_0_to_0`       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `7052_morphine_0_to_0`         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `7804_oxycodone_0_to_0`        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `11289_warfarin_0_to_0`        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ `5224_heparin_0_to_0`          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="cohort-based-versus-concept-based-intersections">Cohort-based versus concept-based intersections<a class="anchor" aria-label="anchor" href="#cohort-based-versus-concept-based-intersections"></a>
@@ -329,7 +314,7 @@ entries in the window of interest while
 withing the window. We can see the impact for acetaminophen for our
 example data below, where we have slightly more records than cohort
 entries.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">acetaminophen_cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
 <span>                                  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acetaminophen"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -345,21 +330,21 @@ entries.</p>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span>targetCohortTable <span class="op">=</span> <span class="st">"acetaminophen"</span>,</span>
 <span>                         window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">acetaminophen_minf_to_inf</span><span class="op">)</span>  <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">`161_acetaminophen_minf_to_inf`</span><span class="op">)</span>  <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">acetaminophen_minf_to_inf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">`161_acetaminophen_minf_to_inf`</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"cohort"</span><span class="op">)</span>,</span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">ankle_sprain</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/addConceptIntersectCount.html">addConceptIntersectCount</a></span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">acetaminophen_cs</span>, </span>
 <span>                         window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">acetaminophen_minf_to_inf</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">`161_acetaminophen_minf_to_inf`</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">acetaminophen_minf_to_inf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">`161_acetaminophen_minf_to_inf`</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"concept_set"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">acetaminophen_minf_to_inf</span>, <span class="va">n</span>, fill <span class="op">=</span> <span class="va">type</span><span class="op">)</span>, </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">`161_acetaminophen_minf_to_inf`</span>, <span class="va">n</span>, fill <span class="op">=</span> <span class="va">type</span><span class="op">)</span>, </span>
 <span>           position <span class="op">=</span> <span class="st">"dodge"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, </span>
@@ -372,7 +357,7 @@ observation time (as defined in the observation period window). Such
 records, however, would not be excluded when adding a concept based
 intersection.</p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -383,15 +368,15 @@ intersection.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>
