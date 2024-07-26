@@ -584,3 +584,4 @@ test_that("NA when min, max and mean works", {
   )
   expect_equal(res4$estimate_value, c('3', NA, NA, NA))
 })
+
