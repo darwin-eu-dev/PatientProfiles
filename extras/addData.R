@@ -46,5 +46,16 @@ namesTable <- read_csv(
 
 formatsOld <- read_csv(here("extras", "formats_old.csv"), col_types = "c")
 
-use_data(formats, namesTable, formatsOld, internal = TRUE, overwrite = TRUE)
+estimatesFunc <- c(
+  "min" = "base::min(x, na.rm = TRUE)",
+  "max" = "base::max(x, na.rm = TRUE)",
+  "mean" = "base::mean(x, na.rm = TRUE)",
+  "median" = "stats::median(x, na.rm = TRUE)",
+  "sum" = "base::sum(x, na.rm = TRUE)",
+  "sd" = "stats::sd(x, na.rm = TRUE)")
+quantiles <- paste0("stats::quantile(x, ", seq(0.01, 0.99, 0.01), ", na.rm = TRUE)")
+names(quantiles) <- c(paste0("q0", 1:9), paste0("q", 10:99))
+estimatesFunc <- c(estimatesFunc, quantiles)
+
+use_data(estimatesFunc, formats, namesTable, formatsOld, internal = TRUE, overwrite = TRUE)
 
