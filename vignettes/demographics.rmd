@@ -23,14 +23,14 @@ library(dplyr)
 
 cdm <- mockPatientProfiles(numberIndividuals = 10000)
 
-cdm$person %>% 
+cdm$person %>%
   dplyr::glimpse()
 ```
 
 As well as the person table, every CDM reference will include an observation period table. This table contains spans of times during which an individual is considered to being under observation. Individuals can have multiple observation periods, but they cannot overlap.
 
 ```{r, message= FALSE, warning=FALSE}
-cdm$observation_period %>% 
+cdm$observation_period %>%
   dplyr::glimpse()
 ```
 
@@ -62,9 +62,11 @@ cdm$condition_occurrence <- cdm$condition_occurrence %>%
   addAge(
     indexDate = "condition_start_date",
     ageGroup = list(
-        "0 to 17" = c(0, 17),
-        "18 to 65" = c(18, 65),
-        ">= 66" = c(66, Inf)))
+      "0 to 17" = c(0, 17),
+      "18 to 65" = c(18, 65),
+      ">= 66" = c(66, Inf)
+    )
+  )
 
 cdm$condition_occurrence %>%
   glimpse()
@@ -75,12 +77,14 @@ By default, when adding age the new column will have been called "age" and will 
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$condition_occurrence <- cdm$condition_occurrence %>%
-  addAge(indexDate = "condition_start_date", 
-         ageName = "age_from_year_of_birth", 
-         ageMissingMonth = 1,
-         ageMissingDay = 1,
-         ageImposeMonth = TRUE, 
-         ageImposeDay = TRUE)
+  addAge(
+    indexDate = "condition_start_date",
+    ageName = "age_from_year_of_birth",
+    ageMissingMonth = 1,
+    ageMissingDay = 1,
+    ageImposeMonth = TRUE,
+    ageImposeDay = TRUE
+  )
 
 cdm$condition_occurrence %>%
   glimpse()
@@ -100,8 +104,8 @@ Similarly, we could also identify whether an individual was in observation at th
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$condition_occurrence <- cdm$condition_occurrence %>%
-  addInObservation(indexDate = "condition_start_date") %>% 
-  addPriorObservation(indexDate = "condition_start_date") %>% 
+  addInObservation(indexDate = "condition_start_date") %>%
+  addPriorObservation(indexDate = "condition_start_date") %>%
   addFutureObservation(indexDate = "condition_start_date")
 
 cdm$condition_occurrence %>%
@@ -113,18 +117,22 @@ For these functions which work with information from the observation table, it i
 When checking whether someone is in observation the default is that we are checking whether someone was in observation on the index date. We could though expand this and consider a window of time around this date. For example here we add a variable indicating whether someone was in observation from 180 days before the index date to 30 days following it.
 
 ```{r, message= FALSE, warning=FALSE}
- cdm$condition_occurrence %>%
-  addInObservation(indexDate = "condition_start_date", 
-                   window = c(-180, 30)) %>%
+cdm$condition_occurrence %>%
+  addInObservation(
+    indexDate = "condition_start_date",
+    window = c(-180, 30)
+  ) %>%
   glimpse()
 ```
 
 We can also specify a window and require that an individual is present for only some days within it. Here we add a variable indicating whether the individual was in observation at least a year in the future,
 ```{r, message= FALSE, warning=FALSE}
- cdm$condition_occurrence %>%
-  addInObservation(indexDate = "condition_start_date", 
-                   window = c(365, Inf), 
-                   completeInterval = FALSE) %>%
+cdm$condition_occurrence %>%
+  addInObservation(
+    indexDate = "condition_start_date",
+    window = c(365, Inf),
+    completeInterval = FALSE
+  ) %>%
   glimpse()
 ```
 
@@ -138,10 +146,11 @@ cdm$cohort1 %>%
 
 cdm$cohort1 <- cdm$cohort1 %>%
   addAge(ageGroup = list(
-        "0 to 17" = c(0, 17),
-        "18 to 65" = c(18, 65),
-        ">= 66" = c(66, Inf))) %>% 
-  addSex() %>% 
+    "0 to 17" = c(0, 17),
+    "18 to 65" = c(18, 65),
+    ">= 66" = c(66, Inf)
+  )) %>%
+  addSex() %>%
   addInObservation() %>%
   addPriorObservation() %>%
   addFutureObservation()
@@ -162,10 +171,11 @@ cdm$cohort2 %>%
 tictoc::tic()
 cdm$cohort2 %>%
   addAge(ageGroup = list(
-        "0 to 17" = c(0, 17),
-        "18 to 65" = c(18, 65),
-        ">= 66" = c(66, Inf))) %>% 
-  addSex() %>% 
+    "0 to 17" = c(0, 17),
+    "18 to 65" = c(18, 65),
+    ">= 66" = c(66, Inf)
+  )) %>%
+  addSex() %>%
   addInObservation() %>%
   addPriorObservation() %>%
   addFutureObservation()
@@ -177,9 +187,10 @@ cdm$cohort2 %>%
     age = TRUE,
     ageName = "age",
     ageGroup = list(
-        "0 to 17" = c(0, 17),
-        "18 to 65" = c(18, 65),
-        ">= 66" = c(66, Inf)),
+      "0 to 17" = c(0, 17),
+      "18 to 65" = c(18, 65),
+      ">= 66" = c(66, Inf)
+    ),
     sex = TRUE,
     sexName = "sex",
     priorObservation = TRUE,

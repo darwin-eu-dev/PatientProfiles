@@ -1,4 +1,5 @@
 test_that("addInObservation, input length and type", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_error(addInObservation(2))
   expect_error(addInObservation(cdm$concept_ancestor))
@@ -12,6 +13,7 @@ test_that("addInObservation, input length and type", {
 })
 
 test_that("addInObservation, cohort and condition_occurrence", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   result1 <- addInObservation(cdm$cohort1)
@@ -42,6 +44,7 @@ test_that("addInObservation, cohort and condition_occurrence", {
 })
 
 test_that("addInObservation, parameters", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   result1 <- addInObservation(cdm$condition_occurrence, indexDate = "condition_end_date", nameStyle = "observ")

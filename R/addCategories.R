@@ -50,7 +50,6 @@ addCategories <- function(x,
                           missingCategoryValue = "None",
                           overlap = FALSE,
                           name = NULL) {
-
   comp <- newTable(name)
   assertClass(x, "cdm_table")
   assertCharacter(variable, length = 1)
@@ -59,8 +58,8 @@ addCategories <- function(x,
   }
   var <- dplyr::pull(utils::head(x, 1), variable)
   if (!inherits(var, "numeric") &
-      !inherits(var, "integer") &
-      !inherits(var, "Date")) {
+    !inherits(var, "integer") &
+    !inherits(var, "Date")) {
     cli::cli_abort("{variable} must be a numeric or date variable")
   }
   assertList(categories, class = "list")

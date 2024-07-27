@@ -1,4 +1,3 @@
-
 test_that("output format - one outcome cohort", {
   # output format - one outcome cohort ----
   # additional column should be added

@@ -1,4 +1,5 @@
 test_that("addSex, check imput length and type", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_error(addSex("cdm$cohort1"))
   expect_error(addSex(cdm$drug_strength))
@@ -9,6 +10,7 @@ test_that("addSex, check imput length and type", {
 })
 
 test_that("addSex, works in both cohort and condition tables", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   cdm$cohort1 <- cdm$cohort1 %>% addSex()
   cdm$condition_occurrence <- cdm$condition_occurrence %>% addSex()
@@ -20,6 +22,7 @@ test_that("addSex, works in both cohort and condition tables", {
 })
 
 test_that("addSex, desired result for all parameters", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
@@ -60,6 +63,7 @@ test_that("addSex, desired result for all parameters", {
 })
 
 test_that("allow NA in missing sex", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),

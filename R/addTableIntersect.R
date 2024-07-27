@@ -120,8 +120,6 @@ addTableIntersectCount <- function(x,
                                    targetEndDate = endDateColumn(tableName),
                                    nameStyle = "{table_name}_{window_name}",
                                    name = NULL) {
-
-
   cdm <- omopgenerics::cdmReference(x)
   assertCharacter(tableName)
   checkCdm(cdm, tables = tableName)

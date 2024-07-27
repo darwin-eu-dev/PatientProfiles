@@ -429,7 +429,7 @@ addDateOfBirthQuery <- function(x,
     age, !is.null(ageGroup), priorObservation, futureObservation
   ))
   indexDate <- validateIndexDate(indexDate, null = notIndexDate, x = x, call = call)
-  ageName <- validateColumn(ageName, null = !age,  call = call)
+  ageName <- validateColumn(ageName, null = !age, call = call)
   sexName <- validateColumn(sexName, null = !sex, call = call)
   priorObservationName <- validateColumn(priorObservationName, null = !priorObservation, call = call)
   futureObservationName <- validateColumn(futureObservationName, null = !futureObservation, call = call)
@@ -474,7 +474,7 @@ addDateOfBirthQuery <- function(x,
           'as.integer(local(CDMConnector::datediff("start_date","{indexDate}")))'
         )
       } else {
-        pHQ <- '.data$start_date'
+        pHQ <- ".data$start_date"
       }
       pHQ <- pHQ %>%
         rlang::parse_exprs() %>%
@@ -490,7 +490,7 @@ addDateOfBirthQuery <- function(x,
           'as.integer(local(CDMConnector::datediff("{indexDate}","end_date")))'
         )
       } else {
-        fOQ <- '.data$end_date'
+        fOQ <- ".data$end_date"
       }
       fOQ <- fOQ |>
         rlang::parse_exprs() %>%
@@ -590,11 +590,13 @@ addDateOfBirthQuery <- function(x,
       sQ <- 'dplyr::case_when(.data$gender_concept_id == 8507 ~ "Male",
           .data$gender_concept_id == 8532 ~ "Female"'
       if (is.na(missingSexValue)) {
-        sQ <- glue::glue('{sQ}, .default = NA_character_)')
+        sQ <- glue::glue("{sQ}, .default = NA_character_)")
       } else {
         sQ <- glue::glue('{sQ}, .default = "{missingSexValue}")')
       }
-      sQ <- sQ |> rlang::parse_exprs() |> rlang::set_names(sexName)
+      sQ <- sQ |>
+        rlang::parse_exprs() |>
+        rlang::set_names(sexName)
     } else {
       sQ <- NULL
     }
@@ -611,7 +613,6 @@ addDateOfBirthQuery <- function(x,
 
     xnew <- xnew |>
       dplyr::left_join(person, by = c(personVariable, indexDate))
-
   }
 
   xnew <- xnew |>
@@ -639,7 +640,7 @@ ageGroupQuery <- function(ageName, ageGroup, missingAgeGroupValue) {
     }) |>
       unlist()
     if (is.na(missingAgeGroupValue)) {
-      xx <- c(xx, '.default = NA_character_')
+      xx <- c(xx, ".default = NA_character_")
     } else {
       xx <- c(xx, paste0('.default = "', missingAgeGroupValue, '"'))
     }
@@ -678,10 +679,10 @@ ageGroupQuery <- function(ageName, ageGroup, missingAgeGroupValue) {
 #' }
 #'
 addInObservationQuery <- function(x,
-                                   indexDate = "cohort_start_date",
-                                   window = c(0, 0),
-                                   completeInterval = FALSE,
-                                   nameStyle = "in_observation") {
+                                  indexDate = "cohort_start_date",
+                                  window = c(0, 0),
+                                  completeInterval = FALSE,
+                                  nameStyle = "in_observation") {
   x |>
     .addInObservationQuery(
       indexDate = indexDate,

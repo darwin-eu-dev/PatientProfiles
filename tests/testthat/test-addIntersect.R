@@ -1,4 +1,3 @@
-
 test_that("conceptIdColumn", {
   expect_no_error(
     standardConceptIdColumn("condition_occurrence")

@@ -139,7 +139,6 @@ test_that("addCategories with infinity", {
 })
 
 test_that("addCategories check naming", {
-
   skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
@@ -154,6 +153,5 @@ test_that("addCategories check naming", {
     ), missingCategoryValue = "None", overlap = FALSE
   )
 
-  expect_true(all(table |> dplyr::pull(date_dummy) |> unique() %in% c("a","b","None")))
-
+  expect_true(all(table |> dplyr::pull(date_dummy) |> unique() %in% c("a", "b", "None")))
 })

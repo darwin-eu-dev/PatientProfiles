@@ -108,8 +108,8 @@ test_that("input validation", {
 
 test_that("addTableIntersectCount example", {
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1,2,2,2,2,2),
-    subject_id = c(1, 1, 1, 1, 1,1,1,1,1,1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2),
+    subject_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
     cohort_start_date = as.Date(
       c(
         "2020-01-01",
@@ -189,7 +189,7 @@ test_that("addTableIntersectCount example", {
 
   expect_true(all((de_count %>%
     dplyr::filter(!cohort_start_date == "2020-01-01") %>%
-      dplyr::filter(cohort_start_date == "2020-01-01") %>%
+    dplyr::filter(cohort_start_date == "2020-01-01") %>%
     dplyr::pull("drug_exposure_m50_to_50") %>%
     as.numeric()) == 0))
 

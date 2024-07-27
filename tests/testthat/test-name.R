@@ -1,4 +1,3 @@
-
 test_that("test that name argument works as expected", {
   skip_on_cran()
   # create simple cdm

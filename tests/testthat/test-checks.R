@@ -1,5 +1,5 @@
-
 test_that("test checkCategory with length 1 ", {
+  skip_on_cran()
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = 1,
@@ -126,6 +126,7 @@ test_that("test checkCategory with length 1 ", {
 })
 
 test_that(" test checkNewName renames duplicate column names in addInObservation  ", {
+  skip_on_cran()
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
     subject_id = c(1, 2),
@@ -176,6 +177,7 @@ test_that(" test checkNewName renames duplicate column names in addInObservation
 })
 
 test_that(" test checkWindow in addIntersect", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
@@ -195,6 +197,7 @@ test_that(" test checkWindow in addIntersect", {
 })
 
 test_that("test checkSnakeCase", {
+  skip_on_cran()
   expect_true(checkSnakeCase("Age") == "age")
   expect_true(checkSnakeCase("age groups") == "age_groups")
   expect_true(checkSnakeCase("new-var") == "new_var")
@@ -206,6 +209,7 @@ test_that("test checkSnakeCase", {
 })
 
 test_that("check window", {
+  skip_on_cran()
   window <- list("short" = c(0, 9), c(10, 20), c(20, 35), "long" = c(-50, 10))
   windowCorrected <- checkWindow(window)
   expect_true("list" %in% class(windowCorrected))
@@ -219,6 +223,7 @@ test_that("check window", {
 })
 
 test_that("checkAgeGroup", {
+  skip_on_cran()
   ageGroup <- list(list(c(0, 69), c(70)))
 
   expect_true(all(checkAgeGroup(ageGroup)$age_group_1[[1]] == c(0, 69)))
@@ -231,6 +236,7 @@ test_that("checkAgeGroup", {
 })
 
 test_that("checkNameStyle", {
+  skip_on_cran()
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1),
     subject_id = c(1, 2),
@@ -278,6 +284,7 @@ test_that("checkNameStyle", {
 })
 
 test_that("test assertNameStyle", {
+  skip_on_cran()
   expect_error(
     assertNameStyle("my_name", values = list(
       "variable1" = 1, "variable2" = c("a", "b", "c")
@@ -304,6 +311,7 @@ test_that("test assertNameStyle", {
 })
 
 test_that("test warnOverwriteColumns", {
+  skip_on_cran()
   # no glue expression
   x <- dplyr::tibble("my_columns" = character(), "no_column" = character())
   expect_message(

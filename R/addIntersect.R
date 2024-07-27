@@ -104,8 +104,9 @@
       dplyr::all_of(extraValue)
     ) %>%
     dplyr::mutate(end_date = dplyr::if_else(is.na(.data$end_date),
-                                                  .data$start_date,
-                                                  .data$end_date))
+      .data$start_date,
+      .data$end_date
+    ))
 
   result <- x |>
     dplyr::select(

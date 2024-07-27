@@ -94,8 +94,10 @@ test_that("addDemographics, cohort and condition_occurrence", {
   )
   expect_identical(
     x$sex,
-    c("Male", "Male", "Female", "Female", "Female", "Female", "Female",
-      "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male")
+    c(
+      "Male", "Male", "Female", "Female", "Female", "Female", "Female",
+      "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male"
+    )
   )
   expect_identical(
     x$prior_observation,
@@ -194,8 +196,10 @@ test_that("partial demographics - cohorts", {
   # age and age group
   expect_equal(
     colnames(cdm$cohort1a),
-    c("cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", "age")
+    c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date", "age"
+    )
   )
 
   # only sex
@@ -210,8 +214,10 @@ test_that("partial demographics - cohorts", {
     )
   expect_equal(
     colnames(cdm$cohort1b),
-    c("cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", "sex")
+    c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date", "sex"
+    )
   )
 
   # only prior history
@@ -226,8 +232,10 @@ test_that("partial demographics - cohorts", {
     )
   expect_equal(
     colnames(cdm$cohort1c),
-    c("cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", "prior_observation")
+    c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date", "prior_observation"
+    )
   )
 
   # only future observation
@@ -242,8 +250,10 @@ test_that("partial demographics - cohorts", {
     )
   expect_equal(
     colnames(cdm$cohort1d),
-    c("cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", "future_observation")
+    c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date", "future_observation"
+    )
   )
 
 
@@ -260,9 +270,11 @@ test_that("partial demographics - cohorts", {
   # age and age group
   expect_equal(
     colnames(cdm$cohort1e),
-    c("cohort_definition_id", "subject_id", "cohort_start_date",
+    c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date", "age", "age_group", "sex", "prior_observation",
-      "future_observation")
+      "future_observation"
+    )
   )
 })
 
@@ -1275,7 +1287,6 @@ test_that("overwriting obs period variables", {
     cdm$cohort2 |> dplyr::pull("observation_period_start_date") |> unique(),
     "a"
   )
-
 })
 
 test_that("addDemographics, date of birth option", {
@@ -1297,7 +1308,7 @@ test_that("allow NA as age_group", {
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   expect_no_error(
     cdm$cohort1 <- cdm$cohort1 |>
-      addAge(ageGroup = list(c(0,0)), missingAgeGroupValue = NA_character_)
+      addAge(ageGroup = list(c(0, 0)), missingAgeGroupValue = NA_character_)
   )
   expect_true(all(is.na(cdm$cohort1 |> dplyr::pull("age_group"))))
   mockDisconnect(cdm = cdm)
@@ -1322,23 +1333,23 @@ test_that("allow age_group only", {
 
 test_that("query gives same result as main function", {
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
- # we should get the same results if compute was internal or not
- result_1 <- cdm$cohort1 %>%
+  # we should get the same results if compute was internal or not
+  result_1 <- cdm$cohort1 %>%
     PatientProfiles::addDemographics() %>%
     dplyr::collect()
- result_2 <- cdm$cohort1 %>%
+  result_2 <- cdm$cohort1 %>%
     addDemographicsQuery() |>
     dplyr::collect()
- expect_equal(result_1, result_2)
+  expect_equal(result_1, result_2)
 
- # check no tables are created along the way with query
- start_tables <- CDMConnector::listSourceTables(cdm)
- cdm$cohort1 %>%
-   addDemographicsQuery()
- end_tables <- CDMConnector::listSourceTables(cdm)
- expect_equal(start_tables, end_tables)
+  # check no tables are created along the way with query
+  start_tables <- CDMConnector::listSourceTables(cdm)
+  cdm$cohort1 %>%
+    addDemographicsQuery()
+  end_tables <- CDMConnector::listSourceTables(cdm)
+  expect_equal(start_tables, end_tables)
 
- mockDisconnect(cdm)
+  mockDisconnect(cdm)
 })
 
 test_that("table names", {

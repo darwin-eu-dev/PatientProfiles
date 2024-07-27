@@ -521,7 +521,6 @@ assertCharacter <- function(x,
 
   # assert null
   if (assertNull(x, null, errorMessage, call)) {
-
     # assert class
     if (!is.character(x)) {
       cli::cli_abort(errorMessage, call = call)
@@ -572,7 +571,6 @@ assertList <- function(x,
 
   # assert null
   if (assertNull(x, null, errorMessage, call)) {
-
     # assert class
     if (!is.list(x)) {
       cli::cli_abort(errorMessage, call = call)
@@ -626,7 +624,6 @@ assertChoice <- function(x,
 
   # assert null
   if (assertNull(x, null, errorMessage, call)) {
-
     # assert class
     if (!all(class(x) == class(choices))) {
       cli::cli_abort(errorMessage, call = call)
@@ -715,7 +712,6 @@ assertNumeric <- function(x,
 
   # assert null
   if (assertNull(x, null, errorMessage, call)) {
-
     # assert class
     if (!is.numeric(x)) {
       cli::cli_abort(errorMessage, call = call)
@@ -850,7 +846,9 @@ validateX <- function(x, call) {
   return(x)
 }
 validateLogical <- function(x, null = FALSE, call) {
-  if (null) return(NULL)
+  if (null) {
+    return(NULL)
+  }
   err <- paste(substitute(x), "must be TRUE or FALSE") |> rlang::set_names("!")
   if (!is.logical(x)) cli::cli_abort(message = err, call = call)
   if (length(x) != 1) cli::cli_abort(message = err, call = call)
@@ -858,7 +856,9 @@ validateLogical <- function(x, null = FALSE, call) {
   return(x)
 }
 validateIndexDate <- function(indexDate, null, x, call) {
-  if (null) return(NULL)
+  if (null) {
+    return(NULL)
+  }
   assertCharacter(indexDate, length = 1, call = call)
   if (!indexDate %in% colnames(x)) {
     cli::cli_abort("indexDate must be a column in x.", call = call)
@@ -873,7 +873,9 @@ validateIndexDate <- function(indexDate, null, x, call) {
   return(indexDate)
 }
 validateColumn <- function(col, null, call) {
-  if (null) return(NULL)
+  if (null) {
+    return(NULL)
+  }
 
   nm <- paste0(substitute(col))
 
@@ -894,7 +896,9 @@ validateColumn <- function(col, null, call) {
   return(scCol)
 }
 validateAgeMissingMonth <- function(ageMissingMonth, null, call) {
-  if (null) return(ageMissingMonth)
+  if (null) {
+    return(ageMissingMonth)
+  }
 
   if (is.character(ageMissingMonth)) {
     ageMissingMonth <- as.numeric(ageMissingMonth)
@@ -905,7 +909,9 @@ validateAgeMissingMonth <- function(ageMissingMonth, null, call) {
   return(ageMissingMonth)
 }
 validateAgeMissingDay <- function(ageMissingDay, null, call) {
-  if (null) return(ageMissingDay)
+  if (null) {
+    return(ageMissingDay)
+  }
 
   if (is.character(ageMissingDay)) {
     ageMissingDay <- as.numeric(ageMissingDay)
@@ -916,7 +922,9 @@ validateAgeMissingDay <- function(ageMissingDay, null, call) {
   return(ageMissingDay)
 }
 validateAgeGroup <- function(ageGroup, call) {
-  if (length(ageGroup) == 0) return(NULL)
+  if (length(ageGroup) == 0) {
+    return(NULL)
+  }
   assertList(ageGroup, call = call)
   if (is.numeric(ageGroup[[1]])) {
     ageGroup <- list("age_group" = ageGroup)
@@ -954,7 +962,9 @@ validateAgeGroup <- function(ageGroup, call) {
   invisible(ageGroup)
 }
 validateMissingValue <- function(x, null, call) {
-  if (null) return(NULL)
+  if (null) {
+    return(NULL)
+  }
   nm <- paste0(substitute(x))
   err <- "{nm} must be a character of length 1." |> rlang::set_names("!")
   if (!is.character(x)) cli::cli_abort(message = err, call = call)
@@ -962,7 +972,9 @@ validateMissingValue <- function(x, null, call) {
   return(x)
 }
 validateType <- function(x, null, call) {
-  if (null) return(NULL)
+  if (null) {
+    return(NULL)
+  }
   nm <- paste0(substitute(x))
   err <- "{nm} must be a choice between 'date' or 'days'." |>
     rlang::set_names("!")
@@ -1036,4 +1048,3 @@ checkCategory <- function(category, overlap = FALSE, type = "numeric", call = pa
 
   invisible(result)
 }
-
