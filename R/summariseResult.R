@@ -225,9 +225,9 @@ summariseInternal <- function(table, groupk, stratak, functions, counts, personV
 
   if (length(strataGroupk) == 0) {
     table <- table |>
-      dplyr::mutate("strata_id" = as.integer(1))
+      dplyr::mutate("strata_id" = 1L)
     strataGroup <- dplyr::tibble(
-      "strata_id" = as.integer(1),
+      "strata_id" = 1L,
       "group_name" = "overall",
       "group_level" = "overall",
       "strata_name" = "overall",
@@ -329,50 +329,47 @@ summariseNumeric <- function(table, functions) {
         !grepl("count|percentage", .data$estimate_name)
     )
 
-  if (nrow(funs) == 0) {
-    return(NULL)
-  }
+  if (nrow(funs) == 0) return(NULL)
 
   funs <- funs |>
-    dplyr::mutate(fun = getFunctions(.data$estimate_name)) |>
+    dplyr::mutate(fun = estimatesFunc[.data$estimate_name]) |>
     dplyr::rowwise() |>
-    dplyr::mutate(fun = gsub("x, ", paste0(.data$variable_name, ", "), .data$fun))
+    dplyr::mutate(fun = gsub("x, ", paste0(".data[['", .data$variable_name, "']], "), .data$fun)) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(id = paste0("variable_", stringr::str_pad(dplyr::row_number(), 6, pad = "0")))
   numericSummary <- funs$fun |>
     rlang::parse_exprs() |>
-    rlang::set_names(glue::glue("{funs$variable_name}_<<{funs$estimate_name}"))
+    rlang::set_names(funs$id)
   res <- table |>
-    dplyr::group_by(strata_id) |>
+    dplyr::group_by(.data$strata_id) |>
     dplyr::summarise(!!!numericSummary, .groups = "drop") |>
     suppressWarnings() |>
     dplyr::collect() |>
-    dplyr::mutate(dplyr::across(
-      .cols = !"strata_id",
-      .fns = as.numeric
-    )) |>
+    dplyr::mutate(dplyr::across(.cols = !"strata_id", .fns = as.numeric)) |>
     tidyr::pivot_longer(
-      cols = !"strata_id",
-      names_to = "variable_name",
-      values_to = "estimate_value"
+      cols = !"strata_id", names_to = "id", values_to = "estimate_value"
     ) |>
-    dplyr::mutate(
-      "estimate_name" = gsub(".*_<<", "", .data$variable_name),
-      "variable_name" = gsub("_<<.*", "", .data$variable_name),
-      "variable_level" = NA_character_
-    ) |>
-    # add estimate_type + correct dates
     dplyr::inner_join(
       funs |>
-        dplyr::select("variable_name", "estimate_name", "estimate_type"),
-      by = c("variable_name", "estimate_name")
+        dplyr::select(c("id", "variable_name", "estimate_name", "estimate_type")),
+      by = "id"
     ) |>
-    dplyr::mutate("estimate_value" = dplyr::case_when(
-      is.infinite(.data$estimate_value) | is.nan(.data$estimate_value) ~ NA_character_,
-      .data$estimate_type == "date" ~
-        as.character(as.Date(round(.data$estimate_value), origin = "1970-01-01")),
-      .data$estimate_type == "integer" ~
-        as.character(round(.data$estimate_value)),
-      .data$estimate_type == "numeric" ~ as.character(.data$estimate_value)
-    ))
+    dplyr::select(-"id") |>
+    dplyr::mutate(
+      "variable_level" = NA_character_,
+      "estimate_value" = dplyr::case_when(
+        # Inf and Nan generated due to missing values
+        is.infinite(.data$estimate_value) | is.nan(.data$estimate_value) ~ NA_character_,
+        # correct dates
+        .data$estimate_type == "date" ~
+          as.character(as.Date(round(.data$estimate_value), origin = "1970-01-01")),
+        # round integers
+        .data$estimate_type == "integer" ~
+          as.character(round(.data$estimate_value)),
+        # numeric to characters
+        .data$estimate_type == "numeric" ~ as.character(.data$estimate_value)
+      )
+    )
 
   return(res)
 }

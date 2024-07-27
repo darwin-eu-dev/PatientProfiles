@@ -132,10 +132,10 @@ test_that("binaryVariable test", {
 })
 
 test_that("getFunction tests", {
-  expect_true(getFunctions("min") == "base::min(x, na.rm = TRUE)")
-  expect_true(getFunctions("max") == "base::max(x, na.rm = TRUE)")
-  expect_true(getFunctions("mean") == "base::mean(x, na.rm = TRUE)")
-  expect_true(getFunctions("sd") == "stats::sd(x, na.rm = TRUE)")
-  expect_true(getFunctions("q99") == "stats::quantile(x, 0.99, na.rm = TRUE)")
-  expect_true(getFunctions("q09") == "stats::quantile(x, 0.09, na.rm = TRUE)")
+  expect_true(estimatesFunc["min"] == "base::min(x, na.rm = TRUE)")
+  expect_true(estimatesFunc["max"] == "base::max(x, na.rm = TRUE)")
+  expect_true(estimatesFunc["mean"] == "base::mean(x, na.rm = TRUE)")
+  expect_true(estimatesFunc["sd"] == "stats::sd(x, na.rm = TRUE)")
+  expect_true(estimatesFunc["q99"] == "stats::quantile(x, 0.99, na.rm = TRUE)")
+  expect_true(estimatesFunc["q09"] == "stats::quantile(x, 0.09, na.rm = TRUE)")
 })
