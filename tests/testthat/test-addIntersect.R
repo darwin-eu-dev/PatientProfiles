@@ -1,5 +1,5 @@
-
 test_that("conceptIdColumn", {
+  skip_on_cran()
   expect_no_error(
     standardConceptIdColumn("condition_occurrence")
   )
@@ -34,6 +34,7 @@ test_that("conceptIdColumn", {
 })
 
 test_that("working examples", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -222,6 +223,7 @@ test_that("working examples", {
 })
 
 test_that("working examples with cohort_end_date", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -272,6 +274,7 @@ test_that("working examples with cohort_end_date", {
 })
 
 test_that("working examples with extra column", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -392,6 +395,7 @@ test_that("working examples with extra column", {
 })
 
 test_that("working examples with multiple cohort Ids", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -495,6 +499,7 @@ test_that("working examples with multiple cohort Ids", {
 })
 
 test_that("working examples calculating as incidence target cohort", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1),
@@ -550,6 +555,7 @@ test_that("working examples calculating as incidence target cohort", {
 })
 
 test_that("working examples with more than one window", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -617,6 +623,7 @@ test_that("working examples with more than one window", {
 })
 
 test_that("working examples with tables, not cohorts", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -765,6 +772,7 @@ test_that("working examples with tables, not cohorts", {
 })
 
 test_that("check input length and type for each of the arguments", {
+  skip_on_cran()
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
@@ -845,6 +853,7 @@ test_that("check input length and type for each of the arguments", {
 })
 
 test_that("test checkWindow function", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_error(cdm$cohort1 %>%
@@ -858,6 +867,7 @@ test_that("test checkWindow function", {
 })
 
 test_that("test if column exist, overwrite", {
+  skip_on_cran()
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 1, 1, 2, 2),
@@ -927,6 +937,7 @@ test_that("test if column exist, overwrite", {
 })
 
 test_that("overlapTable is empty, check return columns", {
+  skip_on_cran()
   # functionality
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -1013,6 +1024,7 @@ test_that("overlapTable is empty, check return columns", {
 })
 
 test_that("overlap is empty or not, multiple ids, check return columns", {
+  skip_on_cran()
   # functionality
   cohort2 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 3),
@@ -1193,6 +1205,7 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
 })
 
 test_that("non snake columns not repeated in output", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   attr(cdm$cohort1, "cohort_set") <- attr(cdm$cohort1, "cohort_set") %>% dplyr::mutate(cohort_name = toupper(cohort_name))
   cdm$cohort2 <- cdm$cohort2 %>%
@@ -1203,6 +1216,7 @@ test_that("non snake columns not repeated in output", {
 })
 
 test_that("no NA when overwrite column", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),

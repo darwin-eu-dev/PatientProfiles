@@ -223,8 +223,9 @@ test_that("multiple observation periods", {
   expect_true(all(
     cdm$cohort1a %>%
       dplyr::pull(prior_observation) == as.numeric(difftime(
-        as.Date("2012-02-01"), as.Date("2010-01-01"), units = "days"
-      ))
+      as.Date("2012-02-01"), as.Date("2010-01-01"),
+      units = "days"
+    ))
   ))
 
   mockDisconnect(cdm = cdm)

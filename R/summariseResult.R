@@ -75,8 +75,8 @@ summariseResult <- function(table,
 
   # create the summary for overall
   if (table %>%
-      dplyr::count() %>%
-      dplyr::pull() == 0) {
+    dplyr::count() %>%
+    dplyr::pull() == 0) {
     if (counts) {
       result <- dplyr::tibble(
         "group_name" = "overall", "group_level" = "overall",
@@ -329,7 +329,9 @@ summariseNumeric <- function(table, functions) {
         !grepl("count|percentage", .data$estimate_name)
     )
 
-  if (nrow(funs) == 0) return(NULL)
+  if (nrow(funs) == 0) {
+    return(NULL)
+  }
 
   funs <- funs |>
     dplyr::mutate(fun = estimatesFunc[.data$estimate_name]) |>
@@ -455,7 +457,8 @@ summariseBinary <- function(table, functions) {
       dplyr::mutate(
         "estimate_value" = dplyr::if_else(
           is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
-          NA_character_, as.character(.data$estimate_value)),
+          NA_character_, as.character(.data$estimate_value)
+        ),
         "variable_level" = NA_character_
       )
   } else {
@@ -552,7 +555,8 @@ summariseMissings <- function(table, functions) {
         "variable_level" = NA_character_,
         "estimate_value" = dplyr::if_else(
           is.infinite(.data$estimate_value) | is.nan(.data$estimate_value),
-          NA_character_, as.character(.data$estimate_value))
+          NA_character_, as.character(.data$estimate_value)
+        )
       ) |>
       dplyr::inner_join(
         functions |>

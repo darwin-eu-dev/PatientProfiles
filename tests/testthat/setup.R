@@ -21,13 +21,13 @@ connection <- function(dbToTest = Sys.getenv("DB_TO_TEST", "duckdb")) {
     "duckdb" = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
     "sql server" = DBI::dbConnect(
       odbc::odbc(),
-      Driver   = "ODBC Driver 18 for SQL Server",
-      Server   = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
+      Driver = "ODBC Driver 18 for SQL Server",
+      Server = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
       Database = Sys.getenv("CDM5_SQL_SERVER_CDM_DATABASE"),
-      UID      = Sys.getenv("CDM5_SQL_SERVER_USER"),
-      PWD      = Sys.getenv("CDM5_SQL_SERVER_PASSWORD"),
+      UID = Sys.getenv("CDM5_SQL_SERVER_USER"),
+      PWD = Sys.getenv("CDM5_SQL_SERVER_PASSWORD"),
       TrustServerCertificate = "yes",
-      Port     = 1433
+      Port = 1433
     ),
     "redshift" = DBI::dbConnect(
       RPostgres::Redshift(),

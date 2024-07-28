@@ -138,7 +138,6 @@ addDeath <- function(x,
                      window,
                      deathName,
                      name) {
-
   # input validation
   cdm <- omopgenerics::cdmReference(x)
   checkCdm(cdm, tables = "death")

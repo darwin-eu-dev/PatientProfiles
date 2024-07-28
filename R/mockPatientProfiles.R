@@ -254,7 +254,8 @@ mockPatientProfiles <- function(con = NULL,
       dplyr::union_all(
         tables$drug_exposure |>
           dplyr::select(
-            "person_id", "visit_start_date" = "drug_exposure_start_date"
+            "person_id",
+            "visit_start_date" = "drug_exposure_start_date"
           )
       ) |>
       dplyr::mutate(
@@ -322,6 +323,7 @@ mockPatientProfiles <- function(con = NULL,
     cohort_tables = names(tables)[
       !names(tables) %in% omopgenerics::omopTables()
     ],
+    .soft_validation = TRUE,
     cdm_name = "PP_MOCK"
   )
 
@@ -349,8 +351,8 @@ addDate <- function(x, cols) {
         "diff" = as.integer(difftime(
           .data$observation_period_end_date,
           .data$observation_period_start_date
-         )),
-        "days" = sample.int(.data$diff + 1, 1) - 1 ,
+        )),
+        "days" = sample.int(.data$diff + 1, 1) - 1,
         !!col := .data$observation_period_start_date + .data$days,
         "observation_period_start_date" = .data[[col]]
       )

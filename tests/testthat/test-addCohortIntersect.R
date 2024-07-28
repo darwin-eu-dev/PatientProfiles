@@ -1,4 +1,3 @@
-
 test_that("output format - one outcome cohort", {
   # output format - one outcome cohort ----
   # additional column should be added
@@ -273,6 +272,7 @@ test_that("multiple cohort entries per person", {
 })
 
 test_that("output names", {
+  skip_on_cran()
   # additional column should be added
   # with the name as specified
 
@@ -348,6 +348,7 @@ test_that("output names", {
 })
 
 test_that("expected errors ", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   # missing outcome table
@@ -392,6 +393,7 @@ test_that("expected errors ", {
 })
 
 test_that("working examples", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -502,6 +504,7 @@ test_that("working examples", {
 })
 
 test_that("working examples", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -592,6 +595,7 @@ test_that("working examples", {
 })
 
 test_that("working examples", {
+  skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
@@ -651,6 +655,7 @@ test_that("working examples", {
 })
 
 test_that("censorDate functionality", {
+  skip_on_cran()
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1),
     subject_id = c(1, 2, 3, 4, 5),
@@ -724,6 +729,7 @@ test_that("censorDate functionality", {
 })
 
 test_that("casing of empty dates", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(), writeSchema = writeSchema(), numberIndividuals = 3,
     seed = 1
@@ -741,6 +747,7 @@ test_that("casing of empty dates", {
 })
 
 test_that("cohortIntersect after observation", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
@@ -826,6 +833,7 @@ test_that("cohortIntersect after observation", {
 })
 
 test_that("issue 612", {
+  skip_on_cran()
   cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 2, 3, 1, 2, 3, 1, 2),
     subject_id = c(1, 1, 1, 2, 3, 3, 4, 4),

@@ -47,10 +47,12 @@ library(dplyr)
 library(ggplot2)
 
 con <- DBI::dbConnect(duckdb::duckdb(),
-                       dbdir = CDMConnector::eunomia_dir())
+  dbdir = CDMConnector::eunomia_dir()
+)
 cdm <- CDMConnector::cdm_from_con(con,
-                                   cdm_schem = "main",
-                                   write_schema = "main")
+  cdm_schem = "main",
+  write_schema = "main"
+)
 
 cdm <- generateConceptCohortSet(
   cdm = cdm,
@@ -67,8 +69,10 @@ cdm$ankle_sprain
 Now let's say we're interested in summarising use of acetaminophen among our ankle sprain cohort. We can start by identifying the relevant concepts.
 
 ```{r}
-acetaminophen_cs <- getDrugIngredientCodes(cdm = cdm, 
-                        name = c("acetaminophen"))
+acetaminophen_cs <- getDrugIngredientCodes(
+  cdm = cdm,
+  name = c("acetaminophen")
+)
 
 acetaminophen_cs
 ```
@@ -79,9 +83,11 @@ First, we can add a binary flag variable indicating whether an individual had a 
 
 ```{r}
 cdm$ankle_sprain %>%
-  addConceptIntersectFlag(conceptSet = acetaminophen_cs, 
-                          indexDate = "cohort_start_date", 
-                          window = c(0, 30)) %>% 
+  addConceptIntersectFlag(
+    conceptSet = acetaminophen_cs,
+    indexDate = "cohort_start_date",
+    window = c(0, 30)
+  ) %>%
   dplyr::glimpse()
 ```
 
@@ -89,9 +95,11 @@ Second, we can count the number of records of acetaminophen in this same window 
 
 ```{r}
 cdm$ankle_sprain %>%
-  addConceptIntersectCount(conceptSet = acetaminophen_cs, 
-                          indexDate = "cohort_start_date", 
-                          window = c(0, 30)) %>% 
+  addConceptIntersectCount(
+    conceptSet = acetaminophen_cs,
+    indexDate = "cohort_start_date",
+    window = c(0, 30)
+  ) %>%
   dplyr::glimpse()
 ```
 
@@ -99,10 +107,12 @@ Third, we could identify the first start date of acetaminophen in this window.
 
 ```{r}
 cdm$ankle_sprain %>%
-  addConceptIntersectDate(conceptSet = acetaminophen_cs, 
-                          indexDate = "cohort_start_date", 
-                          window = c(0, 30), 
-                          order = "first") %>% 
+  addConceptIntersectDate(
+    conceptSet = acetaminophen_cs,
+    indexDate = "cohort_start_date",
+    window = c(0, 30),
+    order = "first"
+  ) %>%
   dplyr::glimpse()
 ```
 
@@ -110,10 +120,12 @@ Or fourth, we can get the number of days to the start date of acetaminophen in t
 
 ```{r}
 cdm$ankle_sprain %>%
-  addConceptIntersectDays(conceptSet = acetaminophen_cs, 
-                          indexDate = "cohort_start_date", 
-                          window = c(0, 30), 
-                          order = "first") %>% 
+  addConceptIntersectDays(
+    conceptSet = acetaminophen_cs,
+    indexDate = "cohort_start_date",
+    window = c(0, 30),
+    order = "first"
+  ) %>%
   dplyr::glimpse()
 ```
 
@@ -123,31 +135,43 @@ We can add more than one variable at a time when using these functions. For exam
 
 ```{r}
 cdm$ankle_sprain %>%
-  addConceptIntersectFlag(conceptSet = acetaminophen_cs, 
-                          indexDate = "cohort_start_date", 
-                          window = list(c(-Inf, -1),
-                                        c(0, 0),
-                                        c(1, Inf))) %>% 
+  addConceptIntersectFlag(
+    conceptSet = acetaminophen_cs,
+    indexDate = "cohort_start_date",
+    window = list(
+      c(-Inf, -1),
+      c(0, 0),
+      c(1, Inf)
+    )
+  ) %>%
   dplyr::glimpse()
 ```
 
 Or we might want to get variables for multiple drug ingredients of interest.
 
 ```{r}
-meds_cs <- getDrugIngredientCodes(cdm = cdm, 
-                                  name = c("acetaminophen",
-                                           "amoxicillin",
-                                           "aspirin",
-                                           "heparin",
-                                           "morphine",
-                                           "oxycodone",
-                                           "warfarin"))
+meds_cs <- getDrugIngredientCodes(
+  cdm = cdm,
+  name = c(
+    "acetaminophen",
+    "amoxicillin",
+    "aspirin",
+    "heparin",
+    "morphine",
+    "oxycodone",
+    "warfarin"
+  )
+)
 
 cdm$ankle_sprain %>%
-  addConceptIntersectFlag(conceptSet = meds_cs, 
-                          indexDate = "cohort_start_date", 
-                          window = list(c(-Inf, -1),
-                                        c(0, 0))) %>% 
+  addConceptIntersectFlag(
+    conceptSet = meds_cs,
+    indexDate = "cohort_start_date",
+    window = list(
+      c(-Inf, -1),
+      c(0, 0)
+    )
+  ) %>%
   dplyr::glimpse()
 ```
 
@@ -158,8 +182,10 @@ In the previous vignette we saw that we can add an intersection variable using a
 When creating a cohort we combine overlapping records, as cohort entries cannot overlap. Thus when adding an intersection count, `addCohortIntersectCount()` will return a count of cohort entries in the window of interest while `addConceptIntersectCount()` will return a count of records withing the window. We can see the impact for acetaminophen for our example data below, where we have slightly more records than cohort entries.
 
 ```{r, fig.width=7}
-acetaminophen_cs <- getDrugIngredientCodes(cdm = cdm, 
-                                  name = c("acetaminophen"))
+acetaminophen_cs <- getDrugIngredientCodes(
+  cdm = cdm,
+  name = c("acetaminophen")
+)
 
 cdm <- generateConceptCohortSet(
   cdm = cdm,
@@ -170,28 +196,36 @@ cdm <- generateConceptCohortSet(
 )
 
 dplyr::bind_rows(
-cdm$ankle_sprain |> 
-  addCohortIntersectCount(targetCohortTable = "acetaminophen",
-                         window = c(-Inf, Inf)) |> 
-  dplyr::group_by(`161_acetaminophen_minf_to_inf`)  |> 
-  dplyr::tally() |> 
-  dplyr::collect() |> 
-  dplyr::arrange(desc(`161_acetaminophen_minf_to_inf`)) |> 
-  dplyr::mutate(type = "cohort"),
-cdm$ankle_sprain |> 
-  addConceptIntersectCount(conceptSet = acetaminophen_cs, 
-                         window = c(-Inf, Inf)) |> 
-  dplyr::group_by(`161_acetaminophen_minf_to_inf`) |> 
-  dplyr::tally() |> 
-  dplyr::collect() |> 
-  dplyr::arrange(desc(`161_acetaminophen_minf_to_inf`)) |> 
-  dplyr::mutate(type = "concept_set")) |> 
+  cdm$ankle_sprain |>
+    addCohortIntersectCount(
+      targetCohortTable = "acetaminophen",
+      window = c(-Inf, Inf)
+    ) |>
+    dplyr::group_by(`161_acetaminophen_minf_to_inf`) |>
+    dplyr::tally() |>
+    dplyr::collect() |>
+    dplyr::arrange(desc(`161_acetaminophen_minf_to_inf`)) |>
+    dplyr::mutate(type = "cohort"),
+  cdm$ankle_sprain |>
+    addConceptIntersectCount(
+      conceptSet = acetaminophen_cs,
+      window = c(-Inf, Inf)
+    ) |>
+    dplyr::group_by(`161_acetaminophen_minf_to_inf`) |>
+    dplyr::tally() |>
+    dplyr::collect() |>
+    dplyr::arrange(desc(`161_acetaminophen_minf_to_inf`)) |>
+    dplyr::mutate(type = "concept_set")
+) |>
   ggplot() +
-  geom_col(aes(`161_acetaminophen_minf_to_inf`, n, fill = type), 
-           position = "dodge") +
-  theme_bw()+
-  theme(legend.title = element_blank(), 
-        legend.position = "top")
+  geom_col(aes(`161_acetaminophen_minf_to_inf`, n, fill = type),
+    position = "dodge"
+  ) +
+  theme_bw() +
+  theme(
+    legend.title = element_blank(),
+    legend.position = "top"
+  )
 ```
 
 Additional differences between cohort and concept set intersections may also result from cohort table rules. For example, cohort tables will typically omit any records that occur outside an individual´s observation time (as defined in the observation period window). Such records, however, would not be excluded when adding a concept based intersection.

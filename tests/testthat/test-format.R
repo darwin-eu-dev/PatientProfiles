@@ -1,4 +1,5 @@
 test_that("test variableTypes", {
+  skip_on_cran()
   expect_no_error(x <- variableTypes(dplyr::tibble()))
   expect_identical(
     x,
@@ -85,6 +86,7 @@ test_that("test variableTypes", {
 })
 
 test_that("test functions", {
+  skip_on_cran()
   expect_true("tbl" %in% class(availableEstimates("numeric")))
   expect_true("tbl" %in% class(availableEstimates("date")))
   expect_true("tbl" %in% class(availableEstimates("categorical")))
@@ -95,6 +97,7 @@ test_that("test functions", {
 })
 
 test_that("test available functions", {
+  skip_on_cran()
   num_test <- availableEstimates("numeric")
   expect_true(all(
     c("sd", "median", "mean") %in% (
@@ -104,6 +107,7 @@ test_that("test available functions", {
 })
 
 test_that("binaryVariable test", {
+  skip_on_cran()
   expect_false(
     binaryVariable(c("A", "B", "C"))
   )
@@ -132,6 +136,7 @@ test_that("binaryVariable test", {
 })
 
 test_that("getFunction tests", {
+  skip_on_cran()
   expect_true(estimatesFunc["min"] == "base::min(x, na.rm = TRUE)")
   expect_true(estimatesFunc["max"] == "base::max(x, na.rm = TRUE)")
   expect_true(estimatesFunc["mean"] == "base::mean(x, na.rm = TRUE)")
