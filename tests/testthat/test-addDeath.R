@@ -101,6 +101,7 @@ test_that("addDeathDate", {
 })
 
 test_that("check alternative index date", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
@@ -145,6 +146,7 @@ test_that("check alternative index date", {
 })
 
 test_that("check window logic", {
+  skip_on_cran()
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 2, 1, 2, 1),
     subject_id = c(1, 1, 1, 1, 1),
@@ -242,6 +244,7 @@ test_that("check window logic", {
 })
 
 test_that("check with omop table", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(),
     writeSchema = writeSchema(),
@@ -284,6 +287,7 @@ test_that("check with omop table", {
 })
 
 test_that("check functionality in presence of multiple death records", {
+  skip_on_cran()
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 2, 1, 2, 1, 1),
     subject_id = c(1, 1, 1, 1, 1, 2),

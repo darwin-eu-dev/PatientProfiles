@@ -167,6 +167,7 @@ test_that("addInObservation, window", {
 })
 
 test_that("query gives same result as main function", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   # we should get the same results if compute was internal or not
   result_1 <- cdm$cohort1 %>%
