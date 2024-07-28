@@ -323,6 +323,7 @@ mockPatientProfiles <- function(con = NULL,
     cohort_tables = names(tables)[
       !names(tables) %in% omopgenerics::omopTables()
     ],
+    .soft_validation = TRUE,
     cdm_name = "PP_MOCK"
   )
 

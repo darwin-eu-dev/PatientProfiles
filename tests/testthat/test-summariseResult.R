@@ -202,6 +202,7 @@ test_that("table in db or local", {
 })
 
 test_that("with and with overall groups and strata", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(
     con = connection(), writeSchema = writeSchema(), numberIndividuals = 1000
   )
@@ -247,6 +248,7 @@ test_that("with and with overall groups and strata", {
 })
 
 test_that("obscure", {
+  skip_on_cran()
   x <- dplyr::tibble(
     s = c("g1", "g1", "g2", "g1&&g2", "g2", "g1&&g2"),
     v1 = c(1, 2, 3, 4, 6, 3),
@@ -303,6 +305,7 @@ test_that("obscure", {
 })
 
 test_that("test empty cohort", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   expect_no_error(
@@ -346,6 +349,7 @@ test_that("test empty cohort", {
 })
 
 test_that("test summary table naming", {
+  skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
 
   dat <-
@@ -366,6 +370,7 @@ test_that("test summary table naming", {
 })
 
 test_that("misisng counts", {
+  skip_on_cran()
   cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -440,6 +445,7 @@ test_that("misisng counts", {
 })
 
 test_that("data is ordered", {
+  skip_on_cran()
   cohort <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -525,6 +531,7 @@ test_that("data is ordered", {
 })
 
 test_that("NA when min, max and mean works", {
+  skip_on_cran()
   # case estimatrs > variables
   expect_no_warning(
     res1 <- dplyr::tibble(group = c("N", "N", "V", "C", "C", "D"), var = c(NA, NA, NA, 1, 1, 1) |> as.integer()) |>
