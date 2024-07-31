@@ -59,10 +59,10 @@
         <dd>Compute the age of the individuals at a certain date</dd>
       </dl><dl><dt>
 
-          <code><a href="addAgeQuery.html">addAgeQuery()</a></code>
+          <code><a href="addSex.html">addSex()</a></code>
 
         </dt>
-        <dd>Query to add the age of the individuals at a certain date</dd>
+        <dd>Compute the sex of the individuals</dd>
       </dl><dl><dt>
 
           <code><a href="addDateOfBirth.html">addDateOfBirth()</a></code>
@@ -71,10 +71,10 @@
         <dd>Add a column with the individual birth date</dd>
       </dl><dl><dt>
 
-          <code><a href="addDateOfBirthQuery.html">addDateOfBirthQuery()</a></code>
+          <code><a href="addPriorObservation.html">addPriorObservation()</a></code>
 
         </dt>
-        <dd>Query to add a column with the individual birth date</dd>
+        <dd>Compute the number of days of prior observation in the current observation period at a certain date</dd>
       </dl><dl><dt>
 
           <code><a href="addFutureObservation.html">addFutureObservation()</a></code>
@@ -83,46 +83,10 @@
         <dd>Compute the number of days till the end of the observation period at a certain date</dd>
       </dl><dl><dt>
 
-          <code><a href="addFutureObservationQuery.html">addFutureObservationQuery()</a></code>
-
-        </dt>
-        <dd>Query to add the number of days till the end of the observation period at a certain date</dd>
-      </dl><dl><dt>
-
           <code><a href="addInObservation.html">addInObservation()</a></code>
 
         </dt>
         <dd>Indicate if a certain record is within the observation period</dd>
-      </dl><dl><dt>
-
-          <code><a href="addInObservationQuery.html">addInObservationQuery()</a></code>
-
-        </dt>
-        <dd>Query to add a new column to indicate if a certain record is within the observation period</dd>
-      </dl><dl><dt>
-
-          <code><a href="addPriorObservation.html">addPriorObservation()</a></code>
-
-        </dt>
-        <dd>Compute the number of days of prior observation in the current observation period at a certain date</dd>
-      </dl><dl><dt>
-
-          <code><a href="addPriorObservationQuery.html">addPriorObservationQuery()</a></code>
-
-        </dt>
-        <dd>Query to add the number of days of prior observation in the current observation period at a certain date</dd>
-      </dl><dl><dt>
-
-          <code><a href="addSex.html">addSex()</a></code>
-
-        </dt>
-        <dd>Compute the sex of the individuals</dd>
-      </dl><dl><dt>
-
-          <code><a href="addSexQuery.html">addSexQuery()</a></code>
-
-        </dt>
-        <dd>Query to add the sex of the individuals</dd>
       </dl></div><div class="section level2">
 
       <h3 id="add-multiple-individual-patient-characteristics">Add multiple individual patient characteristics<a class="anchor" aria-label="anchor" href="#add-multiple-individual-patient-characteristics"></a></h3>
@@ -140,12 +104,6 @@
 
         </dt>
         <dd>Compute demographic characteristics at a certain date</dd>
-      </dl><dl><dt>
-
-          <code><a href="addDemographicsQuery.html">addDemographicsQuery()</a></code>
-
-        </dt>
-        <dd>Query to add demographic characteristics at a certain date</dd>
       </dl></div><div class="section level2">
 
       <h3 id="add-death-information">Add death information<a class="anchor" aria-label="anchor" href="#add-death-information"></a></h3>
@@ -409,10 +367,10 @@
 
       <dl><dt>
 
-          <code><a href="addCategories.html">addCategories()</a></code>
+          <code><a href="addCohortName.html">addCohortName()</a></code>
 
         </dt>
-        <dd>Categorize a numeric variable</dd>
+        <dd>Add cohort name for each cohort_definition_id</dd>
       </dl><dl><dt>
 
           <code><a href="addCdmName.html">addCdmName()</a></code>
@@ -421,16 +379,28 @@
         <dd>Add cdm name</dd>
       </dl><dl><dt>
 
-          <code><a href="addCohortName.html">addCohortName()</a></code>
+          <code><a href="addCategories.html">addCategories()</a></code>
 
         </dt>
-        <dd>Add cohort name for each cohort_definition_id</dd>
+        <dd>Categorize a numeric variable</dd>
+      </dl><dl><dt>
+
+          <code><a href="variableTypes.html">variableTypes()</a></code>
+
+        </dt>
+        <dd>Classify the variables between 5 types: "numeric", "categorical", "binary", "date", or NA.</dd>
       </dl><dl><dt>
 
           <code><a href="availableEstimates.html">availableEstimates()</a></code>
 
         </dt>
         <dd>Show the available estimates that can be used for the different variable_type supported.</dd>
+      </dl><dl><dt>
+
+          <code><a href="startDateColumn.html">startDateColumn()</a></code>
+
+        </dt>
+        <dd>Get the name of the start date column for a certain table in the cdm</dd>
       </dl><dl><dt>
 
           <code><a href="endDateColumn.html">endDateColumn()</a></code>
@@ -449,18 +419,6 @@
 
         </dt>
         <dd>Get the name of the standard concept_id column for a certain table in the cdm</dd>
-      </dl><dl><dt>
-
-          <code><a href="startDateColumn.html">startDateColumn()</a></code>
-
-        </dt>
-        <dd>Get the name of the start date column for a certain table in the cdm</dd>
-      </dl><dl><dt>
-
-          <code><a href="variableTypes.html">variableTypes()</a></code>
-
-        </dt>
-        <dd>Classify the variables between 5 types: "numeric", "categorical", "binary", "date", or NA.</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
