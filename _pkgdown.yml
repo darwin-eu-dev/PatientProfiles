@@ -16,27 +16,34 @@ reference:
 - subtitle: Add individual patient characteristics
   desc: Add patient characteristics to a table in the OMOP Common Data Model
 - contents:
-  - matches("addAge|addSex|addPriorObservation|addFutureObservation|addInObservation|addDateOfBirth")
+  - addAge
+  - addSex
+  - addDateOfBirth
+  - addPriorObservation
+  - addFutureObservation
+  - addInObservation
 - subtitle: Add multiple individual patient characteristics
   desc: Add a set of patient characteristics to a table in the OMOP Common Data Model
 - contents:
-  - matches("addDemographics")
+  - addDemographics
 - subtitle: Add death information
   desc: Add patient death information to a table in the OMOP Common Data Model
 - contents:
-  - matches("addDeathDate|addDeathDays|addDeathFlag")
+  - addDeathDate
+  - addDeathDays
+  - addDeathFlag
 - subtitle: Add a value from a cohort intersection
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a cohort table.
 - contents:
-  - matches("addCohortIntersectFlag|addCohortIntersectCount|addCohortIntersectDays|addCohortIntersectDate")
+  - matches("addCohortIntersect*")
 - subtitle: Add a value from a concept intersection
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a concept.
 - contents:
-  - matches("addConceptIntersectFlag|addConceptIntersectCount|addConceptIntersectDays|addConceptIntersectDate")
+  - matches("addConceptIntersect*")
 - subtitle: Add a value from an omop standard table intersection
   desc: Add a variable indicating the intersection between a table in the OMOP Common Data Model and a standard omop table.
 - contents:
-  - matches("addTableIntersectFlag|addTableIntersectCount|addTableIntersectDays|addTableIntersectDate|addTableIntersectField")
+  - matches("addTableIntersect*")
 - subtitle: Query functions
   desc: These functions add the same information than their analogous add* function but, the result is not computed into a table.
 - contents:
@@ -56,5 +63,12 @@ reference:
 - subtitle: Other functions
   desc: Helper functions
 - contents:
-  - matches("addCohortName|addCdmName|addCategories|variableTypes|available|endDateColumn|sourceConceptIdColumn|standardConceptIdColumn|startDateColumn")
-
+  - addCohortName
+  - addCdmName
+  - addCategories
+  - variableTypes
+  - availableEstimates
+  - startDateColumn
+  - endDateColumn
+  - sourceConceptIdColumn
+  - standardConceptIdColumn
