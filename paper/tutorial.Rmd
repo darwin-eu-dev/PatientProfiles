@@ -1,0 +1,15 @@
+# Tutorial
+
+This tutorial is part of the following paper:
+
+## Create the mock data
+
+```{r}
+library(PatientProfiles)
+cdm <- mockPatientProfiles(numberIndividuals = 1000, seed = 1616)
+```
+
+
+## Demographics of `sinusitis` cohort
+
+## 
