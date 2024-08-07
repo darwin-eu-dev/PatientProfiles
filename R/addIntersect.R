@@ -308,7 +308,12 @@
         values_fill = 0
       ) %>%
       dplyr::rename(!!indexDate := "index_date") %>%
-      dplyr::rename_all(tolower)
+      dplyr::rename_all(tolower) |>
+      dplyr::compute(
+        name = omopgenerics::uniqueTableName(tablePrefix),
+        temporary = FALSE,
+        overwrite = TRUE
+      )
 
     newColCountFlag <- colnames(resultCountFlagPivot)
     newColCountFlag <- newColCountFlag[newColCountFlag %in% newCols$colnam]
@@ -317,7 +322,14 @@
       dplyr::left_join(
         resultCountFlagPivot,
         by = c(personVariable, indexDate)
-      ) %>%
+      ) |>
+      dplyr::compute(
+        name = omopgenerics::uniqueTableName(tablePrefix),
+        temporary = FALSE,
+        overwrite = TRUE
+      )
+
+    x <- x %>%
       dplyr::mutate(dplyr::across(
         dplyr::all_of(newColCountFlag), ~ dplyr::if_else(is.na(.x), 0, .x)
       )) |>
