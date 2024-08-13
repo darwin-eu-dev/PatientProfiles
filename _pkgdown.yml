@@ -66,6 +66,7 @@ reference:
   - addCohortName
   - addCdmName
   - addCategories
+  - addObservationPeriodId
   - variableTypes
   - availableEstimates
   - startDateColumn
