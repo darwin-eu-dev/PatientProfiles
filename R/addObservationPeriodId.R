@@ -21,6 +21,7 @@ addObservationPeriodId <- function(x,
                              indexDate = "cohort_start_date",
                              name = NULL) {
 
+  x <- validateX(x)
   name <- validateName(name)
   cdm <- omopgenerics::cdmReference(x)
   xName <- omopgenerics::tableName(x)
@@ -31,12 +32,6 @@ addObservationPeriodId <- function(x,
   indexDate <- validateIndexDate(indexDate, null = FALSE, x = x)
   personVariable <- c("person_id", "subject_id")
   personVariable <- personVariable[personVariable %in% colnames(x)]
-  if(length(personVariable) == 0){
-    cli::cli_abort("Neither person_id or subject_id found in table")
-  }
-  if(length(personVariable) == 2){
-    cli::cli_abort("Both person_id or subject_id found in table")
-  }
 
   # drop variable if it already exists
   if("observation_period_id" %in% colnames(x)){

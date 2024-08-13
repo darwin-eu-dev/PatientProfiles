@@ -78,11 +78,11 @@ expect_error(cdm$observation_period |>
   # must have either person or subject id
 expect_error(cdm$drug_exposure |>
   dplyr::select(!"person_id") |>
-  addObservationPeriodId())
+  addObservationPeriodId(indexDate = "drug_exposure_start_date"))
 
 expect_error(cdm$drug_exposure |>
                dplyr::mutate("subject_id" = 1L) |>
-               addObservationPeriodId())
+               addObservationPeriodId(indexDate = "drug_exposure_start_date"))
 
   # must have index date column
 expect_error(cdm$drug_exposure |>
