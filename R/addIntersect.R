@@ -39,7 +39,7 @@
   cdm <- omopgenerics::cdmReference(x)
   # initial checks
   personVariable <- checkX(x)
-  checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
+  omopgenerics::assertCharacter(tableName, length = 1, na = FALSE)
   assertCharacter(tableName)
   checkCdm(cdm, tableName)
   personVariableTable <- checkX(cdm[[tableName]])
@@ -49,7 +49,7 @@
   checkVariableInX(indexDate, x)
   checkVariableInX(targetStartDate, cdm[[tableName]], FALSE, "targetStartDate")
   checkVariableInX(targetEndDate, cdm[[tableName]], TRUE, "targetEndDate")
-  checkmate::assertChoice(order, c("first", "last"))
+  omopgenerics::assertChoice(order, choices = c("first", "last"))
   checkVariableInX(censorDate, x, TRUE, "censorDate")
 
   if (!is.null(censorDate)) {

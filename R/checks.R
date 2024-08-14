@@ -174,20 +174,20 @@ getWindowNames <- function(window) {
 #' @noRd
 checkFilter <- function(filterVariable, filterId, idName, x) {
   if (is.null(filterVariable)) {
-    checkmate::testNull(filterId)
-    checkmate::testNull(idName)
+    filterId <- NULL
+    idName <- NULL
     filterTbl <- NULL
   } else {
     checkVariableInX(filterVariable, x, FALSE, "filterVariable")
-    checkmate::assertNumeric(filterId, any.missing = FALSE)
-    checkmate::assertNumeric(utils::head(x, 1) %>% dplyr::pull(dplyr::all_of(filterVariable)))
+    omopgenerics::assertNumeric(filterId, na = FALSE)
+    omopgenerics::assertNumeric(utils::head(x, 1) %>%
+                               dplyr::pull(dplyr::all_of(filterVariable)))
     if (is.null(idName)) {
       idName <- paste0("id", filterId)
     } else {
-      checkmate::assertCharacter(
-        idName,
-        any.missing = FALSE, len = length(filterId)
-      )
+      omopgenerics::assertCharacter(idName,
+                                    na = FALSE,
+                                    length = length(filterId))
     }
     filterTbl <- dplyr::tibble(
       id = filterId,
@@ -199,10 +199,10 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
 
 #' @noRd
 checkValue <- function(value, x, name) {
-  checkmate::assertCharacter(value, any.missing = FALSE, min.len = 1)
-  checkmate::assertTRUE(
-    all(value %in% c("flag", "count", "date", "days", colnames(x)))
-  )
+  omopgenerics::assertCharacter(value, na = FALSE)
+  omopgenerics::assertTrue(all(value %in%
+                                 c("flag", "count", "date", "days",
+                                   colnames(x))))
   valueOptions <- c("flag", "count", "date", "days")
   valueOptions <- valueOptions[valueOptions %in% colnames(x)]
   if (length(valueOptions) > 0) {
@@ -449,9 +449,10 @@ assertNameStyle <- function(nameStyle,
                             values = list(),
                             call = parent.frame()) {
   # initial checks
-  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
-  checkmate::assertList(values, names = "named")
-  checkmate::assertClass(call, "environment")
+  omopgenerics::assertCharacter(nameStyle, length = 1,
+                                na = FALSE, minNumCharacter = 1, call = call)
+  omopgenerics::assertList(values, named = TRUE)
+  omopgenerics::assertClass(call, class = "environment")
 
   # check name style
   err <- character()
