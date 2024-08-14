@@ -99,9 +99,6 @@ test_that("test checkCategory with length 1 ", {
   expect_true("count" %in% x$estimate_name[x$variable_name == "bin"])
   expect_false("count" %in% x$estimate_name[x$variable_name == "age"])
 
-
-  expect_error(assertList(list("ac"), class = "cdm"))
-
   expect_error(checkStrata(list(3)))
 
   expect_error(omopgenerics::assertChoice(2, c("asd", "sad")))

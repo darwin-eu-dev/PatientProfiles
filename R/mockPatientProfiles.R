@@ -60,7 +60,7 @@ mockPatientProfiles <- function(con = NULL,
 
   # Put ... into a list
   tables <- list(...)
-  assertList(tables, named = TRUE, class = "data.frame")
+  omopgenerics::assertList(tables, named = TRUE, class = "data.frame")
 
   # get persons
   if (length(tables) == 0) {

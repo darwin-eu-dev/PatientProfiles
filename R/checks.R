@@ -66,7 +66,7 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 
 #' @noRd
 checkAgeGroup <- function(ageGroup, overlap = FALSE) {
-  assertList(ageGroup, null = TRUE)
+  omopgenerics::assertList(ageGroup, null = TRUE)
   if (!is.null(ageGroup)) {
     if (is.numeric(ageGroup[[1]])) {
       ageGroup <- list("age_group" = ageGroup)
@@ -102,7 +102,7 @@ checkWindow <- function(window, call = parent.frame()) {
   originalWindow <- window
   # change inf to NA to check for floats, as Inf won't pass integerish check
   window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
-  assertList(window, class = "numeric", call = call)
+  omopgenerics::assertList(window, class = "numeric", call = call)
   omopgenerics::assertNumeric(window |> unlist(), integerish = TRUE, na = TRUE, call = call)
   window <- originalWindow
 
@@ -329,8 +329,8 @@ checkStrata <- function(list, table, type = "strata") {
 #' @noRd
 checkVariablesFunctions <- function(variables, estimates, table) {
   errorMessage <- "variables should be a unique named list that point to columns in table"
-  assertList(x = variables, class = "character")
-  assertList(x = estimates, class = "character")
+  omopgenerics::assertList(x = variables, class = "character")
+  omopgenerics::assertList(x = estimates, class = "character")
   if (length(variables) != length(estimates)) {
     cli::cli_abort("Variables and estimates must have the same length")
   }
@@ -624,7 +624,7 @@ validateName <- function(name, call = parent.frame()) {
 }
 
 checkCategory <- function(category, overlap = FALSE, type = "numeric", call = parent.frame()) {
-  assertList(category, class = type, call = call)
+  omopgenerics::assertList(category, class = type, call = call)
 
   if (is.null(names(category))) {
     names(category) <- rep("", length(category))
