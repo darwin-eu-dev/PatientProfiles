@@ -32,7 +32,7 @@
 #' }
 #'
 addCohortName <- function(cohort) {
-  assertClass(cohort, "cohort_table")
+  omopgenerics::assertClass(cohort, class = "cohort_table")
 
   if ("cohort_name" %in% colnames(cohort)) {
     cli::cli_inform(c("!" = "`cohort_name` will be overwrite"))

@@ -109,8 +109,8 @@ test_that("test checkCategory with length 1 ", {
 
   expect_error(assertNumeric(6, max = 5))
 
-  expect_no_error(assertClass(NULL, class = "cdm", null = T))
-  expect_error(assertClass(NULL, class = "cdm", null = F))
+  expect_no_error(omopgenerics::assertClass(NULL, class = "cdm", null = T))
+  expect_error(omopgenerics::assertClass(NULL, class = "cdm", null = F))
 
   expect_error(assertCharacter(NA_character_))
 

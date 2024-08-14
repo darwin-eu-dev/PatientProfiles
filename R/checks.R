@@ -411,32 +411,6 @@ checkCensorDate <- function(x, censorDate) {
   }
 }
 
-assertClass <- function(x,
-                        class,
-                        null = FALSE,
-                        call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""), " must have class: ",
-    paste0(class, collapse = ", "), "; but has class: ",
-    paste0(base::class(x), collapse = ", "), "."
-  )
-  if (is.null(x)) {
-    if (null) {
-      return(invisible(x))
-    } else {
-      cli::cli_abort(
-        "{paste0(substitute(x), collapse = '')} can not be NULL.",
-        call = call
-      )
-    }
-  }
-  if (!all(class %in% base::class(x))) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(x)
-}
-
 correctStrata <- function(strata, overall) {
   if (length(strata) == 0 | overall) {
     strata <- c(list(character()), strata)
@@ -755,31 +729,6 @@ assertNumeric <- function(x,
 
   return(invisible(x))
 }
-assertClass <- function(x,
-                        class,
-                        null = FALSE,
-                        call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""), " must have class: ",
-    paste0(class, collapse = ", "), "; but has class: ",
-    paste0(base::class(x), collapse = ", "), "."
-  )
-  if (is.null(x)) {
-    if (null) {
-      return(invisible(x))
-    } else {
-      cli::cli_abort(
-        "{paste0(substitute(x), collapse = '')} can not be NULL.",
-        call = call
-      )
-    }
-  }
-  if (!all(class %in% base::class(x))) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(x)
-}
 assertLength <- function(x, length, errorMessage, call) {
   if (!is.null(length) && base::length(x) != length) {
     cli::cli_abort(errorMessage, call = call)
@@ -839,7 +788,7 @@ errorNull <- function(null) {
 
 # checks demographics
 validateX <- function(x, call) {
-  assertClass(x, class = "cdm_table", call = call)
+  omopgenerics::assertClass(x, class = "cdm_table", call = call)
   cols <- colnames(x)
   n <- sum(c("person_id", "subject_id") %in% cols)
   if (n == 0) cli::cli_abort("No person indentifier (person_id/subject_id) found in x.", call = call)
