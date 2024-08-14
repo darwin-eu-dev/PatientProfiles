@@ -3,10 +3,9 @@
 #' @param x Table with individuals in the cdm.
 #' @param indexDate Variable in x that contains the date to compute the
 #' observation flag.
-#' @param window window to consider events of.
 #' @param name Name of the new table, if NULL a temporary table is returned.
 #'
-#' @return cohort table with the added binary column assessing inObservation.
+#' @return Table with the current observation period id added.
 #' @export
 #'
 #' @examples

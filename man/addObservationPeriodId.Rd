@@ -13,11 +13,9 @@ addObservationPeriodId(x, indexDate = "cohort_start_date", name = NULL)
 observation flag.}
 
 \item{name}{Name of the new table, if NULL a temporary table is returned.}
-
-\item{window}{window to consider events of.}
 }
 \value{
-cohort table with the added binary column assessing inObservation.
+Table with the current observation period id added.
 }
 \description{
 Add the ID associated with current observation period
