@@ -73,7 +73,7 @@ addCdmName <- function(table, cdm = omopgenerics::cdmReference(table)) {
 }
 
 newTable <- function(name, call = parent.frame()) {
-  assertCharacter(name, length = 1, null = TRUE, na = TRUE, call = call)
+  omopgenerics::assertCharacter(name, length = 1, null = TRUE, na = TRUE, call = call)
   if (is.null(name) || is.na(name)) {
     x <- list(name = omopgenerics::uniqueTableName(), temporary = TRUE)
   } else {

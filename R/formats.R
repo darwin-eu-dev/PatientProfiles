@@ -99,8 +99,8 @@ availableEstimates <- function(variableType = NULL, fullQuantiles = FALSE) {
   if (is.null(variableType)) {
     variableType <- opts
   }
-  assertChoice(variableType, choices = opts, null = TRUE)
-  assertChoice(fullQuantiles, c(TRUE, FALSE))
+  omopgenerics::assertChoice(variableType, choices = opts, null = TRUE)
+  omopgenerics::assertChoice(fullQuantiles, c(TRUE, FALSE))
 
   if (fullQuantiles) {
     x <- formats |>

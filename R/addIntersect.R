@@ -40,7 +40,7 @@
   # initial checks
   personVariable <- checkX(x)
   omopgenerics::assertCharacter(tableName, length = 1, na = FALSE)
-  assertCharacter(tableName)
+  omopgenerics::assertCharacter(tableName)
   checkCdm(cdm, tableName)
   personVariableTable <- checkX(cdm[[tableName]])
   extraValue <- checkValue(value, cdm[[tableName]], tableName)
