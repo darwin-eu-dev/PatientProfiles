@@ -11,7 +11,7 @@ test_that("addConceptIntersect", {
 
   # create a cohort
   cdm <- CDMConnector::generateConceptCohortSet(
-    cdm = cdm, conceptSet = list("sinusitis" = c(4294548, 40481087, 257012)),
+    cdm = cdm, conceptSet = list("sinusitis" = c(4294548L, 40481087L, 257012L)),
     name = "my_cohort"
   )
 
@@ -111,7 +111,7 @@ test_that("unsupported domain name", {
 
   expect_no_warning(result <- cdm$cohort1 %>%
     addConceptIntersectFlag(
-      conceptSet = list("random" = 1125315)
+      conceptSet = list("random" = 1125315L)
     ) %>%
     dplyr::collect())
 
@@ -142,7 +142,7 @@ test_that("NA domain name", {
 
   expect_no_warning(result <- cdm$cohort1 %>%
     addConceptIntersectFlag(
-      conceptSet = list("random2" = 1125315)
+      conceptSet = list("random2" = 1125315L)
     ) %>%
     dplyr::collect())
 
@@ -158,7 +158,7 @@ test_that("domain name not in cdm", {
   skip_on_cran()
   cdm <- mockPatientProfiles(con = connection(), writeSchema = writeSchema())
   concept <- dplyr::tibble(
-    concept_id = c(1125315),
+    concept_id = c(1125315L),
     domain_id = "device",
     concept_class_id = NA_character_,
     vocabulary_id = NA_character_,
@@ -172,7 +172,7 @@ test_that("domain name not in cdm", {
 
   expect_no_warning(result <- cdm$cohort1 %>%
     addConceptIntersectFlag(
-      conceptSet = list("random3" = 1125315)
+      conceptSet = list("random3" = 1125315L)
     ) %>%
     dplyr::collect())
 

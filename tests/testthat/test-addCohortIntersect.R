@@ -73,14 +73,14 @@ test_that("first vs last event - cohort table", {
   # first or last outcome record
 
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = 1,
+    cohort_definition_id = 1L,
     subject_id = c(1L, 2L),
     cohort_start_date = c(as.Date("2010-03-01"), as.Date("2011-02-01")),
     cohort_end_date = c(as.Date("2015-01-01"), as.Date("2013-01-01"))
   )
 
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = 1,
+    cohort_definition_id = 1L,
     subject_id = c(1L, 1L, 1L, 2L),
     cohort_start_date = c(
       as.Date("2010-03-03"), as.Date("2010-03-15"), as.Date("2010-03-25"),
@@ -184,7 +184,7 @@ test_that("multiple cohort entries per person", {
   # each record should be treated independently
 
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = 1,
+    cohort_definition_id = 1L,
     subject_id = c(1L, 1L, 2L),
     cohort_start_date = c(
       as.Date("2010-03-01"), as.Date("2012-03-01"), as.Date("2011-02-01")
@@ -195,7 +195,7 @@ test_that("multiple cohort entries per person", {
   )
 
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = 1,
+    cohort_definition_id = 1L,
     subject_id = c(1L, 1L, 1L, 2L),
     cohort_start_date = c(
       as.Date("2010-03-03"), as.Date("2010-03-15"), as.Date("2012-03-25"),
@@ -396,8 +396,8 @@ test_that("working examples", {
   skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1),
-    subject_id = c(1, 1, 1, 2, 2),
+    cohort_definition_id = as.integer(c(1, 1, 1, 1, 1)),
+    subject_id = as.integer(c(1, 1, 1, 2, 2)),
     cohort_start_date = as.Date(
       c(
         "2020-01-01",
@@ -419,8 +419,8 @@ test_that("working examples", {
   )
 
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
-    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_definition_id = as.integer(c(1, 1, 2, 2, 3, 3, 3)),
+    subject_id = as.integer(c(1, 1, 1, 2, 2, 2, 1)),
     cohort_start_date = as.Date(
       c(
         "2020-01-15",
@@ -486,7 +486,7 @@ test_that("working examples", {
   expect_true(all(result1$cohort_3_minf_to_0 == c(0, 0, 0, 0, 1)))
 
   attr(cdm$cohort2, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2, 3),
+    cohort_definition_id = as.integer(c(1, 2, 3)),
     cohort_name = c("asthma", "covid", "tb")
   )
   result2 <- cdm$cohort1 %>%
@@ -507,8 +507,8 @@ test_that("working examples", {
   skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1),
-    subject_id = c(1, 1, 1, 2, 2),
+    cohort_definition_id = as.integer(c(1, 1, 1, 1, 1)),
+    subject_id = as.integer(c(1, 1, 1, 2, 2)),
     cohort_start_date = as.Date(
       c(
         "2020-01-01",
@@ -530,8 +530,8 @@ test_that("working examples", {
   )
 
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
-    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_definition_id = as.integer(c(1, 1, 2, 2, 3, 3, 3)),
+    subject_id = as.integer(c(1, 1, 1, 2, 2, 2, 1)),
     cohort_start_date = as.Date(
       c(
         "2020-01-15",
@@ -598,8 +598,8 @@ test_that("working examples", {
   skip_on_cran()
   # functionality
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1),
-    subject_id = c(1, 1, 1, 2, 2),
+    cohort_definition_id = as.integer(c(1, 1, 1, 1, 1)),
+    subject_id = as.integer(c(1, 1, 1, 2, 2)),
     cohort_start_date = as.Date(c(
       "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
     )),
@@ -609,8 +609,8 @@ test_that("working examples", {
   )
 
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
-    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_definition_id = as.integer(c(1, 1, 2, 2, 3, 3, 3)),
+    subject_id = as.integer(c(1, 1, 1, 2, 2, 2, 1)),
     cohort_start_date = as.Date(c(
       "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
       "2020-01-24", "2020-02-16"
@@ -657,8 +657,8 @@ test_that("working examples", {
 test_that("censorDate functionality", {
   skip_on_cran()
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1),
-    subject_id = c(1, 2, 3, 4, 5),
+    cohort_definition_id = as.integer(c(1, 1, 1, 1, 1)),
+    subject_id = as.integer(c(1, 2, 3, 4, 5)),
     cohort_start_date = as.Date(c(
       "2020-01-01", "2020-01-15", "2020-01-20", "2020-01-01", "2020-02-01"
     )),
@@ -668,8 +668,8 @@ test_that("censorDate functionality", {
   )
 
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1),
-    subject_id = c(1, 1, 2, 3, 4, 5, 5),
+    cohort_definition_id = as.integer(c(1, 1, 1, 1, 1, 1, 1)),
+    subject_id = as.integer(c(1, 1, 2, 3, 4, 5, 5)),
     cohort_start_date = as.Date(c(
       "2020-01-15", "2020-01-25", "2020-01-26", "2020-01-29", "2020-03-15",
       "2020-01-24", "2020-02-16"
@@ -835,8 +835,8 @@ test_that("cohortIntersect after observation", {
 test_that("issue 612", {
   skip_on_cran()
   cohort <- dplyr::tibble(
-    cohort_definition_id = c(1, 2, 3, 1, 2, 3, 1, 2),
-    subject_id = c(1, 1, 1, 2, 3, 3, 4, 4),
+    cohort_definition_id = as.integer(c(1, 2, 3, 1, 2, 3, 1, 2)),
+    subject_id = as.integer(c(1, 1, 1, 2, 3, 3, 4, 4)),
     cohort_start_date = as.Date(c(
       "2020-03-01", "2020-04-01", "2020-01-01", "2020-02-01", "2020-03-01",
       "2020-04-01", "2020-02-01", "2020-06-01"
@@ -847,20 +847,20 @@ test_that("issue 612", {
     ))
   )
   person <- dplyr::tibble(
-    person_id = c(1, 2, 3, 4),
-    gender_concept_id = c(8507, 8532, 8507, 8532),
-    year_of_birth = 2000,
-    month_of_birth = 1,
-    day_of_birth = 1,
-    race_concept_id = NA_character_,
-    ethnicity_concept_id = NA_character_
+    person_id = as.integer(c(1, 2, 3, 4)),
+    gender_concept_id = as.integer(c(8507, 8532, 8507, 8532)),
+    year_of_birth = 2000L,
+    month_of_birth = 1L,
+    day_of_birth = 1L,
+    race_concept_id = as.integer(NA),
+    ethnicity_concept_id = as.integer(NA)
   )
   observation_period <- dplyr::tibble(
-    observation_period_id = 1:4,
-    person_id = 1:4,
+    observation_period_id = as.integer(1:4),
+    person_id = as.integer(1:4),
     observation_period_start_date = as.Date("2010-01-01"),
     observation_period_end_date = as.Date("2020-12-31"),
-    period_type_concept_id = 32880
+    period_type_concept_id = 32880L
   )
   cdm <- mockPatientProfiles(
     con = connection(),

@@ -684,3 +684,4 @@ checkCategory <- function(category, overlap = FALSE, type = "numeric", call = pa
 
   invisible(result)
 }
+

@@ -374,7 +374,7 @@ addDate <- function(x, cols) {
 #'
 mockDisconnect <- function(cdm) {
   cdm <- omopgenerics::dropTable(cdm = cdm, name = dplyr::everything())
-  if ("db_cdm" %in% class(omopgenerics::cdmSource(cdm = cdm))) {
+  if ("db_cdm" %in% class(omopgenerics::cdmSource(cdm))) {
     con <- CDMConnector::cdmCon(cdm = cdm)
     DBI::dbDisconnect(conn = con, shutdown = TRUE)
   }

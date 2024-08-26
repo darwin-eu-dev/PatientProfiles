@@ -701,7 +701,7 @@ addInObservationQuery <- function(x,
   x <- validateX(x, call = call)
   indexDate <- validateIndexDate(indexDate, null = FALSE, x = x, call = call)
   if (!is.list(window)) window <- list(window)
-  window <- checkWindow(window, call = call)
+  window <- omopgenerics::validateWindowArgument(window, call = call)
   names(window) <- getWindowNames(window)
   assertNameStyle(nameStyle = nameStyle, values = list("window_name" = window), call = call)
   newColumns <- glue::glue(nameStyle, window_name = names(window))
