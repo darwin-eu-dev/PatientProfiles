@@ -83,8 +83,8 @@ mockPatientProfiles <- function(con = NULL,
   if (!"person" %in% names(tables)) {
     tables[["person"]] <- dplyr::tibble(
       "person_id" = persons,
-      "gender_concept_id" = sample(c(8532, 8507), n, TRUE),
-      "year_of_birth" = 1900L + sample.int(120, n, TRUE),
+      "gender_concept_id" = as.integer(sample(c(8532, 8507), n, TRUE)),
+      "year_of_birth" = 1900L + sample.int(80, n, TRUE),
       "race_concept_id" = 0L,
       "ethnicity_concept_id" = 0L
     )
@@ -136,7 +136,7 @@ mockPatientProfiles <- function(con = NULL,
           is.na(.data$observation_period_start_date),
           as.Date(
             x = paste0(
-              .data$year_of_birth + sample.int(120, n, TRUE), "-", sample(1:12, n, TRUE), "-",
+              .data$year_of_birth + sample.int(34, n, TRUE), "-", sample(1:12, n, TRUE), "-",
               sample(1:28, n, TRUE)
             ),
             format = "%Y-%m-%d"
@@ -145,7 +145,7 @@ mockPatientProfiles <- function(con = NULL,
         ),
         "observation_period_end_date" = dplyr::if_else(
           is.na(.data$observation_period_end_date),
-          .data$observation_period_start_date + sample.int(4e4, n, TRUE),
+          .data$observation_period_start_date + sample.int(1e4, n, TRUE),
           .data$observation_period_end_date
         ),
         "period_type_concept_id" = 0L,
@@ -282,7 +282,9 @@ mockPatientProfiles <- function(con = NULL,
       dplyr::ungroup() |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
-      dplyr::rename("subject_id" = "person_id")
+      dplyr::rename("subject_id" = "person_id") |>
+      dplyr::select("cohort_definition_id", "subject_id",
+                    "cohort_start_date", "cohort_end_date")
   }
 
   # create cohort2
@@ -301,7 +303,9 @@ mockPatientProfiles <- function(con = NULL,
       dplyr::ungroup() |>
       addDate(c("cohort_start_date", "cohort_end_date")) |>
       dplyr::mutate("cohort_definition_id" = sample.int(3, n, T)) |>
-      dplyr::rename("subject_id" = "person_id")
+      dplyr::rename("subject_id" = "person_id") |>
+      dplyr::select("cohort_definition_id", "subject_id",
+                    "cohort_start_date", "cohort_end_date")
   }
 
   # into database

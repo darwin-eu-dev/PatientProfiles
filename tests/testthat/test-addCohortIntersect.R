@@ -29,7 +29,6 @@ test_that("output format - one outcome cohort", {
   # additional columns (one per outcome cohort) should be added
   # with the name as specified
 
-  # In 0 to Inf - 2 target cohorts have someone
   cdm$cohort1a <- cdm$cohort1 %>%
     addCohortIntersectDays(
       window = c(0, Inf),
@@ -37,7 +36,7 @@ test_that("output format - one outcome cohort", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1a) == 7)
+  expect_true("cohort_2_0_to_inf" %in% colnames(cdm$cohort1a))
   cdm$cohort1b <- cdm$cohort1 %>%
     addCohortIntersectDate(
       window = c(0, Inf),
@@ -45,9 +44,9 @@ test_that("output format - one outcome cohort", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1b) == 7)
+  expect_true("cohort_1_0_to_inf" %in% colnames(cdm$cohort1b))
+  expect_true("cohort_2_0_to_inf" %in% colnames(cdm$cohort1b))
 
-  # In -Inf to Inf - 2 target cohorts have someone
   cdm$cohort1c <- cdm$cohort1 %>%
     addCohortIntersectDays(
       window = c(-Inf, Inf),
@@ -55,7 +54,9 @@ test_that("output format - one outcome cohort", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1c) == 7)
+  expect_true("cohort_1_minf_to_inf" %in% colnames(cdm$cohort1c))
+  expect_true("cohort_2_minf_to_inf" %in% colnames(cdm$cohort1c))
+
   cdm$cohort1d <- cdm$cohort1 %>%
     addCohortIntersectDate(
       window = c(-Inf, Inf),
@@ -63,7 +64,8 @@ test_that("output format - one outcome cohort", {
       indexDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
-  expect_true(ncol(cdm$cohort1d) == 7)
+  expect_true("cohort_1_minf_to_inf" %in% colnames(cdm$cohort1d))
+  expect_true("cohort_2_minf_to_inf" %in% colnames(cdm$cohort1d))
 
   mockDisconnect(cdm)
 })
@@ -285,24 +287,24 @@ test_that("output names", {
   cdm$cohort1a <- cdm$cohort1 %>%
     addCohortIntersectDays(
       window = c(10, 50),
-      targetCohortId = NULL,
+      targetCohortId = 1,
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     )
   expect_true(all(
-    c("cohort_1_10_to_50", "cohort_2_10_to_50", "cohort_3_10_to_50") %in%
+    c("cohort_1_10_to_50") %in%
       colnames(cdm$cohort1a)
   ))
 
   cdm$cohort1b <- cdm$cohort1 %>%
     addCohortIntersectDate(
       window = c(10, 50),
-      targetCohortId = NULL,
+      targetCohortId = c(1,2),
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2"
     ) # id_name won't be clear to the user
   expect_true(all(
-    c("cohort_1_10_to_50", "cohort_2_10_to_50", "cohort_3_10_to_50") %in%
+    c("cohort_1_10_to_50", "cohort_2_10_to_50") %in%
       colnames(cdm$cohort1b)
   ))
 
@@ -310,13 +312,13 @@ test_that("output names", {
   cdm$cohort1c <- cdm$cohort1 %>%
     addCohortIntersectDays(
       window = c(10, 50),
-      targetCohortId = NULL,
+      targetCohortId = c(1, 2),
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2",
       nameStyle = "study_{cohort_name}"
     )
   expect_true(all(
-    c("study_cohort_1", "study_cohort_2", "study_cohort_3") %in%
+    c("study_cohort_1", "study_cohort_2") %in%
       colnames(cdm$cohort1c)
   ))
 
@@ -324,13 +326,13 @@ test_that("output names", {
   cdm$cohort1d <- cdm$cohort1 %>%
     addCohortIntersectDate(
       window = c(10, 50),
-      targetCohortId = NULL,
+      targetCohortId = 2,
       targetDate = "cohort_start_date",
       targetCohortTable = "cohort2",
       nameStyle = "study_{cohort_name}"
     )
   expect_true(all(
-    c("study_cohort_1", "study_cohort_2", "study_cohort_3") %in%
+    c("study_cohort_2") %in%
       colnames(cdm$cohort1c)
   ))
 

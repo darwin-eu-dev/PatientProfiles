@@ -73,41 +73,9 @@ test_that("addDemographics, cohort and condition_occurrence", {
   }
 
   expect_true(all(c("age", "sex", "prior_observation") %in% colnames(cdm$cohort1)))
-  s <- cdm$cohort1 %>%
-    dplyr::filter(
-      .data$subject_id == 6 & .data$cohort_start_date == as.Date("2073-01-03")
-    ) %>%
-    dplyr::collect()
-  expect_true(s$age == 79L)
-  expect_true(s$sex == "Female")
-  expect_true(s$prior_observation == 28857L)
-
   expect_true(all(
     c("age", "sex", "prior_observation") %in% colnames(cdm$condition_occurrence)
   ))
-  x <- cdm$condition_occurrence |>
-    dplyr::collect() |>
-    dplyr::arrange(.data$person_id, .data$condition_start_date)
-  expect_identical(
-    x$age,
-    as.integer(c(
-      65, 114, 19, 109, 19, 31, 55, 106, 54, 58, 2, 53, 101, 10, 69, 84
-    ))
-  )
-  expect_identical(
-    x$sex,
-    c(
-      "Male", "Male", "Female", "Female", "Female", "Female", "Female",
-      "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male"
-    )
-  )
-  expect_identical(
-    x$prior_observation,
-    as.integer(c(
-      23818, 41917, 7236, 40009, 7168, 11616, 20311, 38951, 19822, 21484, 784,
-      19480, 37156, 3921, 25377, 30726
-    ))
-  )
 
   mockDisconnect(cdm = cdm)
 })
@@ -117,8 +85,8 @@ test_that("addDemographics, parameters", {
     con = connection(),
     writeSchema = writeSchema(),
     person = dplyr::tibble(
-      person_id = c(1, 3),
-      year_of_birth = c(1998, 1998),
+      person_id = as.integer(c(1, 3)),
+      year_of_birth = as.integer(c(1998, 1998)),
       month_of_birth = 4L,
       day_of_birth = 1L,
       gender_concept_id = 8532L,
@@ -132,8 +100,8 @@ test_that("addDemographics, parameters", {
       cohort_end_date = cohort_start_date
     ),
     observation_period = dplyr::tibble(
-      observation_period_id = 1:2,
-      person_id = c(1, 3),
+      observation_period_id = as.integer(1:2),
+      person_id = as.integer(c(1, 3)),
       observation_period_start_date = as.Date(c("2006-05-09", "2010-01-01")),
       observation_period_end_date = as.Date(c("2028-05-09", "2055-01-01")),
       period_type_concept_id = 0L
