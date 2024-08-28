@@ -57,7 +57,7 @@ checkCdm <- function(cdm, tables = NULL) {
 
 #' @noRd
 checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
-  assertCharacter(indexDate, length = 1, null = nullOk)
+  omopgenerics::assertCharacter(indexDate, length = 1, null = nullOk)
   if (!is.null(indexDate) && !(indexDate %in% colnames(x))) {
     cli::cli_abort(glue::glue("{name} ({indexDate}) should be a column in x"))
   }
@@ -66,7 +66,7 @@ checkVariableInX <- function(indexDate, x, nullOk = FALSE, name = "indexDate") {
 
 #' @noRd
 checkAgeGroup <- function(ageGroup, overlap = FALSE) {
-  assertList(ageGroup, null = TRUE)
+  omopgenerics::assertList(ageGroup, null = TRUE)
   if (!is.null(ageGroup)) {
     if (is.numeric(ageGroup[[1]])) {
       ageGroup <- list("age_group" = ageGroup)
@@ -102,8 +102,8 @@ checkWindow <- function(window, call = parent.frame()) {
   originalWindow <- window
   # change inf to NA to check for floats, as Inf won't pass integerish check
   window <- lapply(window, function(x) replace(x, is.infinite(x), NA))
-  assertList(window, class = "numeric", call = call)
-  assertNumeric(window |> unlist(), integerish = TRUE, na = TRUE, call = call)
+  omopgenerics::assertList(window, class = "numeric", call = call)
+  omopgenerics::assertNumeric(window |> unlist(), integerish = TRUE, na = TRUE, call = call)
   window <- originalWindow
 
   # if any element of window list has length over 2, throw error
@@ -174,20 +174,20 @@ getWindowNames <- function(window) {
 #' @noRd
 checkFilter <- function(filterVariable, filterId, idName, x) {
   if (is.null(filterVariable)) {
-    checkmate::testNull(filterId)
-    checkmate::testNull(idName)
+    filterId <- NULL
+    idName <- NULL
     filterTbl <- NULL
   } else {
     checkVariableInX(filterVariable, x, FALSE, "filterVariable")
-    checkmate::assertNumeric(filterId, any.missing = FALSE)
-    checkmate::assertNumeric(utils::head(x, 1) %>% dplyr::pull(dplyr::all_of(filterVariable)))
+    omopgenerics::assertNumeric(filterId, na = FALSE)
+    omopgenerics::assertNumeric(utils::head(x, 1) %>%
+                               dplyr::pull(dplyr::all_of(filterVariable)))
     if (is.null(idName)) {
       idName <- paste0("id", filterId)
     } else {
-      checkmate::assertCharacter(
-        idName,
-        any.missing = FALSE, len = length(filterId)
-      )
+      omopgenerics::assertCharacter(idName,
+                                    na = FALSE,
+                                    length = length(filterId))
     }
     filterTbl <- dplyr::tibble(
       id = filterId,
@@ -199,10 +199,10 @@ checkFilter <- function(filterVariable, filterId, idName, x) {
 
 #' @noRd
 checkValue <- function(value, x, name) {
-  checkmate::assertCharacter(value, any.missing = FALSE, min.len = 1)
-  checkmate::assertTRUE(
-    all(value %in% c("flag", "count", "date", "days", colnames(x)))
-  )
+  omopgenerics::assertCharacter(value, na = FALSE)
+  omopgenerics::assertTrue(all(value %in%
+                                 c("flag", "count", "date", "days",
+                                   colnames(x))))
   valueOptions <- c("flag", "count", "date", "days")
   valueOptions <- valueOptions[valueOptions %in% colnames(x)]
   if (length(valueOptions) > 0) {
@@ -254,7 +254,7 @@ checkCohortNames <- function(x, targetCohortId, name) {
 
 #' @noRd
 checkSnakeCase <- function(name, verbose = TRUE, null = FALSE, call = parent.frame()) {
-  assertCharacter(name, call = call, null = null)
+  omopgenerics::assertCharacter(name, call = call, null = null)
   if (is.null(name)) {
     return(invisible(name))
   }
@@ -329,8 +329,8 @@ checkStrata <- function(list, table, type = "strata") {
 #' @noRd
 checkVariablesFunctions <- function(variables, estimates, table) {
   errorMessage <- "variables should be a unique named list that point to columns in table"
-  assertList(x = variables, class = "character")
-  assertList(x = estimates, class = "character")
+  omopgenerics::assertList(x = variables, class = "character")
+  omopgenerics::assertList(x = estimates, class = "character")
   if (length(variables) != length(estimates)) {
     cli::cli_abort("Variables and estimates must have the same length")
   }
@@ -411,32 +411,6 @@ checkCensorDate <- function(x, censorDate) {
   }
 }
 
-assertClass <- function(x,
-                        class,
-                        null = FALSE,
-                        call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""), " must have class: ",
-    paste0(class, collapse = ", "), "; but has class: ",
-    paste0(base::class(x), collapse = ", "), "."
-  )
-  if (is.null(x)) {
-    if (null) {
-      return(invisible(x))
-    } else {
-      cli::cli_abort(
-        "{paste0(substitute(x), collapse = '')} can not be NULL.",
-        call = call
-      )
-    }
-  }
-  if (!all(class %in% base::class(x))) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(x)
-}
-
 correctStrata <- function(strata, overall) {
   if (length(strata) == 0 | overall) {
     strata <- c(list(character()), strata)
@@ -449,9 +423,10 @@ assertNameStyle <- function(nameStyle,
                             values = list(),
                             call = parent.frame()) {
   # initial checks
-  checkmate::assertCharacter(nameStyle, len = 1, any.missing = FALSE, min.chars = 1)
-  checkmate::assertList(values, names = "named")
-  checkmate::assertClass(call, "environment")
+  omopgenerics::assertCharacter(nameStyle, length = 1,
+                                na = FALSE, minNumCharacter = 1, call = call)
+  omopgenerics::assertList(values, named = TRUE)
+  omopgenerics::assertClass(call, class = "environment")
 
   # check name style
   err <- character()
@@ -496,349 +471,10 @@ warnOverwriteColumns <- function(x, nameStyle, values = list()) {
 
   return(x)
 }
-assertCharacter <- function(x,
-                            length = NULL,
-                            na = FALSE,
-                            null = FALSE,
-                            named = FALSE,
-                            minNumCharacter = 0,
-                            call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""),
-    " must be a character",
-    errorLength(length),
-    errorNa(na),
-    errorNull(null),
-    errorNamed(named),
-    ifelse(
-      minNumCharacter > 0,
-      paste("; at least", minNumCharacter, "per element"),
-      ""
-    ),
-    "."
-  )
-
-  # assert null
-  if (assertNull(x, null, errorMessage, call)) {
-    # assert class
-    if (!is.character(x)) {
-      cli::cli_abort(errorMessage, call = call)
-    }
-
-    # no NA vector
-    xNoNa <- x[!is.na(x)]
-
-    # assert length
-    assertLength(x, length, errorMessage, call)
-
-    # assert na
-    assertNa(x, na, errorMessage, call)
-
-    # assert named
-    assertNamed(x, named, errorMessage, call)
-
-    # minimum number of characters
-    if (any(nchar(xNoNa) < minNumCharacter)) {
-      cli::cli_abort(errorMessage, call = call)
-    }
-  }
-
-  return(invisible(x))
-}
-assertList <- function(x,
-                       length = NULL,
-                       na = FALSE,
-                       null = FALSE,
-                       named = FALSE,
-                       class = NULL,
-                       call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""),
-    " must be a list",
-    errorLength(length),
-    errorNa(na),
-    errorNull(null),
-    errorNamed(named),
-    ifelse(
-      !is.null(class),
-      paste("; elements must have class:", paste0(class, collapse = ", ")),
-      ""
-    ),
-    "."
-  )
-
-  # assert null
-  if (assertNull(x, null, errorMessage, call)) {
-    # assert class
-    if (!is.list(x)) {
-      cli::cli_abort(errorMessage, call = call)
-    }
-
-    # no NA vector
-    xNoNa <- x[!is.na(x)]
-
-    # assert length
-    assertLength(x, length, errorMessage, call)
-
-    # assert na
-    assertNa(x, na, errorMessage, call)
-
-    # assert named
-    assertNamed(x, named, errorMessage, call)
-
-    # assert class
-    if (!is.null(class)) {
-      flag <- lapply(xNoNa, function(y) {
-        any(class %in% base::class(y))
-      }) |>
-        unlist() |>
-        all()
-      if (flag != TRUE) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
-  }
-
-  return(invisible(x))
-}
-assertChoice <- function(x,
-                         choices,
-                         length = NULL,
-                         na = FALSE,
-                         null = FALSE,
-                         named = FALSE,
-                         call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""),
-    " must be a choice between: ",
-    paste0(choices, collapse = ", "),
-    errorLength(length),
-    errorNa(na),
-    errorNull(null),
-    errorNamed(named),
-    "."
-  )
-
-  # assert null
-  if (assertNull(x, null, errorMessage, call)) {
-    # assert class
-    if (!all(class(x) == class(choices))) {
-      cli::cli_abort(errorMessage, call = call)
-    }
-
-    # no NA vector
-    xNoNa <- x[!is.na(x)]
-
-    # assert length
-    assertLength(x, length, errorMessage, call)
-
-    # assert na
-    assertNa(x, na, errorMessage, call)
-
-    # assert named
-    assertNamed(x, named, errorMessage, call)
-
-    # assert choices
-    if (base::length(xNoNa) > 0) {
-      if (!all(xNoNa %in% choices)) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
-  }
-
-  return(invisible(x))
-}
-assertLogical <- function(x,
-                          length = NULL,
-                          na = FALSE,
-                          null = FALSE,
-                          named = FALSE,
-                          call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""),
-    " must be a logical",
-    errorLength(length),
-    errorNa(na),
-    errorNull(null),
-    errorNamed(named),
-    "."
-  )
-
-  # assert null
-  if (assertNull(x, null, errorMessage, call)) {
-    # assert class
-    if (!is.logical(x)) {
-      cli::cli_abort(errorMessage, call = call)
-    }
-
-    # assert length
-    assertLength(x, length, errorMessage, call)
-
-    # assert na
-    assertNa(x, na, errorMessage, call)
-
-    # assert named
-    assertNamed(x, named, errorMessage, call)
-  }
-
-  return(invisible(x))
-}
-assertNumeric <- function(x,
-                          integerish = FALSE,
-                          min = -Inf,
-                          max = Inf,
-                          length = NULL,
-                          na = FALSE,
-                          null = FALSE,
-                          named = FALSE,
-                          call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""),
-    " must be a numeric",
-    ifelse(integerish, "; it has to be integerish", ""),
-    ifelse(is.infinite(min), "", paste0("; greater than", min)),
-    ifelse(is.infinite(max), "", paste0("; smaller than", max)),
-    errorLength(length),
-    errorNa(na),
-    errorNull(null),
-    errorNamed(named),
-    "."
-  )
-
-  # assert null
-  if (assertNull(x, null, errorMessage, call)) {
-    # assert class
-    if (!is.numeric(x)) {
-      cli::cli_abort(errorMessage, call = call)
-    }
-
-    # no NA vector
-    xNoNa <- x[!is.na(x)]
-
-    # assert integerish
-    if (integerish & base::length(xNoNa) > 0) {
-      err <- max(abs(xNoNa - round(xNoNa)))
-      if (err > 0.0001) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
-
-    # assert lower bound
-    if (!is.infinite(min) & base::length(xNoNa) > 0) {
-      if (base::min(xNoNa) < min) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
-
-    # assert upper bound
-    if (!is.infinite(max) & base::length(xNoNa) > 0) {
-      if (base::max(xNoNa) > max) {
-        cli::cli_abort(errorMessage, call = call)
-      }
-    }
-
-    # assert length
-    assertLength(x, length, errorMessage, call)
-
-    # assert na
-    assertNa(x, na, errorMessage, call)
-
-    # assert named
-    assertNamed(x, named, errorMessage, call)
-  }
-
-  return(invisible(x))
-}
-assertClass <- function(x,
-                        class,
-                        null = FALSE,
-                        call = parent.frame()) {
-  # create error message
-  errorMessage <- paste0(
-    paste0(substitute(x), collapse = ""), " must have class: ",
-    paste0(class, collapse = ", "), "; but has class: ",
-    paste0(base::class(x), collapse = ", "), "."
-  )
-  if (is.null(x)) {
-    if (null) {
-      return(invisible(x))
-    } else {
-      cli::cli_abort(
-        "{paste0(substitute(x), collapse = '')} can not be NULL.",
-        call = call
-      )
-    }
-  }
-  if (!all(class %in% base::class(x))) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(x)
-}
-assertLength <- function(x, length, errorMessage, call) {
-  if (!is.null(length) && base::length(x) != length) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(x)
-}
-errorLength <- function(length) {
-  if (!is.null(length)) {
-    str <- paste0("; with length = ", length)
-  } else {
-    str <- ""
-  }
-  return(str)
-}
-assertNa <- function(x, na, errorMessage, call) {
-  if (!na && any(is.na(x))) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(x)
-}
-errorNa <- function(na) {
-  if (na) {
-    str <- ""
-  } else {
-    str <- "; it can not contain NA"
-  }
-  return(str)
-}
-assertNamed <- function(x, named, errorMessage, call) {
-  if (named && length(names(x)[names(x) != ""]) != length(x)) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  invisible(x)
-}
-errorNamed <- function(named) {
-  if (named) {
-    str <- "; it has to be named"
-  } else {
-    str <- ""
-  }
-  return(str)
-}
-assertNull <- function(x, null, errorMessage, call) {
-  if (!null && is.null(x)) {
-    cli::cli_abort(errorMessage, call = call)
-  }
-  return(!is.null(x))
-}
-errorNull <- function(null) {
-  if (null) {
-    str <- ""
-  } else {
-    str <- "; it can not be NULL"
-  }
-  return(str)
-}
 
 # checks demographics
 validateX <- function(x, call) {
-  assertClass(x, class = "cdm_table", call = call)
+  omopgenerics::assertClass(x, class = "cdm_table", call = call)
   cols <- colnames(x)
   n <- sum(c("person_id", "subject_id") %in% cols)
   if (n == 0) cli::cli_abort("No person indentifier (person_id/subject_id) found in x.", call = call)
@@ -859,7 +495,7 @@ validateIndexDate <- function(indexDate, null, x, call) {
   if (null) {
     return(NULL)
   }
-  assertCharacter(indexDate, length = 1, call = call)
+  omopgenerics::assertCharacter(indexDate, length = 1, call = call)
   if (!indexDate %in% colnames(x)) {
     cli::cli_abort("indexDate must be a column in x.", call = call)
   }
@@ -903,7 +539,7 @@ validateAgeMissingMonth <- function(ageMissingMonth, null, call) {
   if (is.character(ageMissingMonth)) {
     ageMissingMonth <- as.numeric(ageMissingMonth)
   }
-  assertNumeric(ageMissingMonth, integerish = TRUE, min = 1, max = 12, call = call)
+  omopgenerics::assertNumeric(ageMissingMonth, integerish = TRUE, min = 1, max = 12, call = call)
   ageMissingMonth <- as.integer(ageMissingMonth)
 
   return(ageMissingMonth)
@@ -916,7 +552,7 @@ validateAgeMissingDay <- function(ageMissingDay, null, call) {
   if (is.character(ageMissingDay)) {
     ageMissingDay <- as.numeric(ageMissingDay)
   }
-  assertNumeric(ageMissingDay, integerish = TRUE, min = 1, max = 12, call = call)
+  omopgenerics::assertNumeric(ageMissingDay, integerish = TRUE, min = 1, max = 12, call = call)
   ageMissingDay <- as.integer(ageMissingDay)
 
   return(ageMissingDay)
@@ -925,7 +561,7 @@ validateAgeGroup <- function(ageGroup, call) {
   if (length(ageGroup) == 0) {
     return(NULL)
   }
-  assertList(ageGroup, call = call)
+  omopgenerics::assertList(ageGroup, call = call)
   if (is.numeric(ageGroup[[1]])) {
     ageGroup <- list("age_group" = ageGroup)
   }
@@ -984,11 +620,11 @@ validateType <- function(x, null, call) {
   return(x)
 }
 validateName <- function(name, call = parent.frame()) {
-  assertCharacter(name, length = 1, null = TRUE, call = call)
+  omopgenerics::assertCharacter(name, length = 1, null = TRUE, call = call)
 }
 
 checkCategory <- function(category, overlap = FALSE, type = "numeric", call = parent.frame()) {
-  assertList(category, class = type, call = call)
+  omopgenerics::assertList(category, class = type, call = call)
 
   if (is.null(names(category))) {
     names(category) <- rep("", length(category))
@@ -1048,3 +684,4 @@ checkCategory <- function(category, overlap = FALSE, type = "numeric", call = pa
 
   invisible(result)
 }
+

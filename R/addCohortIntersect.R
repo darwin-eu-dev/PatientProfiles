@@ -57,9 +57,9 @@ addCohortIntersectFlag <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}",
                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
-  assertCharacter(targetCohortTable)
+  omopgenerics::assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
-  assertNumeric(targetCohortId, null = TRUE)
+  omopgenerics::assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
@@ -126,9 +126,9 @@ addCohortIntersectCount <- function(x,
                                     nameStyle = "{cohort_name}_{window_name}",
                                     name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
-  assertCharacter(targetCohortTable)
+  omopgenerics::assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
-  assertNumeric(targetCohortId, null = TRUE)
+  omopgenerics::assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
@@ -198,9 +198,9 @@ addCohortIntersectDays <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}",
                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
-  assertCharacter(targetCohortTable)
+  omopgenerics::assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
-  assertNumeric(targetCohortId, null = TRUE)
+  omopgenerics::assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 
@@ -271,9 +271,9 @@ addCohortIntersectDate <- function(x,
                                    nameStyle = "{cohort_name}_{window_name}",
                                    name = NULL) {
   cdm <- omopgenerics::cdmReference(x)
-  assertCharacter(targetCohortTable)
+  omopgenerics::assertCharacter(targetCohortTable)
   checkCdm(cdm, tables = targetCohortTable)
-  assertNumeric(targetCohortId, null = TRUE)
+  omopgenerics::assertNumeric(targetCohortId, null = TRUE)
   parameters <- checkCohortNames(cdm[[targetCohortTable]], targetCohortId, targetCohortTable)
   nameStyle <- gsub("\\{cohort_name\\}", "\\{id_name\\}", nameStyle)
 

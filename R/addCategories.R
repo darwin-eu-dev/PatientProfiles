@@ -51,8 +51,8 @@ addCategories <- function(x,
                           overlap = FALSE,
                           name = NULL) {
   comp <- newTable(name)
-  assertClass(x, "cdm_table")
-  assertCharacter(variable, length = 1)
+  omopgenerics::assertClass(x, class = "cdm_table")
+  omopgenerics::assertCharacter(variable, length = 1)
   if (!variable %in% colnames(x)) {
     cli::cli_abort("{variable} is not a column of x")
   }
@@ -62,8 +62,8 @@ addCategories <- function(x,
     !inherits(var, "Date")) {
     cli::cli_abort("{variable} must be a numeric or date variable")
   }
-  assertList(categories, class = "list")
-  assertCharacter(missingCategoryValue, length = 1, na = TRUE)
+  omopgenerics::assertList(categories, class = "list")
+  omopgenerics::assertCharacter(missingCategoryValue, length = 1, na = TRUE)
 
   if (length(unique(names(categories))) < length((names(categories)))) {
     cli::cli_abort(

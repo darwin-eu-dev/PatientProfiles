@@ -99,28 +99,9 @@ test_that("test checkCategory with length 1 ", {
   expect_true("count" %in% x$estimate_name[x$variable_name == "bin"])
   expect_false("count" %in% x$estimate_name[x$variable_name == "age"])
 
-  expect_error(assertCharacter("ASD", minNumCharacter = 4))
-
-  expect_error(assertList(list("ac"), class = "cdm"))
-
-  expect_error(assertNumeric("asd"))
-
-  expect_error(assertNumeric(5, min = 6))
-
-  expect_error(assertNumeric(6, max = 5))
-
-  expect_no_error(assertClass(NULL, class = "cdm", null = T))
-  expect_error(assertClass(NULL, class = "cdm", null = F))
-
-  expect_error(assertCharacter(NA_character_))
-
   expect_error(checkStrata(list(3)))
 
-  expect_error(assertCharacter("sadv", named = T))
-
-  expect_error(assertChoice(2, c("asd", "sad")))
-
-  expect_error(assertLogical(1))
+  expect_error(omopgenerics::assertChoice(2, c("asd", "sad")))
 
   mockDisconnect(cdm = cdm)
 })

@@ -27,8 +27,8 @@
                                  name) {
   # initial checks
   omopgenerics::newCodelist(conceptSet)
-  assertChoice(targetStartDate, choices = c("event_start_date", "event_end_date"), length = 1)
-  assertChoice(targetEndDate, choices = c("event_start_date", "event_end_date"), length = 1, null = TRUE)
+  omopgenerics::assertChoice(targetStartDate, choices = c("event_start_date", "event_end_date"), length = 1)
+  omopgenerics::assertChoice(targetEndDate, choices = c("event_start_date", "event_end_date"), length = 1, null = TRUE)
 
   cdm <- omopgenerics::cdmReference(x)
   tablePrefix <- omopgenerics::tmpPrefix()

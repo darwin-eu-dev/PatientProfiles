@@ -138,27 +138,20 @@ addDeath <- function(x,
                      window,
                      deathName,
                      name) {
+
   # input validation
+  omopgenerics::assertTable(x, columns = c(indexDate))
   cdm <- omopgenerics::cdmReference(x)
-  checkCdm(cdm, tables = "death")
-  if (!indexDate %in% colnames(x)) {
-    cli::cli_abort("{indexDate} variable not found in table")
-  }
-  if (!is.list(window)) {
-    window <- list(window)
-  }
-  if (length(window) != 1) {
-    cli::cli_abort("Only one time window can be provided")
-  }
-  checkWindow(window)
+  omopgenerics::validateCdmArgument(cdm)
+  omopgenerics::assertTable(cdm[["death"]])
+  window <- omopgenerics::validateWindowArgument(window)
   window <- purrr::list_c(window)
+  deathName <- omopgenerics::validateNameArgument(deathName, validation = "warning")
   if (deathName %in% colnames(x)) {
     cli::cli_warn("{deathName} variable already exists and will be overwritten")
     x <- x |>
       dplyr::select(!dplyr::all_of(deathName))
   }
-
-  deathName <- checkSnakeCase(deathName)
 
   x <- x |>
     .addIntersect(

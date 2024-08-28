@@ -39,17 +39,17 @@
   cdm <- omopgenerics::cdmReference(x)
   # initial checks
   personVariable <- checkX(x)
-  checkmate::assertCharacter(tableName, len = 1, any.missing = FALSE)
-  assertCharacter(tableName)
+  omopgenerics::assertCharacter(tableName, length = 1, na = FALSE)
+  omopgenerics::assertCharacter(tableName)
   checkCdm(cdm, tableName)
   personVariableTable <- checkX(cdm[[tableName]])
   extraValue <- checkValue(value, cdm[[tableName]], tableName)
   filterTbl <- checkFilter(filterVariable, filterId, idName, cdm[[tableName]])
-  window <- checkWindow(window)
+  window <- omopgenerics::validateWindowArgument(window)
   checkVariableInX(indexDate, x)
   checkVariableInX(targetStartDate, cdm[[tableName]], FALSE, "targetStartDate")
   checkVariableInX(targetEndDate, cdm[[tableName]], TRUE, "targetEndDate")
-  checkmate::assertChoice(order, c("first", "last"))
+  omopgenerics::assertChoice(order, choices = c("first", "last"))
   checkVariableInX(censorDate, x, TRUE, "censorDate")
 
   if (!is.null(censorDate)) {

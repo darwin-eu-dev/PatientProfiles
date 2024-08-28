@@ -84,7 +84,7 @@ test_that("addDeathDate", {
     window = list(c(0, Inf), c(1, Inf)),
     deathDateName = "ddate"
   ))
-  expect_message(addDeathDate(
+  expect_warning(addDeathDate(
     x = cdm$cohort1,
     indexDate = "cohort_start_date",
     window = c(0, Inf),
@@ -148,20 +148,20 @@ test_that("check alternative index date", {
 test_that("check window logic", {
   skip_on_cran()
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 2, 1, 2, 1),
-    subject_id = c(1, 1, 1, 1, 1),
+    cohort_definition_id = as.integer(c(1, 2, 1, 2, 1)),
+    subject_id = as.integer(c(1, 1, 1, 1, 1)),
     cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2021-07-01", "2021-07-01", "2022-01-01")),
     cohort_end_date = as.Date(c("2020-01-01", "2020-01-01", "2021-07-01", "2021-07-01", "2022-06-30"))
   )
   observation_period <- dplyr::tibble(
-    observation_period_id = c(1, 2, 3),
-    person_id = c(1, 1, 1),
+    observation_period_id = as.integer(c(1, 2, 3)),
+    person_id = as.integer(c(1, 1, 1)),
     observation_period_start_date = as.Date(c("2015-06-30", "2019-06-30", "2021-06-30")),
     observation_period_end_date = as.Date(c("2018-06-30", "2020-06-30", "2022-06-30")),
-    period_type_concept_id = 0
+    period_type_concept_id = 0L
   )
   deathTable <- dplyr::tibble(
-    person_id = 1,
+    person_id = 1L,
     death_date = as.Date("2022-06-30")
   )
   cdm <- mockPatientProfiles(
@@ -289,8 +289,8 @@ test_that("check with omop table", {
 test_that("check functionality in presence of multiple death records", {
   skip_on_cran()
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 2, 1, 2, 1, 1),
-    subject_id = c(1, 1, 1, 1, 1, 2),
+    cohort_definition_id = as.integer(c(1, 2, 1, 2, 1, 1)),
+    subject_id = as.integer(c(1, 1, 1, 1, 1, 2)),
     cohort_start_date = as.Date(c(
       "2020-01-01", "2020-01-01", "2021-07-01", "2021-07-01", "2022-01-01",
       "2020-01-01"
@@ -301,8 +301,8 @@ test_that("check functionality in presence of multiple death records", {
     ))
   )
   observation_period <- dplyr::tibble(
-    observation_period_id = c(1, 2, 3, 4),
-    person_id = c(1, 1, 1, 2),
+    observation_period_id = as.integer(c(1, 2, 3, 4)),
+    person_id = as.integer(c(1, 1, 1, 2)),
     observation_period_start_date = as.Date(c(
       "2015-06-30", "2019-06-30", "2021-06-30",
       "2020-01-01"
@@ -311,7 +311,7 @@ test_that("check functionality in presence of multiple death records", {
       "2018-06-30", "2020-06-30", "2022-06-30",
       "2020-01-01"
     )),
-    period_type_concept_id = 0
+    period_type_concept_id = 0L
   )
   cdm <- mockPatientProfiles(
     con = connection(),
@@ -321,7 +321,7 @@ test_that("check functionality in presence of multiple death records", {
     cohort2 = cohort1
   )
   deathTable <- dplyr::tibble(
-    person_id = c(1, 1, 2),
+    person_id = as.integer(c(1, 1, 2)),
     death_date = c(as.Date("2022-06-30"), as.Date("2022-07-30"), as.Date("2020-01-01"))
   )
   cdm <- omopgenerics::insertTable(cdm = cdm, name = "death", table = deathTable)
