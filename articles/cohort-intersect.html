@@ -104,10 +104,10 @@ while the second contains 3 cohorts.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
 <span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 3, 1, 3, 3, 3, 2, 1, 2, 2, 1, 3, 2, 2, 1, 1…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 809, 190, 641, 111, 972, 636, 198, 298, 384, 412,…</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2017-09-28, 2017-09-12, 1962-06-11, 1995-11-17, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-02-28, 2130-03-05, 1964-03-25, 1996-03-15, …</span></span></code></pre>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 2, 2, 3, 2, 3, 1, 2, 2, 2, 2, 1, 1, 1, 3…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 503, 261, 750, 1, 445, 523, 899, 929, 925, 200, 6…</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-08-05, 1976-07-21, 1978-01-02, 1916-08-27, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-12-14, 1979-07-22, 1980-06-14, 1946-04-06, …</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/settings.html" class="external-link">settings</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
@@ -122,10 +122,10 @@ while the second contains 3 cohorts.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
 <span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 1, 3, 1, 3, 3, 2, 1, 2, 2, 1, 2, 3, 2, 3, 1, 2…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 677, 54, 718, 589, 510, 917, 744, 835, 102, 990, …</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2070-01-27, 2112-02-04, 2094-07-06, 1961-11-01, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2113-02-20, 2112-03-12, 2111-08-19, 1978-09-09, …</span></span></code></pre>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 1, 1, 3, 1, 2, 1, 1, 2, 2, 3, 2, 2, 3, 1, 3, 1…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 576, 112, 58, 256, 335, 291, 294, 615, 782, 721, …</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1956-05-21, 1978-06-11, 1921-03-26, 1955-04-22, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1973-09-24, 2001-11-10, 1923-07-03, 1955-07-27, …</span></span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/settings.html" class="external-link">settings</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
@@ -171,13 +171,13 @@ of the target cohort then used to check for an intersection.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
 <span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 3, 1, 2, 2, 2, 1, 1, 3, 2, 1, 1, 1, 3, 3, 1, 2…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 641, 143, 327, 493, 443, 831, 453, 206, 339, 479,…</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1962-06-11, 2072-12-28, 2025-12-29, 2036-12-06, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1964-03-25, 2082-10-03, 2051-05-21, 2045-01-29, …</span></span>
-<span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0…</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0…</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1…</span></span></code></pre>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 2, 3, 1, 1, 1, 1, 3, 1, 3, 2, 3, 1, 2, 3, 2, 1…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 523, 899, 778, 85, 222, 140, 70, 591, 54, 777, 20…</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1962-10-26, 1950-03-28, 1925-07-30, 1939-09-06, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1974-01-15, 1976-07-06, 1936-05-29, 1942-05-25, …</span></span>
+<span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0…</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0…</span></span>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1…</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectCount.html">addCohortIntersectCount</a></span><span class="op">(</span></span>
@@ -191,13 +191,13 @@ of the target cohort then used to check for an intersection.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
 <span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 3, 1, 2, 2, 2, 1, 1, 3, 2, 1, 1, 1, 3, 3, 1, 2…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 641, 143, 327, 493, 443, 831, 453, 206, 339, 479,…</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1962-06-11, 2072-12-28, 2025-12-29, 2036-12-06, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1964-03-25, 2082-10-03, 2051-05-21, 2045-01-29, …</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1…</span></span>
-<span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0…</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0…</span></span></code></pre>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 2, 3, 1, 1, 1, 1, 3, 1, 3, 2, 3, 1, 2, 3, 2, 1…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 523, 899, 778, 85, 222, 140, 70, 591, 54, 777, 20…</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1962-10-26, 1950-03-28, 1925-07-30, 1939-09-06, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1974-01-15, 1976-07-06, 1936-05-29, 1942-05-25, …</span></span>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1…</span></span>
+<span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0…</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0…</span></span></code></pre>
 <p>Next we can add the date of the intersection and the days to the
 intersection. When identifying these variables we use only one date in
 our target table, which by default will be the cohort start date. In
@@ -216,10 +216,10 @@ will be used.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
 <span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 3, 1, 3, 3, 3, 2, 1, 2, 2, 1, 3, 2, 2, 1, 1…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 809, 190, 641, 111, 972, 636, 198, 298, 384, 412,…</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2017-09-28, 2017-09-12, 1962-06-11, 1995-11-17, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-02-28, 2130-03-05, 1964-03-25, 1996-03-15, …</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 2, 2, 3, 2, 3, 1, 2, 2, 2, 2, 1, 1, 1, 3…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 503, 261, 750, 1, 445, 523, 899, 929, 925, 200, 6…</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-08-05, 1976-07-21, 1978-01-02, 1916-08-27, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-12-14, 1979-07-22, 1980-06-14, 1946-04-06, …</span></span>
 <span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
 <span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span></code></pre>
@@ -236,10 +236,10 @@ will be used.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
 <span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 3, 1, 3, 3, 3, 2, 1, 2, 2, 1, 3, 2, 2, 1, 1…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 809, 190, 641, 111, 972, 636, 198, 298, 384, 412,…</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2017-09-28, 2017-09-12, 1962-06-11, 1995-11-17, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-02-28, 2130-03-05, 1964-03-25, 1996-03-15, …</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 2, 2, 3, 2, 3, 1, 2, 2, 2, 2, 1, 1, 1, 3…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 503, 261, 750, 1, 445, 523, 899, 929, 925, 200, 6…</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-08-05, 1976-07-21, 1978-01-02, 1916-08-27, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-12-14, 1979-07-22, 1980-06-14, 1946-04-06, …</span></span>
 <span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span></code></pre>
