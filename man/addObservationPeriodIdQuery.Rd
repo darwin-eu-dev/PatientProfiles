@@ -18,8 +18,6 @@ addObservationPeriodIdQuery(
 observation flag.}
 
 \item{nameObservationPeriodId}{Name of the new colum.}
-
-\item{name}{Name of the new table, if NULL a temporary table is returned.}
 }
 \value{
 Table with the current observation period id added.
