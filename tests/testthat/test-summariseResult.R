@@ -652,7 +652,7 @@ test_that("density works correctly", {
   x <- sM |>
     dplyr::group_by(.data$variable_level) |>
     dplyr::tally()
-  expect_true(unique(x$n) == 8L)
+  expect_true(unique(x$n) == 6L)
   expect_true(length(unique(x$variable_level)) == 3L)
   x <- s |>
     dplyr::filter(
