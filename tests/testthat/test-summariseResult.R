@@ -69,7 +69,7 @@ test_that("test all functions", {
   variables <- c("age", "number_visits", "prior_history", "sex")
   functions <- c(
     "mean", "sd", "median", "q25", "q75", "count_missing", "percentage_missing",
-    "count", "percentage"
+    "count", "percentage", "density"
   )
   expect_no_error(
     result <- summariseResult(
@@ -601,4 +601,65 @@ test_that("NA when min, max and mean works", {
       )
   )
   expect_equal(res4$estimate_value, c("3", NA, NA, NA))
+})
+
+test_that("density works correctly", {
+  x <- dplyr::tibble(
+    sex = c("M", "F", "F", "F", "F", "F"),
+    group = c("g1", "g1", "g2", "g12", "g2", "g12"),
+    age1 = c(NA, 23, 38, 45, NA, 39),
+    age2 = c(20, 23, 38, 45, 67, 39),
+    asthma = c(0L, 1L, 0L, 1L, 1L, 0L),
+    birth = as.Date(c(
+      "2021-05-12", "2012-05-15", "2023-11-30", "2015-12-10", "2014-01-12",
+      "1993-04-190"
+    ))
+  )
+  est <- c("density", "mean", "count")
+  var <- c("group", "age1", "age2", "asthma", "birth")
+  expect_no_error(s <- summariseResult(x, estimates = est, variables = var))
+  expect_no_error(s <- summariseResult(
+    x, strata = list("sex"), estimates = est, variables = var))
+  expect_false("density_x" %in% s$estimate_name[s$variable_name == "group"])
+  expect_true("density_x" %in% s$estimate_name[s$variable_name == "age1"])
+  expect_true("density_x" %in% s$estimate_name[s$variable_name == "age2"])
+  expect_true("density_x" %in% s$estimate_name[s$variable_name == "asthma"])
+  expect_true("density_x" %in% s$estimate_name[s$variable_name == "birth"])
+  expect_identical(
+    unique(s$estimate_type[s$estimate_name == "density_y"]), "numeric"
+  )
+  expect_identical(
+    unique(s$estimate_type[s$estimate_name == "density_x" & s$variable_name == "age1"]),
+    "numeric"
+  )
+  expect_identical(
+    unique(s$estimate_type[s$estimate_name == "density_x" & s$variable_name == "age2"]),
+    "numeric"
+  )
+  expect_identical(
+    unique(s$estimate_type[s$estimate_name == "density_x" & s$variable_name == "asthma"]),
+    "numeric"
+  )
+  expect_identical(
+    unique(s$estimate_type[s$estimate_name == "density_x" & s$variable_name == "birth"]),
+    "date"
+  )
+  sM <- s |>
+    dplyr::filter(
+      .data$strata_level == "M", startsWith(.data$variable_level, "density")
+    )
+  expect_identical(unique(sM$estimate_value[sM$estimate_name == "density_y"]), c("0", "1"))
+  x <- sM |>
+    dplyr::group_by(.data$variable_level) |>
+    dplyr::tally()
+  expect_true(unique(x$n) == 8L)
+  expect_true(length(unique(x$variable_level)) == 3L)
+  x <- s |>
+    dplyr::filter(
+      .data$strata_level == "F", startsWith(.data$variable_level, "density")
+    ) |>
+    dplyr::group_by(.data$variable_level) |>
+    dplyr::tally()
+  expect_true(unique(x$n) == 8L)
+  expect_true(length(unique(x$variable_level)) == 512L)
 })

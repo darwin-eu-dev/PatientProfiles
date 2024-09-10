@@ -323,57 +323,129 @@ countSubjects <- function(x, personVariable) {
 }
 
 summariseNumeric <- function(table, functions) {
-  funs <- functions |>
+  functions <- functions |>
     dplyr::filter(
       .data$variable_type %in% c("date", "numeric", "integer") &
         !grepl("count|percentage", .data$estimate_name)
     )
 
-  if (nrow(funs) == 0) {
+  if (nrow(functions) == 0) {
     return(NULL)
   }
 
-  funs <- funs |>
-    dplyr::mutate(fun = estimatesFunc[.data$estimate_name]) |>
-    dplyr::rowwise() |>
-    dplyr::mutate(fun = gsub("x, ", paste0(".data[['", .data$variable_name, "']], "), .data$fun)) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(id = paste0("variable_", stringr::str_pad(dplyr::row_number(), 6, pad = "0")))
-  numericSummary <- funs$fun |>
-    rlang::parse_exprs() |>
-    rlang::set_names(funs$id)
-  res <- table |>
-    dplyr::group_by(.data$strata_id) |>
-    dplyr::summarise(!!!numericSummary, .groups = "drop") |>
-    suppressWarnings() |>
-    dplyr::collect() |>
-    dplyr::mutate(dplyr::across(.cols = !"strata_id", .fns = as.numeric)) |>
-    tidyr::pivot_longer(
-      cols = !"strata_id", names_to = "id", values_to = "estimate_value"
-    ) |>
-    dplyr::inner_join(
-      funs |>
-        dplyr::select(c("id", "variable_name", "estimate_name", "estimate_type")),
-      by = "id"
-    ) |>
-    dplyr::select(-"id") |>
-    dplyr::mutate(
-      "variable_level" = NA_character_,
-      "estimate_value" = dplyr::case_when(
-        # Inf and Nan generated due to missing values
-        is.infinite(.data$estimate_value) | is.nan(.data$estimate_value) ~ NA_character_,
-        # correct dates
-        .data$estimate_type == "date" ~
-          as.character(as.Date(round(.data$estimate_value), origin = "1970-01-01")),
-        # round integers
-        .data$estimate_type == "integer" ~
-          as.character(round(.data$estimate_value)),
-        # numeric to characters
-        .data$estimate_type == "numeric" ~ as.character(.data$estimate_value)
+  funs <- functions |>
+    dplyr::filter(.data$estimate_name != "density")
+
+  if (nrow(funs) > 0) {
+    funs <- funs |>
+      dplyr::mutate(fun = estimatesFunc[.data$estimate_name]) |>
+      dplyr::rowwise() |>
+      dplyr::mutate(fun = gsub("x, ", paste0(".data[['", .data$variable_name, "']], "), .data$fun)) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(id = paste0("variable_", stringr::str_pad(dplyr::row_number(), 6, pad = "0")))
+    numericSummary <- funs$fun |>
+      rlang::parse_exprs() |>
+      rlang::set_names(funs$id)
+    res <- table |>
+      dplyr::group_by(.data$strata_id) |>
+      dplyr::summarise(!!!numericSummary, .groups = "drop") |>
+      suppressWarnings() |>
+      dplyr::collect() |>
+      dplyr::mutate(dplyr::across(.cols = !"strata_id", .fns = as.numeric)) |>
+      tidyr::pivot_longer(
+        cols = !"strata_id", names_to = "id", values_to = "estimate_value"
+      ) |>
+      dplyr::inner_join(
+        funs |>
+          dplyr::select(c("id", "variable_name", "estimate_name", "estimate_type")),
+        by = "id"
+      ) |>
+      dplyr::select(-"id") |>
+      dplyr::mutate("variable_level" = NA_character_) |>
+      correctTypes()
+  } else {
+    res <- NULL
+  }
+
+  functions <- functions |>
+    dplyr::filter(.data$estimate_name == "density")
+
+  if (nrow(functions) > 0) {
+    res <- res |>
+      dplyr::union_all(
+        table |>
+          dplyr::select(dplyr::all_of(c("strata_id", functions$variable_name))) |>
+          dplyr::collect() |>
+          dplyr::group_by(.data$strata_id) |>
+          dplyr::group_split() |>
+          as.list() |>
+          purrr::map_df(getDensityResult) |>
+          dplyr::inner_join(
+            functions |>
+              dplyr::select("variable_name", "estimate_type" = "variable_type") |>
+              dplyr::mutate(estimate_type = dplyr::if_else(
+                .data$estimate_type == "integer", "numeric", .data$estimate_type
+              )),
+            by = "variable_name"
+          ) |>
+          dplyr::mutate(estimate_type = dplyr::if_else(
+            .data$estimate_name == "density_y", "numeric", .data$estimate_type
+          )) |>
+          correctTypes()
       )
-    )
+  }
 
   return(res)
+}
+
+correctTypes <- function(x) {
+  x |>
+    dplyr::mutate(estimate_value = dplyr::case_when(
+      # Inf and Nan generated due to missing values
+      is.infinite(.data$estimate_value) | is.nan(.data$estimate_value) ~ NA_character_,
+      # correct dates
+      .data$estimate_type == "date" ~
+        as.character(as.Date(round(.data$estimate_value), origin = "1970-01-01")),
+      # round integers
+      .data$estimate_type == "integer" ~
+        as.character(round(.data$estimate_value)),
+      # numeric to characters
+      .data$estimate_type == "numeric" ~ as.character(.data$estimate_value)
+    ))
+}
+
+getDensityResult <- function(x) {
+  x |>
+    dplyr::select(!"strata_id") |>
+    as.list() |>
+    purrr::map(densityResult) |>
+    dplyr::bind_rows(.id = "variable_name") |>
+    dplyr::mutate(strata_id = x$strata_id[1])
+}
+densityResult <- function(x) {
+  nPoints <- 512
+  nDigits <- ceiling(log(nPoints)/log(10))
+  x <- as.numeric(x[!is.na(x)])
+  if (length(x) == 0) {
+    return(NULL)
+  } else if (length(x) == 1) {
+    den <- list(x = c(x - 1, x, x + 1), y = c(0, 1, 0)) # NEEDS DISCUSSION
+  } else {
+    den <- stats::density(x, n = nPoints)
+  }
+  lev <- paste0("density_", stringr::str_pad(
+    seq_along(den$x), width = nDigits, side = "left", pad = "0"))
+  dplyr::tibble(
+    variable_level = lev,
+    estimate_name = "density_x",
+    estimate_value = den$x
+  ) |>
+    dplyr::union_all(dplyr::tibble(
+      variable_level = lev,
+      estimate_name = "density_y",
+      estimate_value = den$y
+    )) |>
+    dplyr::arrange(.data$variable_level, .data$estimate_name)
 }
 
 summariseBinary <- function(table, functions) {

@@ -31,6 +31,12 @@ formats <- variables |>
     variable_type == "logical" & estimate_name == "percentage" ~
       "percentage of occurrences of `TRUE` (NA are excluded).",
     .default = estimate_description
+  )) |>
+  dplyr::union_all(dplyr::tibble(
+    variable_type = c("date", "numeric", "integer"),
+    estimate_name = "density",
+    estimate_description = "density distribution",
+    estimate_type = "multiple"
   ))
 
 namesTable <- read_csv(
