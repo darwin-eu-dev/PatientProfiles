@@ -473,7 +473,7 @@ warnOverwriteColumns <- function(x, nameStyle, values = list()) {
 }
 
 # checks demographics
-validateX <- function(x, call) {
+validateX <- function(x, call = parent.frame()) {
   omopgenerics::assertClass(x, class = "cdm_table", call = call)
   cols <- colnames(x)
   n <- sum(c("person_id", "subject_id") %in% cols)
@@ -508,14 +508,14 @@ validateIndexDate <- function(indexDate, null, x, call) {
   }
   return(indexDate)
 }
-validateColumn <- function(col, null, call) {
+validateColumn <- function(col, null = FALSE, call = parent.frame()) {
   if (null) {
     return(NULL)
   }
 
   nm <- paste0(substitute(col))
 
-  err <- "{nm} must be a snake_case character vector"
+  err <- "{nm} must be a snake_case character string"
   if (!is.character(col)) cli::cli_abort(message = err, call = call)
   if (length(col) != 1) cli::cli_abort(message = err, call = call)
   if (is.na(col)) cli::cli_abort(message = err, call = call)
