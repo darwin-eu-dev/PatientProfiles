@@ -1,3 +1,10 @@
+# PatientProfiles 1.2.0
+
+* `addObservationPeriodId()` is a new function that adds the number of 
+  observation period that an observation is in.
+  
+* Add `density` estimate to `summariseResult()`
+
 # PatientProfiles 1.1.1
 
 * `addCohortName` overwrites if there already exists a `cohort_name` column 
