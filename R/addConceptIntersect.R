@@ -101,6 +101,10 @@ subsetTable <- function(x) {
   domains[domains == "obs"] <- "observation"
   domains <- unique(domains)
 
+  if(length(domains) == 0){
+    domains <- NA_character_
+  }
+
   lapply(domains, function(domain) {
     tableName <- switch(domain,
       "device" = "device_exposure",
