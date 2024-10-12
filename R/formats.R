@@ -153,8 +153,3 @@ binaryVariable <- function(x) {
   }
   return(FALSE)
 }
-
-#' @noRd
-getFunctions <- function(f) {
-  return(estimatesFunc[f])
-}

@@ -49,6 +49,19 @@ test_that("addCategories, functionality", {
       addCategories(variable = "sex")
   )
 
+  expect_no_error(
+    agegroupOverlap <- cdm$cohort1 %>%
+      addAge() %>%
+      addCategories(
+        variable = "age",
+        categories = list("age_group" = list(c(0, 55), c(50, 120))),
+        overlap = TRUE,
+        missingCategoryValue = NA_character_
+      ) %>%
+      dplyr::collect() |>
+      dplyr::arrange(subject_id, cohort_start_date)
+  )
+
   mockDisconnect(cdm)
 })
 

@@ -313,8 +313,15 @@ mockPatientProfiles <- function(con = NULL,
   src <- CDMConnector::dbSource(con = con, writeSchema = writeSchema)
 
   for (tab in names(tables)) {
+    x <- tables[[tab]]
+    for (col in c("subject_id", "person_id", "cohort_definition_id")) {
+      if (col %in% colnames(x)) {
+        x <- x |>
+          dplyr::mutate(!!col := as.integer(.data[[col]]))
+      }
+    }
     omopgenerics::insertTable(
-      cdm = src, name = tab, table = tables[[tab]], overwrite = TRUE
+      cdm = src, name = tab, table = x, overwrite = TRUE
     ) |>
       invisible()
   }

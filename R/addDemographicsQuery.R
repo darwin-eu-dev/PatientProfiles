@@ -424,7 +424,7 @@ addDateOfBirthQuery <- function(x,
   priorObservation <- validateLogical(priorObservation, call = call)
   futureObservation <- validateLogical(futureObservation, call = call)
   dateOfBirth <- validateLogical(dateOfBirth, call = call)
-  ageGroup <- validateAgeGroup(ageGroup, call = call)
+  ageGroup <- omopgenerics::validateAgeGroupArgument(ageGroup, call = call)
   notIndexDate <- !any(c(
     age, !is.null(ageGroup), priorObservation, futureObservation
   ))
@@ -702,7 +702,6 @@ addInObservationQuery <- function(x,
   indexDate <- validateIndexDate(indexDate, null = FALSE, x = x, call = call)
   if (!is.list(window)) window <- list(window)
   window <- omopgenerics::validateWindowArgument(window, call = call)
-  names(window) <- getWindowNames(window)
   assertNameStyle(nameStyle = nameStyle, values = list("window_name" = window), call = call)
   newColumns <- glue::glue(nameStyle, window_name = names(window))
   overwriteCols <- newColumns[newColumns %in% colnames(x)]

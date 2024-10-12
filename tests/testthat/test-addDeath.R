@@ -78,12 +78,12 @@ test_that("addDeathDate", {
     window = c(Inf, Inf),
     deathDateName = "ddate"
   ))
-  expect_error(addDeathDate(
+  expect_warning(expect_error(addDeathDate(
     x = cdm$cohort1,
     indexDate = "cohort_start_date",
     window = list(c(0, Inf), c(1, Inf)),
     deathDateName = "ddate"
-  ))
+  )))
   expect_warning(addDeathDate(
     x = cdm$cohort1,
     indexDate = "cohort_start_date",
