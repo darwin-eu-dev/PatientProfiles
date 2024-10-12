@@ -121,7 +121,7 @@ addObservationPeriodIdQuery <- function(x,
     ) |>
     dplyr::group_by(.data[[personVariable]], .data[[indexDate]]) |>
     dplyr::arrange(.data[[cols[1]]]) |>
-    dplyr::mutate(!!nameObservationPeriodId := dplyr::row_number()) |>
+    dplyr::mutate(!!nameObservationPeriodId := as.integer(dplyr::row_number())) |>
     dplyr::ungroup() |>
     dplyr::filter(
       .data[[indexDate]] <= .data[[cols[2]]] &&
