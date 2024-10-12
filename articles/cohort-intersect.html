@@ -220,9 +220,9 @@ will be used.</p>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 503, 261, 750, 1, 445, 523, 899, 929, 925, 200, 6…</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-08-05, 1976-07-21, 1978-01-02, 1916-08-27, …</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-12-14, 1979-07-22, 1980-06-14, 1946-04-06, …</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span></code></pre>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays</a></span><span class="op">(</span></span>
@@ -318,8 +318,8 @@ ongoing record for aspirin on that date.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_0_to_0      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0</span></span></code></pre>
@@ -338,8 +338,8 @@ case an intersection would be found.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_0_to_0      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span></code></pre>
@@ -359,8 +359,8 @@ found.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span></code></pre>
@@ -379,8 +379,8 @@ person would have a count of two cohort intersections.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2</span></span></code></pre>
@@ -399,8 +399,8 @@ will get the start date of the first record of aspirin.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-01-01</span></span></code></pre>
@@ -419,8 +419,8 @@ second record of aspirin.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-10</span></span></code></pre>
@@ -444,8 +444,8 @@ variables.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_m90_to_90   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-10</span></span></code></pre>
@@ -466,8 +466,8 @@ avoid duplicate names).</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ my_new_variable      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-10</span></span></code></pre>
@@ -496,8 +496,8 @@ different types of intersection values.</p>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 6</span></span>
 <span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
-<span><span class="co">## $ subject_id              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1</span></span>
+<span><span class="co">## $ cohort_definition_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
+<span><span class="co">## $ subject_id              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1</span></span>
 <span><span class="co">## $ cohort_start_date       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-01</span></span>
 <span><span class="co">## $ cohort_end_date         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-15</span></span>
 <span><span class="co">## $ cohort_1_m90_to_90_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2020-02-10</span></span>
