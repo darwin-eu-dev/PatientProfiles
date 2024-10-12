@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PatientProfiles</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.900</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Adding patient demographics</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/PatientProfiles/blob/v1.2.0/vignettes/demographics.rmd" class="external-link"><code>vignettes/demographics.rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/PatientProfiles/blob/main/vignettes/demographics.rmd" class="external-link"><code>vignettes/demographics.rmd</code></a></small>
       <div class="d-none name"><code>demographics.rmd</code></div>
     </div>
 
@@ -98,7 +98,7 @@ time-invariant).</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
 <span><span class="co">## $ person_id            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15…</span></span>
 <span><span class="co">## $ gender_concept_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 8532, 8532, 8507, 8532, 8532, 8507, 8532, 8532, 8…</span></span>
 <span><span class="co">## $ year_of_birth        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1940, 1952, 1958, 1906, 1950, 1917, 1967, 1972, 1…</span></span>
@@ -114,7 +114,7 @@ overlap.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 5</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
 <span><span class="co">## $ person_id                     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1…</span></span>
 <span><span class="co">## $ observation_period_start_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1940-01-01, 1952-01-01, 1958-01-01, 190…</span></span>
 <span><span class="co">## $ observation_period_end_date   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1969-04-09, 1977-04-26, 2000-12-04, 193…</span></span>
@@ -134,7 +134,7 @@ number of functions that can help us do this.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 6</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
 <span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
 <span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
 <span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
@@ -156,7 +156,7 @@ date.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 7</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
 <span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
 <span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
 <span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
@@ -182,15 +182,15 @@ time. Here we create three age groups: those aged 0 to 17, those 18 to
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 8</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
-<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
-<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
-<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1…</span></span>
-<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 2, 7, 6, 9, 8, 3, 10, 5, 3, 2, 5, 5, 3…</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 74, 266, 318, 410, 427, 434, 450, 457, 468, …</span></span>
+<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1969-08-01, 1936-01-11, 1952-08-18, 1957-01…</span></span>
+<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-06-27, 1959-01-10, 1967-10-03, 1957-09…</span></span>
+<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 21, 81, 88, 105, 109, 117, 32, 41, 36, 82, 7…</span></span>
+<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 8, 10, 3, 3, 9, 1, 1, 5, 2, 6, 3, 7…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 23, 42, 34, 7, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "0 to 17", "0 to 17", …</span></span></code></pre>
+<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 14, 26, 2…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "18 to 65"…</span></span></code></pre>
 <p>By default, when adding age the new column will have been called
 “age” and will have been calculated using all available information on
 date of birth contained in the person. We can though also alter these
@@ -211,16 +211,16 @@ and day of birth is the 1st for all individuals.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 9</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
-<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
-<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
-<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1…</span></span>
-<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 2, 7, 6, 9, 8, 3, 10, 5, 3, 2, 5, 5, 3…</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 74, 266, 318, 410, 427, 434, 450, 457, 468, …</span></span>
+<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1969-08-01, 1936-01-11, 1952-08-18, 1957-01…</span></span>
+<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-06-27, 1959-01-10, 1967-10-03, 1957-09…</span></span>
+<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 21, 81, 88, 105, 109, 117, 32, 41, 36, 82, 7…</span></span>
+<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 8, 10, 3, 3, 9, 1, 1, 5, 2, 6, 3, 7…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 23, 42, 34, 7, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "0 to 17", "0 to 17", …</span></span>
-<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 23, 42, 34, 7, …</span></span></code></pre>
+<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 14, 26, 2…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "18 to 65"…</span></span>
+<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 14, 26, 2…</span></span></code></pre>
 <p>As well as age at diagnosis, we might also want identify patients’
 sex. PatientProfiles provides the <code><a href="../reference/addSex.html">addSex()</a></code> function that
 will add this for us. Because this is treated as time-invariant, we will
@@ -233,17 +233,17 @@ not have to specify any index variable.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 10</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
-<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
-<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
-<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, …</span></span>
-<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 2, 7, 6, 9, 8, 3, 5, 3, 2, 5, 5, 3, 8,…</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 74, 266, 318, 410, 427, 434, 450, 457, 468, …</span></span>
+<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1969-08-01, 1936-01-11, 1952-08-18, 1957-01…</span></span>
+<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-06-27, 1959-01-10, 1967-10-03, 1957-09…</span></span>
+<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 21, 81, 88, 105, 109, 117, 32, 41, 36, 82, 1…</span></span>
+<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 8, 10, 3, 3, 9, 1, 1, 2, 6, 3, 5, 9…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "0 to 17", "0 to 17", …</span></span>
-<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Male", "Male", …</span></span></code></pre>
+<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "18 to 65"…</span></span>
+<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Female", "Male"…</span></span></code></pre>
 <p>Similarly, we could also identify whether an individual was in
 observation at the time of their diagnosis (i.e. had an observation
 period that overlaps with their diagnosis date), as well as identifying
@@ -259,20 +259,20 @@ have following it.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 13</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
-<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
-<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
-<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, …</span></span>
-<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 2, 7, 6, 9, 8, 3, 5, 3, 2, 5, 5, 3, 8,…</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 74, 266, 318, 410, 427, 434, 450, 457, 468, …</span></span>
+<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1969-08-01, 1936-01-11, 1952-08-18, 1957-01…</span></span>
+<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-06-27, 1959-01-10, 1967-10-03, 1957-09…</span></span>
+<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 21, 81, 88, 105, 109, 117, 32, 41, 36, 82, 1…</span></span>
+<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 8, 10, 3, 3, 9, 1, 1, 2, 6, 3, 5, 9…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "0 to 17", "0 to 17", …</span></span>
-<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Male", "Male", …</span></span>
+<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "18 to 65"…</span></span>
+<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Female", "Male"…</span></span>
 <span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3930, 3261, 360, 3903, 8249, 7528, 8522, 300…</span></span>
-<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2483, 14353, 7060, 3043, 5659, 5110, 5037, 7…</span></span></code></pre>
+<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 578, 3297, 7900, 8409, 10879, 9565, 2697, 57…</span></span>
+<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 14672, 10185, 12460, 1601, 2901, 4798, 9016,…</span></span></code></pre>
 <p>For these functions which work with information from the observation
 table, it is important to note that the results will be based on the
 observation period during which the index date falls within. Moreover,
@@ -294,19 +294,19 @@ it.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 13</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
-<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
-<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
-<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, …</span></span>
-<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 2, 7, 6, 9, 8, 3, 5, 3, 2, 5, 5, 3, 8,…</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 74, 266, 318, 410, 427, 434, 450, 457, 468, …</span></span>
+<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1969-08-01, 1936-01-11, 1952-08-18, 1957-01…</span></span>
+<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-06-27, 1959-01-10, 1967-10-03, 1957-09…</span></span>
+<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 21, 81, 88, 105, 109, 117, 32, 41, 36, 82, 1…</span></span>
+<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 8, 10, 3, 3, 9, 1, 1, 2, 6, 3, 5, 9…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "0 to 17", "0 to 17", …</span></span>
-<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Male", "Male", …</span></span>
-<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3930, 3261, 360, 3903, 8249, 7528, 8522, 300…</span></span>
-<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2483, 14353, 7060, 3043, 5659, 5110, 5037, 7…</span></span>
+<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "18 to 65"…</span></span>
+<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Female", "Male"…</span></span>
+<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 578, 3297, 7900, 8409, 10879, 9565, 2697, 57…</span></span>
+<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 14672, 10185, 12460, 1601, 2901, 4798, 9016,…</span></span>
 <span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span></code></pre>
 <p>We can also specify a window and require that an individual is
 present for only some days within it. Here we add a variable indicating
@@ -322,19 +322,19 @@ future,</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 13</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2284, 3335, 9438, 6762, 9433, 9393, 6360, 36…</span></span>
-<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1918-10-05, 1934-12-06, 1945-12-27, 1944-09…</span></span>
-<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1925-01-30, 1954-09-30, 1947-08-23, 1947-08…</span></span>
-<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, …</span></span>
-<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 2, 7, 6, 9, 8, 3, 5, 3, 2, 5, 5, 3, 8,…</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ person_id                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 74, 266, 318, 410, 427, 434, 450, 457, 468, …</span></span>
+<span><span class="co">## $ condition_start_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1969-08-01, 1936-01-11, 1952-08-18, 1957-01…</span></span>
+<span><span class="co">## $ condition_end_date        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1978-06-27, 1959-01-10, 1967-10-03, 1957-09…</span></span>
+<span><span class="co">## $ condition_occurrence_id   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 21, 81, 88, 105, 109, 117, 32, 41, 36, 82, 1…</span></span>
+<span><span class="co">## $ condition_concept_id      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 1, 1, 8, 10, 3, 3, 9, 1, 1, 2, 6, 3, 5, 9…</span></span>
 <span><span class="co">## $ condition_type_concept_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "0 to 17", "0 to 17", …</span></span>
-<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 8, 0, 10, 22, 20, 23, 8, 42, 34, 7, 28, …</span></span>
-<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Male", "Male", …</span></span>
-<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3930, 3261, 360, 3903, 8249, 7528, 8522, 300…</span></span>
-<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2483, 14353, 7060, 3043, 5659, 5110, 5037, 7…</span></span>
+<span><span class="co">## $ age                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ age_group                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "18 to 65"…</span></span>
+<span><span class="co">## $ age_from_year_of_birth    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 9, 21, 23, 29, 26, 7, 15, 8, 6, 26, 20, 0…</span></span>
+<span><span class="co">## $ sex                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Male", "Female", "Female", "Male"…</span></span>
+<span><span class="co">## $ prior_observation         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 578, 3297, 7900, 8409, 10879, 9565, 2697, 57…</span></span>
+<span><span class="co">## $ future_observation        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 14672, 10185, 12460, 1601, 2901, 4798, 9016,…</span></span>
 <span><span class="co">## $ in_observation            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span></code></pre>
 </div>
 <div class="section level2">
@@ -348,7 +348,7 @@ cohort tables. Note as the default index date in the functions is
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 2, 1, 3, 2, 2, 2, 1, 3, 3, 1, 3, 2, 3…</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 5853, 1622, 8574, 6414, 7299, 4793, 6541, 1029, 5…</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1964-06-05, 1927-03-08, 1955-08-04, 1963-06-12, …</span></span>
@@ -369,17 +369,17 @@ cohort tables. Note as the default index date in the functions is
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 10</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 2, 1, 2, 2, 2, 1, 3, 3, 1, 3, 2, 3, 1, 3, 2…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 5853, 8574, 7299, 4793, 1029, 5228, 665, 6672, 86…</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1964-06-05, 1955-08-04, 1984-10-05, 1932-10-15, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1964-12-11, 1958-05-01, 1987-05-30, 1933-12-13, …</span></span>
-<span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 37, 20, 5, 17, 19, 8, 31, 5, 25, 14, 33, 5, 21, 1…</span></span>
-<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "18 to 65", "0 to 17", "0 to 17", "18…</span></span>
-<span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Male", "Male", "Male", "Female", "Female", "Fema…</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 2, 1, 2, 1, 3, 2, 2, 1, 2, 3, 3, 3, 2, 1, 3, 3…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17,…</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1957-08-12, 1957-03-05, 1985-01-22, 1923-05-21, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1966-11-16, 1960-04-16, 1999-11-20, 1948-03-23, …</span></span>
+<span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 17, 5, 27, 6, 22, 10, 2, 11, 4, 21, 10, 2, 11, 12…</span></span>
+<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "0 to 17", "18 …</span></span>
+<span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Female", "Male", "Male", "Female", "Fe…</span></span>
 <span><span class="co">## $ in_observation       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 13670, 7520, 2104, 6497, 7273, 2966, 11557, 2056,…</span></span>
-<span><span class="co">## $ future_observation   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2816, 3670, 9355, 1273, 8189, 4560, 1025, 4037, 3…</span></span></code></pre>
+<span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 6433, 1890, 9883, 2331, 8400, 3929, 1061, 4123, 1…</span></span>
+<span><span class="co">## $ future_observation   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4258, 7357, 5795, 9935, 672, 6928, 4450, 13069, 8…</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="getting-multiple-characteristics-at-once">Getting multiple characteristics at once<a class="anchor" aria-label="anchor" href="#getting-multiple-characteristics-at-once"></a>
@@ -396,7 +396,7 @@ period tables.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 4</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
 <span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 3, 1, 3, 1, 1, 2, 3, 3, 1, 2, 1, 2, 2, 1, 1, 3…</span></span>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 6688, 3035, 5292, 1351, 8144, 699, 8733, 1007, 68…</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1999-06-28, 1977-03-24, 1931-10-19, 1993-07-08, …</span></span>
@@ -413,26 +413,26 @@ period tables.</p>
 <span>  <span class="fu"><a href="../reference/addInObservation.html">addInObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addPriorObservation.html">addPriorObservation</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addFutureObservation.html">addFutureObservation</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_019_1726258128&gt; [?? x 10]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;og_019_1728733021&gt; [?? x 10]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">##    cohort_definition_id subject_id cohort_start_date cohort_end_date   age</span></span>
 <span><span class="co">##                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>                    3       <span style="text-decoration: underline;">6</span>688 1999-06-28        2019-08-31         27</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>                    3       <span style="text-decoration: underline;">3</span>035 1977-03-24        1988-06-17         12</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>                    1       <span style="text-decoration: underline;">5</span>292 1931-10-19        1937-06-27         22</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>                    3       <span style="text-decoration: underline;">1</span>351 1993-07-08        2003-11-19         20</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>                    1       <span style="text-decoration: underline;">8</span>144 1956-10-23        1958-02-13         33</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>                    1        699 1961-10-27        1964-11-25         15</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>                    3       <span style="text-decoration: underline;">6</span>848 1950-08-18        1951-03-01          4</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>                    2       <span style="text-decoration: underline;">2</span>257 1979-08-24        1979-09-16         10</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">8</span>938 1978-08-30        1995-08-13         12</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>                    2       <span style="text-decoration: underline;">7</span>105 1962-07-26        1981-02-06          6</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>                    2          1 1940-11-29        1959-10-09          0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>                    3          2 1963-05-30        1977-03-31         11</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>                    2          3 1993-09-04        1995-07-27         35</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>                    3          4 1923-10-12        1926-04-27         17</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>                    3          5 1954-06-30        1955-12-24          4</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>                    2          6 1923-07-07        1940-06-01          6</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>                    3          7 1989-02-22        1991-02-24         22</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>                    2          8 1992-10-16        2017-04-23         20</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>                    3          9 1985-09-19        1997-05-06         12</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>                    3         10 1935-05-26        1936-02-06         12</span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 5 more variables: age_group &lt;chr&gt;, sex &lt;chr&gt;, in_observation &lt;int&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   prior_observation &lt;int&gt;, future_observation &lt;int&gt;</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 1.275 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 1.123 sec elapsed</span></span></code></pre>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -453,18 +453,18 @@ period tables.</p>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: ??</span></span>
 <span><span class="co">## Columns: 8</span></span>
-<span><span class="co">## Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 3, 3, 1, 3, 1, 1, 2, 3, 2, 1, 2, 2, 1, 3, 2, 3, 2…</span></span>
-<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 6688, 3035, 5292, 1351, 8144, 699, 8733, 6848, 22…</span></span>
-<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1999-06-28, 1977-03-24, 1931-10-19, 1993-07-08, …</span></span>
-<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2019-08-31, 1988-06-17, 1937-06-27, 2003-11-19, …</span></span>
-<span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 27, 12, 22, 20, 33, 15, 9, 4, 10, 12, 6, 6, 19, 2…</span></span>
-<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "18 to 65", "0 to 17", "18 to 65", "18 to 65", "1…</span></span>
-<span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Female", "Male", "Male", "Female", "Ma…</span></span>
-<span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10040, 4465, 8326, 7493, 12349, 5778, 3494, 1690,…</span></span></code></pre>
+<span><span class="co">## Database: DuckDB v1.1.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span>
+<span><span class="co">## $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 3, 2, 3, 3, 2, 3, 2, 3, 3, 2, 1, 3, 2, 3, 2, 3…</span></span>
+<span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16…</span></span>
+<span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1940-11-29, 1963-05-30, 1993-09-04, 1923-10-12, …</span></span>
+<span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1959-10-09, 1977-03-31, 1995-07-27, 1926-04-27, …</span></span>
+<span><span class="co">## $ age                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 0, 11, 35, 17, 4, 6, 22, 20, 12, 12, 14, 25, 2, 4…</span></span>
+<span><span class="co">## $ age_group            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0 to 17", "0 to 17", "18 to 65", "0 to 17", "0 t…</span></span>
+<span><span class="co">## $ sex                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Female", "Female", "Male", "Female", "Female", "…</span></span>
+<span><span class="co">## $ prior_observation    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 333, 4167, 13030, 6493, 1641, 2378, 8088, 7594, 4…</span></span></code></pre>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 0.489 sec elapsed</span></span></code></pre>
+<pre><code><span><span class="co">## 0.46 sec elapsed</span></span></code></pre>
 <p>In our small mock dataset we see a small improvement in performance,
 but this difference will become much more noticeable when working with
 real data that will typically be far larger.</p>
@@ -480,7 +480,7 @@ real data that will typically be far larger.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
