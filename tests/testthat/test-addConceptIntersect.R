@@ -121,6 +121,16 @@ test_that("unsupported domain name", {
         colnames())
   )
 
+  expect_no_error(
+    cdm$cohort1a <- cdm$cohort1 %>%
+    addConceptIntersectFlag(
+      conceptSet = list("not_in_concept_table" = 99L),
+      nameStyle = "new_col"
+    )
+  )
+ expect_true(all(cdm$cohort1a |>
+    dplyr::pull("new_col") == 0L))
+
   mockDisconnect(cdm = cdm)
 })
 
