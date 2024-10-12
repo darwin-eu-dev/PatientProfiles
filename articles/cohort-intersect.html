@@ -195,9 +195,9 @@ of the target cohort then used to check for an intersection.</p>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 22,…</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1916-08-27, 2000-07-08, 1968-12-10, 1908-10-06, …</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1946-04-06, 2001-12-27, 1973-11-05, 1923-03-12, …</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0…</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1…</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span></code></pre>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0…</span></span></code></pre>
 <p>Next we can add the date of the intersection and the days to the
 intersection. When identifying these variables we use only one date in
 our target table, which by default will be the cohort start date. In
@@ -220,9 +220,9 @@ will be used.</p>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 503, 261, 750, 1, 445, 523, 899, 929, 925, 200, 6…</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-08-05, 1976-07-21, 1978-01-02, 1916-08-27, …</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-12-14, 1979-07-22, 1980-06-14, 1946-04-06, …</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
 <span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
-<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span></code></pre>
+<span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addCohortIntersectDays.html">addCohortIntersectDays</a></span><span class="op">(</span></span>
@@ -240,9 +240,9 @@ will be used.</p>
 <span><span class="co">## $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 503, 261, 750, 1, 445, 523, 899, 929, 925, 200, 6…</span></span>
 <span><span class="co">## $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-08-05, 1976-07-21, 1978-01-02, 1916-08-27, …</span></span>
 <span><span class="co">## $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2005-12-14, 1979-07-22, 1980-06-14, 1946-04-06, …</span></span>
-<span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
+<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span><span class="co">## $ cohort_2_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span><span class="co">## $ cohort_3_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span></code></pre>
+<span><span class="co">## $ cohort_1_m180_to_180 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="options-for-identifying-cohort-intersection">Options for identifying cohort intersection<a class="anchor" aria-label="anchor" href="#options-for-identifying-cohort-intersection"></a>
