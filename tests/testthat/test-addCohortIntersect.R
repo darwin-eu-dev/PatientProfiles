@@ -817,7 +817,7 @@ test_that("cohortIntersect after observation", {
       dplyr::collect()
   )
 
-  windows <- checkWindow(windows)
+  windows <- omopgenerics::validateWindowArgument(windows)
   out <- c(5, 6, 8, 9)
   for (k in seq_along(windows)) {
     for (val in c("flag", "count", "date", "days")) {

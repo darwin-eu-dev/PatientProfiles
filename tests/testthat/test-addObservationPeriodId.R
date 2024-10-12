@@ -104,9 +104,11 @@ test_that("add observation period id", {
     addObservationPeriodId(indexDate = "drug_exposure_start_date"))
 
   # no error if empty
-  cdm$drug_exposure |>
-    dplyr::filter(person_id == 0) |>
-    addObservationPeriodId(indexDate = "drug_exposure_start_date")
+  expect_no_error(
+    cdm$drug_exposure |>
+      dplyr::filter(person_id == 0) |>
+      addObservationPeriodId(indexDate = "drug_exposure_start_date")
+  )
 
   # check name
   expect_warning(
@@ -150,6 +152,19 @@ test_that("add observation period id", {
     cdm$my_cohort_obs |>
       addObservationPeriodId(nameObservationPeriodId = c("id1", "id2"))
   )
+
+  # check query
+  expect_no_error(
+    x <- cdm$my_cohort |>
+      addObservationPeriodId() |>
+      dplyr::collect()
+  )
+  expect_no_error(
+    y <- cdm$my_cohort |>
+      addObservationPeriodIdQuery() |>
+      dplyr::collect()
+  )
+  expect_identical(x, y)
 
   mockDisconnect(cdm = cdm)
 })

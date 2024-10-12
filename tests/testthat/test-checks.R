@@ -85,10 +85,6 @@ test_that("test checkCategory with length 1 ", {
       dplyr::as_tibble()
   )
 
-  expect_error(checkAgeGroup(list(c(-5, 0))))
-
-  expect_error(checkWindow(c(0, 180)))
-
   expect_no_error(
     x <- checkVariablesFunctions(
       variables = list(c("age", "bin")),
@@ -187,33 +183,6 @@ test_that("test checkSnakeCase", {
   expect_true(checkSnakeCase("thisIsNotSnake") == "thisisnotsnake")
   expect_true(checkSnakeCase("this-is-not-snake") == "this_is_not_snake")
   expect_true(checkSnakeCase("this_is_alm@st_snake") == "this_is_alm_st_snake")
-})
-
-test_that("check window", {
-  skip_on_cran()
-  window <- list("short" = c(0, 9), c(10, 20), c(20, 35), "long" = c(-50, 10))
-  windowCorrected <- checkWindow(window)
-  expect_true("list" %in% class(windowCorrected))
-  expect_true(all(lapply(windowCorrected, function(x) {
-    x[1]
-  }) |> unlist() == c(0, 10, 20, -50)))
-  expect_true(all(lapply(windowCorrected, function(x) {
-    x[2]
-  }) |> unlist() == c(9, 20, 35, 10)))
-  expect_true(all(names(windowCorrected) == c("short", "10_to_20", "20_to_35", "long")))
-})
-
-test_that("checkAgeGroup", {
-  skip_on_cran()
-  ageGroup <- list(list(c(0, 69), c(70)))
-
-  expect_true(all(checkAgeGroup(ageGroup)$age_group_1[[1]] == c(0, 69)))
-
-  expect_true(all(checkAgeGroup(ageGroup)$age_group_1[[2]] == c(70)))
-
-  ageGroup <- list("age_group" = list(c(0, 40), c(41, 120)), list(c(0, 20)))
-
-  expect_true(all(checkAgeGroup(ageGroup)$age_group_2[[1]] == c(0, 20)))
 })
 
 test_that("checkNameStyle", {

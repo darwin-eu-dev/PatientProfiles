@@ -201,7 +201,7 @@ test_that("missing event end date", {
   )
 
   cohort <- dplyr::tibble(
-    cohort_definition_id = 1,
+    cohort_definition_id = 1L,
     subject_id = 273L,
     cohort_start_date = as.Date("2012-10-10"),
     cohort_end_date = as.Date("2013-10-10")

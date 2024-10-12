@@ -662,4 +662,7 @@ test_that("density works correctly", {
     dplyr::tally()
   expect_true(unique(x$n) == 8L)
   expect_true(length(unique(x$variable_level)) == 512L)
+
+  # only density
+  expect_no_error(s <- summariseResult(x, estimates = "density", variables = "age1"))
 })

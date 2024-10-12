@@ -940,8 +940,8 @@ test_that("overlapTable is empty, check return columns", {
   skip_on_cran()
   # functionality
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1),
-    subject_id = c(1, 1, 1, 2, 2),
+    cohort_definition_id = c(1, 1, 1, 1, 1) |> as.integer(),
+    subject_id = c(1, 1, 1, 2, 2) |> as.integer(),
     cohort_start_date = as.Date(
       c(
         "2020-01-01",
@@ -963,8 +963,8 @@ test_that("overlapTable is empty, check return columns", {
   )
 
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
-    subject_id = c(1, 1, 1, 2, 2, 2, 1),
+    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3) |> as.integer(),
+    subject_id = c(1, 1, 1, 2, 2, 2, 1) |> as.integer(),
     cohort_start_date = as.Date(
       c(
         "2020-01-15",
@@ -1027,8 +1027,8 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
   skip_on_cran()
   # functionality
   cohort2 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 3),
-    subject_id = c(1, 1, 1, 2, 2, 3),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 3) |> as.integer(),
+    subject_id = c(1, 1, 1, 2, 2, 3) |> as.integer(),
     cohort_start_date = as.Date(
       c(
         "2020-01-01",
@@ -1052,8 +1052,8 @@ test_that("overlap is empty or not, multiple ids, check return columns", {
   )
 
   cohort1 <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3),
-    subject_id = c(3, 3, 3, 3, 3, 3, 3),
+    cohort_definition_id = c(1, 1, 2, 2, 3, 3, 3) |> as.integer(),
+    subject_id = c(3, 3, 3, 3, 3, 3, 3) |> as.integer(),
     cohort_start_date = as.Date(
       c(
         "2020-01-15",
