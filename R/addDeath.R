@@ -137,16 +137,16 @@ addDeath <- function(x,
                      censorDate,
                      window,
                      deathName,
-                     name) {
+                     name,
+                     call = parent.frame()) {
 
   # input validation
-  omopgenerics::assertTable(x, columns = c(indexDate))
+  omopgenerics::assertTable(x, class = "cdm_table", columns = c(indexDate), call = call)
   cdm <- omopgenerics::cdmReference(x)
-  omopgenerics::validateCdmArgument(cdm)
-  omopgenerics::assertTable(cdm[["death"]])
-  window <- omopgenerics::validateWindowArgument(window)
-  window <- purrr::list_c(window)
-  deathName <- omopgenerics::validateNameArgument(deathName, validation = "warning")
+  omopgenerics::validateCdmArgument(cdm, call = call)
+  omopgenerics::assertTable(cdm[["death"]], class = "omop_table", call = call)
+  window <- omopgenerics::validateWindowArgument(window, call = call)
+  deathName <- omopgenerics::validateNameArgument(deathName, validation = "warning", call = call)
   if (deathName %in% colnames(x)) {
     cli::cli_warn("{deathName} variable already exists and will be overwritten")
     x <- x |>
