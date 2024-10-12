@@ -82,7 +82,7 @@ test_that("add observation period id", {
     x |>
       dplyr::group_by(.data$person_id) |>
       dplyr::arrange(.data$observation_period_start_date) |>
-      dplyr::mutate(id = dplyr::row_number()) |>
+      dplyr::mutate(id = as.integer(dplyr::row_number())) |>
       dplyr::collect() |>
       dplyr::arrange(.data$person_id, .data$observation_period_start_date) |>
       dplyr::pull("id")
