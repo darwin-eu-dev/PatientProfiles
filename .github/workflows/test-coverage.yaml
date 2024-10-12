@@ -8,9 +8,6 @@ on:
 
 name: test-coverage.yaml
 
-codecov:
-token: c930022b-e11a-47ad-90f1-ffd2b6e14c80
-
 permissions: read-all
 
 jobs:
@@ -47,7 +44,7 @@ jobs:
           file: ./cobertura.xml
           plugin: noop
           disable_search: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: c930022b-e11a-47ad-90f1-ffd2b6e14c80
 
       - name: Show testthat output
         if: always()
