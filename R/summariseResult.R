@@ -224,7 +224,6 @@ summariseInternal <- function(table, groupk, stratak, functions, counts, personV
   strataGroupk <- unique(c(groupk, stratak))
 
   if (length(strataGroupk) == 0) {
-    dropNm <- FALSE
     table <- table |>
       dplyr::mutate("strata_id" = 1L)
     strataGroup <- dplyr::tibble(
@@ -235,13 +234,11 @@ summariseInternal <- function(table, groupk, stratak, functions, counts, personV
       "strata_level" = "overall"
     )
   } else {
-    dropNm <- inherits(table, "cdm_table")
-    nm <- omopgenerics::uniqueTableName()
     strataGroup <- table |>
       dplyr::select(dplyr::all_of(strataGroupk)) |>
       dplyr::distinct() |>
-      dplyr::mutate("strata_id" = dplyr::row_number()) |>
-      dplyr::compute(name = nm, temporary = FALSE)
+      dplyr::arrange(dplyr::across(dplyr::all_of(strataGroupk))) |>
+      dplyr::mutate("strata_id" = dplyr::row_number())
     if (strataGroup |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull() == 1) {
       table <- table |>
         dplyr::mutate("strata_id" = 1L)
@@ -284,12 +281,6 @@ summariseInternal <- function(table, groupk, stratak, functions, counts, personV
 
   # summariseMissings
   result$missings <- summariseMissings(table, functions)
-
-  if (dropNm) {
-    table |>
-      omopgenerics::cdmReference() |>
-      omopgenerics::dropTable(name = nm)
-  }
 
   result <- result |>
     dplyr::bind_rows() |>
