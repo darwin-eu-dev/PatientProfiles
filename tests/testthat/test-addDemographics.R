@@ -1384,8 +1384,14 @@ test_that("test query functions", {
   )
 
   for (k in seq_along(fun1)) {
-    x <- do.call(fun1[[k]], list(cdm$cohort1)) |> dplyr::collect()
-    y <- do.call(fun2[[k]], list(cdm$cohort1)) |> dplyr::collect()
+    x <- do.call(fun1[[k]], list(cdm$cohort1)) |> dplyr::collect() |>
+      dplyr::arrange(cohort_definition_id,
+                     subject_id,
+                     cohort_start_date)
+    y <- do.call(fun2[[k]], list(cdm$cohort1)) |> dplyr::collect() |>
+      dplyr::arrange(cohort_definition_id,
+                     subject_id,
+                     cohort_start_date)
     expect_identical(x, y)
   }
 
