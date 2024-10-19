@@ -683,6 +683,7 @@ addInObservationQuery <- function(x,
                                   window = c(0, 0),
                                   completeInterval = FALSE,
                                   nameStyle = "in_observation") {
+
   x |>
     .addInObservationQuery(
       indexDate = indexDate,
@@ -697,6 +698,7 @@ addInObservationQuery <- function(x,
                                    window = c(0, 0),
                                    completeInterval = FALSE,
                                    nameStyle = "in_observation",
+                                   tmpName = NULL,
                                    call = parent.frame()) {
   x <- validateX(x, call = call)
   indexDate <- validateIndexDate(indexDate, null = FALSE, x = x, call = call)
@@ -740,6 +742,9 @@ addInObservationQuery <- function(x,
       !!startDif := !!CDMConnector::datediff(indexDate, start),
       !!endDif := !!CDMConnector::datediff(indexDate, end)
     )
+  if(!is.null(tmpName)){
+    xnew <- xnew |> dplyr::compute(name = tmpName, temporary = FALSE)
+  }
 
   qR <- NULL
   for (k in seq_along(window)) {
@@ -779,7 +784,7 @@ addInObservationQuery <- function(x,
         }
       }
     }
-    nQ <- paste0("as.integer(", nQ, ")") |>
+    nQ <- paste0(nQ) |>
       glue::glue() |>
       rlang::parse_exprs() |>
       rlang::set_names(nam)
@@ -792,7 +797,7 @@ addInObservationQuery <- function(x,
       by = c(personVariable, indexDate)
     ) |>
     dplyr::mutate(dplyr::across(
-      dplyr::all_of(newColumns), ~ as.integer(dplyr::if_else(is.na(.x), 0L, .x))
+      dplyr::all_of(newColumns), ~ dplyr::coalesce(as.integer(.x), 0L)
     ))
 
   return(x)
