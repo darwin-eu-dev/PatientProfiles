@@ -330,7 +330,9 @@ addInObservation <- function(x,
     ) |>
     computeTable(name = name)
 
-  CDMConnector::dropTable(cdm = cdm, name = tmpName)
+  omopgenerics::dropTable(cdm = cdm, name = tmpName)
+
+  x
 }
 
 #' Compute the sex of the individuals
