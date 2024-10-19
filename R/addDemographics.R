@@ -316,14 +316,21 @@ addInObservation <- function(x,
                              nameStyle = "in_observation",
                              name = NULL) {
   name <- validateName(name)
-  x |>
+
+  cdm <- omopgenerics::cdmReference(x)
+  tmpName <- omopgenerics::uniqueTableName()
+
+  x <- x |>
     .addInObservationQuery(
       indexDate = indexDate,
       window = window,
       completeInterval = completeInterval,
-      nameStyle = nameStyle
+      nameStyle = nameStyle,
+      tmpName = tmpName
     ) |>
     computeTable(name = name)
+
+  CDMConnector::dropTable(cdm = cdm, name = tmpName)
 }
 
 #' Compute the sex of the individuals
