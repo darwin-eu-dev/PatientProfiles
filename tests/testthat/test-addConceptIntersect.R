@@ -237,3 +237,129 @@ test_that("missing event end date", {
 
   mockDisconnect(cdm)
 })
+
+test_that("records out of observation", {
+
+  cdm <- mockPatientProfiles(con = connection(),
+                             writeSchema = writeSchema())
+  cdm <- omopgenerics::insertTable(
+    cdm, "observation_period",
+    table = data.frame(observation_period_id = 1L,
+                       person_id = 1L,
+                       observation_period_start_date = as.Date("2000-01-01"),
+                       observation_period_end_date  = as.Date("2010-01-01"),
+                       period_type_concept_id = 1L))
+  cdm <- omopgenerics::insertTable(
+    cdm, "my_cohort",
+    table = data.frame(cohort_definition_id = 1L,
+                       subject_id = 1L,
+                       cohort_start_date = as.Date("2000-01-01"),
+                       cohort_end_date = as.Date("2010-01-01")))
+  # add a concept to put out of observation
+  cdm <- omopgenerics::insertTable(cdm, "concept",
+                            table = data.frame(concept_id = 99L,
+                                               concept_name = "concept",
+                                               domain_id = "condition",
+                                               vocabulary_id = "test",
+                                               concept_class_id = 1L,
+                                               concept_code = 99L,
+                                               valid_start_date = as.Date("1900-01-01"),
+                                               valid_end_date = as.Date("2099-01-01")))
+
+  cdm <- omopgenerics::insertTable(cdm, "condition_occurrence",
+                                   table = data.frame(condition_occurrence_id = c(1L, 2L),
+                                                      person_id = c(1L, 1L),
+                                                      condition_concept_id = c(99L, 99L),
+                                                      condition_start_date = c(as.Date("1990-01-01"),
+                                                                               as.Date("1991-01-01")),
+                                                      condition_end_date= c(as.Date("1990-01-01"),
+                                                                            as.Date("1991-01-01")),
+                                                      condition_type_concept_id = c(1L, 1L))
+  )
+
+
+  # default - record out of observation will be excluded
+  cdm$my_cohort <- cdm$my_cohort |>
+   addConceptIntersectFlag(conceptSet = list(a = 99L),
+                           window = list(c(-Inf, Inf)),
+                           inObservation = TRUE,
+                           nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+    dplyr::pull("intersect") == 0)
+
+  # include records out of observation
+  cdm$my_cohort <- cdm$my_cohort |>
+    addConceptIntersectFlag(conceptSet = list(a = 99L),
+                            window = list(c(-Inf, Inf)),
+                            inObservation = FALSE,
+                            nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+                dplyr::pull("intersect") == 1)
+  # not if outside of window
+  cdm$my_cohort <- cdm$my_cohort |>
+    addConceptIntersectFlag(conceptSet = list(a = 99L),
+                            window = list(c(0, Inf)),
+                            inObservation = FALSE,
+                            nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+                dplyr::pull("intersect") == 0)
+
+expect_error(cdm$my_cohort |>
+    addConceptIntersectFlag(conceptSet = list(a = 99L),
+                            window = list(c(-Inf, Inf)),
+                            inObservation = "not_logical", # should cause error
+                            nameStyle = "intersect"))
+
+  # count
+  cdm$my_cohort <- cdm$my_cohort |>
+    addConceptIntersectCount(conceptSet = list(a = 99L),
+                            window = list(c(-Inf, Inf)),
+                            inObservation = FALSE,
+                            nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+                dplyr::pull("intersect") == 2)
+
+  # date
+  cdm$my_cohort <- cdm$my_cohort |>
+    addConceptIntersectDate(conceptSet = list(a = 99L),
+                             window = list(c(-Inf, Inf)),
+                             inObservation = FALSE,
+                              order = "first",
+                             nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+                dplyr::pull("intersect") == "1990-01-01")
+
+  cdm$my_cohort <- cdm$my_cohort |>
+    addConceptIntersectDate(conceptSet = list(a = 99L),
+                            window = list(c(-Inf, Inf)),
+                            inObservation = FALSE,
+                            order = "last",
+                            nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+                dplyr::pull("intersect") == "1991-01-01")
+
+   # days
+  cdm$my_cohort <- cdm$my_cohort |>
+    addConceptIntersectDays(conceptSet = list(a = 99L),
+                            window = list(c(-Inf, Inf)),
+                            inObservation = FALSE,
+                            order = "last",
+                            nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+                dplyr::pull("intersect") ==
+                as.integer(difftime(as.Date("1991-01-01"),
+                         as.Date("2000-01-01"))))
+
+  cdm$my_cohort <- cdm$my_cohort |>
+    addConceptIntersectDays(conceptSet = list(a = 99L),
+                            window = list(c(-Inf, Inf)),
+                            inObservation = FALSE,
+                            order = "first",
+                            nameStyle = "intersect")
+  expect_true(cdm$my_cohort |>
+                dplyr::pull("intersect") ==
+                as.integer(difftime(as.Date("1990-01-01"),
+                                    as.Date("2000-01-01"))))
+
+
+})
