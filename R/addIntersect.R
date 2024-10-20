@@ -25,6 +25,7 @@
                           censorDate = NULL,
                           targetStartDate = startDateColumn(tableName),
                           targetEndDate = endDateColumn(tableName),
+                          inObservation = TRUE,
                           order = "first",
                           nameStyle = "{value}_{id_name}_{window_name}",
                           name = NULL) {
@@ -140,10 +141,15 @@
     dplyr::mutate(
       "start" = !!CDMConnector::datediff("index_date", "start_date"),
       "end" = !!CDMConnector::datediff("index_date", "end_date")
-    ) |>
+    )
+  if(isTRUE(inObservation)){
+  result <- result |>
     dplyr::filter(
       .data$start_obs <= .data$end & .data$start <= .data$end_obs
-    ) |>
+    )
+  }
+
+  result <- result |>
     dplyr::compute(
       name = omopgenerics::uniqueTableName(tablePrefix),
       temporary = FALSE,
