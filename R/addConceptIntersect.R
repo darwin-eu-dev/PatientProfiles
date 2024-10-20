@@ -44,7 +44,7 @@
   conceptSetId <- conceptSetId(conceptSet)
 
   # subset table
-  cdm[[nm]] <- subsetTable(cdm[[nm]]) |>
+  cdm[[nm]] <- subsetTable(cdm[[nm]], value) |>
     dplyr::compute(name = nm, temporary = FALSE)
   attr(x, "cdm_reference") <- cdm
   x <- x |>
@@ -81,7 +81,9 @@ conceptSetId <- function(conceptSet) {
     "concept_set_id" = as.integer(seq_along(conceptSet))
   )
 }
-subsetTable <- function(x) {
+subsetTable <- function(x, value) {
+  value <- value[!value %in% c("count", "flag", "date", "days")]
+
   cdm <- omopgenerics::cdmReference(x)
 
   # domains
@@ -101,30 +103,21 @@ subsetTable <- function(x) {
   domains[domains == "obs"] <- "observation"
   domains <- unique(domains)
 
-  if(length(domains) == 0){
-    domains <- NA_character_
-  }
+  if (length(domains) == 0) domains <- NA_character_
+
+  type <- getValueType(cdm, domain)
 
   lapply(domains, function(domain) {
-    tableName <- switch(domain,
-      "device" = "device_exposure",
-      "specimen" = "specimen",
-      "measurement" = "measurement",
-      "drug" = "drug_exposure",
-      "condition" = "condition_occurrence",
-      "observation" = "observation",
-      "procedure" = "procedure_occurrence",
-      "episode" = "episode",
-      NA_character_
-    )
+    tableName <- domainTable(domain)
     if (tableName %in% names(cdm)) {
       concept <- standardConceptIdColumn(tableName)
       start <- startDateColumn(tableName)
       end <- endDateColumn(tableName)
       res <- cdm[[tableName]] |>
+        addValue(value, type) |>
         dplyr::select(
           "event_start_date" = .env$start, "event_end_date" = .env$end,
-          "concept_id" = .env$concept, "person_id"
+          "concept_id" = .env$concept, "person_id", dplyr::all_of(value)
         ) |>
         dplyr::inner_join(
           x |> dplyr::select("concept_id", "concept_set_id"),
@@ -144,11 +137,46 @@ subsetTable <- function(x) {
           "concept_set_id" = as.integer(0),
           "person_id" = as.integer(0)
         ) |>
-        utils::head(0)
+        utils::head(0) |>
+        addValue(value, type)
     }
     return(res)
   }) |>
     purrr::reduce(dplyr::union_all)
+}
+domainTable <- function(domain) {
+  switch(
+    domain,
+    "device" = "device_exposure",
+    "specimen" = "specimen",
+    "measurement" = "measurement",
+    "drug" = "drug_exposure",
+    "condition" = "condition_occurrence",
+    "observation" = "observation",
+    "procedure" = "procedure_occurrence",
+    "episode" = "episode",
+    NA_character_
+  )
+}
+getValueType <- function(cdm, domain, value) {
+  if (is.null(value)) return(character())
+  purrr::map(domain, \(x) {
+    tab <- domainTable(x)
+    if (tab %in% names(cdm)) {
+      if (value %in% colnames(cdm[[tab]])) {
+        typ <- cdm[[tab]] |>
+          dplyr::select(dplyr::select(dplyr::all_of(value))) |>
+          utils::head(1) |>
+          dplyr::pull() |>
+          dplyr::type_sum()
+      } else {
+        typ <- NA_character_
+      }
+    } else {
+      typ <- NA_character_
+    }
+    return(typ)
+  })
 }
 
 #' It creates column to indicate the flag overlap information between a table
@@ -418,6 +446,78 @@ addConceptIntersectDays <- function(x,
     targetEndDate = NULL,
     order = order,
     value = "days",
+    nameStyle = nameStyle,
+    name = name
+  )
+}
+
+#' It creates column to indicate the flag overlap information between a table
+#' and a concept
+#'
+#' @param x Table with individuals in the cdm.
+#' @param conceptSet Concept set list.
+#' @param field Column that you want to add the value for.
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
+#' @param censorDate whether to censor overlap events at a date column of x
+#' @param window window to consider events in.
+#' @param targetStartDate Event start date to use for the intersection.
+#' @param targetEndDate Event end date to use for the intersection.
+#' @param nameStyle naming of the added column or columns, should include
+#' required parameters.
+#' @param name Name of the new table, if NULL a temporary table is returned.
+#'
+#' @return table with added columns with overlap information
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(PatientProfiles)
+#' cdm <- mockPatientProfiles()
+#' concept <- dplyr::tibble(
+#'   concept_id = c(1125315),
+#'   domain_id = "Drug",
+#'   vocabulary_id = NA_character_,
+#'   concept_class_id = "Ingredient",
+#'   standard_concept = "S",
+#'   concept_code = NA_character_,
+#'   valid_start_date = as.Date("1900-01-01"),
+#'   valid_end_date = as.Date("2099-01-01"),
+#'   invalid_reason = NA_character_
+#' ) %>%
+#'   dplyr::mutate(concept_name = paste0("concept: ", .data$concept_id))
+#' cdm <- CDMConnector::insertTable(cdm, "concept", concept)
+#' result <- cdm$cohort1 %>%
+#'   addConceptIntersectFlag(
+#'     conceptSet = list("acetaminophen" = 1125315)
+#'   ) %>%
+#'   dplyr::collect()
+#' mockDisconnect(cdm = cdm)
+#' }
+#'
+addConceptIntersectField <- function(x,
+                                    conceptSet,
+                                    field,
+                                    indexDate = "cohort_start_date",
+                                    censorDate = NULL,
+                                    window = list(c(0, Inf)),
+                                    targetStartDate = "event_start_date",
+                                    targetEndDate = "event_end_date",
+                                    nameStyle = "{field}_{concept_name}_{window_name}",
+                                    name = NULL) {
+
+  nameStyle <- gsub("\\{field\\}", "\\{value\\}", nameStyle)
+  .addConceptIntersect(
+    x = x,
+    conceptSet = conceptSet,
+    indexDate = indexDate,
+    censorDate = censorDate,
+    window = window,
+    targetStartDate = targetStartDate,
+    targetEndDate = targetEndDate,
+    order = "first",
+    value = "flag",
     nameStyle = nameStyle,
     name = name
   )
