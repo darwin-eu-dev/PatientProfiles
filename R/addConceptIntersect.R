@@ -21,6 +21,7 @@
                                  window,
                                  targetStartDate = "event_start_date",
                                  targetEndDate = "event_end_date",
+                                 inObservation = TRUE,
                                  order = "first",
                                  value,
                                  nameStyle = "{value}_{concept_name}_{window_name}",
@@ -29,6 +30,7 @@
   omopgenerics::newCodelist(conceptSet)
   omopgenerics::assertChoice(targetStartDate, choices = c("event_start_date", "event_end_date"), length = 1)
   omopgenerics::assertChoice(targetEndDate, choices = c("event_start_date", "event_end_date"), length = 1, null = TRUE)
+  omopgenerics::assertLogical(inObservation, length = 1)
 
   cdm <- omopgenerics::cdmReference(x)
   tablePrefix <- omopgenerics::tmpPrefix()
@@ -60,6 +62,7 @@
       censorDate = censorDate,
       targetStartDate = targetStartDate,
       targetEndDate = targetEndDate,
+      inObservation = inObservation,
       nameStyle = nameStyle,
       name = name
     )
@@ -162,6 +165,8 @@ subsetTable <- function(x) {
 #' @param window window to consider events in.
 #' @param targetStartDate Event start date to use for the intersection.
 #' @param targetEndDate Event end date to use for the intersection.
+#' @param inObservation If TRUE only records inside an observation period
+#' will be considered.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
 #' @param name Name of the new table, if NULL a temporary table is returned.
@@ -202,6 +207,7 @@ addConceptIntersectFlag <- function(x,
                                     window = list(c(0, Inf)),
                                     targetStartDate = "event_start_date",
                                     targetEndDate = "event_end_date",
+                                    inObservation = TRUE,
                                     nameStyle = "{concept_name}_{window_name}",
                                     name = NULL) {
   .addConceptIntersect(
@@ -212,6 +218,7 @@ addConceptIntersectFlag <- function(x,
     window = window,
     targetStartDate = targetStartDate,
     targetEndDate = targetEndDate,
+    inObservation = inObservation,
     order = "first",
     value = "flag",
     nameStyle = nameStyle,
@@ -230,6 +237,8 @@ addConceptIntersectFlag <- function(x,
 #' @param window window to consider events in.
 #' @param targetStartDate Event start date to use for the intersection.
 #' @param targetEndDate Event end date to use for the intersection.
+#' @param inObservation If TRUE only records inside an observation period
+#' will be considered.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
 #' @param name Name of the new table, if NULL a temporary table is returned.
@@ -270,6 +279,7 @@ addConceptIntersectCount <- function(x,
                                      window = list(c(0, Inf)),
                                      targetStartDate = "event_start_date",
                                      targetEndDate = "event_end_date",
+                                     inObservation = TRUE,
                                      nameStyle = "{concept_name}_{window_name}",
                                      name = NULL) {
   .addConceptIntersect(
@@ -280,6 +290,7 @@ addConceptIntersectCount <- function(x,
     window = window,
     targetStartDate = targetStartDate,
     targetEndDate = targetEndDate,
+    inObservation = inObservation,
     order = "first",
     value = "count",
     nameStyle = nameStyle,
@@ -298,6 +309,8 @@ addConceptIntersectCount <- function(x,
 #' @param window window to consider events in.
 #' @param targetDate Event date to use for the intersection.
 #' @param order last or first date to use for date/days calculations.
+#' @param inObservation If TRUE only records inside an observation period
+#' will be considered.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
 #' @param name Name of the new table, if NULL a temporary table is returned.
@@ -338,6 +351,7 @@ addConceptIntersectDate <- function(x,
                                     window = list(c(0, Inf)),
                                     targetDate = "event_start_date",
                                     order = "first",
+                                    inObservation = TRUE,
                                     nameStyle = "{concept_name}_{window_name}",
                                     name = NULL) {
   .addConceptIntersect(
@@ -348,6 +362,7 @@ addConceptIntersectDate <- function(x,
     window = window,
     targetStartDate = targetDate,
     targetEndDate = NULL,
+    inObservation = inObservation,
     order = order,
     value = "date",
     nameStyle = nameStyle,
@@ -366,6 +381,8 @@ addConceptIntersectDate <- function(x,
 #' @param window window to consider events in.
 #' @param targetDate Event date to use for the intersection.
 #' @param order last or first date to use for date/days calculations.
+#' @param inObservation If TRUE only records inside an observation period
+#' will be considered.
 #' @param nameStyle naming of the added column or columns, should include
 #' required parameters.
 #' @param name Name of the new table, if NULL a temporary table is returned.
@@ -406,6 +423,7 @@ addConceptIntersectDays <- function(x,
                                     window = list(c(0, Inf)),
                                     targetDate = "event_start_date",
                                     order = "first",
+                                    inObservation = TRUE,
                                     nameStyle = "{concept_name}_{window_name}",
                                     name = NULL) {
   .addConceptIntersect(
@@ -416,6 +434,7 @@ addConceptIntersectDays <- function(x,
     window = window,
     targetStartDate = targetDate,
     targetEndDate = NULL,
+    inObservation = inObservation,
     order = order,
     value = "days",
     nameStyle = nameStyle,

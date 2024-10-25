@@ -13,6 +13,7 @@ addConceptIntersectDate(
   window = list(c(0, Inf)),
   targetDate = "event_start_date",
   order = "first",
+  inObservation = TRUE,
   nameStyle = "{concept_name}_{window_name}",
   name = NULL
 )
@@ -32,6 +33,9 @@ intersection.}
 \item{targetDate}{Event date to use for the intersection.}
 
 \item{order}{last or first date to use for date/days calculations.}
+
+\item{inObservation}{If TRUE only records inside an observation period
+will be considered.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters.}

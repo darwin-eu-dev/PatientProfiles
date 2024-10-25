@@ -13,6 +13,7 @@ addConceptIntersectCount(
   window = list(c(0, Inf)),
   targetStartDate = "event_start_date",
   targetEndDate = "event_end_date",
+  inObservation = TRUE,
   nameStyle = "{concept_name}_{window_name}",
   name = NULL
 )
@@ -32,6 +33,9 @@ intersection.}
 \item{targetStartDate}{Event start date to use for the intersection.}
 
 \item{targetEndDate}{Event end date to use for the intersection.}
+
+\item{inObservation}{If TRUE only records inside an observation period
+will be considered.}
 
 \item{nameStyle}{naming of the added column or columns, should include
 required parameters.}

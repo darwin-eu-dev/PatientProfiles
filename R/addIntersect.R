@@ -25,6 +25,7 @@
                           censorDate = NULL,
                           targetStartDate = startDateColumn(tableName),
                           targetEndDate = endDateColumn(tableName),
+                          inObservation = TRUE,
                           order = "first",
                           nameStyle = "{value}_{id_name}_{window_name}",
                           name = NULL) {
@@ -103,47 +104,57 @@
       "end_date" = dplyr::all_of(targetEndDate %||% targetStartDate),
       dplyr::all_of(extraValue)
     ) %>%
-    dplyr::mutate(end_date = dplyr::if_else(is.na(.data$end_date),
-      .data$start_date,
-      .data$end_date
+    dplyr::mutate(end_date = dplyr::if_else(
+      is.na(.data$end_date), .data$start_date, .data$end_date
     ))
 
   result <- x |>
     dplyr::select(
       dplyr::all_of(personVariable),
       "index_date" = dplyr::all_of(indexDate),
-      "censor_time" = dplyr::any_of(censorDate)
+      "censor_date" = dplyr::any_of(censorDate)
     ) |>
-    dplyr::distinct() |>
-    addDemographics(
-      indexDate = "index_date", age = FALSE, sex = FALSE,
-      priorObservationName = "start_obs", futureObservationName = "end_obs",
-      name = omopgenerics::uniqueTableName(tablePrefix)
-    ) %>%
-    dplyr::mutate("start_obs" = -.data$start_obs)
+    dplyr::distinct()
 
+  if (isTRUE(inObservation)) {
+    result <- result |>
+      addDemographics(
+        indexDate = "index_date",
+        age = FALSE,
+        sex = FALSE,
+        priorObservation = TRUE,
+        priorObservationName = "start_obs",
+        priorObservationType = "date",
+        futureObservation = TRUE,
+        futureObservationName = "end_obs",
+        futureObservationType = "date",
+        name = omopgenerics::uniqueTableName(tablePrefix)
+      )
+  }
 
-
+  result <- result |>
+    dplyr::inner_join(overlapTable, by = personVariable)
 
   if (!is.null(censorDate)) {
-    result <- result %>%
-      dplyr::mutate(
-        "censor_time" = !!CDMConnector::datediff("index_date", "censor_time"),
-        "end_obs" = dplyr::if_else(
-          .data$censor_time < .data$end_obs, .data$censor_time, .data$end_obs
-        )
-      ) |>
-      dplyr::select(-"censor_time")
+    result <- result |>
+      dplyr::filter(.data$start_date <= .data$censor_date)
   }
-  result <- result |>
-    dplyr::inner_join(overlapTable, by = personVariable) %>%
+
+  if (isTRUE(inObservation)) {
+    result <- result |>
+      dplyr::filter(
+        .data$start_obs <= .data$end_date & .data$start_date <= .data$end_obs
+      )
+  }
+
+  result <- result %>%
     dplyr::mutate(
       "start" = !!CDMConnector::datediff("index_date", "start_date"),
       "end" = !!CDMConnector::datediff("index_date", "end_date")
     ) |>
-    dplyr::filter(
-      .data$start_obs <= .data$end & .data$start <= .data$end_obs
-    ) |>
+    dplyr::select(!dplyr::any_of(c(
+      "censor_date", "start_date", "end_date", "start_obs", "end_obs"
+    ))) |>
     dplyr::compute(
       name = omopgenerics::uniqueTableName(tablePrefix),
       temporary = FALSE,
